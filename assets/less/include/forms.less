@@ -1,0 +1,146 @@
+@import "variables";
+
+// button
+.bip-button {
+    display: flex; align-items: center; justify-content: center; width: 100%; padding: 14px 20px; font-size: 14px; line-height: 18px; font-weight: 700; font-family: @heading-font-family; /*color: @c-black;*/ text-transform: uppercase; text-align: center; border: 2px solid transparent; border-radius: 15px; text-decoration: none; transition: 0.15s; outline: none; cursor: pointer; position: relative;
+    &:hover, &:focus {}
+    &:active {}
+    &[disabled], &.is-disabled {
+        cursor: default;
+        &:not(.is-loading) {opacity: 0.4; box-shadow: none;}
+    }
+    &.is-loading .bip-button__content {color: transparent;}
+    &+& {margin-top: 16px;}
+}
+.bip-button-shadow() {
+    box-shadow: 0 4px 8px fade(@c-main, 15%), 0 1px 2px fade(@c-main, 20%);
+    &:hover, &:focus {box-shadow: 0 6px 12px fade(@c-main, 15%), 0 1px 4px fade(@c-main, 20%);}
+    &:active {box-shadow: 0 2px 4px fade(@c-main, 15%), 0 1px 2px fade(@c-main, 20%);}
+}
+.bip-button--main {
+    color: #fff; background: @c-main; .bip-button-shadow();
+    &:hover, &:focus {background: tint(@c-main, 10%);}
+    &:active {background: shade(@c-main, 20%);}
+    &[disabled], &.is-disabled {background: @c-black-light;}
+    //&[disabled], &.is-disabled {
+    //    &:not(.is-loading) {background: fade(@c-black-light, 40%); opacity: 1;}
+    //}
+}
+.bip-button--white {
+    color: @c-main; background: #fff; .bip-button-shadow();
+    &:hover, &:focus {background: mix(#fff, @c-main, 90%);}
+    &:active {background: mix(#fff, @c-main, 80%);}
+}
+.bip-button--ghost-main {
+    color: @c-main; background: transparent; border-color: @c-main;
+    &:hover, &:focus {color: #fff; background: @c-main;}
+    &:active {color: #fff; background: shade(@c-main, 20%); border-color: shade(@c-main, 20%);}
+}
+.bip-button--ghost-white {
+    color: #fff; background: transparent; border-color: #fff;
+    &:hover, &:focus {color: @c-main; background: #fff;}
+    &:active {color: @c-main; background: mix(#fff, @c-main, 80%); border-color: mix(#fff, @c-main, 80%);}
+}
+.bip-button__content {transition: 0.15s;}
+// button group
+//.button-group {
+//    display: flex; flex-direction: column; align-items: center; margin-top: -10px; margin-left: -20px; margin-bottom: @default-indent;
+//    .button {margin-top: 10px; margin-left: 20px;}
+//    * + & {margin-top: @default-indent - 10px;}
+//    &:last-child {margin-bottom: 0;}
+//}
+//.button-group--small {
+//    margin-left: -10px;
+//    .button {margin-left: 10px;}
+//}
+//@media (min-width: @breakpoint-medium-up) {
+//    .button-group {flex-direction: row; justify-content: center; flex-wrap: wrap;}
+//}
+@media (min-width: @breakpoint-small-up) {
+    .bip-button {max-width: 320px; margin-left: auto; margin-right: auto;}
+}
+@media (min-width: @breakpoint-medium-up) {
+    .bip-button {max-width: none;}
+}
+
+.bip-link {
+    font-weight: 500; color: @c-main;
+    &:hover, &:focus {color: tint(@c-main, 20%);}
+    &:active {color: tint(@c-main, 40%);}
+}
+
+
+// button-loader
+@loader-length: 16 * 3.14 * 2; // длина окружности
+.loader {width: 40px; height: 40px; margin: auto; pointer-events: none; animation: loader-rotate 2s linear infinite;}
+.loader--button {
+    position: absolute; left: 0; right: 0; top: 0; bottom: 0; opacity: 0; transition: 0.05s;
+    .is-loading > & { opacity: 1; transition: 0.15s 0.15s;}
+}
+.loader--inline {vertical-align: middle; margin-right: 10px;}
+.loader__path { fill: none; stroke: currentColor; stroke-width: 3px; stroke-linecap: round; animation: loader-dash 1.5s ease-in-out infinite; }
+@keyframes loader-rotate {
+    0% {transform: rotate(-90deg);}
+    100% { transform: rotate(270deg); }
+}
+@keyframes loader-dash {
+    0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
+    50% { stroke-dasharray: @loader-length * 0.8, 200; stroke-dashoffset: 0; }
+    100% { stroke-dasharray: @loader-length * 0.8, 200; stroke-dashoffset: -@loader-length + 1px; }
+}
+
+
+
+.u-text-error {color: @c-red; font-weight: 500;}
+.bip-form__error {color: @c-red; display: block; margin-top: 10px; text-align: center; overflow-wrap: break-word; font-weight: 500;}
+
+
+
+// input
+@field-input-padding: 4px;
+@field-label-height: 20px;
+@field-label-scale: 0.75;
+@field-padding: (@field-label-height * @field-label-scale);
+@field-label-top: (@field-padding + @field-input-padding);
+@field-label-translate: (@field-label-height + @field-input-padding);
+.bg-field-layer() {content: ''; position: absolute; top: (2px + 7px + 17px); right: 2px; width: 40px; height: 40px; border-radius: 6px;}
+.bg-field-icon() {content: ''; position: absolute; top: (18px + 7px + 17px); right: 16px;}
+.bip-field--row {
+    &+& {margin-top: 20px;}
+}
+.bip-field {
+    display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; position: relative; cursor: pointer; font-weight: 500; pointer-events: none;
+    // show layer only when needed
+    &.is-success, &.is-error, &.bip-field--select {
+        &::before {.bg-field-layer(); background: linear-gradient(to right, #fff0, #fff 40%);}
+    }
+    //&.is-success::after {.bg-field-icon(); .bg-url("../img/icon-success.svg");}
+    //&.is-error::after {.bg-field-icon(); .bg-url("../img/icon-error.svg");}
+}
+.bip-field--select {
+    .bip-field__input {appearance: none;}
+    //&::after {.bg-field-layer(); background: url(../img/icon-dropdown.svg) no-repeat right 6px top 50%;}
+}
+.bip-field--with-max {
+    .bip-field__input {padding-right: 77px;}
+}
+.bip-field__input {
+    padding: 10px 26px 10px 16px; margin-top: 7px; font-size: 16px; line-height: 22px; color: @c-black; background: #fff; border: 2px solid @c-border; transition: 0.2s; display: block; width: 100%; pointer-events: auto; border-radius: 8px; min-height: 46px; background-clip: padding-box; /* remove ios safari box shadow */
+    &:focus {border-color: @c-main;}
+    &:read-only:not(select) {border-color:@c-border; border-style: dotted; cursor: default;}
+    .is-success & {border-color: @c-green;}
+    .is-error & {border-color: @c-red;}
+}
+.field-label-text() {font-size: 12px; /*line-height: 16px;*/ text-transform: uppercase; font-weight: 500;}
+.bip-field__label {
+    .field-label-text(); padding-left: 10px; pointer-events: auto; flex-grow: 2; /* fix IE11 justify-content: space-between */
+}
+.bip-field__error {
+    .field-label-text(); padding-left: 10px; color: @c-red; display: none; margin-top: 6px;
+    .is-error > & {display: block;}
+}
+.bip-field__asterisk {
+    padding-left: 22px; position: relative;
+    &::before {content: '*'; position: absolute; left: 0; top: 0;}
+}
+.bip-field__button {text-transform: uppercase; position: absolute; top: (13px + 7px + 17px); right: 16px; pointer-events: auto; padding-left: 10px; background: linear-gradient(to right, #fff0, #fff 10px); z-index: 1; font-weight: 700;}

@@ -1,0 +1,16 @@
+version: 1.0.0
+apiVersion: v2
+name: honee-web
+icon: https://explorer.minter.network/img/minter-logo-circle.svg
+description: A Helm chart for Honee Web
+
+appVersion: v1.0.0
+
+home: https://github.com/MinterTeam/honee-web
+keywords:
+  - minter
+  - honee
+maintainers:
+  - name: shrpne
+    email: shrpne@gmail.com
+

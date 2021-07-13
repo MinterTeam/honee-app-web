@@ -1,0 +1,23 @@
+export default function({store, route, redirect, error}) {
+    if (process.server) {
+        return;
+    }
+    console.log('CHECK AUTH');
+    console.log('-- route', route);
+    console.log('-- path', route.path);
+
+    const urlRequiresNonAuth = /^\/auth(\/|$)/.test(route.path);
+
+    if (!store.getters.isAuthorized && !urlRequiresNonAuth) {
+        console.log('-- restricted: redirect to auth');
+        store.commit('SET_AUTH_REDIRECT_PATH', route.fullPath);
+        return redirect('/auth');
+    }
+    if (store.getters.isAuthorized && urlRequiresNonAuth) {
+        console.log('-- restricted: redirect to index');
+        return redirect('/');
+    }
+
+    console.log('-- not restricted');
+    return Promise.resolve();
+}

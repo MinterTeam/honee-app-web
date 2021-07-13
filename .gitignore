@@ -1,0 +1,20 @@
+/assets/css/onsen.css
+/static/css/
+/static/img/
+/tmp/
+/.env
+sw.*
+
+
+
+# dependencies
+node_modules
+
+# logs
+npm-debug.log
+
+# Nuxt build
+.nuxt
+
+# Nuxt generate
+dist

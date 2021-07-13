@@ -1,0 +1,331 @@
+@import "variables";
+
+
+@font-face {
+    font-family: Inter;
+    src: url('../fonts/Inter-Regular.woff2') format('woff2'),
+    url('../fonts/Inter-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: Inter;
+    src: url('../fonts/Inter-SemiBold.woff2') format('woff2'),
+    url('../fonts/Inter-SemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+}
+@font-face {
+    font-family: Inter;
+    src: url('../fonts/Inter-Bold.woff2') format('woff2'),
+    url('../fonts/Inter-Bold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+}
+@font-face {
+    font-family: Inter;
+    src: url('../fonts/Inter-ExtraBold.woff2') format('woff2'),
+    url('../fonts/Inter-ExtraBold.woff') format('woff');
+    font-weight: 800;
+    font-style: normal;
+}
+
+
+*, *::before, *::after {box-sizing: border-box;}
+html {
+    overflow-y: scroll; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; -webkit-overflow-scrolling: touch;
+    font-family: @body-font-family;
+    font-size: 16px;
+    line-height: 1.42;
+    color: @c-black;
+    font-weight: 400;
+    background: @body-bg-color;
+}
+body {
+    font-size: 14px;
+    margin: 0;
+    //position: relative; //в данной реализации модала не актуально // чтобы не разъезжался абсолютный контент при открытии модального
+
+}
+
+a, .link {color: inherit; outline: none; text-decoration: none; text-decoration-skip-ink: auto; transition: 0.1s;}
+a, .link {&:hover, &:focus {/*text-decoration: underline; */outline: none;}}
+.no-link {text-decoration: none;}
+.link--main {&, &:hover, &:focus {color: @c-main;}}
+.link--green {&, &:hover, &:focus {color: @c-green;}}
+.link--white {&, &:hover, &:focus {color: #fff;}}
+.link--opacity {
+    text-decoration: none; transition: 0.1s;
+    &:hover, &:focus {opacity: 0.65;}
+}
+.link--hover {
+    //text-decoration: none;
+    &:hover, &:focus {text-decoration: underline;}
+}
+.link--underline {
+    text-decoration: underline;
+    &:hover, &:focus {text-decoration: none;}
+}
+.link--default {.link--main(); .link--hover(); font-weight: 600;}
+.link--default-green {.link--green(); .link--hover(); font-weight: 600;}
+button {cursor: pointer; outline: none;}
+p, ul, ol {margin: 0;}
+p, ul, ol, h5 {
+    &+& {margin-top: 0.75rem;}
+}
+sub, sup { font-size: 75%;}
+.no-list {
+    padding: 0; margin: 0;
+    li {list-style: none;}
+}
+.list-simple {
+    padding: 0;
+    li {
+        list-style: none; position: relative; padding-left: 25px;
+        &::before {content: '•'; position: absolute; left: 0; top: 0;}
+    }
+    li + li {margin-top: 10px;}
+}
+:-moz-focusring {outline: none;}
+input, textarea, select {
+    font: inherit; color: @c-black; outline: none; caret-color: @c-main;
+    &::placeholder {color: #a4a4a4; opacity: 1;}
+}
+input {vertical-align: middle;}
+textarea {resize: none;}
+
+.u-h {margin: 0; font-family: @heading-font-family; font-weight: 700; line-height: 1.2;}
+h1, h2, h3, h4, h5, h6 {.u-h();}
+//.h-title {font-size: 24px; text-transform: uppercase; margin-bottom: 12px;}
+.u-h1 {font-size: 32px; line-height: 1.22;}
+.u-h2 {font-size: 24px;}
+.u-h3 {font-size: 18px; line-height: 1.21;}
+.u-h5 {font: inherit; font-weight: 600;}
+.u-h--uppercase {font-weight: 700; font-size: 12px; line-height: 16px; color: @c-black-light; letter-spacing: 1.5px; text-transform: uppercase;}
+.u-h--uppercase-solid {.u-h--uppercase(); color: inherit;}
+@media (min-width: @breakpoint-small-up) {
+    //html {font-size: 20px; line-height: 1.4;}
+    .u-h1 {font-size: 42px; line-height: 1.2;}
+    .u-h2 {font-size: 29px;}
+    .u-h3 {font-size: 19px;}
+}
+@media (min-width: @breakpoint-large-up) {
+    .u-h1--large {font-size: 60px; letter-spacing: -0.4px; font-weight: 800;}
+}
+
+
+hr {border: none; border-top: 1px solid @c-border;}
+.hr--divider {margin: 48px 0;}
+.hr--divider-large {}
+.hr--section-divider {margin: 0;}
+@media (min-width: @breakpoint-medium-up) {
+    .hr--divider {margin: 64px 0;}
+    .hr--divider-large {margin: 80px 0;}
+}
+
+
+blockquote {
+    position: relative; padding-left: 29px; margin: 0;
+    &::before {content: ''; position: absolute; left: 0; top: 7px; bottom: 7px; background: #ee7033; width: 8px;}
+}
+
+
+
+
+
+
+
+// button
+.button {
+    display: inline-flex; align-items: center; justify-content: center; padding: 8px 22px; font-size: 16px; line-height: 20px; font-weight: 600; font-family: @heading-font-family; background: #fff; color: @c-black; border-radius: 10px; text-align: center; border: 2px solid transparent; text-decoration: none; transition: 0.1s; position: relative; overflow: hidden; vertical-align: top;
+    &[disabled], &.is-disabled {
+        cursor: default;
+        &:not(.is-loading) {background: shade(#fff, 25%);}
+    }
+    &.is-loading .button__content {color: transparent;}
+}
+.button--large {padding-top: 16px; padding-bottom: 16px;}
+//.button--medium {min-width: auto; width: 100%;}
+//.button--small {padding: 2px 8px; border-radius: 4px;}
+.button--icon {padding-left: 48px;}
+.button__icon {position: absolute; left: 28px; top: 50%; transform: translate(-50%, -50%);}
+.button--full {display: flex; width: 100%;}
+/*.button__content {transition: 0.1s;}*/
+//.button--small {padding-left: 14px; padding-right: 14px;}
+@media (max-width: @breakpoint-small-down) {
+    .button--medium-mobile {min-width: auto; width: 100%;}
+    .button--full-mobile {display: flex; width: 100%;}
+}
+@media (min-width: @breakpoint-small-up) {
+    //.button--small {padding-left: 26px; padding-right: 26px;}
+    .button--medium {min-width: 240px; width: auto;}
+}
+.button--main {
+    color: #fff; background: @c-main; /*box-shadow: 0 2px 4px rgba(0,0,0,0.5);*/
+    &:hover, &:focus {background: tint(@c-main, 10%);}
+    &:active {background: shade(@c-main, 10%);}
+}
+.button--yellow-light {
+    color: @c-black; background: @c-yellow-light; /*box-shadow: 0 2px 4px rgba(0,0,0,0.5);*/
+    &:hover, &:focus {background: tint(@c-yellow-light, 10%);}
+    &:active {background: shade(@c-yellow-light, 10%);}
+}
+.button--main--hover {
+    color: @c-main; background: transparent; /*box-shadow: 0 2px 4px rgba(0,0,0,0.5);*/
+    &:hover, &:focus {background: tint(@c-main, 80%);}
+    &:active {background: tint(@c-main, 75%);}
+}
+.button--green {
+    color: #fff; background: @c-green;
+    &:hover, &:focus {background: tint(@c-green, 15%);}
+    &:active {background: shade(@c-green, 10%);}
+}
+//.button--white {
+//    color: @c-green; background: #fff;
+//    &:hover, &:focus {background: tint(@c-green, 90%);}
+//    &:active {background: shade(#fff, 10%);}
+//}
+//.button--black {
+//    color: #fff; background: @c-black;
+//    &:hover, &:focus {background: tint(@c-black, 15%);}
+//    &:active {background: shade(@c-black, 10%);}
+//}
+//.button--white {
+//    color: @c-main; background: #fff;
+//    &:active {background: shade(#fff, 10%);}
+//}
+.button--ghost {
+    color: @c-black; background: transparent; border-color: @c-black;
+    &:hover, &:focus {background: fade(@c-black, 10%);}
+    &:active {background: fade(@c-black, 20%);}
+    &[disabled], &.is-disabled {
+        cursor: default;
+        &:not(.is-loading) {color: shade(#fff, 35%); background: transparent; border-color: shade(#fff, 25%);}
+    }
+}
+.button--ghost-green {
+    color: @c-green; background: transparent; border-color: @c-green;
+    &:hover, &:focus {background: fade(@c-green, 20%);}
+    &:active {background: fade(@c-green, 40%);}
+}
+.button--ghost-main {
+    color: @c-main; background: transparent; border-color: @c-main;
+    &:hover, &:focus {background: fade(@c-main, 20%);}
+    &:active {background: fade(@c-main, 40%);}
+}
+//.button--ghost-white {
+//    color: #fff; background: transparent; border-color: #fff;
+//    &:hover, &:focus {color: @c-black; background: #fff;}
+//    &:active {color: @c-black; background: shade(#fff, 10%);}
+//}
+
+.button-group {
+    display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; margin-top: -10px; margin-left: -16px;
+    .button, .link--default {margin-top: 10px; margin-left: 16px;}
+}
+
+
+// button-loader
+@loader-length: 16 * 3.14 * 2; // длина окружности
+.loader {width: 40px; height: 40px; margin: auto; pointer-events: none; animation: loader-rotate 2s linear infinite;}
+.loader--button {
+    position: absolute; left: 0; right: 0; top: 0; bottom: 0; opacity: 0; transition: 0.05s;
+    .is-loading > & { opacity: 1; transition: 0.15s 0.15s;}
+}
+.loader--inline {vertical-align: middle; margin-right: 10px;}
+.loader__path { fill: none; stroke: currentColor; stroke-width: 2px; stroke-linecap: round; animation: loader-dash 1.5s ease-in-out infinite; }
+@keyframes loader-rotate {
+    0% {transform: rotate(-90deg);}
+    100% { transform: rotate(270deg); }
+}
+@keyframes loader-dash {
+    0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
+    50% { stroke-dasharray: @loader-length * 0.8, 200; stroke-dashoffset: 0; }
+    100% { stroke-dasharray: @loader-length * 0.8, 200; stroke-dashoffset: -@loader-length + 1px; }
+}
+
+
+
+
+// input
+@field-input-padding: 4px;
+@field-label-height: 20px;
+@field-label-scale: 0.75;
+@field-label-top-line-height-compensation: 3px;
+@field-padding: (@field-label-height * @field-label-scale - @field-label-top-line-height-compensation);
+@field-label-top: (@field-padding + @field-input-padding);
+@field-label-translate: (-1 * (@field-label-top + @field-label-top-line-height-compensation));
+.form-row {&+& {margin-top: 20px;}}
+.form-field {
+    display: block; position: relative; cursor: pointer; font-size: 16px; font-weight: 500; pointer-events: none;
+    &.is-disabled {opacity: 0.6;}
+}
+.form-field__input {
+    font-size: inherit; line-height: 20px; padding: 27px 16px 9px; min-height: 20px + 27px + 9px; color: @c-black; background: #fff; border: none; box-shadow: inset 0 0 0 1px @c-border; transition: 0.15s; display: block; width: 100%; pointer-events: auto; border-radius: 8px; opacity: 1; /* safari disabled fix */ -webkit-text-fill-color: currentcolor; /* safari disabled fix */ -webkit-appearance: none; /* ios shadow fix */
+    &:hover {background-color: #f8f8f8;}
+    &:focus {box-shadow: inset 0 0 0 2px @c-main;}
+    .is-error > & {box-shadow: inset 0 0 0 2px @c-red;}
+    &[readonly], div&& {background: #fff; box-shadow: inset 0 0 0 1px @c-border; cursor: default;} //unset to initial
+    .form-field--with-icon & {padding-right: 24px + 16px;}
+    .form-field--without-label & {padding-top: 12px; padding-bottom: 12px; min-height: 44px;}
+}
+//.form-field__input--select, select.form-field__input {
+//    appearance: none; background: url(../img/icon-dropdown.svg) no-repeat right 12px center; padding-right: 24px + 12px;
+//    option {font-weight: 300; font-size: 14px; background-color: #f8f8f8;}
+//}
+.form-field__label {
+    font-size: inherit; left: 16px; top: 18px; line-height: 20px; color: @c-black-light; position: absolute; transition: 0.15s; transform-origin: 0 0; user-select: none; white-space: nowrap;
+    .form-field__input:focus:not([readonly]) ~ &, .is-not-empty ~ & {transform: translateY(-9px) scale(.75); letter-spacing: 0.06em;}
+    .form-field__input:focus ~ & {color: @c-main;}
+    .form-field.is-error > & {color: @c-red;}
+    .form-field__input[readonly] ~ & {color: @c-black-light;} // unset to initial
+}
+.form-field__use-max {position: absolute; right: 16px; top: (4px + @field-padding); z-index: 1; cursor: pointer; pointer-events: auto; font-size: 14px; text-transform: uppercase; font-weight: 700; }
+.help-text() {font-size: 11px; line-height: 16px; letter-spacing: 0.06em; font-weight: 600; padding: 0 16px; margin-top: 4px; display: block; overflow-wrap: break-word;}
+.error-text() {font-size: 11px; line-height: 16px; letter-spacing: 0.06em; font-weight: 600; color: @c-red; }
+.form-field__help {
+    .help-text(); color: @c-black-light;
+    .form-field__error + & {margin-top: 0;}
+}
+.form-field__error {.help-text(); .error-text();}
+.form__error {font-weight: 600; color: @c-red;}
+.form-field__icon {position: absolute; right: 16px; top: (2px + @field-padding); z-index: 1; cursor: pointer; pointer-events: auto; font-size: 0;}
+.form-field__icon--copy {top: calc((100% - 12px) / 2 - 2px);}
+
+
+// checkbox & radio
+.form-check-label {font-weight: 700; margin-bottom: 12px;}
+.form-check-error {.error-text(); margin-top: 4px;}
+.form-check {
+    position: relative; display: inline-block; user-select: none; cursor: pointer; font-weight: 600; margin: 0; line-height: 0;
+    &.is-disabled {opacity: 0.5; cursor: default;}
+    &+& {margin-left: 16px;} /* сейчас используются только в профиле, при больше ширине понадобится отдельный хелпер form-check-inline-group */
+}
+.form-check__input {position: absolute; left: 0; top: 0; opacity: 0; z-index: -1;}
+.form-check__label {padding-left: 30px; display: inline-block; font-size: 14px; line-height: 22px;}
+.form-check__label--radio {
+    &::before {content: ''; width: 20px; height: 20px; position: absolute; left: 1px; top: 1px; border: 2px solid hsl(0,0,46%); border-radius: 99px; transition: 0.15s;}
+    &::after {content: ''; position: absolute; left: 11px; top: 11px; transform: translate(-50%, -50%); border: 0 solid @c-main; border-radius: 99px; transition: 0.15s;}
+    .form-check__input:focus + & {
+        &::before {box-shadow: 0 0 3px @c-main;}
+    }
+    .form-check__input:checked + & {
+        &::before {border-color: @c-main;}
+        &::after {border-width: 5px;}
+    }
+}
+.form-check__label--checkbox {
+    &::before {content: ''; width: 18px; height: 18px; position: absolute; left: 2px; top: 2px; border: 2px solid hsl(0,0,46%); border-radius: 2px; transition: 0.15s;}
+    &::after {content: ''; position: absolute; left: 5px; top: 6px; width: 12px; height: 7px; border: solid #fff; border-width: 0 0 2px 2px; transform: rotate(-45deg); opacity: 0; transition: 0.15s;}
+    .form-check__input:focus + & {
+        &::before {box-shadow: 0 0 3px @c-main;}
+    }
+    .form-check__input:checked + & {
+        &::before {border-color: @c-main; background-color: @c-main;}
+        &::after {opacity: 1;}
+    }
+}
+
+
+
+

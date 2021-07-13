@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "chart.fullname" . }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # production
+    {{- if .Values.ingress.clusterissuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterissuer }}
+    {{- end }}
+    # staging
+    {{- if .Values.ingress.issuer }}
+    cert-manager.io/issuer: {{ .Values.ingress.issuer }}
+  {{- end }}
+spec:
+  rules:
+    - host: "{{ .Values.ingress.domain }}"
+      http:
+        paths:
+          - backend:
+              serviceName: "{{ include "chart.fullname" . }}"
+              servicePort: {{ .Values.service.port }}
+            path: /
+  tls:
+    - hosts:
+        - {{ .Values.ingress.domain }}
+      secretName: {{ .Values.ingress.tlsname }}
