@@ -2,8 +2,8 @@
 @import (inline) '../../node_modules/@material/snackbar/dist/mdc.snackbar.css';
 @import "include/variables";
 @import "include/utils";
-@import (inline) "../css/onsen.css";
-@import "include/onsen";
+//@import (inline) "../css/onsen.css";
+//@import "include/onsen";
 @import "include/suggest";
 @import "include/general";
 @import "include/forms";
@@ -97,7 +97,7 @@
     100% {opacity: 0;}
 }
 
-.error__title {.list-title(); .list-title--bold(); margin-bottom: 10px;}
+//.error__title {.list-title(); .list-title--bold(); margin-bottom: 10px;}
 
 .is-connection-notice-open {padding-bottom: 46px;}
 .connection-notice {position: fixed; background: @c-black; color: #fff; left: 0; bottom: 0; right: 0; font-weight: 500; font-size: 16px; line-height: 22px; text-align: center; padding: 12px 0;}
@@ -113,7 +113,10 @@
 .default-layout {overflow-y: scroll;}
 
 // auth
-.auth__logo {display: block; margin-inline: auto; margin-bottom: 64px;}
+.auth__body {background-image: url(../img/auth-bg.svg); background-position: 50% 40%; background-repeat: no-repeat;}
+//.auth__bg {position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin-top: 40px; margin-left: -3px; z-index: -1;}
+.auth__bee {position: absolute; bottom: 100%; right: 10px; margin-bottom: 8px;}
+.auth__logo {display: block; margin-inline: auto; margin-bottom: 64px; margin-top: 60px;}
 
 
 .v-transition-toast-enter-active, .v-transition-toast-leave-active {
@@ -130,8 +133,12 @@
 @card-padding-large: 24px;
 @card-chevron-width: 8px;
 .card {
-    background: #fff; box-shadow: 0 4px 4px rgba(0,0,0,0.05); position: relative; border-radius: 16px; overflow: hidden; display: block;
+    background: #fff; color: @c-black; box-shadow: 0 4px 4px rgba(0,0,0,0.05); position: relative; border-radius: 16px; overflow: hidden; display: block;
     &::before {content: ''; display: table;} // fix firefox incorrect collapsing negative margin
+}
+.card--light-grey {
+    background: #f2f2f2;
+    .card__content + .card__content {border-top: 1px solid #cbcbcb;}
 }
 .card__content {
     &+&, & + .card__content--top-border {border-top: 1px solid #f2f2f2;}
@@ -237,15 +244,11 @@
 
 
 // convert
-.convert__divider {
-    position: relative; overflow: hidden; text-align: center;
-    &::before, &::after {content: ''; position: absolute; width: 50%; height: 1px; top: 50%; background: @c-border;}
-    &::before {right: 50%; margin-right: 20px;}
-    &::after {left: 50%; margin-left: 20px;}
+.convert__reverse {
 }
-.convert__divider-icon  {vertical-align: top;}
+.convert__reverse-button {padding: 5px; margin: 16px auto; display: flex;}
 .convert__panel {
-    background: #F0F0F0; border-radius: 8px; padding: 16px; text-align: center; position: relative;
+    background: #fff; border-radius: 8px; padding: 16px; text-align: left; position: relative;
     &.is-loading {
         & > .convert__panel-content {opacity: 0;}
 
@@ -263,3 +266,40 @@
     .convert__panel + & {margin-top: 16px;}
 }
 
+
+
+.amount-field {position: relative;}
+.amount-field, .amount-field__select {background: #fff; padding: 8px 16px 16px; border-radius: 12px; box-shadow: 0 4px 4px rgba(0,0,0,0.05);}
+.amount-field__content {display: flex;}
+.amount-field__coin {font-weight: 600; flex-shrink: 0;}
+.amount-field__coin-name {color: @c-black-light; line-height: 24px; margin-bottom: 8px;}
+.amount-field__coin-button {display: flex; align-items: center;}
+.amount-field__coin-icon {margin-right: 8px; border-radius: 50%;}
+.amount-field__coin-symbol {font-size: 20px;}
+.amount-field__icon-dropdown {margin-left: 8px;}
+
+.amount-field__amount {flex-grow: 2;}
+.amount-field__amount-balance {line-height: 24px; margin-bottom: 8px; display: flex; align-items: center; justify-content: right; color: @c-black-light;}
+.amount-field__amount-max {
+    font-size: 10px; line-height: 12px; font-weight: 700; text-transform: uppercase; border: 1px solid @c-main; background: transparent; border-radius: 8px; color: @c-main; padding: 5px 7px; margin-left: 8px; transition: 0.1s;
+    &:hover, &:focus {background: fade(@c-main, 20%);}
+    &:active {background: fade(@c-main, 40%);}
+}
+.amount-field__amount-input {
+    font-weight: 600; font-size: 30px; line-height: 32px; height: 32px; text-align: right; width: 100%; color: currentColor; padding: 0; background: transparent; border: none; opacity: 1; /* safari disabled fix */ -webkit-text-fill-color: currentcolor; /* safari disabled fix */ -webkit-appearance: none; /* ios shadow fix */
+    &::placeholder {color: @c-black-light;}
+}
+
+.amount-field__select {position: absolute; left: 0; right: 0; padding-top: 16px; z-index: 1;}
+.amount-field__select-field {position: relative;}
+.amount-field__select-field-icon {position: absolute; right: 16px; top: 8px; pointer-events: none;}
+.amount-field__select-input {
+    border-radius: 12px; border: none; padding: 10px 16px; padding-right: (24px + 16px); background: @c-border; font-size: 16px; line-height: 20px; font-weight: 600; height: 40px; width: 100%; margin-bottom: 16px;
+    &::placeholder {color: @c-black;}
+}
+.amount-field__suggestion-item {
+    display: flex; align-items: center;
+    &+& {margin-top: 16px;}
+}
+.amount-field__suggestion-icon {flex-shrink: 0; margin-right: 8px; border-radius: 50%;}
+.amount-field__suggestion-symbol {font-weight: 600; font-size: 20px;}

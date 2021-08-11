@@ -97,7 +97,7 @@ module.exports = {
     /*
     ** Customize the progress bar color
     */
-    loading: { color: '#502EC2' },
+    loading: { color: '#ff8a00' },
     router: {
         linkActiveClass: 'is-active-inner',
         linkExactActiveClass: 'is-active',
@@ -116,7 +116,7 @@ module.exports = {
     plugins: [
         { src: '~/plugins/custom-event-polyfill.js', ssr: false },
         { src: '~/plugins/persistedState.js', ssr: false },
-        { src: '~/plugins/vue-onsen.js', ssr: false },
+        { src: '~/plugins/click-blur.js', ssr: false },
     ],
     /*
     ** PWA manifest

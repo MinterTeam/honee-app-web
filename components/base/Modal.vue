@@ -78,6 +78,9 @@
                 }
             },
             handleModalKeydown(e) {
+                if (this.disableOutsideClick) {
+                    return;
+                }
                 if (e.code === 'Escape' || e.keyCode === 27) {
                     e.preventDefault();
                     this.closeModal();

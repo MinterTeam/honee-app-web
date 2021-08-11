@@ -1,22 +1,14 @@
 <script>
     import {mapState} from 'vuex';
-    import VOnsPage from 'vue-onsenui/esm/components/VOnsPage';
-    import VOnsTabbar from 'vue-onsenui/esm/components/VOnsTabbar';
-    import VOnsTab from 'vue-onsenui/esm/components/VOnsTab';
     import getTitle from '~/assets/get-title.js';
     import {getExplorerTxUrl} from '~/assets/utils.js';
-    import ConvertSell from '~/components/ConvertSell.vue';
-    import ConvertBuy from '~/components/ConvertBuy.vue';
+    import Swap from '~/components/Swap.vue';
     import Modal from '~/components/base/Modal.vue';
 
     export default {
         PAGE_TITLE: 'Swap coins',
         components: {
-            VOnsPage,
-            VOnsTabbar,
-            VOnsTab,
-            ConvertSell,
-            ConvertBuy,
+            Swap,
             Modal,
         },
 
@@ -47,7 +39,7 @@
             }),
         },
         beforeCreate() {
-            this.$ons.platform.select('android'); // Or any other method
+            // this.$ons.platform.select('android'); // Or any other method
         },
         methods: {
             openSuccessModal({hash}) {
@@ -62,32 +54,34 @@
 </script>
 
 <template id="main">
-    <Modal :isOpen="true" :hideCloseButton="false" :disableOutsideClick="true" @modal-close="$router.push('/')">
-        <v-ons-tabbar class="ons-tabbar" v-if="balance && balance.length">
-            <v-ons-tab label="Sell"/>
-            <v-ons-tab label="Buy"/>
+    <Modal
+        :isOpen="true"
+        :hideCloseButton="false"
+        :disableOutsideClick="true"
+        modalContainerClass="card card--light-grey"
+        @modal-close="$router.push('/')"
+    >
+        <Swap class="card__content" @success-tx="openSuccessModal"/>
 
-            <template slot="pages">
-                <v-ons-page>
-                    <ConvertSell @success-tx="openSuccessModal"/>
-                </v-ons-page>
-                <v-ons-page>
-                    <ConvertBuy @success-tx="openSuccessModal"/>
-                </v-ons-page>
-            </template>
-        </v-ons-tabbar>
+        <div class="card__content">
+            <h3 class="u-h5 u-mb-05">What’s BIP?</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Massa pellentesque donec in mus mi massa fusce netus. Nec gravida faucibus pellentesque aliquam consequat sed. Dignissim suspendisse blandit lacinia amet. Cras tincidunt nec maecenas eleifend nisl tristique volutpat enim habitant.</p>
 
-        <div class="u-section u-container" v-else>
-            No coins to exchange
-            <!--<span v-if="isBalanceLoading">Loading…</span>
-            <span v-else>No coins to send</span>-->
+            <h3 class="u-h5 u-mb-05 u-mt-15">What's swap?</h3>
+            <p>Nec gravida faucibus pellentesque aliquam consequat sed. Dignissim suspendisse blandit lacinia amet. Cras tincidunt nec maecenas eleifend nisl tristique volutpat enim habitant.</p>
+
+            <h3 class="u-h5 u-mb-05 u-mt-15">Is it possible to cancel the transaction?</h3>
+            <p>Augue nisi quis dignissim sed. Lorem ipsum dolor sit amet, consectetur adipiscing elit. </p>
+
+            <h3 class="u-h5 u-mb-05 u-mt-15">How long does a transaction take to complete?</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquet ac tellus etiam.</p>
         </div>
 
         <!-- success modal -->
         <Modal :isOpen.sync="isSuccessModalOpen" :hideCloseButton="true">
             <div class="modal__panel">
                 <h3 class="modal__title u-h2">Success</h3>
-                <div class="modal__content">
+                <div class="modal__content u-mb-10">
                     <p>Coins successfully exchanged!</p>
                 </div>
                 <div class="modal__footer">

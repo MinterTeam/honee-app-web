@@ -14,6 +14,9 @@
                 meta: [
                     { hid: 'og-title', name: 'og:title', content: getTitle(this.$options.PAGE_TITLE) },
                 ],
+                bodyAttrs: {
+                    class: 'auth__body',
+                },
             };
         },
         methods: {
@@ -23,8 +26,12 @@
 </script>
 
 <template>
-    <div class="u-section">
-        <img class="auth__logo" src="/img/logo-honee.svg" alt="Honee" width="244" height="48">
+    <div class="u-section u-relative">
+<!--        <img class="auth__bg" src="/img/auth-bg.svg" alt="" role="presentation">-->
+        <div class="u-relative">
+            <img class="auth__bee" src="/img/logo-bee.svg" alt="" role="presentation">
+            <img class="auth__logo" src="/img/logo-honee.svg" alt="Honee" width="244" height="48">
+        </div>
 
         <nuxt-link class="button button--main button--full button--large" to="/auth/new-wallet">Sign up</nuxt-link>
 

@@ -18,3 +18,11 @@ export const COIN_NAME = BASE_COIN;
 export const CHAIN_ID = NETWORK === MAINNET ? 1 : 2;
 
 export const STAKE_RECALCULATE_BLOCK_COUNT = 720;
+
+export const COIN_TYPE = {
+    ANY: 'any',
+    COIN: 'coin',
+    ANY_TOKEN: 'any_token',
+    TOKEN: 'token',
+    POOL_TOKEN: 'pool_token',
+};

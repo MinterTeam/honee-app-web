@@ -64,7 +64,7 @@
                 <div class="wallet__balance-wrap">
                     <div class="wallet__balance">
                         <div class="wallet__balance-value">
-                            ${{ pretty($store.state.totalBalanceSum) }}
+                            ${{ pretty($store.state.totalBalanceSumUsd) }}
                         </div>
                     </div>
                     <div class="wallet__balance-links" >

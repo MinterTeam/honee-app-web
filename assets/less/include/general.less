@@ -107,7 +107,7 @@ h1, h2, h3, h4, h5, h6 {.u-h();}
     //html {font-size: 20px; line-height: 1.4;}
     .u-h1 {font-size: 42px; line-height: 1.2;}
     .u-h2 {font-size: 29px;}
-    .u-h3 {font-size: 19px;}
+    .u-h3 {font-size: 20px;}
 }
 @media (min-width: @breakpoint-large-up) {
     .u-h1--large {font-size: 60px; letter-spacing: -0.4px; font-weight: 800;}
@@ -137,7 +137,7 @@ blockquote {
 
 // button
 .button {
-    display: inline-flex; align-items: center; justify-content: center; padding: 8px 22px; font-size: 16px; line-height: 20px; font-weight: 600; font-family: @heading-font-family; background: #fff; color: @c-black; border-radius: 10px; text-align: center; border: 2px solid transparent; text-decoration: none; transition: 0.1s; position: relative; overflow: hidden; vertical-align: top;
+    display: inline-flex; align-items: center; justify-content: center; padding: 8px 22px; font-size: 16px; line-height: 20px; font-weight: 700; font-family: @heading-font-family; background: #fff; color: @c-black; border-radius: 10px; text-align: center; border: 2px solid transparent; text-decoration: none; transition: 0.1s; position: relative; overflow: hidden; vertical-align: top;
     &[disabled], &.is-disabled {
         cursor: default;
         &:not(.is-loading) {background: shade(#fff, 25%);}
@@ -180,11 +180,11 @@ blockquote {
     &:hover, &:focus {background: tint(@c-green, 15%);}
     &:active {background: shade(@c-green, 10%);}
 }
-//.button--white {
-//    color: @c-green; background: #fff;
-//    &:hover, &:focus {background: tint(@c-green, 90%);}
-//    &:active {background: shade(#fff, 10%);}
-//}
+.button--white {
+    color: @c-main; background: #fff;
+    &:hover, &:focus {background: fade(@c-main, 20%);}
+    &:active {background: fade(@c-main, 40%);}
+}
 //.button--black {
 //    color: #fff; background: @c-black;
 //    &:hover, &:focus {background: tint(@c-black, 15%);}
@@ -231,6 +231,10 @@ blockquote {
 .loader--button {
     position: absolute; left: 0; right: 0; top: 0; bottom: 0; opacity: 0; transition: 0.05s;
     .is-loading > & { opacity: 1; transition: 0.15s 0.15s;}
+}
+.button__loader {
+    position: absolute; left: 0; right: 0; top: 0; bottom: 0; pointer-events: none; display: none;
+    .is-loading > & { display: block;}
 }
 .loader--inline {vertical-align: middle; margin-right: 10px;}
 .loader__path { fill: none; stroke: currentColor; stroke-width: 2px; stroke-linecap: round; animation: loader-dash 1.5s ease-in-out infinite; }
