@@ -13,11 +13,24 @@ export const CHAINIK_API_URL = 'https://chainik.io/json/';
 export const HUB_ETHEREUM_CONTRACT_ADDRESS = process.env.APP_HUB_ETHEREUM_CONTRACT_ADDRESS;
 export const HUB_MINTER_MULTISIG_ADDRESS = process.env.APP_HUB_MINTER_MULTISIG_ADDRESS;
 export const HUB_API_URL = process.env.APP_HUB_API_URL;
+export const ETHEREUM_API_URL = process.env.APP_ETHEREUM_API_URL;
+export const ETHEREUM_CHAIN_ID = NETWORK === MAINNET ? 1 : 3;
+export const ETHERSCAN_API_URL = NETWORK === MAINNET ? 'https://api.etherscan.io/api/' : 'https://api-ropsten.etherscan.io/api/';
+export const ETHERSCAN_API_KEY = 'I3VTWM2AX8BXS2ZX1FYRXINCWHQVVGEBJM';
+export const ETHERSCAN_HOST = NETWORK === MAINNET ? 'https://etherscan.io' : 'https://ropsten.etherscan.io';
+export const WETH_ETHEREUM_CONTRACT_ADDRESS = NETWORK === MAINNET ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' : '0xc778417e063141139fce010982780140aa0cd5ab';
 export const BASE_COIN = NETWORK === MAINNET ? 'BIP' : 'MNT';
 export const COIN_NAME = BASE_COIN;
 export const CHAIN_ID = NETWORK === MAINNET ? 1 : 2;
 
 export const STAKE_RECALCULATE_BLOCK_COUNT = 720;
+
+export const SWAP_TYPE = {
+    BANCOR: 'bancor',
+    POOL: 'pool',
+    POOL_DIRECT: 'pool_direct',
+    OPTIMAL: 'optimal',
+};
 
 export const COIN_TYPE = {
     ANY: 'any',
@@ -25,4 +38,35 @@ export const COIN_TYPE = {
     ANY_TOKEN: 'any_token',
     TOKEN: 'token',
     POOL_TOKEN: 'pool_token',
+};
+
+export const HUB_TRANSFER_STATUS = {
+    not_found_long: 'not_found_long', // custom status
+    not_found: 'TX_STATUS_NOT_FOUND',
+    deposit_to_hub_received: "TX_STATUS_DEPOSIT_RECEIVED",
+    batch_created: "TX_STATUS_BATCH_CREATED",
+    batch_executed: "TX_STATUS_BATCH_EXECUTED",
+    refund: "TX_STATUS_REFUNDED",
+};
+
+export const HUB_DEPOSIT_TX_PURPOSE = {
+    SEND: 'Send',
+    UNLOCK: 'Unlock',
+    WRAP: 'Wrap',
+    OTHER: 'Other',
+};
+
+/**
+ * Order matters
+ * @enum
+ */
+export const HUB_BUY_STAGE = {
+    WAIT_ETH: 'wait_eth',
+    SWAP_ETH: 'swap_eth',
+    WRAP_ETH: 'wrap_eth',
+    APPROVE_BRIDGE: 'approve_bridge',
+    SEND_BRIDGE: 'send_bridge',
+    WAIT_BRIDGE: 'wait_bridge',
+    SWAP_MINTER: 'swap_minter',
+    FINISH: 'finish',
 };

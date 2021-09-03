@@ -6,7 +6,7 @@ import parseISO from "date-fns/esm/parseISO";
 import format from "date-fns/esm/format";
 import formatDistanceStrict from "date-fns/esm/formatDistanceStrict";
 import {txTypeList} from 'minterjs-tx/src/tx-types';
-import {EXPLORER_HOST, ACCOUNTS_API_URL} from "~/assets/variables";
+import {EXPLORER_HOST, ETHERSCAN_HOST, ACCOUNTS_API_URL, HUB_TRANSFER_STATUS as WITHDRAW_STATUS} from "~/assets/variables.js";
 
 
 
@@ -40,6 +40,14 @@ export function getExplorerAddressUrl(address) {
     return EXPLORER_HOST + '/address/' + address;
 }
 
+export function getEtherscanTxUrl(hash) {
+    return ETHERSCAN_HOST + '/tx/' + hash;
+}
+
+export function getEtherscanAddressUrl(hash) {
+    return ETHERSCAN_HOST + '/address/' + hash;
+}
+
 /**
  * @param {string|number} value
  * @return {string}
@@ -59,6 +67,14 @@ export function pretty(value) {
         }
         return value;
     }
+}
+
+/**
+ * @param {string|number} value
+ * @return {string}
+ */
+export function prettyRound(value) {
+    return decode(prettyNum(value, {precision: 0, thousandsSeparator: '&nbsp;'}));
 }
 
 /**
@@ -139,24 +155,65 @@ export function makeAccepter(propName, isAcceptUnmasked) {
 }
 
 
-export function getTimeStamp(timestamp) {
-    const time = format(parseISO(timestamp), 'dd MMMM yyyy HH:mm:ss (O)');
+/**
+ *
+ * @param {string|number|Date} timestamp
+ * @return {Date|null}
+ */
+function parseTime(timestamp) {
+    if (timestamp instanceof Date) {
+        return timestamp;
+    }
+    if (typeof timestamp === 'string') {
+        return parseISO(timestamp);
+    }
+    if (typeof timestamp === 'number') {
+        return new Date(timestamp);
+    }
 
-    return time && time !== 'Invalid Date' ? time : false;
+    return null;
 }
 
-export function getTimeDistance(timestamp, allowFuture) {
-    if (typeof timestamp === 'string') {
-        timestamp = parseISO(timestamp);
+export function getTimeStamp(timestamp) {
+    timestamp = parseTime(timestamp);
+    if (!timestamp) {
+        return false;
     }
+
+    return format(parseTime(timestamp), 'dd MMM yyyy HH:mm:ss');
+}
+
+export function getTime(timestamp) {
+    timestamp = parseTime(timestamp);
+    if (!timestamp) {
+        return false;
+    }
+
+    return format(parseTime(timestamp), 'HH:mm:ss');
+}
+
+// export function getTimeZone(timestamp) {
+//     timestamp = parseTime(timestamp);
+//     if (!timestamp) {
+//         return false;
+//     }
+//
+//     return format(timestamp, 'O');
+// }
+
+export function getTimeDistance(timestamp, allowFuture) {
+    timestamp = parseTime(timestamp);
+    if (!timestamp) {
+        return false;
+    }
+
     const now = new Date();
     // if timestamp from future
     if (timestamp > now && !allowFuture) {
         timestamp = now;
     }
-    const distance = formatDistanceStrict(timestamp, now, {roundingMethod: 'floor'});
 
-    return distance && distance !== 'Invalid Date' ? distance : false;
+    return formatDistanceStrict(timestamp, now, {roundingMethod: 'floor'});
 }
 
 export function fromBase64(str) {
@@ -167,4 +224,14 @@ export function fromBase64(str) {
     } catch (e) {
         return asci;
     }
+}
+
+export function isHubTransferFinished(status) {
+    const finishedStatus = {
+        [WITHDRAW_STATUS.not_found_long]: true,
+        [WITHDRAW_STATUS.batch_executed]: true,
+        [WITHDRAW_STATUS.refund]: true,
+    };
+
+    return !!finishedStatus[status];
 }

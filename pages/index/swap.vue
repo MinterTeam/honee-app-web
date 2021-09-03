@@ -1,5 +1,4 @@
 <script>
-    import {mapState} from 'vuex';
     import getTitle from '~/assets/get-title.js';
     import {getExplorerTxUrl} from '~/assets/utils.js';
     import Swap from '~/components/Swap.vue';
@@ -28,18 +27,9 @@
         },
         data() {
             return {
-                // activeIndex: 0,
                 isSuccessModalOpen: false,
                 successHash: '',
             };
-        },
-        computed: {
-            ...mapState({
-                balance: 'balance',
-            }),
-        },
-        beforeCreate() {
-            // this.$ons.platform.select('android'); // Or any other method
         },
         methods: {
             openSuccessModal({hash}) {
@@ -53,7 +43,7 @@
     };
 </script>
 
-<template id="main">
+<template>
     <Modal
         :isOpen="true"
         :hideCloseButton="false"

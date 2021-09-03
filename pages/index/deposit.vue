@@ -53,7 +53,7 @@
             <div class="form-field__input is-not-empty">{{ $store.getters.address }}</div>
             <div class="form-field__label">Your address</div>
             <BaseButtonCopy class="form-field__icon form-field__icon--copy u-semantic-button link--opacity" :copy-text="$store.getters.address">
-                <img src="/img/icon-copy-black.svg" alt="Copy">
+                <img src="/img/icon-copy.svg" alt="Copy">
             </BaseButtonCopy>
         </div>
         <qrcode-vue class="u-mt-20" :value="$store.getters.address" :size="160" level="L"/>

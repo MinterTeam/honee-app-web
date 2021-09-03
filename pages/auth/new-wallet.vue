@@ -70,7 +70,7 @@
         <div class="form-field form-field--with-icon form-field--without-label form-row">
             <div class="form-field__input is-not-empty">{{ mnemonic }}</div>
             <BaseButtonCopy class="form-field__icon form-field__icon--copy u-semantic-button link--opacity" :copy-text="mnemonic">
-                <img src="/img/icon-copy-black.svg" alt="Copy">
+                <img src="/img/icon-copy.svg" alt="Copy">
             </BaseButtonCopy>
         </div>
         <div class="form-row">

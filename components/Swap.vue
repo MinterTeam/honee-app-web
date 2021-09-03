@@ -464,7 +464,7 @@
             <div class="convert__panel u-text-error" v-if="!$v.form.$invalid && isEstimationErrorVisible">{{ estimationError }}</div>
             <div class="convert__panel u-text-error" v-else-if="$v.minimumValueToBuy.$dirty && !$v.minimumValueToBuy.required">Can't calculate swap limits</div>
             <div class="convert__panel u-text-error" v-else-if="$v.minimumValueToBuy.$dirty && !$v.minimumValueToBuy.minValue">Invalid swap limit</div>
-            <p class="convert__panel-note u-text-muted u-text-small">The final amount depends on&nbsp;the&nbsp;exchange rate at&nbsp;the&nbsp;moment of&nbsp;transaction.</p>
+            <p class="u-text-center u-text-muted u-text-small">The final amount depends on&nbsp;the&nbsp;exchange rate at&nbsp;the&nbsp;moment of&nbsp;transaction.</p>
 
             <div class="u-section--small">
                 <button class="button button--main button--full" :class="{'is-loading': isFormSending || isEstimationWaiting, 'is-disabled': $v.$invalid}">
@@ -473,7 +473,7 @@
                 </button>
                 <span class="bip-form__error" v-if="serverError">{{ serverError }}</span>
             </div>
-            <p class="convert__panel-note u-text-muted u-text-small">By clicking this button you confirm that you’ve read and understood the text below.</p>
+            <p class="u-text-center u-text-muted u-text-small">By clicking this button you confirm that you’ve read and understood the text below.</p>
         </form>
 
         <!-- Confirm Modal -->

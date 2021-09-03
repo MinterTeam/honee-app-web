@@ -4,10 +4,12 @@
     import checkEmpty from '~/assets/v-check-empty';
     import {pretty} from '~/assets/utils.js';
     import InputMaskedAmount from '~/components/base/InputMaskedAmount.vue';
+    import Loader from '@/components/base/Loader.vue';
 
     export default {
         components: {
             InputMaskedAmount,
+            Loader,
         },
         directives: {
             checkEmpty,
@@ -40,6 +42,14 @@
             fee: {
                 type: [Object, null],
                 default: null,
+            },
+            isEstimation: {
+                type: Boolean,
+                default: false,
+            },
+            isLoading: {
+                type: Boolean,
+                default: false,
             },
         },
         data() {
@@ -138,20 +148,29 @@
 <template>
     <div class="amount-field__amount" :class="{'is-error': $value.$error}">
         <div class="amount-field__amount-balance">
-            <template v-if="isMaxValueDefined">
+            <Loader
+                class="amount-field__amount-loader"
+                v-if="isLoading"
+                :isLoading="true"
+            />
+            <template v-else-if="isMaxValueDefined">
                 Balance: {{ isMaxValueRounded ? '≈' : '' }}{{ pretty(maxValueComputed) }}
                 <button class="amount-field__amount-max" type="button" @click="useMax">Max</button>
             </template>
             <template v-else>&nbsp;</template>
         </div>
         <InputMaskedAmount
-            class="amount-field__amount-input" type="text" inputmode="decimal" placeholder="0.0"
+            v-if="!isEstimation"
+            class="amount-field__amount-input" type="text" inputmode="decimal" placeholder="0.00"
             v-bind="$attrs"
             :value="value"
             @input="$emit('input', $event)"
             @input.native="$emit('input-native', $event)"
             @blur="$value.$touch(); $emit('blur', $event)"
         />
+        <div class="amount-field__amount-input" v-else>
+            ≈{{ pretty(value || 0) }}
+        </div>
     </div>
 </template>
 

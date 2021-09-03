@@ -6,7 +6,7 @@
 //@import "include/onsen";
 @import "include/suggest";
 @import "include/general";
-@import "include/forms";
+//@import "include/forms";
 @import "include/modal";
 @import "include/layout";
 
@@ -36,56 +36,7 @@
 
 
 .header {box-shadow: 0 0 6px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 10;}
-.menu {background: #fff;}
-.menu__container {display: flex; justify-content: space-between; list-style-type: none; margin-top: 0; margin-bottom: 0;}
-.menu__item {
-    &+& {margin-left: 5px;}
-}
-.menu__link {
-    display: block; padding: 12px 8px 14px; position: relative; color: inherit; font-size: 14px; line-height: 20px; font-weight: 700; text-transform: uppercase; text-decoration: none; margin-bottom: -1px;
-    &::after {content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: currentColor; opacity: 0; transition: 0.15s;}
-    &:hover::after, &:focus::after {opacity: 0.4;}
-    &.is-active, &.is-active-inner {
-        color: @c-main;
-        &::after {opacity: 1; background: @c-main;}
-    }
-}
-@media (min-width: @breakpoint-mini-up) {
-    .menu__container {justify-content: space-around;}
-}
-@media (min-width: @breakpoint-medium-up) {
-    .menu__container {justify-content: space-between;}
-    .menu__item {
-        &+& {margin-left: 20px;}
-    }
-}
 
-//.title {font-size: 14px; text-transform: uppercase; font-weight: 700; margin: 0;}
-
-// toolbar user
-.avatar {width: 26px; height: 26px; border-radius: 50%; background: no-repeat 50% 50%; background-size: cover; font-size: 16px; line-height: 20px;}
-.avatar--large {width: 50px; height: 50px; box-shadow: 0 2px 18px rgba(0,0,0,0.2); font-size: 28px; line-height: 42px;}
-.avatar--letter {background-color: @c-main; color: #fff; font-weight: 700; text-align: center;}
-
-.user {display: inline-flex; align-items: center;}
-.user__name {line-height: 1.4; font-weight: 700;}
-.user__avatar {margin-left: 10px;}
-
-.avatar-field {display: flex; align-items: center; justify-content: center;}
-.avatar-field__avatar {margin-right: 20px; flex-shrink: 0;}
-.avatar-field__button {position: relative;  flex-grow: 2;}
-.avatar-field__input {position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none;}
-@media (min-width: @breakpoint-small-up) {
-    .avatar-field__button {margin: 0; max-width: 280px;}
-}
-
-.file-input__drag-layer {
-    &::before {content: ''; position: absolute; left: 0; right: 0; top: 0; bottom: 0; margin: 22px 18px; border: 3px dashed; border-radius: 20px; z-index: -1;}
-}
-.file-input__drag-layer-container {padding-left: 15px; padding-right: 15px;}
-@media (min-width: @breakpoint-small-up) {
-    .file-input__drag-layer::before {margin: 28px 25px;}
-}
 
 
 @keyframes fade-in {
@@ -232,9 +183,6 @@
 .wallet__coin-balance-usd {font-size: 12px; color: @c-black-light; text-align: right;}
 
 
-.tx-info__name {font-size: 12px; user-select: text;}
-.tx-info__value {font-weight: 700; line-height: 1.25; overflow-wrap: break-word; user-select: text;}
-.tx-info__button {margin-top: @section-margin;}
 
 
 // send
@@ -254,32 +202,26 @@
 
     }
 }
-.convert__panel-content {
-    text-transform: uppercase; font-size: 12px; font-weight: 500; transition: 0.2s;
-    &+& {margin-top: 16px;}
-}
-.convert__panel-amount {font-size: 22px;}
-.convert__panel-value {font-size: 18px;}
-.convert__panel-error {}
-.convert__panel-note {
-    text-align: center;
-    .convert__panel + & {margin-top: 16px;}
-}
 
 
 
 .amount-field {position: relative;}
-.amount-field, .amount-field__select {background: #fff; padding: 8px 16px 16px; border-radius: 12px; box-shadow: 0 4px 4px rgba(0,0,0,0.05);}
+.amount-field, .amount-field__select {background: #fff; padding: 6px 14px 14px; border-radius: 12px; box-shadow: 0 4px 4px rgba(0,0,0,0.05); border: 2px solid transparent;}
+.amount-field--is-readonly {box-shadow: none; border: 2px dashed @c-border;}
 .amount-field__content {display: flex;}
 .amount-field__coin {font-weight: 600; flex-shrink: 0;}
 .amount-field__coin-name {color: @c-black-light; line-height: 24px; margin-bottom: 8px;}
-.amount-field__coin-button {display: flex; align-items: center;}
+.amount-field__coin-button {
+    display: flex; align-items: center;
+    &[disabled] {cursor: default;}
+}
 .amount-field__coin-icon {margin-right: 8px; border-radius: 50%;}
 .amount-field__coin-symbol {font-size: 20px;}
 .amount-field__icon-dropdown {margin-left: 8px;}
 
-.amount-field__amount {flex-grow: 2;}
+.amount-field__amount {flex-grow: 2; margin-left: 20px;}
 .amount-field__amount-balance {line-height: 24px; margin-bottom: 8px; display: flex; align-items: center; justify-content: right; color: @c-black-light;}
+.amount-field__amount-loader {width: 24px; height: 24px; margin: 0;}
 .amount-field__amount-max {
     font-size: 10px; line-height: 12px; font-weight: 700; text-transform: uppercase; border: 1px solid @c-main; background: transparent; border-radius: 8px; color: @c-main; padding: 5px 7px; margin-left: 8px; transition: 0.1s;
     &:hover, &:focus {background: fade(@c-main, 20%);}
@@ -288,9 +230,10 @@
 .amount-field__amount-input {
     font-weight: 600; font-size: 30px; line-height: 32px; height: 32px; text-align: right; width: 100%; color: currentColor; padding: 0; background: transparent; border: none; opacity: 1; /* safari disabled fix */ -webkit-text-fill-color: currentcolor; /* safari disabled fix */ -webkit-appearance: none; /* ios shadow fix */
     &::placeholder {color: @c-black-light;}
+    &:focus::placeholder {color: transparent;}
 }
 
-.amount-field__select {position: absolute; left: 0; right: 0; padding-top: 16px; z-index: 1;}
+.amount-field__select {position: absolute; left: -2px; right: -2px; /* border size */ padding-top: 16px; z-index: 1;}
 .amount-field__select-field {position: relative;}
 .amount-field__select-field-icon {position: absolute; right: 16px; top: 8px; pointer-events: none;}
 .amount-field__select-input {
@@ -303,3 +246,22 @@
 }
 .amount-field__suggestion-icon {flex-shrink: 0; margin-right: 8px; border-radius: 50%;}
 .amount-field__suggestion-symbol {font-weight: 600; font-size: 20px;}
+
+
+
+.hub__preview-transaction-row {/*font-size: 14px;*/font-weight: 500;line-height: 20px;}
+.hub__preview-transaction-meta {color: @c-black-light;font-size: 12px;line-height: 18px;}
+.hub__preview-loader {width: 18px;height: 18px;display: inline-block;vertical-align: middle;margin-top: -3px;margin-left: 2px;}
+@media (min-width: @breakpoint-medium-up) {
+    .hub__preview-transaction-row {display: flex;justify-content: space-between;}
+}
+
+.hub__buy-stage {
+    &+& {margin-top: 12px;}
+}
+.hub__buy-transaction-row {/*font-size: 14px;*/font-weight: 500;line-height: 20px;}
+.hub__buy-time {margin-left: 8px;}
+.hub__buy-loader {width: 22px; height: 22px; display: inline-block; vertical-align: middle; margin-top: -4px; margin-right: 6px;}
+@media (min-width: @breakpoint-medium-up) {
+    .hub__buy-transaction-row {display: flex;}
+}

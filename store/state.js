@@ -16,6 +16,7 @@ export default function() {
         },
         history: [],
         authRedirectPath: '',
+        onLine: true,
         isSnackbarActive: false,
     };
     // vuex-persistedstate enabled in nuxt.config.js

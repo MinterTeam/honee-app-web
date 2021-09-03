@@ -45,6 +45,9 @@ export default {
     POP_HISTORY: (state) => {
         state.history.pop();
     },
+    SET_ONLINE(state, onLine) {
+        state.onLine = onLine;
+    },
     /**
      * Show snackbar if it is inactive
      */

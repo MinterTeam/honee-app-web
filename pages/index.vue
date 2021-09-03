@@ -68,7 +68,7 @@
                         </div>
                     </div>
                     <div class="wallet__balance-links" >
-                        <nuxt-link class="button button--yellow-light" to="/send">
+                        <nuxt-link class="button button--yellow-light" to="/buy">
                             Buy BIP & HUB
                         </nuxt-link>
                     </div>
