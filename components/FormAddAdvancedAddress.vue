@@ -3,8 +3,9 @@
     import required from 'vuelidate/lib/validators/required';
     import withParams from 'vuelidate/lib/withParams';
     import autosize from 'v-autosize';
-    import checkEmpty from '~/assets/v-check-empty.js';
     import {isValidMnemonic, walletFromMnemonic} from 'minterjs-wallet';
+    import checkEmpty from '~/assets/v-check-empty.js';
+    import {} from '~/assets/variables.js';
 
     const mnemonicValidator = withParams({type: 'mnemonic'}, isValidMnemonic);
 

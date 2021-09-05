@@ -1,10 +1,12 @@
 <script>
     import getTitle from '~/assets/get-title.js';
     import {getExplorerTxUrl} from '~/assets/utils.js';
+    import {DASHBOARD_URL} from '~/assets/variables.js';
     import Swap from '~/components/Swap.vue';
     import Modal from '~/components/base/Modal.vue';
 
     export default {
+        DASHBOARD_URL,
         PAGE_TITLE: 'Swap coins',
         components: {
             Swap,
@@ -49,7 +51,7 @@
         :hideCloseButton="false"
         :disableOutsideClick="true"
         modalContainerClass="card card--light-grey"
-        @modal-close="$router.push('/')"
+        @modal-close="$router.push($options.DASHBOARD_URL)"
     >
         <Swap class="card__content" @success-tx="openSuccessModal"/>
 

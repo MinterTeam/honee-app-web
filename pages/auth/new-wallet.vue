@@ -5,6 +5,7 @@
     import * as clipboard from 'clipbrd';
     import {generateMnemonic} from 'minterjs-wallet';
     import getTitle from '~/assets/get-title';
+    import {DASHBOARD_URL} from '~/assets/variables.js';
     import BaseButtonCopy from '~/components/base/BaseButtonCopy.vue';
 
     // checkbox validator
@@ -52,7 +53,7 @@
                 this.$store.commit('LOGOUT');
                 this.$store.commit('ADD_AUTH_ADVANCED', this.mnemonic);
                 // redirect
-                const authRedirectPath = this.$store.state.authRedirectPath || '/';
+                const authRedirectPath = this.$store.state.authRedirectPath || DASHBOARD_URL;
                 this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
                 this.$router.push(authRedirectPath);
             },

@@ -13,6 +13,7 @@
     import FeeBus from '~/assets/fee.js';
     import {getServerValidator, getErrorText} from "~/assets/server-error.js";
     import {getAvatarUrl, pretty, prettyExact, getExplorerTxUrl} from '~/assets/utils.js';
+    import {DASHBOARD_URL} from '~/assets/variables.js';
     import getTitle from '~/assets/get-title.js';
     import Modal from '~/components/base/Modal.vue';
     import TxFormBlocksToUpdateStake from '~/components/TxFormBlocksToUpdateStake.vue';
@@ -28,6 +29,7 @@
 
     export default {
         TX_TYPE,
+        DASHBOARD_URL,
         PAGE_TITLE: 'Send coins',
         components: {
             Modal,
@@ -432,7 +434,7 @@
 </script>
 
 <template>
-    <Modal :isOpen="true" :hideCloseButton="false" :disableOutsideClick="true" @modal-close="$router.push('/')">
+    <Modal :isOpen="true" :hideCloseButton="false" :disableOutsideClick="true" @modal-close="$router.push($options.DASHBOARD_URL)">
 
         <form novalidate @submit.prevent="openTxModal" v-if="$store.state.balance && $store.state.balance.length">
             <div class="u-section u-container u-text-left">

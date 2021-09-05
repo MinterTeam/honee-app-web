@@ -1,9 +1,11 @@
 <script>
 import getTitle from '~/assets/get-title.js';
+import {DASHBOARD_URL} from '~/assets/variables.js';
 import HubBuyForm from '~/components/HubBuyForm.vue';
 import Modal from '~/components/base/Modal.vue';
 
 export default {
+    DASHBOARD_URL,
     PAGE_TITLE: 'Buy BIP & HUB for ETH',
     components: {
         HubBuyForm,
@@ -26,7 +28,7 @@ export default {
         :hideCloseButton="false"
         :disableOutsideClick="true"
         modalContainerClass="card card--light-grey"
-        @modal-close="$router.push('/')"
+        @modal-close="$router.push($options.DASHBOARD_URL)"
     >
         <HubBuyForm class="card__content"/>
 

@@ -24,6 +24,7 @@ export const COIN_NAME = BASE_COIN;
 export const CHAIN_ID = NETWORK === MAINNET ? 1 : 2;
 
 export const STAKE_RECALCULATE_BLOCK_COUNT = 720;
+export const DASHBOARD_URL = '/dashboard';
 
 export const SWAP_TYPE = {
     BANCOR: 'bancor',

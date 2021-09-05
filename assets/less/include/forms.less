@@ -71,23 +71,23 @@
 
 
 // button-loader
-@loader-length: 16 * 3.14 * 2; // длина окружности
-.loader {width: 40px; height: 40px; margin: auto; pointer-events: none; animation: loader-rotate 2s linear infinite;}
-.loader--button {
-    position: absolute; left: 0; right: 0; top: 0; bottom: 0; opacity: 0; transition: 0.05s;
-    .is-loading > & { opacity: 1; transition: 0.15s 0.15s;}
-}
-.loader--inline {vertical-align: middle; margin-right: 10px;}
-.loader__path { fill: none; stroke: currentColor; stroke-width: 3px; stroke-linecap: round; animation: loader-dash 1.5s ease-in-out infinite; }
-@keyframes loader-rotate {
-    0% {transform: rotate(-90deg);}
-    100% { transform: rotate(270deg); }
-}
-@keyframes loader-dash {
-    0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
-    50% { stroke-dasharray: @loader-length * 0.8, 200; stroke-dashoffset: 0; }
-    100% { stroke-dasharray: @loader-length * 0.8, 200; stroke-dashoffset: -@loader-length + 1px; }
-}
+//@loader-length: 16 * 3.14 * 2; // длина окружности
+//.loader {width: 40px; height: 40px; margin: auto; pointer-events: none; animation: loader-rotate 2s linear infinite;}
+//.loader--button {
+//    position: absolute; left: 0; right: 0; top: 0; bottom: 0; opacity: 0; transition: 0.05s;
+//    .is-loading > & { opacity: 1; transition: 0.15s 0.15s;}
+//}
+//.loader--inline {vertical-align: middle; margin-right: 10px;}
+//.loader__path { fill: none; stroke: currentColor; stroke-width: 3px; stroke-linecap: round; animation: loader-dash 1.5s ease-in-out infinite; }
+//@keyframes loader-rotate {
+//    0% {transform: rotate(-90deg);}
+//    100% { transform: rotate(270deg); }
+//}
+//@keyframes loader-dash {
+//    0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
+//    50% { stroke-dasharray: @loader-length * 0.8, 200; stroke-dashoffset: 0; }
+//    100% { stroke-dasharray: @loader-length * 0.8, 200; stroke-dashoffset: -@loader-length + 1px; }
+//}
 
 
 

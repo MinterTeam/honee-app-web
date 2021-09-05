@@ -2,10 +2,12 @@
     import * as clipboard from 'clipbrd';
     import QrcodeVue from 'qrcode.vue';
     import getTitle from '~/assets/get-title.js';
+    import {DASHBOARD_URL} from '~/assets/variables.js';
     import Modal from '~/components/base/Modal.vue';
     import BaseButtonCopy from '~/components/base/BaseButtonCopy.vue';
 
     export default {
+        DASHBOARD_URL,
         PAGE_TITLE: 'Receive Coins',
         components: {
             QrcodeVue,
@@ -48,7 +50,7 @@
 </script>
 
 <template>
-    <Modal :isOpen="true" :hideCloseButton="false" :disableOutsideClick="true" @modal-close="$router.push('/')">
+    <Modal :isOpen="true" :hideCloseButton="false" :disableOutsideClick="true" @modal-close="$router.push($options.DASHBOARD_URL)">
         <div class="form-field form-field--with-icon u-text-left">
             <div class="form-field__input is-not-empty">{{ $store.getters.address }}</div>
             <div class="form-field__label">Your address</div>
