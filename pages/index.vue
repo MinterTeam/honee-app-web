@@ -86,7 +86,7 @@ export default {
                         <h3>Top it up</h3>
                     </div>
                 </div>
-                <a class="btn btn-2" href="#">Get Started</a>
+                <!--<a class="btn btn-2" href="#">Get Started</a>-->
             </div>
         </section>
         <section class="follow">
@@ -143,7 +143,3 @@ export default {
         </footer>
     </div>
 </template>
-
-
-
-
