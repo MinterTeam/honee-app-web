@@ -35,7 +35,7 @@ export default {
                     <div class="features-item">
                         <img src="/img/landing/f1.svg" alt="" width="64" height="64">
                         <h3>Great to Earn With</h3>
-                        <p>Crypto and decentralized finance are complicated, but we did all the hard work for you. Enjoy our one-click solutions to apply the best earning tools to your balance.</p>
+                        <p>Crypto and decentralized finance are complicated, but we did all the hard work for you. Enjoy our one-click solutions applying the best earning tools to your balance.</p>
                     </div>
                     <div class="features-item">
                         <img src="/img/landing/f2.svg" alt="" width="64" height="64">
