@@ -50,7 +50,7 @@ export default {
                     <div class="features-item">
                         <img src="/img/landing/f4.svg" alt="" width="64" height="64">
                         <h3>Private & Secure</h3>
-                        <p>You are the only person who can access your wallet. We don’t collect any personal data.</p>
+                        <p>You are the only person who can access your wallet. We don't store your seed phrase.</p>
                     </div>
                     <div class="features-item">
                         <img src="/img/landing/f5.svg" alt="" width="64" height="64">
