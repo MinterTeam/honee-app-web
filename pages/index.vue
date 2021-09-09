@@ -114,12 +114,14 @@ export default {
         </section>
         <footer class="footer">
             <div class="container">
-                <!--<div class="footer-disclaimer">
+                <div class="footer-disclaimer">
                     <h3>Disclaimer</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Dui, dui turpis viverra dictum odio bibendum lacus leo. Accumsan bibendum quam nulla mattis aliquet ornare amet urna. Urna eget vel accumsan eget consequat. Massa semper erat urna egestas turpis consectetur. Vitae, tincidunt euismod duis id at molestie. Arcu odio ultrices et id. Egestas mauris in nec, elementum morbi suspendisse sit diam maecenas. Vestibulum, tellus, lacus etiam orci. Proin lorem gravida leo blandit quis vestibulum sapien adipiscing. Ultrices nunc a magna feugiat elementum. At porta at vitae sed ipsum. Enim feugiat sed faucibus integer faucibus. Ipsum ac sed laoreet quisque sit sapien, dui, quisque.</p>
-                    <p>Ullamcorper augue ullamcorper eget adipiscing mi neque. At elementum, porttitor adipiscing mauris ullamcorper. Tellus fames condimentum sem felis. Pretium pharetra risus nibh lectus sed et ultrices. Donec pulvinar varius tincidunt adipiscing leo lobortis morbi.</p>
-                    <p>Consequat tortor nisl velit felis posuere porttitor lobortis hendrerit porttitor. Fusce leo augue odio scelerisque.</p>
-                </div>-->
+                    <p>Please note that you are accessing the ALPHA Version of the Honee service which is in the process of being tested before its official release. The sole purpose of this ALPHA Version is to conduct testing and obtain feedback.</p>
+                    <p>ALPHA testing is free for users and we do not demand any remuneration for access to the ALPHA Version of the services. Intra-blockchain fees you pay for transactions are not the payment for using the Honee service.</p>
+                    <p>Operations with virtual assets pose intrinsic risks, including the risk of monetary loss. We strongly suggest you seek professional advice before engaging in any operations with virtual assets.</p>
+                    <p>We do not give any warranties, whether express or implied, as to the suitability or usability of the service, its software or any of its content. We will not be liable for any loss, whether such loss is direct, indirect, special or consequential, suffered by any party as a result of their use of the ALPHA, its content and functionalities. </p>
+                    <p>Should you encounter any bugs, glitches, lack of functionality or other problems on the ALPHA, please email us at <a href="mailto:hello@honee.app" class="link--underline u-fw-600">hello@honee.app</a>.</p>
+                </div>
                 <div class="logo"><img src="/img/logo-honee.svg" alt="" width="82" height="16"/></div>
                 <div class="footer-copyright-container">
                     <div class="footer-copyright">
