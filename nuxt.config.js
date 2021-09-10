@@ -6,7 +6,9 @@ import webpack from 'webpack';
 const envConfig = dotenv.config();
 const envConfigParsed = envConfig.error ? {} : envConfig.parsed;
 
-import {BASE_TITLE, BASE_DESCRIPTION} from "./assets/variables.js";
+import langEn from './lang/en.js';
+import langRu from './lang/ru.js';
+import {BASE_TITLE, BASE_DESCRIPTION, I18N_ROUTE_NAME_SEPARATOR, LANGUAGE_COOKIE_KEY} from "./assets/variables.js";
 
 const NUXT_LOADING_INLINE_SCRIPT_SHA = process.env.NODE_ENV === 'production'
     ? [
@@ -111,7 +113,39 @@ module.exports = {
     },
     env: envConfigParsed,
     modules: [
-        //'@nuxtjs/pwa'
+        ['nuxt-i18n-preferred', {
+            routesNameSeparator: I18N_ROUTE_NAME_SEPARATOR,
+            languageCookieKey: LANGUAGE_COOKIE_KEY,
+            detectBrowserLanguage: false,
+        }],
+        'nuxt-i18n-default',
+        ['nuxt-i18n', {
+            locales: [
+                {
+                    code: 'en',
+                    iso: 'en',
+                    name: 'English',
+                },
+                {
+                    code: 'ru',
+                    iso: 'ru',
+                    name: 'Russian',
+                },
+            ],
+            defaultLocale: 'en',
+            routesNameSeparator: I18N_ROUTE_NAME_SEPARATOR,
+            strategy: 'prefix_except_default',
+            rootRedirect: null,
+            vueI18n: {
+                fallbackLocale: 'en',
+                messages: {
+                    ru: langRu,
+                    en: langEn,
+                },
+            },
+            seo: false,
+            detectBrowserLanguage: false,
+        }],
     ],
     plugins: [
         { src: '~/plugins/base-url-prefix.js'},

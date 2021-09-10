@@ -1,5 +1,8 @@
 // normalize-css подключается с помощью postcss-normalize
 @import (inline) '../../node_modules/@material/snackbar/dist/mdc.snackbar.css';
+@import (inline) '../../node_modules/@material/menu/dist/mdc.menu.css';
+@import (inline) '../../node_modules/@material/menu-surface/dist/mdc.menu-surface.css';
+@import (inline) '../../node_modules/@material/list/dist/mdc.list.css';
 @import "include/variables";
 @import "include/utils";
 //@import (inline) "../css/onsen.css";
@@ -27,6 +30,11 @@
     &::before {transform: rotate(45deg);}
     &::after {transform: rotate(-45deg);}
 }
+.mdc-list-item--with-one-line {align-items: center; justify-content: space-between;}
+// nuxt page transition
+.page-leave-active, .layout-leave-active {transition: opacity .1s;}
+.page-enter-active, .layout-enter-active {transition: opacity .25s;}
+.page-enter, .page-leave-to, .layout-enter, .layout-leave-to {opacity: 0;}
 
 // common
 .main-wrap {display: flex; flex-direction: column; min-height: 100vh;}
@@ -35,8 +43,6 @@
     .main-content {padding-top: 20px; padding-bottom: 50px; }
 }
 
-
-.header {box-shadow: 0 0 6px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 10;}
 
 
 
@@ -67,7 +73,7 @@
 .default-layout {overflow-y: scroll;}
 
 // auth
-.auth__body {background-image: url(../img/auth-bg.svg); background-position: 50% 40%; background-repeat: no-repeat;}
+.auth__body {background-image: url(../img/auth-bg.svg); background-position: 50% 42%; background-repeat: no-repeat;}
 //.auth__bg {position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin-top: 40px; margin-left: -3px; z-index: -1;}
 .auth__bee {position: absolute; bottom: 100%; right: 10px; margin-bottom: 8px;}
 .auth__logo {display: block; margin-inline: auto; margin-bottom: 64px; margin-top: 60px;}
@@ -136,7 +142,7 @@
 @header-height: 56px;
 @header-height-large: 80px;
 .header {
-    height: @header-height; background: #ffffff; box-shadow: inset 0 -1px 1px #e6e6e6;
+    height: @header-height; background: #ffffff; box-shadow: 0 4px 4px rgba(0,0,0,0.05);
 }
 .header__container {display: flex; align-items: center; justify-content: space-between; top: 0; height: 100%;}
 .header__logo {margin-right: 24px; display: flex; align-items: center; width: 40%; flex-grow: 2;}
@@ -155,6 +161,10 @@
 .header__controls-user {display: flex; align-items: center; font-weight: 700; max-width: calc(100vw - 220px); margin-right: 24px;}
 .header__controls-user-name {overflow: hidden; text-overflow: ellipsis;white-space: nowrap;}
 .header__controls-user-avatar {width: 24px; height: 24px; border-radius: 50%; background: no-repeat 50% 50% @c-black-light; background-size: cover; margin-right: 12px; flex-shrink: 0;}
+.header__controls-language {display: flex; align-items: center; margin-left: 24px;}
+.header__language-container {padding-top: 16px; padding-bottom: 16px; display: flex; justify-content: flex-end;}
+.header__language-button {font-size: 0; display: block;}
+.header__language-text {margin-right: 16px;}
 @media (min-width: @breakpoint-small-up) {
     //.header__logo {margin-right: 70px;}
     .header__controls-user {max-width: calc(100vw - 260px);}

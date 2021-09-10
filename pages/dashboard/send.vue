@@ -16,7 +16,7 @@
     import {DASHBOARD_URL} from '~/assets/variables.js';
     import getTitle from '~/assets/get-title.js';
     import Modal from '~/components/base/Modal.vue';
-    import TxFormBlocksToUpdateStake from '~/components/TxFormBlocksToUpdateStake.vue';
+    import TxFormBlocksToUpdateStake from '@/components/base/TxFormBlocksToUpdateStake.vue';
 
     let recipientCheckData = null; // storage with latest recipient data to check
     let recipientCheckCancel;
@@ -434,7 +434,12 @@
 </script>
 
 <template>
-    <Modal :isOpen="true" :hideCloseButton="false" :disableOutsideClick="true" @modal-close="$router.push($options.DASHBOARD_URL)">
+    <Modal
+        :isOpen="true"
+        :hideCloseButton="false"
+        :disableOutsideClick="true"
+        @modal-close="$router.push($i18nGetPreferredPath({path: $options.DASHBOARD_URL}))"
+    >
 
         <form novalidate @submit.prevent="openTxModal" v-if="$store.state.balance && $store.state.balance.length">
             <div class="u-section u-container u-text-left">

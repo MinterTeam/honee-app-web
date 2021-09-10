@@ -1,6 +1,11 @@
 <script>
+import IndexSubscribeForm from '@/components/IndexSubscribeForm.vue';
+
 export default {
     layout: 'simple',
+    components: {
+        IndexSubscribeForm,
+    },
     data() {
         return {
 
@@ -18,10 +23,11 @@ export default {
                 <div class="hello">
                     <div class="hello-content">
                         <div class="logo"><img src="/img/logo-honee.svg" alt="" width="122" height="24"/></div>
-                        <h1>The simplest crypto wallet that helps you earn</h1>
-                        <p class="subtitle-h1">Honee wallet is focused on enabling people to earn crypto.</p>
+                        <h1>{{ $td('The simplest crypto wallet that helps you earn', 'index.hello-title')}}</h1>
+                        <p class="subtitle-h1">{{ $td('Honee wallet is focused on enabling people to&nbsp;earn crypto. Enter&nbsp;your e-mail address below to be among the first&nbsp;users!', 'index.hello-description')}}</p>
                         <!-- <a class="btn" href="#">Start Earning</a> -->
-                        <h3>Coming this September</h3>
+                        <IndexSubscribeForm class="u-mb-15"/>
+                        <h3>{{ $td('Coming this September', 'index.hello-coming')}}</h3>
                     </div>
                     <img src="/img/landing/phone.png" alt="" class="hello-image" />
                 </div>
@@ -29,8 +35,11 @@ export default {
         </header>
         <section class="features">
             <div class="container">
-                <h2>Сrypto wallet as it’s meant to be</h2>
-                <p class="subtitle-h2">Find out why Honee is <b><i>the</i></b> crypto wallet</p>
+                <h2>{{ $td('Сrypto wallet as it’s meant to be', 'index.features-title')}}</h2>
+                <i18n tag="p" class="subtitle-h2" path="index.features-description">
+                    <b><i>{{ $td('the', 'index.features-description-highlight')}}</i></b>
+                </i18n>
+                <p class="subtitle-h2"></p>
                 <div class="features-items">
                     <div class="features-item">
                         <img src="/img/landing/f1.svg" alt="" width="64" height="64">

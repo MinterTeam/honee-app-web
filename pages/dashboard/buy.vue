@@ -28,7 +28,7 @@ export default {
         :hideCloseButton="false"
         :disableOutsideClick="true"
         modalContainerClass="card card--light-grey"
-        @modal-close="$router.push($options.DASHBOARD_URL)"
+        @modal-close="$router.push($i18nGetPreferredPath({path: $options.DASHBOARD_URL}))"
     >
         <HubBuyForm class="card__content"/>
 

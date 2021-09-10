@@ -343,3 +343,13 @@
     }
 
 }
+
+
+.hello__form {display: flex; align-items: flex-start;}
+.hello__form-field {margin-right: 16px; flex-grow: 2; max-width: 256px;}
+.hello__form-button {
+    flex-shrink: 0; margin-top: 8px; box-shadow: 0px 8px 12px fade(@c-yolk, 30%);
+    &:hover, &:focus {box-shadow: 0px 8px 12px fade(@c-yolk, 40%)}
+    &:active {box-shadow: 0px 6px 8px fade(@c-yolk, 30%)}
+}
+.hello__form-success {padding: 18px 30px; display: inline-block; background: #e5e5e5; border-radius: 12px; font-weight: 700; font-size: 16px; line-height: 20px; width: 360px; max-width: 100%; text-align: center;}

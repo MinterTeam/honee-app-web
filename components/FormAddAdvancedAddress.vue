@@ -41,7 +41,7 @@
                 // redirect
                 const authRedirectPath = this.$store.state.authRedirectPath || '/';
                 this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
-                this.$router.push(authRedirectPath);
+                this.$router.push(this.$i18nGetPreferredPath({path: authRedirectPath}));
             },
         },
     };

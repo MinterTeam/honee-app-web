@@ -1,5 +1,10 @@
 <script>
+import Language from '~/components/base/Language.vue';
+
 export default {
+    components: {
+        Language,
+    },
     props: {
         title: {
             type: String,
@@ -41,6 +46,9 @@ export default {
                     <div class="header__controls-user-name">{{ $store.getters.username }}</div>
                 </div>
                 <button class="header__controls-link link link--opacity u-semantic-button" @click="logout" >Logout</button>
+                <div class="header__controls-language">
+                    <Language/>
+                </div>
             </div>
         </div>
     </header>

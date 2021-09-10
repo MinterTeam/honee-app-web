@@ -153,7 +153,7 @@ blockquote {
 
 // button
 .button {
-    display: inline-flex; align-items: center; justify-content: center; padding: 8px 22px; font-size: 16px; line-height: 20px; font-weight: 700; font-family: @heading-font-family; background: #fff; color: @c-black; border-radius: 10px; text-align: center; border: 2px solid transparent; text-decoration: none; transition: 0.1s; position: relative; overflow: hidden; vertical-align: top;
+    display: inline-flex; align-items: center; justify-content: center; padding: 8px 22px; font-size: 16px; line-height: 20px; font-weight: 700; font-family: @heading-font-family; background: #fff; color: @c-black; border-radius: 12px; text-align: center; border: 2px solid transparent; text-decoration: none; transition: 0.1s; position: relative; overflow: hidden; vertical-align: top;
     &[disabled], &.is-disabled {
         cursor: default;
         &:not(.is-loading) {background: shade(#fff, 25%);}
@@ -179,7 +179,7 @@ blockquote {
 .button--main {
     color: #fff; background: @c-main; /*box-shadow: 0 2px 4px rgba(0,0,0,0.5);*/
     &:hover, &:focus {background: tint(@c-main, 10%);}
-    &:active {background: shade(@c-main, 10%);}
+    &:active {background: shade(@c-main, 5%);}
 }
 .button--yellow-light {
     color: @c-black; background: @c-yellow-light; /*box-shadow: 0 2px 4px rgba(0,0,0,0.5);*/

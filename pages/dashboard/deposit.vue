@@ -50,7 +50,12 @@
 </script>
 
 <template>
-    <Modal :isOpen="true" :hideCloseButton="false" :disableOutsideClick="true" @modal-close="$router.push($options.DASHBOARD_URL)">
+    <Modal
+        :isOpen="true"
+        :hideCloseButton="false"
+        :disableOutsideClick="true"
+        @modal-close="$router.push($i18nGetPreferredPath({path: $options.DASHBOARD_URL}))"
+    >
         <div class="form-field form-field--with-icon u-text-left">
             <div class="form-field__input is-not-empty">{{ $store.getters.address }}</div>
             <div class="form-field__label">Your address</div>

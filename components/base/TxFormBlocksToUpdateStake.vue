@@ -1,5 +1,5 @@
 <script>
-import {STAKE_RECALCULATE_BLOCK_COUNT} from '~/assets/variables.js';
+import {STAKE_RECALCULATE_BLOCK_COUNT} from 'assets/variables.js';
 
 export default {
     props: {
