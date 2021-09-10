@@ -59,7 +59,7 @@ export default {
                     <div class="features-item">
                         <img src="/img/landing/f4.svg" alt="" width="64" height="64">
                         <h3>{{ $td('Private & Secure', 'index.index.features-item4-title')}}</h3>
-                        <p>{{ $td('You are the only person who can access your wallet. We don't store your seed phrase.', 'index.features-item4-description')}}</p>
+                        <p>{{ $td('You are the only person who can access your wallet. We don\'t store your seed phrase.', 'index.features-item4-description')}}</p>
                     </div>
                     <div class="features-item">
                         <img src="/img/landing/f5.svg" alt="" width="64" height="64">
