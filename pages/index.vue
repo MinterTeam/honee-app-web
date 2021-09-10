@@ -48,27 +48,27 @@ export default {
                     </div>
                     <div class="features-item">
                         <img src="/img/landing/f2.svg" alt="" width="64" height="64">
-                        <h3>{{ $td('Simple to Use', 'index.index.features-item2-title')}}</h3>
+                        <h3>{{ $td('Simple to Use', 'index.features-item2-title')}}</h3>
                         <p>{{ $td('Aside from helping you earn, our second-biggest goal is to provide a smooth user experience. Honee is simple and user-friendly at every step of the way.', 'index.features-item2-description')}}</p>
                     </div>
                     <div class="features-item">
                         <img src="/img/landing/f3.svg" alt="" width="64" height="64">
-                        <h3>{{ $td('Best to Trade At', 'index.index.features-item3-title')}}</h3>
+                        <h3>{{ $td('Best to Trade At', 'index.features-item3-title')}}</h3>
                         <p>{{ $td('Buy, sell, and swap your Bitcoin, Ether, USDT, and other popular cryptos instantly & at the lowest fees in the industry.', 'index.features-item3-description')}}</p>
                     </div>
                     <div class="features-item">
                         <img src="/img/landing/f4.svg" alt="" width="64" height="64">
-                        <h3>{{ $td('Private & Secure', 'index.index.features-item4-title')}}</h3>
+                        <h3>{{ $td('Private & Secure', 'index.features-item4-title')}}</h3>
                         <p>{{ $td('You are the only person who can access your wallet. We don\'t store your seed phrase.', 'index.features-item4-description')}}</p>
                     </div>
                     <div class="features-item">
                         <img src="/img/landing/f5.svg" alt="" width="64" height="64">
-                        <h3>{{ $td('Fully Decentralized', 'index.index.features-item5-title')}}</h3>
+                        <h3>{{ $td('Fully Decentralized', 'index.features-item5-title')}}</h3>
                         <p>{{ $td('It means that only you own your money, not an exchange or a wallet. No one can stop or limit your actions.', 'index.features-item5-description')}}</p>
                     </div>
                     <div class="features-item">
                         <img src="/img/landing/f6.svg" alt="" width="64" height="64">
-                        <h3>{{ $td('Rewarding', 'index.index.features-item6-title')}}</h3>
+                        <h3>{{ $td('Rewarding', 'index.features-item6-title')}}</h3>
                         <p>{{ $td('Honee has rich programs to reward users for different actions. It’s the best way to win crypto or get it for free.', 'index.features-item6-description')}}</p>
                     </div>
                 </div>
@@ -125,11 +125,11 @@ export default {
             <div class="container">
                 <div class="footer-disclaimer">
                     <h3>{{ $td('Disclaimer', 'index.footer-disclaimer-title')}}</h3>
-                    <p>{{ $td('Please note that you are accessing the ALPHA Version of the Honee service which is in the process of being tested before its official release. The sole purpose of this ALPHA Version is to conduct testing and obtain feedback.', 'index.footer-disclaimer-p1')}}</p>
-                    <p>{{ $td('ALPHA testing is free for users and we do not demand any remuneration for access to the ALPHA Version of the services. Intra-blockchain fees you pay for transactions are not the payment for using the Honee service.', 'index.footer-disclaimer-p2')}}</p>
-                    <p>{{ $td('Operations with virtual assets pose intrinsic risks, including the risk of monetary loss. We strongly suggest you seek professional advice before engaging in any operations with virtual assets.', 'index.footer-disclaimer-p3')}}</p>
-                    <p>{{ $td('We do not give any warranties, whether express or implied, as to the suitability or usability of the service, its software or any of its content. We will not be liable for any loss, whether such loss is direct, indirect, special or consequential, suffered by any party as a result of their use of the ALPHA, its content and functionalities.', 'index.footer-disclaimer-p4')}}</p>
-                    <p>{{ $td('Should you encounter any bugs, glitches, lack of functionality or other problems on the ALPHA, please email us at', 'index.footer-disclaimer-p5')}} <a href="mailto:hello@honee.app" class="link--underline u-fw-600">hello@honee.app</a>.</p>
+                    <p>Please note that you are accessing the ALPHA Version of the Honee service which is in the process of being tested before its official release. The sole purpose of this ALPHA Version is to conduct testing and obtain feedback.</p>
+                    <p>ALPHA testing is free for users and we do not demand any remuneration for access to the ALPHA Version of the services. Intra-blockchain fees you pay for transactions are not the payment for using the Honee service.</p>
+                    <p>Operations with virtual assets pose intrinsic risks, including the risk of monetary loss. We strongly suggest you seek professional advice before engaging in any operations with virtual assets.</p>
+                    <p>We do not give any warranties, whether express or implied, as to the suitability or usability of the service, its software or any of its content. We will not be liable for any loss, whether such loss is direct, indirect, special or consequential, suffered by any party as a result of their use of the ALPHA, its content and functionalities.</p>
+                    <p>Should you encounter any bugs, glitches, lack of functionality or other problems on the ALPHA, please email us at <a href="mailto:hello@honee.app" class="link--underline u-fw-600">hello@honee.app</a>.</p>
                 </div>
                 <div class="logo"><img src="/img/logo-honee.svg" alt="" width="82" height="16"/></div>
                 <div class="footer-copyright-container">

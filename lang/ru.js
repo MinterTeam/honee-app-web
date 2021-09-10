@@ -47,7 +47,7 @@ export default {
 
         'follow-title': 'Подписывайтесь',
 
-        'footer-disclaimer-title': '',
+        'footer-disclaimer-title': 'Дисклеймер',
         'footer-disclaimer-p1': '',
         'footer-disclaimer-p2': '',
         'footer-disclaimer-p3': '',
