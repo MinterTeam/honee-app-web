@@ -342,10 +342,22 @@
         .footer-copyright:last-child {text-align: left;}
     }
 
+    @media (max-width: 400px) {
+      h1 {font-size: 40px; line-height: 1.2em;}
+      h2 {font-size: 30px; line-height: 1.2em;}
+      .page-index img.hello-image {max-width: 100%;}
+      .features-item {margin: 0 8px 40px;}
+    }
+
+    @media (max-width: 330px) {
+      h1 {font-size: 32px; line-height: 1.2em;}
+      h2 {font-size: 24px; line-height: 1.2em;}
+    }
+
 }
 
 
-.hello__form {display: flex; align-items: flex-start;}
+.hello__form {display: flex; align-items: flex-start; flex-wrap: wrap;}
 .hello__form-field {margin-right: 16px; flex-grow: 2; max-width: 256px;}
 .hello__form-button {
     flex-shrink: 0; margin-top: 8px; box-shadow: 0px 8px 12px fade(@c-yolk, 30%);
