@@ -142,14 +142,13 @@ export default {
                         <a href="mailto:hello@honee.app" class="link--underline u-fw-600">hello@honee.app</a>
                     </div>
                 </div>
-                <!--<nav class="footer-menu">
+                <nav class="footer-menu">
                     <ul>
-                        <li><a href="">Terms</a></li>
-                        <li><a href="">Privacy</a></li>
-                        <li><a href="">Help</a></li>
-                        <li><a href="">Contact</a></li>
+                        <li><a href="/legal/terms.pdf" target="_blank">Terms</a></li>
+                        <li><a href="/legal/privacy.pdf" target="_blank">Privacy</a></li>
+                        <li><a href="mailto:hello@honee.app" target="_blank">Contact</a></li>
                     </ul>
-                </nav>-->
+                </nav>
             </div>
         </footer>
     </div>
