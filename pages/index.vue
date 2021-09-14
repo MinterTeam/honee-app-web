@@ -27,7 +27,7 @@ export default {
                         <p class="subtitle-h1">{{ $td('Honee wallet is focused on enabling people to&nbsp;earn crypto. Enter&nbsp;your e-mail address below to be among the first&nbsp;users!', 'index.hello-description')}}</p>
                         <!-- <a class="btn" href="#">Start Earning</a> -->
                         <IndexSubscribeForm class="u-mb-15"/>
-                        <h3>{{ $td('Coming this September', 'index.hello-coming')}}</h3>
+                        <h3>{{ $td('Alpha Coming Sep 28, 2021', 'index.hello-coming')}}</h3>
                     </div>
                     <img src="/img/landing/phone.png" alt="" class="hello-image" />
                 </div>
