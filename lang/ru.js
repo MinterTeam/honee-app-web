@@ -22,6 +22,11 @@ export default {
 		'subscribe-button': 'Отправить',
 		'subscribe-success': 'Отлично, мы сообщим вам!',
 
+		'video-title': 'Что такое Honee?',
+		'video-description': 'Посмотрите 30-секундное видео',
+		'video-url': 'https://www.youtube.com/watch?v=dqi1569ICTQ',
+
+
 		'features-title': 'Крипто-кошелек, каким он должен быть',
 		'features-description': 'Узнайте, почему Honee — это {0} крипто-кошелек',
 		'features-description-highlight': 'тот самый',

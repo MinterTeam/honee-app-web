@@ -33,6 +33,15 @@ export default {
                 </div>
             </div>
         </header>
+        <section class="video">
+            <div class="container">
+                <h2>{{ $td('What’s Honee?', 'index.video-title')}}</h2>
+                <p class="subtitle-h2">{{ $td('Hit the play button to learn more', 'index.video-description')}}</p>
+                <div class="video-youtube">
+                    <iframe src="{{ $td('https://www.youtube.com/embed/fVRlrTYCtvg', 'index.video-url')}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+        </section>
         <section class="features">
             <div class="container">
                 <h2>{{ $td('Сrypto wallet as it’s meant to be', 'index.features-title')}}</h2>
