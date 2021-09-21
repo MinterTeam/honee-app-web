@@ -24,7 +24,7 @@ export default {
                     <div class="hello-content">
                         <div class="logo"><img src="/img/logo-honee.svg" alt="" width="122" height="24"/></div>
                         <h1>{{ $td('The simplest crypto wallet that helps you earn', 'index.hello-title')}}</h1>
-                        <p class="subtitle-h1">{{ $td('Honee wallet is focused on enabling people to&nbsp;earn crypto. Enter&nbsp;your e-mail address below to be among the first&nbsp;users!', 'index.hello-description')}}</p>
+                        <p class="subtitle-h1">{{ $td('Honee is focused on helping people to earn crypto. Enter your e-mail address below to be among the first users!', 'index.hello-description')}}</p>
                         <!-- <a class="btn" href="#">Start Earning</a> -->
                         <IndexSubscribeForm class="u-mb-15"/>
                         <h3>{{ $td('Alpha Coming Sep 28, 2021', 'index.hello-coming')}}</h3>
