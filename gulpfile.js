@@ -10,9 +10,6 @@ const postcss = require('gulp-postcss');
 const postcssNormalize = require('postcss-normalize');
 const autoprefixer = require('autoprefixer');
 const cleanCss = require('gulp-clean-css');
-// css onsen
-const postcssImport = require('postcss-import');
-const cssnext = require('postcss-cssnext');
 // images
 const del = require('del');
 const path = require('path');
@@ -26,17 +23,14 @@ const jpegtran = require('imagemin-jpegtran');
 let paths = {
     src: {
         less: 'assets/less/*.less',
-        onsen: 'assets/css/onsen/index.pcss',
         img: ['assets/img/**/*.{png,jpg,gif,svg}'],
     },
     dest: {
         css: 'static/css/',
-        onsen: 'assets/css/',
         img: 'static/img/',
     },
     watch: {
         less: 'assets/less/**/*.less',
-        onsen: 'assets/css/onsen/**/*.pcss',
     },
     cache: {
         tmpDir: 'tmp/',
@@ -46,7 +40,7 @@ let paths = {
 
 
 // LESS
-gulp.task('less:standalone', function() {
+gulp.task('less', function() {
     return gulp.src(paths.src.less)
         .pipe(plumber({errorHandler: onError}))
         .pipe(less())
@@ -67,27 +61,6 @@ gulp.task('less:standalone', function() {
         }))
         .pipe(gulp.dest(paths.dest.css));
 });
-
-// onsen css
-gulp.task('onsen', function() {
-    return gulp.src(paths.src.onsen)
-        .pipe(plumber({errorHandler: onError}))
-        .pipe(postcss([
-            postcssImport(),
-            cssnext({
-                features: {
-                    autoprefixer: false,
-                },
-            }),
-        ]))
-        .pipe(rename({
-            basename: 'onsen',
-            extname: '.css',
-        }))
-        .pipe(gulp.dest(paths.dest.onsen));
-});
-
-gulp.task('less', gulp.series('onsen', 'less:standalone'));
 
 
 
@@ -132,13 +105,14 @@ gulp.task('once', gulp.parallel('less', 'imagemin'));
 gulp.task('default', gulp.series(
     'once',
     function watch() {
-        gulp.watch(paths.watch.less, gulp.task('less:standalone'));
-        gulp.watch(paths.watch.onsen, gulp.task('less'));
-        gulp.watch(paths.src.img, gulp.task('imagemin')).on('change', function(event) {
-            if (event.type === 'deleted') {
-                del(paths.dest.img + path.basename(event.path));
-            }
-        });
+        gulp.watch(paths.watch.less, gulp.task('less'));
+        gulp.watch(paths.src.img, gulp.task('imagemin'))
+            .on('unlink', function(filePath) {
+                del(paths.dest.img + path.basename(filePath));
+            })
+            .on('unlinkDir', function(dirPath) {
+                del(paths.dest.img + path.basename(dirPath));
+            });
     },
 ));
 
