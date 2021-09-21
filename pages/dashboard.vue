@@ -1,58 +1,54 @@
 <script>
-    import {mapGetters, mapState} from 'vuex';
-    import {getCoinIconUrl, pretty, getTimeDistance} from "~/assets/utils";
-    import CoinList from '~/components/CoinList.vue';
+import {getCoinIconUrl, pretty} from "~/assets/utils.js";
+import {DASHBOARD_URL} from '~/assets/variables.js';
+import CoinList from '~/components/CoinList.vue';
 
-    const BALANCE_DISPLAY_BIP = 1;
-    const BALANCE_DISPLAY_TOTAL = 2;
-    const BALANCE_DISPLAY_TOTAL_USD = 3;
+const BALANCE_DISPLAY_BIP = 1;
+const BALANCE_DISPLAY_TOTAL = 2;
+const BALANCE_DISPLAY_TOTAL_USD = 3;
 
-    let timeInterval = null;
+let timeInterval = null;
 
-    export default {
-        ideFix: null,
-        BALANCE_DISPLAY_BIP,
-        BALANCE_DISPLAY_TOTAL,
-        BALANCE_DISPLAY_TOTAL_USD,
-        components: {
-            CoinList,
-        },
-        filters: {
-            pretty,
-            uppercase: (value) => value.toUpperCase(),
-        },
-        props: {
+export default {
+    ideFix: null,
+    BALANCE_DISPLAY_BIP,
+    BALANCE_DISPLAY_TOTAL,
+    BALANCE_DISPLAY_TOTAL_USD,
+    components: {
+        CoinList,
+    },
+    filters: {
+        pretty,
+        uppercase: (value) => value.toUpperCase(),
+    },
+    props: {
 
-        },
-        data() {
-            return {
+    },
+    data() {
+        return {
 
-            };
+        };
+    },
+    computed: {
+    },
+    watch: {
+        // update tx list on balance updated
+        "$store.state.balance": function() {
+            this.$store.dispatch('FETCH_TRANSACTION_LIST');
         },
-        computed: {
-            ...mapState({
-                balance: 'balance',
-            }),
-            ...mapGetters([
-                'username',
-                'address',
-                'baseCoin',
-            ]),
+    },
+    destroyed() {
+        clearInterval(timeInterval);
+    },
+    methods: {
+        pretty,
+        getCoinIconUrl,
+        pageUrl(page) {
+            const dashboardUrl = DASHBOARD_URL.replace('/', '');
+            return this.$i18nGetPreferredPath(dashboardUrl + '-' + page);
         },
-        watch: {
-            // update tx list on balance updated
-            "$store.state.balance": function() {
-                this.$store.dispatch('FETCH_TRANSACTION_LIST');
-            },
-        },
-        destroyed() {
-            clearInterval(timeInterval);
-        },
-        methods: {
-            pretty,
-            getCoinIconUrl,
-        },
-    };
+    },
+};
 </script>
 
 
@@ -68,7 +64,7 @@
                         </div>
                     </div>
                     <div class="wallet__balance-links" >
-                        <nuxt-link class="button button--yellow-light" to="/buy">
+                        <nuxt-link class="button button--yellow-light" :to="pageUrl('buy')">
                             Buy BIP & HUB
                         </nuxt-link>
                     </div>
@@ -76,9 +72,9 @@
             </div>
             <div class="card__content">
                 <div class="button-group">
-                    <nuxt-link class="button button--main" to="/deposit">Deposit</nuxt-link>
-                    <nuxt-link class="button button--main" to="/swap">Swap</nuxt-link>
-                    <nuxt-link class="button button--main" to="/send">Send</nuxt-link>
+                    <nuxt-link class="button button--main" :to="pageUrl('deposit')">Deposit</nuxt-link>
+                    <nuxt-link class="button button--main" :to="pageUrl('swap')">Swap</nuxt-link>
+                    <nuxt-link class="button button--main" :to="pageUrl('send')">Send</nuxt-link>
                 </div>
             </div>
             <CoinList class="card__content"/>
