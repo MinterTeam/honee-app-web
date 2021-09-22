@@ -126,7 +126,7 @@ export default {
                     <a href="https://medium.com/@honeeapp" target="_blank">
                         <img src="/img/landing/medium.svg" alt="" width="64" height="64">
                     </a>
-                    <a href="https://www.instagram.com/honeeteam/" target="_blank"><img src="/img/landing/instagram.svg" alt="" width="64" height="64"></a>
+                    <a href="https://www.instagram.com/honee_app/" target="_blank"><img src="/img/landing/instagram.svg" alt="" width="64" height="64"></a>
                 </div>
             </div>
         </section>
