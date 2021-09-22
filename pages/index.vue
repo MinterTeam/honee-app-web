@@ -117,7 +117,7 @@ export default {
                     <a href="https://t.me/HoneeApp" target="_blank">
                         <img src="/img/landing/telegram.svg" alt="" width="64" height="64">
                     </a>
-                    <a href="https://www.youtube.com/channel/UChqsLhknZKhKfNxmMT7yytQ" target="_blank">
+                    <a href="https://www.youtube.com/c/honeeapp" target="_blank">
                         <img src="/img/landing/youtube.svg" alt="" width="64" height="64">
                     </a>
                     <a href="https://www.facebook.com/honeeapp" target="_blank">
