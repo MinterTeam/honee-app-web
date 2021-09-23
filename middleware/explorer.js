@@ -3,7 +3,7 @@ export default function({store}) {
         return Promise.resolve();
     }
 
-    if (store.getters.isOfflineMode) {
+    if (!store.state.onLine) {
         return;
     }
 

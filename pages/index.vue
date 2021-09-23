@@ -24,7 +24,7 @@ export default {
                     <div class="hello-content">
                         <div class="logo"><img src="/img/logo-honee.svg" alt="" width="122" height="24"/></div>
                         <h1>{{ $td('The simplest crypto wallet that helps you earn', 'index.hello-title')}}</h1>
-                        <p class="subtitle-h1">{{ $td('Honee wallet is focused on enabling people to&nbsp;earn crypto. Enter&nbsp;your e-mail address below to be among the first&nbsp;users!', 'index.hello-description')}}</p>
+                        <p class="subtitle-h1">{{ $td('Honee is focused on helping people to earn crypto. Enter your e-mail address below to be among the first users!', 'index.hello-description')}}</p>
                         <!-- <a class="btn" href="#">Start Earning</a> -->
                         <IndexSubscribeForm class="u-mb-15"/>
                         <h3>{{ $td('Alpha Coming Sep 28, 2021', 'index.hello-coming')}}</h3>
@@ -117,7 +117,7 @@ export default {
                     <a href="https://t.me/HoneeApp" target="_blank">
                         <img src="/img/landing/telegram.svg" alt="" width="64" height="64">
                     </a>
-                    <a href="https://www.youtube.com/channel/UChqsLhknZKhKfNxmMT7yytQ" target="_blank">
+                    <a href="https://www.youtube.com/c/honeeapp" target="_blank">
                         <img src="/img/landing/youtube.svg" alt="" width="64" height="64">
                     </a>
                     <a href="https://www.facebook.com/honeeapp" target="_blank">
@@ -126,7 +126,7 @@ export default {
                     <a href="https://medium.com/@honeeapp" target="_blank">
                         <img src="/img/landing/medium.svg" alt="" width="64" height="64">
                     </a>
-                    <a href="https://www.instagram.com/honeeteam/" target="_blank"><img src="/img/landing/instagram.svg" alt="" width="64" height="64"></a>
+                    <a href="https://www.instagram.com/honee_app/" target="_blank"><img src="/img/landing/instagram.svg" alt="" width="64" height="64"></a>
                 </div>
             </div>
         </section>

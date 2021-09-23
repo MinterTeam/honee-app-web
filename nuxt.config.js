@@ -103,7 +103,6 @@ module.exports = {
     router: {
         linkActiveClass: 'is-active-inner',
         linkExactActiveClass: 'is-active',
-        //@TODO middlewares not working properly with nuxt generate @see https://github.com/nuxt/nuxt.js/issues/2653
         middleware: [
             'auth',
             'history',
@@ -113,13 +112,15 @@ module.exports = {
     },
     env: envConfigParsed,
     modules: [
+        /*
         ['nuxt-i18n-preferred', {
             routesNameSeparator: I18N_ROUTE_NAME_SEPARATOR,
             languageCookieKey: LANGUAGE_COOKIE_KEY,
             detectBrowserLanguage: false,
         }],
+        */
         'nuxt-i18n-default',
-        ['nuxt-i18n', {
+        ['@nuxtjs/i18n', {
             locales: [
                 {
                     code: 'en',
@@ -148,6 +149,7 @@ module.exports = {
         }],
     ],
     plugins: [
+        { src: '~/plugins/i18n-mock-preferred.js'},
         { src: '~/plugins/base-url-prefix.js'},
         { src: '~/plugins/online.js', ssr: false },
         { src: '~/plugins/custom-event-polyfill.js', ssr: false },

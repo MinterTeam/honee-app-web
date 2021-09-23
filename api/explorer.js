@@ -4,13 +4,38 @@ import stripZeros from 'pretty-num/src/strip-zeros.js';
 import {convertToPip} from 'minterjs-util';
 import {_getOracleCoinList} from '~/api/hub.js';
 import {getCoinIconList as getChainikIconList} from '~/api/chainik.js';
-import {BASE_COIN, EXPLORER_API_URL} from "~/assets/variables";
+import {BASE_COIN, EXPLORER_API_URL, TX_STATUS} from '~/assets/variables.js';
 import addToCamelInterceptor from '~/assets/to-camel.js';
 import {addTimeInterceptor} from '~/assets/time-offset.js';
 
+
+function save404Adapter(adapter) {
+    return async function(config) {
+        try {
+            return await adapter(config);
+        } catch (error) {
+            if (error.response?.status === 404) {
+                return {savedError: error};
+            }
+
+            throw error;
+        }
+    };
+}
+
+function restoreErrorAdapter(adapter) {
+    return async function(config) {
+        const result = await adapter(config);
+        if (result.savedError) {
+            throw result.savedError;
+        }
+        return result;
+    };
+}
+
 const instance = axios.create({
     baseURL: EXPLORER_API_URL,
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
+    adapter: restoreErrorAdapter(cacheAdapterEnhancer(save404Adapter(axios.defaults.adapter), { enabledByDefault: false})),
 });
 addToCamelInterceptor(instance);
 addTimeInterceptor(instance);
@@ -22,7 +47,6 @@ const explorer = instance;
  * @typedef {Object} Status
  * @property {number} marketCap - in $
  * @property {number} bipPriceUsd
- * @property {number} bipPriceBtc
  * @property {number} bipPriceChange - in %
  * @property {number} latestBlockHeight - block count
  * @property {number} avgBlockTime - in seconds
@@ -41,29 +65,33 @@ export function getStatus() {
 }
 
 /**
- * @typedef {Object} TransactionListInfo
- * @property {Array<Transaction>} data
- * @property {Object} meta - pagination
+ * @param {string} hash
+ * @return {Promise<Transaction>}
  */
+export function getTransaction(hash) {
+    return explorer.get('transactions/' + hash)
+        .then((response) => {
+            const tx = response.data.data;
+            if (!tx.data) {
+                tx.data = {};
+            }
+            if (response.status === 200) {
+                tx.status = TX_STATUS.SUCCESS;
+            }
+            if (response.status === 206) {
+                tx.status = TX_STATUS.FAILURE;
+            }
 
-/**
- * @param {string} address
- * @param {Object} [params]
- * @param {number} [params.page]
- * @param {number} [params.limit]
- * @return {Promise<TransactionListInfo>}
- */
-export function getAddressTransactionList(address, params = {}) {
-    return explorer.get(`addresses/${address}/transactions`, {params})
-        .then((response) => response.data);
+            return tx;
+        });
 }
 
 /**
- * @param addressHash
+ * @param {string} address
  * @return {Promise<{data: BalanceData, latestBlockTime: string}>}
  */
-export async function getBalance(addressHash) {
-    const response = await explorer.get('addresses/' + addressHash + '?with_sum=true');
+export async function getBalance(address) {
+    const response = await explorer.get('addresses/' + address + '?with_sum=true');
     response.data.data.balances = await prepareBalance(response.data.data.balances);
     return response.data;
 }
@@ -84,7 +112,6 @@ export async function getBalance(addressHash) {
 
 
 /**
- *
  * @param {Array<BalanceItem>} balanceList
  * @return {Promise<Array<BalanceItem>>}
  */
@@ -121,7 +148,7 @@ export async function prepareBalance(balanceList) {
  *
  * @param {Promise} coinListPromise
  * @param {('coin','balance')} itemType
- * @return {Promise<Array<CoinItem>|Array<BalanceItem>>}
+ * @return {Promise<Array<Coin>|Array<BalanceItem>>}
  */
 function markVerified(coinListPromise, itemType = 'coin') {
     const hubCoinListPromise = _getOracleCoinList()
@@ -152,13 +179,57 @@ function markVerified(coinListPromise, itemType = 'coin') {
         });
 }
 
+/**
+ * @param {string} address
+ * @param {Object} [params]
+ * @param {number} [params.page]
+ * @param {number} [params.limit]
+ * @return {Promise<TransactionListInfo>}
+ */
+export function getAddressTransactionList(address, params) {
+    return explorer.get(`addresses/${address}/transactions`, {params})
+        .then((response) => response.data);
+}
+
+/**
+ * @param {string} address
+ * @return {Promise<Array<StakeItem>>}
+ */
+export function getAddressStakeList(address) {
+    return explorer.get(`addresses/${address}/delegations`, {params: {limit: 999}})
+        .then((response) => response.data.data);
+}
+
+
+
+/**
+ * @return {Promise<Array<Validator>>}
+ */
+export function getValidatorList() {
+    return explorer.get(`validators`)
+        .then((response) => {
+            return response.data.data.sort((a, b) => {
+                // Sort by stake descending
+                return b.stake - a.stake;
+            });
+        });
+}
+
+/**
+ * @return {Promise<Array<ValidatorMeta>>}
+ */
+export function getValidatorMetaList() {
+    return explorer.get(`validators/meta`)
+        .then((response) => response.data.data);
+}
+
 
 // 1 min cache
 const coinsCache = new Cache({maxAge: 1 * 60 * 1000});
 
 /**
  * @param {boolean} [skipMeta]
- * @return {Promise<Array<CoinItem>>}
+ * @return {Promise<Array<CoinInfo>>}
  */
 export function getCoinList({skipMeta} = {}) {
     let coinListPromise = explorer.get('coins', {
@@ -233,7 +304,7 @@ export function getCoinList({skipMeta} = {}) {
 /**
  * @param {string|number} [coin]
  * @param {number} [depth]
- * @return {Promise<Array<CoinItem>>}
+ * @return {Promise<Array<CoinInfo>>}
  */
 export function getSwapCoinList(coin, depth) {
     const coinUrlSuffix = coin ? '/' + coin : '';
@@ -246,101 +317,11 @@ export function getSwapCoinList(coin, depth) {
         }));
 }
 
-
 /**
- * @typedef {Object} Coin
- * @property {number} id
- * @property {string} symbol
- * @property {CoinType} type
+ * @typedef {Object} PoolListInfo
+ * @property {Array<Pool>} data
+ * @property {PaginationMeta} meta
  */
-
-/**
- * @typedef {Object} CoinItem
- * @property {number} id
- * @property {string} symbol
- * @property {CoinType} type
- * @property {number} crr
- * @property {number|string} volume
- * @property {number|string} reserveBalance
- * @property {string} name
- * @property {boolean} mintable
- * @property {boolean} burnable
- * @property {boolean} [verified] - filled from hub api
- * @property {boolean} [icon] - filled from chainik app
- */
-
-/**
- * @typedef {('coin'|'token'|'pool_token')} CoinType
- */
-
-
-/**
- * @param {string} address
- * @return {Promise<Array<StakeItem>>}
- */
-export function getAddressStakeList(address) {
-    return explorer.get(`addresses/${address}/delegations`, {params: {limit: 999}})
-        .then((response) => response.data.data);
-}
-
-/**
- * @typedef {Object} StakeItem
- * @property {Validator} [validator]
- * @property {string} [address]
- * @property {string|number} value
- * @property {string|number} bipValue
- * @property {Coin} coin
- * @property {boolean} isWaitlisted
- */
-
-/**
- * @return {Promise<Array<Validator>>}
- */
-export function getValidatorList() {
-    return explorer.get(`validators`)
-        .then((response) => {
-            return response.data.data.sort((a, b) => {
-                // Sort by stake descending
-                return b.stake - a.stake;
-            });
-        });
-}
-
-/**
- * @typedef {Object} Validator
- * @property {string} publicKey
- * @property {string} name
- * @property {string} description
- * @property {string} iconUrl
- * @property {string} siteUrl
- * @property {number} status
- * @property {string|number} [stake]
- * @property {string|number} [part]
- * @property {number} [delegatorCount]
- * @property {Array<{coin: Coin, value: string, address: string}>} [delegatorList]
- */
-
-
-/**
- * @param {string} hash
- * @return {Promise<Transaction>}
- */
-export function getTransaction(hash) {
-    return explorer.get('transactions/' + hash)
-        .then((response) => {
-            const tx = response.data.data;
-            if (!tx.data) {
-                tx.data = {};
-            }
-            if (response.status === 200) {
-                tx.status = true;
-            }
-            if (response.status === 206) {
-                tx.status = false;
-            }
-            return tx;
-        });
-}
 
 /**
  * @param {Object} [params]
@@ -353,6 +334,7 @@ export function getTransaction(hash) {
 export function getPoolList(params) {
     return explorer.get('pools', {
             params,
+            cache: statusCache,
         })
         .then((response) => response.data);
 }
@@ -377,10 +359,12 @@ export function getPool(coin0, coin1) {
  * @param {string|number} coin0
  * @param {string|number} coin1
  * @param {string} address
- * @return {Promise<Pool>}
+ * @return {Promise<PoolProvider>}
  */
 export function getPoolProvider(coin0, coin1, address) {
-    return explorer.get(`pools/coins/${coin0}/${coin1}/providers/${address}`)
+    return explorer.get(`pools/coins/${coin0}/${coin1}/providers/${address}`, {
+            cache: statusCache,
+        })
         .then((response) => response.data.data);
 }
 
@@ -398,6 +382,13 @@ export function getProviderPoolList(address, params) {
         })
         .then((response) => response.data);
 }
+
+/**
+ * @typedef {Object} ProviderPoolListInfo
+ * @property {Array<PoolProvider>} data
+ * @property {PaginationMeta} meta
+ */
+
 
 /**
  * @param {string} coin0
@@ -422,15 +413,45 @@ export function getSwapRoute(coin0, coin1, {buyAmount, sellAmount}, axiosOptions
 }
 
 /**
- * @typedef {Object} PoolListInfo
- * @property {Array<Pool>} data
- * @property {Object} meta - pagination
+ * @typedef {Object} StakeListInfo
+ * @property {Array<StakeItem>} data
+ * @property {PaginationMeta} meta
  */
 
 /**
- * @typedef {Object} ProviderPoolListInfo
- * @property {Array<PoolProvider>} data
- * @property {Object} meta - pagination
+ * @typedef {Object} StakeItem
+ * @property {Coin} coin
+ * @property {string|number} value
+ * @property {string|number} bipValue
+ * @property {Validator} [validator] - in address stakes
+ * @property {string} [address] - in validator stakes
+ * @property {boolean} isWaitlisted
+ */
+
+/**
+ * @typedef {Object} ValidatorListItem
+ * @property {Validator} validator
+ * @property {boolean} signed
+ */
+
+/**
+ * @typedef {Object} ValidatorMeta
+ * @property {string} publicKey
+ * @property {number} status
+ * @property {string} name - meta name
+ * @property {string} description - meta desc
+ * @property {string} iconUrl - meta icon
+ * @property {string} siteUrl - meta url
+ */
+
+/**
+ * @typedef {ValidatorMeta} Validator
+ * @property {string|number} stake
+ * @property {string|number} minStake
+ * @property {string|number} part
+ * @property {number} commission
+ * @property {number} delegatorCount
+ * @property {Array<{coin: Coin, value: string, address: string}>} delegatorList
  */
 
 /**
@@ -459,6 +480,12 @@ export function getSwapRoute(coin0, coin1, {buyAmount, sellAmount}, axiosOptions
  */
 
 /**
+ * @typedef {Object} TransactionListInfo
+ * @property {Array<Transaction>} data
+ * @property {PaginationMeta} meta
+ */
+
+/**
  * @typedef {Object} Transaction
  * @property {number} txn
  * @property {string} hash
@@ -481,8 +508,11 @@ export function getSwapRoute(coin0, coin1, {buyAmount, sellAmount}, axiosOptions
  * -- type: TX_TYPE.CONVERT
  * @property {Coin} [data.coinToSell]
  * @property {Coin} [data.coinToBuy]
+ * @property {Array<Coin>} [data.coins]
  * @property {number} [data.valueToSell]
+ * @property {number} [data.minimumValueToBuy]
  * @property {number} [data.valueToBuy]
+ * @property {number} [data.maximumValueToSell]
  * -- type: TX_TYPE.CREATE_COIN
  * @property {number} [data.createdCoinId]
  * @property {string} [data.name]
@@ -527,5 +557,42 @@ export function getSwapRoute(coin0, coin1, {buyAmount, sellAmount}, axiosOptions
  * @property {Array<string>} [data.addresses]
  * @property {Array<string|number>} [data.weights]
  * @property {string|number} [data.threshold]
+ */
+
+/**
+ * @typedef {Object} Coin
+ * @property {number} id
+ * @property {string} symbol
+ * @property {CoinType} type
+ */
+
+/**
+ * @typedef {Object} CoinInfo
+ * @property {number} id
+ * @property {string} symbol
+ * @property {CoinType} type
+ * @property {number} crr
+ * @property {number|string} volume
+ * @property {number|string} reserveBalance
+ * @property {number|string} maxSupply
+ * @property {boolean} mintable
+ * @property {boolean} burnable
+ * @property {string} name
+ * @property {string|null} ownerAddress
+ * @property {boolean} [verified] - filled from hub api
+ * @property {boolean} [icon] - filled from chainik app
+ */
+
+/**
+ * @typedef {('coin'|'token'|'pool_token')} CoinType
+ */
+
+/**
+ * @typedef {Object} PaginationMeta
+ * @property {number} currentPage
+ * @property {number} lastPage
+ * @property {number} perPage
+ * @property {number} total
+ * @property {string} path
  */
 

@@ -11,7 +11,7 @@ export default function({app, store, redirect}) {
         return Promise.resolve();
     }
 
-    if (store.getters.isAuthorized /*&& !store.getters.isOfflineMode*/) {
+    if (store.getters.isAuthorized && store.state.onLine) {
         // init only once
         if (centrifuge) {
             return Promise.resolve();

@@ -1,6 +1,6 @@
 import {isValidMnemonic, walletFromMnemonic} from 'minterjs-wallet';
 import {getAvatarUrl, shortHashFilter} from "~/assets/utils";
-import {COIN_NAME} from '~/assets/variables';
+import {COIN_NAME, CHAIN_ID} from '~/assets/variables.js';
 
 export default {
     /**
@@ -59,5 +59,8 @@ export default {
      */
     COIN_NAME() {
         return COIN_NAME;
+    },
+    CHAIN_ID() {
+        return CHAIN_ID;
     },
 };

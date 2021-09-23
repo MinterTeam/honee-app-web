@@ -5,8 +5,6 @@
 @import (inline) '../../node_modules/@material/list/dist/mdc.list.css';
 @import "include/variables";
 @import "include/utils";
-//@import (inline) "../css/onsen.css";
-//@import "include/onsen";
 @import "include/suggest";
 @import "include/general";
 //@import "include/forms";
@@ -96,12 +94,12 @@
     background: #fff; color: @c-black; box-shadow: 0 4px 4px rgba(0,0,0,0.05); position: relative; border-radius: 16px; overflow: hidden; display: block;
     &::before {content: ''; display: table;} // fix firefox incorrect collapsing negative margin
 }
+.card--invert {background: @c-black; color: #fff;}
 .card--light-grey {
-    background: #f2f2f2;
-    .card__content + .card__content {border-top: 1px solid #cbcbcb;}
+    background: @c-white-light;
 }
 .card__content {
-    &+&, & + .card__content--top-border {border-top: 1px solid #f2f2f2;}
+    &+&, & + .card__content--top-border {border-top: 1px solid #0001;}
 }
 .card__content, .card__content--top-border {padding: 24px 16px;}
 .card__content--wrapper {padding: 0;}
@@ -112,15 +110,18 @@
 .card__content--top-small {padding-top: 16px; padding-bottom: 0;}
 .card__content--small {padding: 16px;}
 .card__content--mini {padding-block: 10px;}
-.card__content--gray {background: #fafafa;}
-.card__content--pop {padding-top: 0;}
-.card--category {}
-.card__category-bg {height: 120px; display: flex; align-items: center; justify-content: center;}
-.card__category-bg--phone {background: #4dc28f;}
-.card__category-bg--games {background: #7e5cd7;}
-.card__category-bg--gift-cards {background: #e087ba;}
-.card__category-title {font-size: 16px; line-height: 20px;}
-.card__category-description {font-size: 14px; line-height: 20px;}
+
+.card__action-head {display: flex; align-items: center; margin-bottom: 24px;}
+.card__action-logo {
+    border-radius: 50%; box-shadow: 0 8px 20px rgba(0,0,0,0.2); width: 64px; height: 64px;
+    &+& {margin-left: -14px;}
+}
+.card__action-stats {margin-left: auto; text-align: right;}
+.card__action-stats-caption {/*text-transform: uppercase;*/ font-size: 12px; font-weight: 700; opacity: 0.5; line-height: 15px;}
+.card__action-stats-value {font-size: 24px; font-weight: 700; line-height: 29px;}
+.card__action-title {font-size: 20px; margin-bottom: 8px;}
+.card__action-tag-list {display: flex; margin-top: (24px - 8px); margin-left: -8px; flex-wrap: wrap;}
+.card__action-tag {margin-left: 8px; margin-top: 8px; padding: 2px 8px; line-height: 20px; background: rgba(255,255,255, 0.3); border-radius: 6px; font-weight: 700;}
 
 @media (min-width: @breakpoint-medium-up) {
     .card__content, .card__content--top-border {
@@ -133,9 +134,6 @@
     }
 }
 
-@media (min-width: @breakpoint-large-up) {
-    .card--section {margin-top: -48px; padding-top: 0;}
-}
 
 
 // header
@@ -192,10 +190,11 @@
 .wallet__coin-icon {margin-right: 5px; margin-top: -6px; margin-bottom: -5px; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); vertical-align: middle;}
 .wallet__coin-name {font-weight: 700; vertical-align: middle;}
 .wallet__coin-verified {vertical-align: middle; margin-left: 4px;}
-.wallet__coin-balance {font-weight: 600;}
+.wallet__coin-balance {font-weight: 600; text-align: right;}
 .wallet__coin-balance-usd {font-size: 12px; color: @c-black-light; text-align: right;}
 
-
+.dashboard__category-title {font-size: 26px; line-height: 32px; display: flex; align-items: center; text-transform: uppercase;}
+.dashboard__category-icon {margin-left: 32px; margin-right: 16px;}
 
 
 // send

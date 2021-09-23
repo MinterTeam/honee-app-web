@@ -1,5 +1,5 @@
 import {TX_TYPE} from 'minterjs-tx/src/tx-types';
-import {getBalance, getAddressStakeList, getAddressTransactionList, getCoinList} from "~/api/explorer.js";
+import {getBalance, getAddressStakeList, getAddressTransactionList, getCoinList, getValidatorMetaList} from "~/api/explorer.js";
 
 
 export default {
@@ -37,15 +37,21 @@ export default {
                 return balanceResponse.data.balances;
             });
     },
-    FETCH_DELEGATION: ({ commit, getters }) => {
-        // use only 1 address
+    FETCH_STAKE_LIST: ({ commit, getters }) => {
         return getAddressStakeList(getters.address)
-            .then((delegation) => {
-                commit('SET_DELEGATION', delegation);
-                return delegation;
+            .then((stakeList) => {
+                commit('SET_STAKE_LIST', stakeList);
+                return stakeList;
             });
     },
     FETCH_COIN_LIST: () => {
         return getCoinList();
+    },
+    FETCH_VALIDATOR_META_LIST({ commit }) {
+        return getValidatorMetaList()
+            .then((validatorList) => {
+                commit('SET_VALIDATOR_META_LIST', validatorList);
+                return validatorList;
+            });
     },
 };
