@@ -106,6 +106,10 @@ export function decreasePrecisionSignificant(value) {
     return prettyNum(value, {precision: 4, precisionSetting: PRECISION_SETTING.REDUCE_SIGNIFICANT});
 }
 
+export function decreasePrecisionFixed(value) {
+    return prettyNum(value, {precision: 2, precisionSetting: PRECISION_SETTING.FIXED});
+}
+
 /**
  * @param {string} value
  * @param {number} [endLength]
@@ -224,6 +228,50 @@ export function fromBase64(str) {
     } catch (e) {
         return asci;
     }
+}
+
+export function suggestionValidatorFilter(suggestion, query) {
+    if (!query) {
+        return true;
+    }
+    return [suggestion.value, suggestion.name].some((item) => item?.toLowerCase().includes(query.toLowerCase()));
+}
+
+/**
+ * @typedef {Object} SuggestionValidatorListItem
+ * @property {string} [name]
+ * @property {string} value
+ * @property {string} [delegatedAmount]
+ */
+
+/**
+ *
+ * @param {{suggestion: SuggestionValidatorListItem, query: string}} scope
+ * @return {string|*}
+ */
+export function suggestionValidatorContent(scope) {
+    if (!scope) return scope;
+
+    const { suggestion, query } = scope;
+
+    let result = [];
+    if (suggestion.name) {
+        result.push(`<span class="suggest-item--large">${boldenSuggestion(suggestion.name, query)}</span>`);
+    }
+    if (suggestion.delegatedAmount) {
+        result.push(`<span>(${suggestion.delegatedAmount})</span>`);
+    }
+    result.push(`<div class="suggest-item--small">${boldenSuggestion(suggestion.value, query)}</div>`);
+
+    return result.join(' ');
+}
+
+function boldenSuggestion(text, query) {
+    if (!query) {
+        return text;
+    }
+    const queries = query.split(/[\s-_/\\|.]/gm).filter((t) => !!t) || [''];
+    return text.replace(new RegExp('(.*?)(' + queries.join('|') + ')(.*?)', 'gi'), '$1<b>$2</b>$3');
 }
 
 export function isHubTransferFinished(status) {

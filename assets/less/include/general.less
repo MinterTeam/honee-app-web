@@ -154,6 +154,8 @@ blockquote {
 // button
 .button {
     display: inline-flex; align-items: center; justify-content: center; padding: 8px 22px; font-size: 16px; line-height: 20px; font-weight: 700; font-family: @heading-font-family; background: #fff; color: @c-black; border-radius: 12px; text-align: center; border: 2px solid transparent; text-decoration: none; transition: 0.1s; position: relative; overflow: hidden; vertical-align: top;
+    &:hover, &:focus {background: fade(#fff, 85%);}
+    &:active {background: fade(#fff, 70%);}
     &[disabled], &.is-disabled {
         cursor: default;
         &:not(.is-loading) {background: shade(#fff, 25%);}

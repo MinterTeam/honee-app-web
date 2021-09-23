@@ -27,7 +27,7 @@ import {HUB_ETHEREUM_CONTRACT_ADDRESS, NETWORK, MAINNET, ETHEREUM_CHAIN_ID, ETHE
 import {getErrorText} from '~/assets/server-error.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import BaseAmount from '@/components/base/BaseAmount.vue';
-import Loader from '~/components/base/Loader.vue';
+import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '@/components/base/Modal.vue';
 import ButtonCopyIcon from '~/components/base/ButtonCopyIcon.vue';
 import FieldSwap from '~/components/base/FieldSwap.vue';

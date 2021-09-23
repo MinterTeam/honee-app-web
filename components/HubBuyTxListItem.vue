@@ -1,6 +1,6 @@
 <script>
 import {shortHashFilter, getTime, getEtherscanTxUrl, getExplorerTxUrl, pretty} from '~/assets/utils.js';
-import Loader from '@/components/base/Loader.vue';
+import Loader from '@/components/base/BaseLoader.vue';
 import {HUB_BUY_STAGE as LOADING_STAGE} from '~/assets/variables.js';
 
 export default {

@@ -4,7 +4,7 @@
     import checkEmpty from '~/assets/v-check-empty';
     import {pretty} from '~/assets/utils.js';
     import InputMaskedAmount from '~/components/base/InputMaskedAmount.vue';
-    import Loader from '@/components/base/Loader.vue';
+    import Loader from '@/components/base/BaseLoader.vue';
 
     export default {
         components: {

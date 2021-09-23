@@ -33,8 +33,11 @@ export default {
     SET_LAST_UPDATE_TIME: (state, timestamp) => {
         state.lastUpdateTime = timestamp - getTimeOffset();
     },
-    SET_DELEGATION: (state, delegation) => {
-        state.delegation = delegation;
+    SET_STAKE_LIST: (state, stakeList) => {
+        state.stakeList = Object.freeze(stakeList);
+    },
+    SET_VALIDATOR_META_LIST(state, validatorList) {
+        state.validatorMetaList = Object.freeze(validatorList);
     },
     SET_AUTH_REDIRECT_PATH: (state, authRedirectPath) => {
         state.authRedirectPath = authRedirectPath;

@@ -1,13 +1,16 @@
 export default function() {
     return {
         auth: '',
-        /** @type Array<CoinItem> */
+        /** @type Array<BalanceItem> */
         balance: [],
         totalBalanceSum: '0',
         totalBalanceSumUsd: '0',
         balanceDisplayType: 0,
         lastUpdateTime: 9999999999999,
-        delegation: {},
+        /** @type Array<StakeItem> */
+        stakeList: [],
+        /** @type Array<ValidatorMeta> */
+        validatorMetaList: [],
         // store only first page here
         transactionListInfo: {
             /** @type Array<Transaction> */
