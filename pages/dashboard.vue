@@ -23,7 +23,7 @@ export default {
                     price: 'BIP',
                 },
                 tags: ['Exchange', 'BIP'],
-                action: '/swap?coinToBuy=BIP',
+                action: '/swap/BIP',
             },
             {
                 title: 'Buy HUB',
@@ -34,7 +34,7 @@ export default {
                     price: 'HUB',
                 },
                 tags: ['Exchange', 'HUB'],
-                action: '/swap?coinToBuy=HUB',
+                action: '/swap/HUB',
             },
             {
                 title: 'Buy BEE',
@@ -45,7 +45,7 @@ export default {
                     price: 'BEE',
                 },
                 tags: ['Exchange', 'BEE'],
-                action: '/swap?coinToBuy=BEE',
+                action: '/swap/BEE',
             },
         ],
         earn: [

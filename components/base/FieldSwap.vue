@@ -74,7 +74,7 @@ export default {
     },
     computed: {
         isSelectDisabled() {
-            // 0 and >1 are OK
+            // 0 and >1 are OK (enabled)
             return this.coinList.length === 1;
         },
     },
@@ -94,7 +94,7 @@ export default {
             this.isSelectVisible = true;
         },
         handleSelect(coin) {
-            this.$emit('update:coin', coin);
+            this.$emit('update:coin', coin.coin?.symbol || coin);
         },
         handleUseMax(value) {
             console.log('reimeit', value);
@@ -135,7 +135,7 @@ export default {
             :is-open.sync="isSelectVisible"
             :coin-list="coinList"
             :fallback-to-full-list="fallbackToFullList"
-            @select="$emit('update:coin', $event);"
+            @select="handleSelect"
         />
     </div>
 </template>

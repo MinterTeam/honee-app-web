@@ -1,6 +1,7 @@
 <script>
 import getTitle from '~/assets/get-title.js';
 import {DASHBOARD_URL} from '~/assets/variables.js';
+import Swap from '~/components/Swap.vue';
 import TxPoolAddLiquidityForm from '~/components/TxPoolAddLiquidityForm.vue';
 import TxPoolRemoveLiquidityForm from '~/components/TxPoolRemoveLiquidityForm.vue';
 import TxStakeDelegateForm from '~/components/TxStakeDelegateForm.vue';
@@ -14,6 +15,11 @@ const addLiquidityAction = {
 };
 
 const actionList = {
+    swap: {
+        title: 'Swap coins',
+        params: ['coinToBuy', 'coinToSell'],
+        component: Swap,
+    },
     'add-liquidity': addLiquidityAction,
     win: {
         ...addLiquidityAction,
