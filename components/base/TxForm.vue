@@ -295,10 +295,10 @@ function clearEmptyFields(obj) {
                     <!-- Controls -->
                     <div class="u-cell u-cell--1-2 u-cell--xlarge--1-4 u-cell--order-2 u-cell--align-center" v-if="!showSwitcherAdvanced">
                         <button class="link--default u-semantic-button" type="button" @click="switchToSimple" v-if="showAdvanced">
-                            {{ $td('Simple mode', 'form.toggle-simple-mode') }}
+                            {{ $td('Remove message', 'form.toggle-simple-mode') }}
                         </button>
                         <button class="link--default u-semantic-button" type="button" @click="switchToAdvanced" v-if="!showAdvanced">
-                            {{ $td('Advanced mode', 'form.toggle-advanced-mode') }}
+                            {{ $td('Add message', 'form.toggle-advanced-mode') }}
                         </button>
                     </div>
                     <div class="u-cell u-cell--1-2 u-cell--xlarge--1-4 u-cell--order-2 u-hidden-xlarge-down" v-if="showSwitcherAdvanced"><!--placeholder--></div>

@@ -238,7 +238,7 @@ export default {
             </p>
         </template>
 
-        <template v-slot:extra-panel="{fee, addressBalance}">
+        <template v-slot:extra-panel="{fee}">
             <div class="panel__section panel__section--medium">
                 <div class="u-grid u-grid--small u-grid--vertical-margin--small">
                     <div class="u-cell u-cell--small--1-2 u-cell--xlarge--1-4">
@@ -261,7 +261,7 @@ export default {
                             :label="(form.coin0 || $td('First coin', 'form.pool-coin0')) + ' ' + $td('amount', 'form.pool-remove-amount')"
                             :selected-coin-symbol="form.coin0"
                             :fee="fee"
-                            :address-balance="addressBalance"
+                            :address-balance="$store.state.balance"
                             @input.native="selectedInput = $options.INPUT_TYPE.AMOUNT0"
                             @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT0"
                         />
@@ -294,7 +294,7 @@ export default {
                             :$value="$v.formAmount1"
                             :label="(form.coin1 || $td('Second coin', 'form.pool-coin1')) + ' ' + $td('amount', 'form.pool-remove-amount')"
                             :selected-coin-symbol="form.coin1"
-                            :address-balance="addressBalance"
+                            :address-balance="$store.state.balance"
                             @input.native="selectedInput = $options.INPUT_TYPE.AMOUNT1"
                             @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT1"
                         />
@@ -316,7 +316,7 @@ export default {
 
         <template v-slot:confirm-modal-header>
             <h1 class="panel__header-title">
-                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-feature-pool.svg`" alt="" role="presentation" width="40" height="40">
+<!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-feature-pool.svg`" alt="" role="presentation" width="40" height="40">-->
                 {{ $td('Add liquidity to swap pool', 'pool.add-title') }}
             </h1>
         </template>

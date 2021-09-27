@@ -62,8 +62,8 @@ export default {
 
 	},
 	form: {
-		'toggle-simple-mode': 'Простой режим',
-		'toggle-advanced-mode': 'Расширенный режим',
+		'toggle-simple-mode': 'Убрать сообщение',
+		'toggle-advanced-mode': 'Добавить сообщение',
 
 		'generate-button': 'Сгенерировать',
 		'generate-nonce-error-min': 'Минимум 1',
