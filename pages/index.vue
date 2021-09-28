@@ -1,10 +1,10 @@
 <script>
-import IndexSubscribeForm from '@/components/IndexSubscribeForm.vue';
+// import IndexSubscribeForm from '@/components/IndexSubscribeForm.vue';
 
 export default {
     layout: 'simple',
     components: {
-        IndexSubscribeForm,
+        // IndexSubscribeForm,
     },
     data() {
         return {
@@ -24,10 +24,10 @@ export default {
                     <div class="hello-content">
                         <div class="logo"><img src="/img/logo-honee.svg" alt="" width="122" height="24"/></div>
                         <h1>{{ $td('The simplest crypto wallet that helps you earn', 'index.hello-title')}}</h1>
-                        <p class="subtitle-h1">{{ $td('Honee is focused on helping people to earn crypto. Enter your e-mail address below to be among the first users!', 'index.hello-description')}}</p>
-                        <!-- <a class="btn" href="#">Start Earning</a> -->
-                        <IndexSubscribeForm class="u-mb-15"/>
-                        <h3>{{ $td('Alpha Coming Sep 28, 2021', 'index.hello-coming')}}</h3>
+                        <p class="subtitle-h1">{{ $td('Honee is focused on helping people to earn crypto. Join today!', 'index.hello-description')}}</p>
+                        <nuxt-link class="btn" :to="$i18nGetPreferredPath('/dashboard')">{{ $td('Start Earning', 'index.hello-button')}}</nuxt-link>
+<!--                        <IndexSubscribeForm class="u-mb-15"/>-->
+<!--                        <h3>{{ $td('Alpha Coming Sep 28, 2021', 'index.hello-coming')}}</h3>-->
                     </div>
                     <img src="/img/landing/phone.png" alt="" class="hello-image" />
                 </div>
@@ -104,7 +104,7 @@ export default {
                         <h3>{{ $td('Top it up', 'index.steps-step2')}}</h3>
                     </div>
                 </div>
-                <!--<a class="btn btn-2" href="#">{{ $td('Get Started', 'index.steps-button')}}</a>-->
+                <nuxt-link class="btn btn-2 u-mt-40" :to="$i18nGetPreferredPath('/dashboard')">{{ $td('Get Started', 'index.steps-button')}}</nuxt-link>
             </div>
         </section>
         <section class="follow">

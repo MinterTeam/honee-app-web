@@ -9,3 +9,6 @@ Provide both tokens into a liquidity pool and start getting farming rewards ever
 
 ### What's APR?
 APR stands for Annual Percentage Rate.
+
+### What's impermanent loss?
+Impermanent loss means that the dollar price of your holdings is lower at the time of removing liquidity than at the time of adding it. [Learn&nbsp;more](https://www.minter.network/earn/impermanent-loss)
