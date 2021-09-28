@@ -8,14 +8,8 @@ export default function({app, store, route, redirect, error}) {
     console.log('-- route', route);
     console.log('-- path', route.path);
 
-    const urlRequiresNonAuth = /^\/auth(\/|$)/.test(route.path);
-    const urlRequiresAuth = /^\/dashboard(\/|$)/.test(route.path);
-
-    // disable app routes
-    // @TODO enable before release
-    if (urlRequiresAuth || urlRequiresNonAuth) {
-        return redirect(app.i18nGetPreferredPath({path: '/'}));
-    }
+    const urlRequiresNonAuth = /^(\/ru)?\/auth(\/|$)/.test(route.path);
+    const urlRequiresAuth = /^(\/ru)?\/dashboard(\/|$)/.test(route.path);
 
     if (!store.getters.isAuthorized && urlRequiresAuth) {
         console.log('-- restricted: redirect to auth');

@@ -15,7 +15,7 @@
     import {postTx, estimateCoinSell, estimateCoinBuy} from '~/api/gate.js';
     import FeeBus from '~/assets/fee';
     import {getErrorText} from "~/assets/server-error";
-    import {pretty, prettyExact, prettyPrecise, decreasePrecisionSignificant} from '~/assets/utils.js';
+    import {pretty, prettyExact, prettyPrecise, decreasePrecisionSignificant, getExplorerTxUrl} from '~/assets/utils.js';
     import BaseAmount from '@/components/base/BaseAmount.vue';
     import BaseLoader from '@/components/base/BaseLoader.vue';
     import Modal from '@/components/base/Modal.vue';
@@ -41,16 +41,28 @@
         mixins: [validationMixin],
         directives: {
         },
+        props: {
+            params: {
+                type: Object,
+                default: () => ({}),
+            },
+        },
         data() {
             const coinList = this.$store.state.balance;
+            let firstBalanceSymbol = coinList?.length ? coinList[0].coin.symbol : '';
+            // can't be same as coinToBuy
+            if (firstBalanceSymbol === this.params.coinToBuy?.toUpperCase()) {
+                firstBalanceSymbol = '';
+            }
             return {
                 isFormSending: false,
                 serverError: '',
+                serverSuccess: '',
                 form: {
-                    coinFrom: coinList && coinList.length ? coinList[0].coin.symbol : '',
-                    coinTo: '',
-                    sellAmount: '',
-                    buyAmount: '',
+                    coinFrom: this.params.coinToSell?.toUpperCase() || firstBalanceSymbol,
+                    coinTo: this.params.coinToBuy?.toUpperCase() || '',
+                    sellAmount: this.params.valueToSell || '',
+                    buyAmount: this.params.valueToBuy || '',
                 },
                 isSelling: true,
                 /** @type FeeData */
@@ -64,6 +76,7 @@
                 debouncedGetEstimation: null,
                 isUseMax: false, // should sellAllTx be used
                 isConfirmModalVisible: false,
+                isSuccessModalVisible: false,
             };
         },
         validations() {
@@ -199,7 +212,7 @@
                     txParams: {
                         // don't use `this.txType`, it may lead to infinite loop
                         // ignore `isSellAll` to get `sell` fee (assume sell and sell-all txs consume equal fees)
-                        type: getTxType({isPool: this.isPool, isSelling: this.isSelling}),
+                        type: getTxType({isPool: this.isPool, isSelling: this.isSelling, isSellAll: false}),
                         data: {
                             // pass only fields that affect fee
                             coinToSell: this.form.coinFrom,
@@ -237,6 +250,7 @@
             pretty,
             prettyExact,
             prettyPrecise,
+            getExplorerTxUrl,
             inputBlur() {
                 // force estimation after blur if estimation was delayed
                 if (this.debouncedGetEstimation.pending()) {
@@ -358,13 +372,15 @@
                 this.isConfirmModalVisible = false;
                 this.isFormSending = true;
                 this.serverError = '';
+                this.serverSuccess = '';
                 postTx({
                     type: getTxType({isPool: this.isPool, isSelling: this.isSelling, isSellAll: this.isSellAll}),
                     data: this.txData,
                     gasCoin: this.fee.coin,
                 }, {privateKey: this.$store.getters.privateKey})
                     .then((tx) => {
-                        this.$emit('success-tx', tx);
+                        this.serverSuccess = tx;
+                        this.isSuccessModalVisible = true;
                         this.isFormSending = false;
                         this.clearForm();
                     })
@@ -424,7 +440,12 @@
 <template>
     <div>
         <form novalidate @submit.prevent="openConfirmation()">
-            <h1 class="u-h3 u-mb-10">Swap</h1>
+            <h1 class="u-h3 u-mb-10">
+                Swap
+                <template v-if="params.coinToSell">{{ params.coinToSell.toUpperCase() }}</template>
+                <template v-if="params.coinToBuy && !params.coinToSell">coins</template>
+                <template v-if="params.coinToBuy">for {{ params.coinToBuy.toUpperCase() }}</template>
+            </h1>
 <!--            <h2 class="u-h5 u-mb-10">You pay</h2>-->
             <FieldSwap
                 :coin.sync="form.coinFrom"
@@ -445,26 +466,40 @@
             <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.minValue">Not enough to pay transaction fee: {{ pretty(fee.value) }} {{ fee.coinSymbol}}</span>
             <!--        <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.maxAmount">Not enough coins</span>-->
 
-            <button class="button button--white convert__reverse-button" type="button" @click="reverseCoins()">
-                <img class="" src="/img/icon-reverse.svg" alt="Replace coins">
+            <button class="button button--white convert__reverse-button" type="button" @click="reverseCoins()" v-if="!params.coinToSell && !params.coinToBuy">
+                <img class="" src="/img/icon-reverse.svg" width="24" height="24" alt="⇅">
             </button>
 
-<!--            <h2 class="u-h5 u-mb-10">You receive</h2>-->
-            <FieldSwap
-                class="u-mb-10"
-                :coin.sync="form.coinTo"
-                :$coin="$v.form.coinTo"
-                :amount.sync="form.buyAmount"
-                :$amount="$v.form.buyAmount"
-                label="You receive"
-                @input-native="isSelling = false"
-                @blur="inputBlur(); $v.form.buyAmount.$touch()"
-            />
+            <template v-if="!params.coinToBuy">
+                <FieldSwap
+                    class="u-mb-10"
+                    :coin.sync="form.coinTo"
+                    :$coin="$v.form.coinTo"
+                    :amount.sync="form.buyAmount"
+                    :$amount="$v.form.buyAmount"
+                    label="You receive"
+                    @input-native="isSelling = false"
+                    @blur="inputBlur(); $v.form.buyAmount.$touch()"
+                />
 
-            <div class="convert__panel u-text-error" v-if="!$v.form.$invalid && isEstimationErrorVisible">{{ estimationError }}</div>
-            <div class="convert__panel u-text-error" v-else-if="$v.minimumValueToBuy.$dirty && !$v.minimumValueToBuy.required">Can't calculate swap limits</div>
-            <div class="convert__panel u-text-error" v-else-if="$v.minimumValueToBuy.$dirty && !$v.minimumValueToBuy.minValue">Invalid swap limit</div>
-            <p class="u-text-center u-text-muted u-text-small">The final amount depends on&nbsp;the&nbsp;exchange rate at&nbsp;the&nbsp;moment of&nbsp;transaction.</p>
+<!--                @TODO minimumValueToBuy, minimumValueToSell in estimation-->
+                <div class="convert__panel u-text-error" v-if="!$v.form.$invalid && isEstimationErrorVisible">{{ estimationError }}</div>
+                <div class="convert__panel u-text-error" v-else-if="$v.minimumValueToBuy.$dirty && !$v.minimumValueToBuy.required">Can't calculate swap limits</div>
+                <div class="convert__panel u-text-error" v-else-if="$v.minimumValueToBuy.$dirty && !$v.minimumValueToBuy.minValue">Invalid swap limit</div>
+            </template>
+
+            <div class="estimation u-mt-10" v-if="params.coinToSell || params.coinToBuy">
+                <h3 class="estimation__title">You get approximately</h3>
+                <div class="estimation__item">
+                    <div class="estimation__coin">
+                        <img class="estimation__coin-icon" :src="$store.getters['explorer/getCoinIcon'](form.coinTo)" width="20" height="20" alt="" role="presentation">
+                        <div class="estimation__coin-symbol">{{ form.coinTo }}</div>
+                    </div>
+                    <div class="u-fw-600 u-text-number">≈{{ pretty(form.buyAmount || 0) }}</div>
+                </div>
+            </div>
+
+            <p class="u-text-center u-text-muted u-text-small u-mt-10">The final amount depends on&nbsp;the&nbsp;exchange rate at&nbsp;the&nbsp;moment of&nbsp;transaction.</p>
 
             <div class="u-section--small">
                 <button class="button button--main button--full" :class="{'is-loading': isFormSending || isEstimationWaiting, 'is-disabled': $v.$invalid}">
@@ -578,6 +613,24 @@
                 <button class="button button--ghost-main button--full u-mt-10" type="button" v-if="!isFormSending" @click="isConfirmModalVisible = false">
                     Cancel
                 </button>
+            </div>
+        </Modal>
+
+        <!-- success modal -->
+        <Modal :isOpen.sync="isSuccessModalVisible" :hideCloseButton="true">
+            <div class="modal__panel">
+                <h3 class="modal__title u-h2">Success</h3>
+                <div class="modal__content u-mb-10">
+                    <p>Coins successfully exchanged!</p>
+                </div>
+                <div class="modal__footer">
+                    <a class="button button--main button--full" :href="getExplorerTxUrl(serverSuccess.hash)" target="_blank" v-if="serverSuccess">
+                        {{ $td('View transaction', 'form.success-view-button') }}
+                    </a>
+                    <button class="button button--ghost-main button--full" type="button" @click="isSuccessModalVisible = false">
+                        {{ $td('Close', 'form.success-close-button') }}
+                    </button>
+                </div>
             </div>
         </Modal>
     </div>

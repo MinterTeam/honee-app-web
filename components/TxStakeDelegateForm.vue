@@ -119,7 +119,7 @@ export default {
             </p>
         </template>
 
-        <template v-slot:default="{fee, addressBalance}">
+        <template v-slot:default="{fee}">
             <div class="u-cell u-cell--xlarge--1-2">
                 <FieldRecipient
                     v-model.trim="form.publicKey"
@@ -134,7 +134,7 @@ export default {
                     v-model="form.coin"
                     :$value="$v.form.coin"
                     :label="$td('Coin', 'form.coin')"
-                    :coin-list="addressBalance"
+                    :coin-list="$store.state.balance"
                     :select-mode="true"
                     coin-type="coin"
                 />
@@ -149,7 +149,7 @@ export default {
                     :label="$td('Stake', 'form.masternode-stake')"
                     :selected-coin-symbol="form.coin"
                     :fee="fee"
-                    :address-balance="addressBalance"
+                    :address-balance="$store.state.balance"
                 />
                 <span class="form-field__error" v-if="$v.form.stake.$dirty && !$v.form.stake.required">{{ $td('Enter stake', 'form.masternode-stake-error-required') }}</span>
             </div>
@@ -161,7 +161,7 @@ export default {
 
         <template v-slot:confirm-modal-header>
             <h1 class="panel__header-title">
-                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-delegate.svg`" alt="" role="presentation" width="40" height="40">
+<!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-delegate.svg`" alt="" role="presentation" width="40" height="40">-->
                 {{ $td('Delegate', 'delegation.delegate-title') }}
             </h1>
         </template>

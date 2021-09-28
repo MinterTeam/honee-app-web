@@ -220,7 +220,7 @@
 
         <template v-slot:confirm-modal-header>
             <h1 class="panel__header-title">
-                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-unbond.svg`" alt="" role="presentation" width="40" height="40">
+<!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-unbond.svg`" alt="" role="presentation" width="40" height="40">-->
                 {{ $td('Unbond', 'delegation.unbond-title') }}
             </h1>
         </template>

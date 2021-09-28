@@ -275,8 +275,8 @@ blockquote {
 @field-label-scale: 0.75;
 @field-label-top-line-height-compensation: 3px;
 @field-padding: (@field-label-height * @field-label-scale - @field-label-top-line-height-compensation);
-@field-label-top: (@field-padding + @field-input-padding);
-@field-label-translate: (-1 * (@field-label-top + @field-label-top-line-height-compensation));
+@field-label-top: 18px;
+@field-label-translate: -9px;
 .form-row {&+& {margin-top: 16px;}}
 .form-field {
     display: block; position: relative; cursor: pointer; font-size: 16px; font-weight: 500; pointer-events: none;
@@ -287,8 +287,9 @@ blockquote {
     &:hover {background-color: #f8f8f8;}
     &:focus {box-shadow: inset 0 0 0 2px @c-main;}
     .is-error > & {box-shadow: inset 0 0 0 2px @c-red;}
-    &[readonly], div&& {background: #fff; box-shadow: inset 0 0 0 1px @c-border; cursor: default;} //unset to initial
+    &[readonly], div&& {background: #fff; box-shadow: inset 0 0 0 1px @c-border; cursor: default; word-wrap: break-word;} //unset to initial
     .form-field--with-icon & {padding-right: 24px + 16px;}
+    .form-field--with-use-max & {padding-right: 80px;}
     .form-field--without-label & {padding-top: 12px; padding-bottom: 12px; min-height: 44px;}
 }
 //.form-field__input--select, select.form-field__input {
@@ -296,13 +297,14 @@ blockquote {
 //    option {font-weight: 300; font-size: 14px; background-color: #f8f8f8;}
 //}
 .form-field__label {
-    font-size: inherit; left: 16px; top: 18px; line-height: 20px; color: @c-black-light; position: absolute; transition: 0.15s; transform-origin: 0 0; user-select: none; white-space: nowrap;
-    .form-field__input:focus:not([readonly]) ~ &, .is-not-empty ~ & {transform: translateY(-9px) scale(.75); letter-spacing: 0.06em;}
+    font-size: inherit; left: 16px; top: @field-label-top; line-height: 20px; color: @c-black-light; position: absolute; transition: 0.15s; transform-origin: 0 0; user-select: none; white-space: nowrap;
+    .form-field__input:focus:not([readonly]) ~ &, .is-not-empty ~ & {transform: translateY(@field-label-translate) scale(@field-label-scale); letter-spacing: 0.06em;}
     .form-field__input:focus ~ & {color: @c-main;}
     .form-field.is-error > & {color: @c-red;}
     .form-field__input[readonly] ~ & {color: @c-black-light;} // unset to initial
 }
-.form-field__use-max {position: absolute; right: 16px; top: (4px + @field-padding); z-index: 1; cursor: pointer; pointer-events: auto; font-size: 14px; text-transform: uppercase; font-weight: 700; }
+.form-field__use-max {position: absolute; right: 16px; top: 28px; z-index: 1; cursor: pointer; pointer-events: auto; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700;}
+.form-field__max-available {font-size: 16px; line-height: @field-label-height; color: @c-black-light; position: absolute; right: 16px; top: @field-label-top; user-select: none; white-space: nowrap; transform: translateY(@field-label-translate) scale(@field-label-scale); transform-origin: 100% 0;}
 .help-text() {font-size: 11px; line-height: 16px; letter-spacing: 0.06em; font-weight: 600; padding: 0 16px; margin-top: 4px; display: block; overflow-wrap: break-word;}
 .error-text() {font-size: 11px; line-height: 16px; letter-spacing: 0.06em; font-weight: 600; color: @c-red; }
 .form-field__help {
@@ -311,8 +313,8 @@ blockquote {
 }
 .form-field__error {.help-text(); .error-text();}
 .form__error {font-weight: 600; color: @c-red;}
-.form-field__icon {position: absolute; right: 16px; top: (2px + @field-padding); z-index: 1; cursor: pointer; pointer-events: auto; font-size: 0;}
-.form-field__icon--copy {top: calc((100% - 12px) / 2 - 2px);}
+.form-field__icon {position: absolute; right: 16px; top: 16px; z-index: 1; cursor: pointer; pointer-events: auto; font-size: 0;}
+.form-field__icon--copy {top: calc((100% - 24px) / 2);}
 
 
 // checkbox & radio

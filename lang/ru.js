@@ -14,7 +14,8 @@ export default {
 	},
 	index: {
 		'hello-title': 'Простейший крипто-кошелек помогающий зарабатывать',
-		'hello-description': 'Оставь свой E-mail и начни зарабатывать с Honee одним из первых!',
+		'hello-description': 'Honee wallet сосредоточен на том, чтобы дать людям возможность зарабатывать крипту. Присоединяйтесь уже сегодня!',
+		'hello-button': 'Начать зарабатывать',
 		'hello-coming': 'Альфа запуск 28 Сентября 2021',
 
 		'input-email-error-required': 'Укажите e-mail',
@@ -62,8 +63,8 @@ export default {
 
 	},
 	form: {
-		'toggle-simple-mode': 'Простой режим',
-		'toggle-advanced-mode': 'Расширенный режим',
+		'toggle-simple-mode': 'Убрать сообщение',
+		'toggle-advanced-mode': 'Добавить сообщение',
 
 		'generate-button': 'Сгенерировать',
 		'generate-nonce-error-min': 'Минимум 1',

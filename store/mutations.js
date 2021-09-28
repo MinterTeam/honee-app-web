@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import {getTimeOffset} from '~/assets/time-offset.js';
+import {getTimeOffset} from '~/assets/axios-time-offset.js';
 
 export default {
     ADD_AUTH_ADVANCED: (state, mnemonic) => {
