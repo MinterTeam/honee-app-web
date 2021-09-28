@@ -287,7 +287,7 @@ export default {
             // return selectedUnlocked.gt(0) && selectedUnlocked.gt(this.uniswapEstimation?.output * 2);
         },
         suggestionList() {
-            return [this.$store.getters.BASE_COIN, 'HUB'];
+            return [this.$store.getters.BASE_COIN, 'HUB', 'BEE'];
         },
         // stage() {
         //     if (!this.isCoinApproved) {
@@ -891,7 +891,7 @@ function getSwapOutput(receipt) {
 <template>
     <div>
         <h1 class="panel__header-title u-mb-10">
-            Buy BIP or HUB for ETH
+            Buy BIP, HUB, or BEE for ETH
         </h1>
 
         <div class="u-grid u-grid--small u-grid--vertical-margin--small" v-if="recovery">

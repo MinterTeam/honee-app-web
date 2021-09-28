@@ -8,7 +8,7 @@
 
     export default {
         DASHBOARD_URL,
-        PAGE_TITLE: 'Receive Coins',
+        PAGE_TITLE: 'Receive coins',
         components: {
             QrcodeVue,
             Modal,
@@ -63,9 +63,14 @@
                 <img src="/img/icon-copy.svg" alt="Copy">
             </BaseButtonCopy>
         </div>
-        <qrcode-vue class="u-mt-20" :value="$store.getters.address" :size="160" level="L"/>
-        <div class="u-section u-container" v-if="isShareSupported">
-            <button class="bip-button bip-button--main" @click="shareAddress">Share Address</button>
+        <qrcode-vue class="u-mt-10 u-text-center" :value="$store.getters.address" :size="160" level="L"/>
+
+        <div class="u-mt-10" v-if="isShareSupported">
+            <button class="button button--ghost-main button--full" @click="shareAddress">Share address</button>
         </div>
+
+        <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath($options.DASHBOARD_URL + '/buy')">
+            Top up with ETH
+        </nuxt-link>
     </Modal>
 </template>

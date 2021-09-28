@@ -2,6 +2,7 @@
 import getTitle from '~/assets/get-title.js';
 import {DASHBOARD_URL} from '~/assets/variables.js';
 import cardList from '~/assets/data-card-list.js';
+import HubBuyForm from '~/components/HubBuyForm.vue';
 import Swap from '~/components/Swap.vue';
 import TxSendForm from '~/components/TxSendForm.vue';
 import TxPoolAddLiquidityForm from '~/components/TxPoolAddLiquidityForm.vue';
@@ -17,6 +18,12 @@ const addLiquidityAction = {
 };
 
 const actionList = {
+    buy: {
+        title: 'Buy BIP, HUB, & BEE for ETH',
+        params: [],
+        component: HubBuyForm,
+        tags: [],
+    },
     swap: {
         title: 'Swap coins',
         params: ['coinToBuy', 'coinToSell'],

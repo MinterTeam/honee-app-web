@@ -81,7 +81,7 @@ export default {
                     </div>
                     <div class="wallet__balance-links" >
                         <nuxt-link class="button button--yellow-light" :to="pageUrl('buy')">
-                            Buy BIP & HUB
+                            Buy BIP, HUB, & BEE
                         </nuxt-link>
                     </div>
                 </div>
