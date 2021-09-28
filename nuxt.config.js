@@ -147,6 +147,7 @@ module.exports = {
             seo: false,
             detectBrowserLanguage: false,
         }],
+        '@nuxt/content',
     ],
     plugins: [
         { src: '~/plugins/i18n-mock-preferred.js'},
@@ -156,6 +157,12 @@ module.exports = {
         { src: '~/plugins/persistedState.js', ssr: false },
         { src: '~/plugins/click-blur.js', ssr: false },
     ],
+    content: {
+        liveEdit: false,
+        markdown: {
+            remarkAutolinkHeadings: false,
+        },
+    },
     /*
     ** PWA manifest
      */

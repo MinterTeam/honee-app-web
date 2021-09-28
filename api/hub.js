@@ -3,7 +3,7 @@ import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
 import {TinyEmitter as Emitter} from 'tiny-emitter';
 import {getCoinList} from '@/api/explorer.js';
 import {HUB_API_URL, HUB_TRANSFER_STATUS} from "~/assets/variables.js";
-import addToCamelInterceptor from '~/assets/to-camel.js';
+import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {isHubTransferFinished} from '~/assets/utils.js';
 
 const instance = axios.create({

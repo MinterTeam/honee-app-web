@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
 import {SUBSCRIBE_API_URL, SUBSCRIBE_API_PROJECT_NAME} from "~/assets/variables.js";
-import addToCamelInterceptor from '~/assets/to-camel.js';
+import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 
 const instance = axios.create({
     baseURL: SUBSCRIBE_API_URL,

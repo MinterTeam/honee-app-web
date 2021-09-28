@@ -1,6 +1,7 @@
 <script>
 import getTitle from '~/assets/get-title.js';
 import {DASHBOARD_URL} from '~/assets/variables.js';
+import cardList from '~/assets/data-card-list.js';
 import Swap from '~/components/Swap.vue';
 import TxSendForm from '~/components/TxSendForm.vue';
 import TxPoolAddLiquidityForm from '~/components/TxPoolAddLiquidityForm.vue';
@@ -20,6 +21,7 @@ const actionList = {
         title: 'Swap coins',
         params: ['coinToBuy', 'coinToSell'],
         component: Swap,
+        tags: ['exchange'],
     },
     send: {
         title: 'Send coins',
@@ -30,10 +32,12 @@ const actionList = {
     win: {
         ...addLiquidityAction,
         title: 'Win',
+        tags: ['lottery'],
     },
     farm: {
         ...addLiquidityAction,
         title: 'Farm',
+        tags: ['farming'],
     },
     'remove-liquidity': {
         title: 'Remove liquidity from pool',
@@ -44,6 +48,7 @@ const actionList = {
         title: 'Delegate',
         params: ['coin', 'publicKey'],
         component: TxStakeDelegateForm,
+        tags: ['staking'],
     },
     unbond: {
         title: 'Unbond',
@@ -59,7 +64,11 @@ export default {
         Modal,
     },
     fetchOnServer: false,
-    fetch() {
+    async fetch() {
+        // remove ending slash
+        if (!this.$route.params.pathMatch) {
+            return this.$router.replace(this.$i18nGetPreferredPath({path: DASHBOARD_URL}));
+        }
         const [actionType, ...actionParams] = this.$route.params.pathMatch.split('/').filter((item) => !!item);
         const action = actionList[actionType];
         if (!action) {
@@ -69,7 +78,7 @@ export default {
             });
         }
 
-        // params
+        // action params
         let pathParams = {};
         action.params.forEach((paramKey, paramIndex) => {
             if (actionParams[paramIndex]) {
@@ -81,17 +90,55 @@ export default {
             ...pathParams,
         };
 
-        // title
+        // action title
         let title = action.title;
         if (actionType === 'delegate' && params.coin) {
             title += ' ' + params.coin;
         }
 
+        // action
         this.action = Object.freeze({
             ...action,
             title,
             params,
         });
+
+        const flatCardList = [].concat(...Object.values(cardList));
+        const currentActionCard = flatCardList.find((card) => card.action.replace(/^\//, '').toLowerCase() === this.$route.params.pathMatch.toLowerCase());
+        let actionTags = (currentActionCard?.tags || []).map((tag) => tag.toLowerCase());
+        //@TODO check each action.tags
+        if (action.tags?.[0] && !actionTags.includes(action.tags[0])) {
+            actionTags.push(action.tags[0]);
+        }
+        if (!actionTags.length) {
+            return;
+        }
+
+        // faq
+        let faqItems = await this.$content('faq').where({ 'slug': { $in: actionTags } }).fetch();
+        if (!faqItems) {
+            return;
+        }
+        if (!Array.isArray(faqItems)) {
+            faqItems = [faqItems];
+        }
+        let faq = faqItems[0];
+        let children = [];
+        faqItems.forEach((faqPage) => {
+            children = children.concat(faqPage.body.children.map((child) => {
+                if (child.type === 'element') {
+                    return {
+                        ...child,
+                        // remove id from props
+                        props: {},
+                    };
+                }
+
+                return child;
+            }));
+        });
+        faq.body.children = children;
+        this.faq = Object.freeze(faq);
     },
     head() {
         return {
@@ -104,6 +151,7 @@ export default {
     data() {
         return {
             action: null,
+            faq: null,
         };
     },
 };
@@ -124,19 +172,7 @@ export default {
                 :params="action.params"
             />
 
-            <div class="card__content">
-                <h3 class="u-h5 u-mb-05">What’s BIP?</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Massa pellentesque donec in mus mi massa fusce netus. Nec gravida faucibus pellentesque aliquam consequat sed. Dignissim suspendisse blandit lacinia amet. Cras tincidunt nec maecenas eleifend nisl tristique volutpat enim habitant.</p>
-
-                <h3 class="u-h5 u-mb-05 u-mt-15">What's swap?</h3>
-                <p>Nec gravida faucibus pellentesque aliquam consequat sed. Dignissim suspendisse blandit lacinia amet. Cras tincidunt nec maecenas eleifend nisl tristique volutpat enim habitant.</p>
-
-                <h3 class="u-h5 u-mb-05 u-mt-15">Is it possible to cancel the transaction?</h3>
-                <p>Augue nisi quis dignissim sed. Lorem ipsum dolor sit amet, consectetur adipiscing elit. </p>
-
-                <h3 class="u-h5 u-mb-05 u-mt-15">How long does a transaction take to complete?</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquet ac tellus etiam.</p>
-            </div>
+            <nuxt-content class="card__content" :document="faq" v-if="faq"/>
         </div>
         <div v-else-if="$fetchState.pending">Loading…</div>
         <div v-else>Action not found</div>
