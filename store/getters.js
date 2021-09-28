@@ -33,7 +33,10 @@ export default {
         return getters.wallet ? getters.wallet.getPrivateKeyString() : '';
     },
     username(state, getters) {
-        return shortHashFilter(getters.address, 4);
+        if (!getters.address.length) {
+            return '';
+        }
+        return '…' + getters.address.slice(-4);
     },
     // usernameLetter(state, getters) {
     //     return getNameLetter(getters.username);

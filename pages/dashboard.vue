@@ -79,18 +79,28 @@ export default {
                             ${{ pretty($store.state.totalBalanceSumUsd) }}
                         </div>
                     </div>
-                    <div class="wallet__balance-links" >
-                        <nuxt-link class="button button--yellow-light" :to="pageUrl('buy')">
+                    <div class="wallet__balance-links">
+                        <nuxt-link class="button button--yellow-light button--full-mobile" :to="pageUrl('buy')">
+                            <img class="button__icon" src="/img/icon-category-buy.svg" width="24" height="24" alt="" role="presentation">
                             Buy BIP, HUB, & BEE
                         </nuxt-link>
                     </div>
                 </div>
             </div>
             <div class="card__content">
-                <div class="button-group">
-                    <nuxt-link class="button button--main" :to="pageUrl('deposit')">Deposit</nuxt-link>
-                    <nuxt-link class="button button--main" :to="pageUrl('swap')">Swap</nuxt-link>
-                    <nuxt-link class="button button--main" :to="pageUrl('send')">Send</nuxt-link>
+                <div class="button-group button-group--center">
+                    <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('deposit')">
+                        <img class="button__icon" src="/img/icon-white-deposit.svg" width="24" height="24" alt="" role="presentation">
+                        Deposit
+                    </nuxt-link>
+                    <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('swap')">
+                        <img class="button__icon" src="/img/icon-white-swap.svg" width="24" height="24" alt="" role="presentation">
+                        Swap
+                    </nuxt-link>
+                    <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('send')">
+                        <img class="button__icon" src="/img/icon-white-send.svg" width="24" height="24" alt="" role="presentation">
+                        Send
+                    </nuxt-link>
                 </div>
             </div>
             <CoinList class="card__content"/>

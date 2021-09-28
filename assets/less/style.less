@@ -188,20 +188,22 @@
     &.is-active::after {background: @c-main}
     &+& {margin-left: 24px;}
 }
-.header__controls-user {display: flex; align-items: center; font-weight: 700; max-width: calc(100vw - 220px); margin-right: 24px;}
-.header__controls-user-name {overflow: hidden; text-overflow: ellipsis;white-space: nowrap;}
-.header__controls-user-avatar {width: 24px; height: 24px; border-radius: 50%; background: no-repeat 50% 50% @c-black-light; background-size: cover; margin-right: 12px; flex-shrink: 0;}
-.header__controls-language {display: flex; align-items: center; margin-left: 24px;}
+.header__controls-user {display: flex; align-items: center; font-weight: 700; /*max-width: calc(100vw - 220px);*/ margin-right: 16px;}
+//.header__controls-user-name {overflow: hidden; text-overflow: ellipsis;white-space: nowrap;}
+.header__controls-user-avatar {width: 24px; height: 24px; border-radius: 50%; background: no-repeat 50% 50% @c-black-light; background-size: cover; margin-right: 8px; flex-shrink: 0;}
+.header__controls-language {display: flex; align-items: center; margin-left: 16px;}
 .header__language-container {padding-top: 16px; padding-bottom: 16px; display: flex; justify-content: flex-end;}
 .header__language-button {font-size: 0; display: block;}
 .header__language-text {margin-right: 16px;}
 @media (min-width: @breakpoint-small-up) {
     //.header__logo {margin-right: 70px;}
-    .header__controls-user {max-width: calc(100vw - 260px);}
+    .header__controls-user {/*max-width: calc(100vw - 260px);*/ margin-right: 24px;}
+    .header__controls-user-avatar {margin-right: 12px;}
+    .header__controls-language {margin-left: 24px;}
 }
 @media (min-width: @breakpoint-large-up) {
     .header {height: @header-height-large;}
-    .header__controls-user {max-width: calc(100vw - 340px);}
+    //.header__controls-user {max-width: calc(100vw - 340px);}
 }
 
 
@@ -210,9 +212,11 @@
 .wallet__balance-wrap {margin-top: 8px;}
 .wallet__balance {}
 .wallet__balance-value {font-size: 30px; line-height: 36px; font-weight: 700; font-feature-settings: "zero" on;}
-@media (min-width: @breakpoint-small-up) {
+.wallet__balance-links {margin-top: 16px;}
+@media (min-width: @breakpoint-medium-up) {
     .wallet__balance-wrap {display: flex; justify-content: space-between; align-items: center;}
     .wallet__balance-value {font-size: 40px; line-height: 48px;}
+    .wallet__balance-links {margin-top: 0;}
 }
 
 .wallet__coin-row {
