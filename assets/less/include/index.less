@@ -388,6 +388,163 @@
 
 }
 
+.page-seo {
+    article {
+        padding: 122px 0 0 0;
+        text-align: left;
+        font-size: 16px;
+        line-height: 19.36px;
+
+        .container {
+            max-width: 634px;
+        }
+        .logo {
+            text-align: left;
+        }
+        p {
+            font-size: 16px;
+            line-height: 19.36px;
+            margin: 0 0 16px;
+        }
+        h1, .h1, .title{
+            font-size: 38px;
+            line-height: 46px;
+            font-weight: 700;
+        }
+        .subtitle-h1 {
+            font-size: 20px;
+            line-height: 24px;
+            margin: 0 0 75px 0;
+        }
+        h2 {
+            font-size: 22px;
+            line-height: 26px;
+            margin: 0 0 24px;
+        }
+        .h2-badge {
+            font-size: 18px;
+            line-height: 21px;
+            font-weight: 700;
+            color: #FFF;
+            background: #FF8A00;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: inline-block;
+            text-align: center;
+            padding: .5em .5em;
+            margin: 0 16px 0 0;
+        }
+        section {
+            margin: 0 0 120px 0;
+        }
+        .article-header {
+            margin: 0 0 64px 0;
+        }
+        .article-last-block {
+            margin: 0 0 64px 0;
+            .subtitle-h1 {
+                margin: 56px 0 64px 0;
+            }
+        }
+        .cta-center {
+            text-align: center;
+        }
+        ol {
+            list-style: none;
+            counter-reset: steps;
+            padding-inline-start: 0;
+            position: relative;
+            li {
+                counter-increment: steps;
+                padding: 0 0 16px 40px;
+            }
+            li::before {
+                content: counter(steps);
+                background: #FFE4B0;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                display: inline-grid;
+                position: absolute;
+                place-items: center;
+                font-size: 14px;
+                line-height: 16px;
+                font-weight: 700;
+                left: 0;
+            }
+        }
+        .article-picture-box {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            position: relative;
+        }
+        .article-picture-box-content {
+            max-width: 309px;
+            width: 100%;
+        }
+        .box-reverse {
+            flex-direction: row-reverse;
+        }
+        .article-buy-bitcoin {
+            height: 230px;
+            margin: 0 0 83px 0;
+            img {
+                position: absolute;
+                max-width: 319px;
+                right: -30px;
+            }
+        }
+        .article-buy-bitcoin-2 {
+            height: 408px;
+            img {
+                position: absolute;
+                max-width: 345px;
+                left: -71px;
+            }
+        }
+        .article-buy-bitcoin-3 {
+            img {
+                position: absolute;
+                max-width: 285px;
+                right: -30px;
+            }
+        }
+
+        @media (max-width: 960px) {
+            .container {
+                padding: 0;
+            }
+        }
+
+        @media (max-width: 634px) {
+            padding: 24px 0 0 0;
+            .container {
+                padding: 0 24px;
+            }
+            section {
+                margin: 0 0 64px 0;
+            }
+            .article-picture-box {
+                display: block;
+                height: auto;
+                width: 100%;
+            }
+            .article-picture-box-content {
+                max-width: 100%;
+            }
+            .article-picture-box img {
+                max-width: 60%;
+                display: block;
+                position: relative;
+                left: 0;
+                margin: 0 auto;
+            }
+        }
+    }
+}
+
 
 .hello__form {display: flex; align-items: flex-start; flex-wrap: wrap;}
 .hello__form-field {margin-right: 16px; flex-grow: 2; max-width: 256px;}
