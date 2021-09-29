@@ -1,4 +1,5 @@
 <script>
+import getTitle from '~/assets/get-title.js';
 
 export default {
     layout: 'landing',
@@ -7,6 +8,19 @@ export default {
             ru: '/how-to-buy-bitcoin-2021',
         },
         locales: ['ru'],
+    },
+    head() {
+        const title = getTitle('Купить Биткоин (BTC) в 2021');
+        const description = 'С помощью этой пошаговой инструкции вы сможете купить Биткоин за любые токены, доступные в криптокошельке Honee.';
+
+        return {
+            title: title,
+            meta: [
+                { hid: 'og-title', name: 'og:title', content: title },
+                { hid: 'description', name: 'description', content: description },
+                { hid: 'og-description', name: 'og:description', content: description },
+            ],
+        };
     },
 };
 
