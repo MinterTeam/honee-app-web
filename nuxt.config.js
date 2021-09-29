@@ -109,6 +109,15 @@ module.exports = {
             'explorer',
             'balance',
         ],
+        extendRoutes(routes, resolve) {
+            routes.forEach((route) => {
+                // route is not processed by i18n yet
+                if (route.name.indexOf('ru-') === 0 && !route.name.includes(I18N_ROUTE_NAME_SEPARATOR + 'ru')) {
+                    // cast name to the same as default locale, so separate page in /ru folder will work as same page in root folder
+                    route.name = route.name.substring(3);
+                }
+            });
+        },
     },
     env: envConfigParsed,
     modules: [
