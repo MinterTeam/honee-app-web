@@ -1,9 +1,23 @@
 <script>
+import getTitle from '~/assets/get-title.js';
 
 export default {
     layout: 'landing',
     nuxtI18n: {
         locales: ['en'],
+    },
+    head() {
+        const title = getTitle('How to Buy Bitcoin 2021');
+        const description = 'With Honee\'s earning cards, figuring out how to buy Bitcoin is no longer an issue in 2021.';
+
+        return {
+            title: title,
+            meta: [
+                { hid: 'og-title', name: 'og:title', content: title },
+                { hid: 'description', name: 'description', content: description },
+                { hid: 'og-description', name: 'og:description', content: description },
+            ],
+        };
     },
 };
 
@@ -26,7 +40,7 @@ export default {
                         <h2><span class="h2-badge">1</span>Deposit</h2>
                         <p>To buy BTC, you will need an address in the Honee crypto wallet. You can log in with the one you already have or create a new one.</p>
                     </div>
-                    <img src="/img/articles/buy-bitcoin-1.png" alt="buy bitcoin" />
+                    <img src="/img/articles/buy-bitcoin-1.png" alt="best way to buy bitcoin 2021" />
                 </section>
                 <section class="article-picture-box article-buy-bitcoin-2 box-reverse">
                     <div class="article-picture-box-content">
@@ -38,7 +52,7 @@ export default {
                         </ol>
                         <p>Once the transaction has gone through, you’ll see the deposited amount on your balance.</p>
                     </div>
-                    <img src="/img/articles/buy-bitcoin-2.png" alt="buy bitcoin" />
+                    <img src="/img/articles/buy-bitcoin-2.png" alt="how to buy bitcoin 2021" />
                 </section>
                 <section class="article-buy-bitcoin-3">
                     <h2><span class="h2-badge">2</span>How to Buy Bitcoin 2021</h2>
@@ -55,7 +69,7 @@ export default {
                             </ol>
                             <p>Once the buy Bitcoin transaction is completed, BTC will appear on your balance.</p>
                         </div>
-                        <img src="/img/articles/buy-bitcoin-3.png" alt="buy bitcoin" class="img-deposit" />
+                        <img src="/img/articles/buy-bitcoin-3.png" alt="how to buy btc 2021" class="img-deposit" />
                     </div>
                 </section>
                 <section class="article-last-block">

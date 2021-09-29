@@ -5,13 +5,13 @@ export default {
     layout: 'landing',
     nuxtI18n: {
         paths: {
-            ru: '/how-to-buy-bitcoin-2021',
+            ru: '/kak-kupit-bitkoin-2021',
         },
         locales: ['ru'],
     },
     head() {
-        const title = getTitle('Купить Биткоин (BTC) в 2021');
-        const description = 'С помощью этой пошаговой инструкции вы сможете купить Биткоин за любые токены, доступные в криптокошельке Honee.';
+        const title = getTitle('Как купить Биткоин 2021');
+        const description = 'Один из способов, как купить биткоин в 2021 году — это используя карточки заработка в Honee.';
 
         return {
             title: title,
@@ -35,7 +35,7 @@ export default {
                     <img src="/img/logo-honee.svg" alt="" width="122" height="24"/>
                 </div>
                 <section class="article-header">
-                    <h1>Купить Биткоин (BTC) в 2021</h1>
+                    <h1>Как купить Биткоин (BTC) в 2021</h1>
                     <p class="subtitle-h1">С помощью этой пошаговой инструкции вы сможете купить Биткоин за любые токены, доступные в криптокошельке Honee.</p>
                 </section>
                 <section class="article-picture-box article-buy-bitcoin">
@@ -43,7 +43,7 @@ export default {
                         <h2><span class="h2-badge">1</span>Депозит</h2>
                         <p>Для покупки BTC вам понадобится адрес в криптокошельке Honee. Вы можете зарегистрировать новый или войти с уже имеющимся.</p>
                     </div>
-                    <img src="/img/articles/buy-bitcoin-1.png" alt="buy bitcoin" />
+                    <img src="/img/articles/buy-bitcoin-1.png" alt="лучший способ купить биткоин 2021" />
                 </section>
                 <section class="article-picture-box article-buy-bitcoin-2 box-reverse">
                     <div class="article-picture-box-content">
@@ -55,7 +55,7 @@ export default {
                         </ol>
                         <p>После того, как транзакция будет совершена, на вашем балансе отобразится сумма депозита.</p>
                     </div>
-                    <img src="/img/articles/buy-bitcoin-2.png" alt="buy bitcoin" />
+                    <img src="/img/articles/buy-bitcoin-2.png" alt="как купить биткоин 2021" />
                 </section>
                 <section class="article-buy-bitcoin-3">
                     <h2><span class="h2-badge">2</span>Как купить Биткоин 2021</h2>
@@ -72,7 +72,7 @@ export default {
                             </ol>
                             <p>После этого транзакция покупки Биткоина будет совершена и BTC появится на вашем балансе.</p>
                         </div>
-                        <img src="/img/articles/buy-bitcoin-3.png" alt="buy bitcoin" class="img-deposit" />
+                        <img src="/img/articles/buy-bitcoin-3.png" alt="как купить биткойн 2021" class="img-deposit" />
                     </div>
                 </section>
                 <section class="article-last-block">
