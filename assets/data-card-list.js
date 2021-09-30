@@ -54,7 +54,7 @@ export default {
             color: '#3f9c37',
             stats: {
                 caption: 'APR in BEE',
-                value: '36.5%',
+                value: '100%',
             },
             tags: ['Farming', 'BEE', 'MUSD'],
             action: '/farm/BEE/MUSD',
