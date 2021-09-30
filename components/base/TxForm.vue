@@ -100,7 +100,11 @@ export default {
             return this.alwaysAdvanced || this.isModeAdvanced;
         },
         showSwitcherAdvanced() {
-            return this.alwaysAdvanced;
+            if (this.alwaysAdvanced) {
+                // switcher not needed for always visible advanced fields
+                return false;
+            }
+            return this.txType === TX_TYPE.SEND;
         },
         payloadLength() {
             return new Blob([this.form.payload]).size;
@@ -293,7 +297,7 @@ function clearEmptyFields(obj) {
 
 
                     <!-- Controls -->
-                    <div class="u-cell u-cell--1-2 u-cell--xlarge--1-4 u-cell--order-2 u-cell--align-center" v-if="!showSwitcherAdvanced">
+                    <div class="u-cell u-cell--1-2 u-cell--xlarge--1-4 u-cell--order-2 u-cell--align-center" v-if="showSwitcherAdvanced">
                         <button class="link--default u-semantic-button" type="button" @click="switchToSimple" v-if="showAdvanced">
                             {{ $td('Remove message', 'form.toggle-simple-mode') }}
                         </button>
@@ -301,7 +305,7 @@ function clearEmptyFields(obj) {
                             {{ $td('Add message', 'form.toggle-advanced-mode') }}
                         </button>
                     </div>
-                    <div class="u-cell u-cell--1-2 u-cell--xlarge--1-4 u-cell--order-2 u-hidden-xlarge-down" v-if="showSwitcherAdvanced"><!--placeholder--></div>
+                    <div class="u-cell u-cell--1-2 u-cell--xlarge--1-4 u-cell--order-2 u-hidden-xlarge-down" v-if="!showSwitcherAdvanced"><!--placeholder--></div>
                     <div class="u-cell u-cell--1-2 u-cell--xlarge--1-4 u-cell--order-2">
                     </div>
                     <div class="u-cell u-cell--xlarge--1-2 u-cell--order-2">

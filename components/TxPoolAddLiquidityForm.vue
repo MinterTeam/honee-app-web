@@ -16,8 +16,7 @@ import {decreasePrecisionSignificant, pretty, prettyExact} from "~/assets/utils.
 import {getErrorText} from '~/assets/server-error.js';
 import BaseAmount from '~/components/base/BaseAmount.vue';
 import TxForm from '~/components/base/TxForm.vue';
-import FieldCoin from '~/components/base/FieldCoin.vue';
-import FieldUseMax from '~/components/base/FieldUseMax.vue';
+import FieldSwap from '~/components/base/FieldSwap.vue';
 
 let watcherTimer;
 
@@ -32,8 +31,7 @@ export default {
     components: {
         BaseAmount,
         TxForm,
-        FieldCoin,
-        FieldUseMax,
+        FieldSwap,
     },
     directives: {
         checkEmpty,
@@ -238,73 +236,43 @@ export default {
             </p>
         </template>
 
-        <template v-slot:extra-panel="{fee}">
-            <div class="panel__section panel__section--medium">
-                <div class="u-grid u-grid--small u-grid--vertical-margin--small">
-                    <div class="u-cell u-cell--small--1-2 u-cell--xlarge--1-4">
-                        <FieldCoin
-                            v-model="form.coin0"
-                            :$value="$v.form.coin0"
-                            :label="$td('First coin', 'form.pool-coin0')"
-                            :coin-list="availableCoinList"
-                            :select-mode="true"
-                        />
-                        <span class="form-field__error" v-if="$v.form.coin0.$dirty && !$v.form.coin0.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
-                        <span class="form-field__error" v-else-if="$v.form.coin0.$dirty && !$v.form.coin0.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
-                        <!--<span class="form-field__error" v-else-if="$v.form.coin0.$dirty && !$v.form.coin0.maxLength">{{ $td('Max 10 letters', 'form.coin-error-max') }}</span>-->
-                    </div>
-                    <div class="u-cell u-cell--small--1-2 u-cell--xlarge--1-4">
-                        <FieldUseMax
-                            ref="fieldAmount"
-                            v-model="form.volume0"
-                            :$value="$v.form.volume0"
-                            :label="(form.coin0 || $td('First coin', 'form.pool-coin0')) + ' ' + $td('amount', 'form.pool-remove-amount')"
-                            :selected-coin-symbol="form.coin0"
-                            :fee="fee"
-                            :address-balance="$store.state.balance"
-                            @input.native="selectedInput = $options.INPUT_TYPE.AMOUNT0"
-                            @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT0"
-                        />
-                        <span class="form-field__error" v-if="$v.form.volume0.$dirty && !$v.form.volume0.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="icon-divider">
-                <button class="icon-divider__icon u-semantic-button" type="button" @click="reverseCoins">
-                    <img class="" :src="`${BASE_URL_PREFIX}/img/icon-reverse.svg`" width="24" height="24" alt="" role="presentation"/>
-                </button>
-            </div>
-            <div class="panel__section panel__section--medium">
-                <div class="u-grid u-grid--small u-grid--vertical-margin--small">
-                    <div class="u-cell u-cell--small--1-2 u-cell--xlarge--1-4">
-                        <FieldCoin
-                            v-model="form.coin1"
-                            :$value="$v.form.coin1"
-                            :label="$td('Second coin', 'form.pool-coin1')"
-                            :coin-list="availableCoinList"
-                            :select-mode="true"
-                        />
-                        <span class="form-field__error" v-if="$v.form.coin1.$dirty && !$v.form.coin1.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
-                        <span class="form-field__error" v-else-if="$v.form.coin1.$dirty && !$v.form.coin1.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
-                        <!--<span class="form-field__error" v-else-if="$v.form.coin1.$dirty && !$v.form.coin1.maxLength">{{ $td('Max 10 letters', 'form.coin-error-max') }}</span>-->
-                    </div>
-                    <div class="u-cell u-cell--small--1-2 u-cell--xlarge--1-4">
-                        <FieldUseMax
-                            v-model="formAmount1"
-                            :$value="$v.formAmount1"
-                            :label="(form.coin1 || $td('Second coin', 'form.pool-coin1')) + ' ' + $td('amount', 'form.pool-remove-amount')"
-                            :selected-coin-symbol="form.coin1"
-                            :address-balance="$store.state.balance"
-                            @input.native="selectedInput = $options.INPUT_TYPE.AMOUNT1"
-                            @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT1"
-                        />
-                        <div class="form-field__help">
-                            {{ $td('Estimated, depends on the pool ratio', 'form.pool-remove-amount-help') }}
-                        </div>
-                    </div>
+        <template v-slot:extra-panel>
+            <FieldSwap
+                :coin.sync="form.coin0"
+                :$coin="$v.form.coin0"
+                :coinList="availableCoinList"
+                :amount.sync="form.volume0"
+                :$amount="$v.form.volume0"
+                :useBalanceForMaxValue="true"
+                label="First coin"
+                @input-native="selectedInput = $options.INPUT_TYPE.AMOUNT0"
+                @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT0"
+            />
+            <span class="form-field__error" v-if="$v.form.coin0.$dirty && !$v.form.coin0.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
+            <span class="form-field__error" v-else-if="$v.form.coin0.$dirty && !$v.form.coin0.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
+            <span class="form-field__error" v-if="$v.form.volume0.$dirty && !$v.form.volume0.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
 
-                </div>
-            </div>
+            <button class="button button--white convert__reverse-button" type="button" @click="reverseCoins()">
+                <img class="" src="/img/icon-reverse.svg" width="24" height="24" alt="⇅">
+            </button>
+
+            <FieldSwap
+                :coin.sync="form.coin1"
+                :$coin="$v.form.coin1"
+                :coinList="availableCoinList"
+                :amount.sync="formAmount1"
+                :$amount="$v.formAmount1"
+                :useBalanceForMaxValue="true"
+                label="Second coin"
+                @input-native="selectedInput = $options.INPUT_TYPE.AMOUNT1"
+                @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT1"
+            />
+            <span class="form-field__error" v-if="$v.form.coin1.$dirty && !$v.form.coin1.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
+            <span class="form-field__error" v-else-if="$v.form.coin1.$dirty && !$v.form.coin1.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
+
+            <p class="u-text-center u-text-muted u-text-small u-mt-10">
+                {{ $td('Second coin amount is estimated and depends on&nbsp;the&nbsp;pool ratio at&nbsp;the&nbsp;moment of&nbsp;transaction', 'form.pool-remove-amount-help') }}
+            </p>
         </template>
 
         <!--        <template v-slot:default="{fee, addressBalance}">-->

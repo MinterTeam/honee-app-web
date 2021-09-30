@@ -458,7 +458,7 @@
                 label="You pay"
                 @input-native="isSelling = true"
                 @use-max="isSelling = true"
-                @blur="inputBlur(); $v.form.sellAmount.$touch()"
+                @blur="inputBlur()"
             />
             <span class="form-field__error" v-if="$v.form.coinFrom.$dirty && !$v.form.coinFrom.required">Enter coin</span>
             <span class="form-field__error" v-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.required">Enter amount</span>
@@ -479,7 +479,7 @@
                     :$amount="$v.form.buyAmount"
                     label="You receive"
                     @input-native="isSelling = false"
-                    @blur="inputBlur(); $v.form.buyAmount.$touch()"
+                    @blur="inputBlur()"
                 />
 
 <!--                @TODO minimumValueToBuy, minimumValueToSell in estimation-->
