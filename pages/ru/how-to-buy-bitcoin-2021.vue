@@ -31,8 +31,18 @@ export default {
     <div class="page-seo">
         <article>
             <div class="container">
-                <div class="logo">
-                    <img src="/img/logo-honee.svg" alt="" width="122" height="24"/>
+                <div class="top-line">
+                    <div class="logo">
+                        <img src="/img/logo-honee.svg" alt="" width="122" height="24"/>
+                    </div>
+                    <div class="share">
+                        <span>Поделиться</span>
+                        <a href="https://twitter.com/intent/tweet?url=https://honee.app/how-to-buy-bitcoin-2021&text=How+to+Buy+Bitcoin+2021" target="_blank" rel="nofollow"><img src="/img/landing/twitter.svg" alt="Поделиться в Twitter" width="40" height="40"></a>
+                        <a href="https://www.facebook.com/share.php?u=https://honee.app/how-to-buy-bitcoin-2021&quote=How+to+Buy+Bitcoin+2021" target="_blank" rel="nofollow"><img src="/img/landing/facebook.svg" alt="Поделиться в Facebook" width="40" height="40"></a>
+                        <a href="tg://msg_url?url=https://honee.app/how-to-buy-bitcoin-2021&text=How+to+Buy+Bitcoin+2021" rel="nofollow"><img src="/img/landing/telegram.svg" alt="Поделиться в Telegram" width="40" height="40"></a>
+                        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://honee.app/how-to-buy-bitcoin-2021" target="_blank" rel="nofollow"><img src="/img/landing/linkedin.svg" alt="Поделиться в Linkedin" width="40" height="40"></a>
+                        <!--<a href="" rel="nofollow"><img src="/img/landing/copy-link.svg" alt="Скопировать ссылку" width="40" height="40"></a>-->
+                    </div>
                 </div>
                 <section class="article-header">
                     <h1>Как купить Биткоин (BTC) в 2021</h1>

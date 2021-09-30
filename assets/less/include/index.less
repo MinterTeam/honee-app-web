@@ -294,48 +294,78 @@
 
     /* FOOTER */
     .footer {
-        padding: 0 0 56px 0;
+        padding: 0 0 48px 0;
         line-height: 18px;
-    }
-    .footer-disclaimer {
-        text-align: left;
-        margin: 0 0 48px 0;
-    }
-    .footer-disclaimer p {
-        color: #838383;
-    }
-    .footer .logo {
-        text-align: left;
-        margin: 0 0 16px;
-    }
-    .footer-copyright-container {
-        display: flex;
-        justify-content: space-between;
-        text-align: left;
-        margin: 0 0 16px 0;
-    }
-    .footer-copyright {
-        max-width: 355px;
-        padding: 0 0 16px 0;
-    }
-    .footer-copyright:last-child {
-        text-align: right;
-    }
-    .footer-menu ul {
-        display: flex;
-        text-align: center;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .footer-menu li {
-        margin: 0 10px;
-        list-style-type: none;
-    }
-    .footer-menu li a {
-        text-transform: uppercase;
-        text-decoration: none;
-        font-weight: bold;
-        color: inherit;
+        
+        .footer-disclaimer {
+            text-align: left;
+            margin: 0 0 48px 0;
+        }
+        .footer-disclaimer p {
+            color: #838383;
+        }
+        .footer-menu {
+            display: flex;
+            text-align: left;
+            justify-content: space-between;
+            flex-direction: row;
+            flex-wrap: wrap;
+            line-height: 20px;
+
+            .info-links {
+                padding: 0 0 24px 0;
+                .footer-link-box {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                    .buy-links, .earn-links, .wallet-links {
+                        display: flex;
+                        flex-direction: column;
+                        padding: 0 33px 8px 0;
+                    }
+                }
+            }
+            
+            .footer-contacts {
+                max-width: 352px;
+            }
+
+            .about-links {
+                padding: 0 0 24px 0;
+                ul {
+                    display: flex;
+                    flex-direction: column;
+                    flex-wrap: nowrap;
+                    padding: 0 33px 0 0;
+                }
+            }
+
+            ul {
+                li {
+                    list-style-type: none;
+                }
+            }
+
+            h3 {
+                font-size: 10px;
+                line-height: 12px;
+                color: #838383;
+                text-transform: uppercase;
+            }
+            a {
+                text-decoration: none;
+                font-weight: 600;
+                color: inherit;
+            }
+        }
+        .footer-copyright {
+            text-align: left;
+        }
+        .logo {
+            text-align: left;
+            margin: 39px 0 16px 0;
+        }
     }
     /* END FOOTER */
 
@@ -365,12 +395,13 @@
         .features-items {
             justify-content: space-evenly;
         }
+        /*.footer-menu, .footer-link-box {
+            justify-content: flex-start !important;
+        }*/
     }
 
     @media (max-width: 580px) {
         .steps-items img.arrow {display: none;}
-        .footer-copyright-container {flex-wrap: wrap;}
-        .footer-copyright:last-child {text-align: left;}
         .socials img {width: 56px; height: 56px;}
     }
 
@@ -398,8 +429,24 @@
         .container {
             max-width: 634px;
         }
+        .top-line {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 0 24px 0;
+        }
         .logo {
-            text-align: left;
+            margin: 0;
+        }
+        .share {
+            display: flex;
+            align-items: flex-end;
+            align-items: center;
+            span {
+                font-weight: 700;
+                padding: 0 8px 0 0;
+            }
         }
         p {
             font-size: 16px;
