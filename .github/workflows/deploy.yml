@@ -92,3 +92,4 @@ jobs:
           chatId: ${{ secrets.TELEGRAM_CI_TO }}
           jobStatus: ${{ job.status }}
           skipSuccess: false
+
