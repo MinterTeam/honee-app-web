@@ -1,10 +1,24 @@
 <script>
 // import IndexSubscribeForm from '@/components/IndexSubscribeForm.vue';
+import getTitle from '~/assets/get-title.js';
 
 export default {
     layout: 'landing',
     components: {
         // IndexSubscribeForm,
+    },
+    head() {
+        const title = getTitle(this.$td('Crypto Wallet That Helps You Earn', 'index.title'));
+        const description = this.$td('Honee is the simplest crypto wallet that helps you earn through user-friendly, one-click money-making cards.', 'index.description');
+
+        return {
+            title: title,
+            meta: [
+                { hid: 'og-title', name: 'og:title', content: title },
+                { hid: 'description', name: 'description', content: description },
+                { hid: 'og-description', name: 'og:description', content: description },
+            ],
+        };
     },
     data() {
         return {
