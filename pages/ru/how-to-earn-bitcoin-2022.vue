@@ -33,7 +33,7 @@ export default {
             <div class="container">
                 <div class="top-line">
                     <div class="logo">
-                        <img src="/img/logo-honee.svg" alt="" width="122" height="24"/>
+                        <a href="/"><img src="/img/logo-honee.svg" alt="" width="122" height="24"/></a>
                     </div>
                     <div class="share">
                         <span>Поделиться</span>
@@ -78,7 +78,7 @@ export default {
                     <div class="article-picture-box-img earn-bitcoin-3"><img src="/img/articles/earn-bitcoin-3.png" alt="как получить биткоин бесплатно 2022" /></div>
                 </section>
                 <section class="article-last-block">
-                    <p class="subtitle-h1">Мы надеемся, что после прочтения этой статьи у вас есть практическое понимание того, как заработать биткоин. В 2022 году на рынок выйдет Honee Alpha, а значит, этот процесс станет более удобным для пользователя!</p>
+                    <p class="subtitle-h1">Мы надеемся, что после прочтения этой статьи у вас есть практическое понимание того, как заработать биткоин. В 2022 году на рынок выйдет релизная версия Honee, а значит, этот процесс станет более удобным для пользователя!</p>
                     <div class="cta-center">
                         <a class="btn btn-2" href="#">{{ $td('Launch Honee', 'index.steps-button')}}</a>
                     </div>

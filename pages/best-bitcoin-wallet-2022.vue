@@ -30,7 +30,7 @@ export default {
             <div class="container">
                 <div class="top-line">
                     <div class="logo">
-                        <img src="/img/logo-honee.svg" alt="" width="122" height="24"/>
+                        <a href="/"><img src="/img/logo-honee.svg" alt="" width="122" height="24"/></a>
                     </div>
                     <div class="share">
                         <span>Share</span>
@@ -102,14 +102,14 @@ export default {
                                 <li>Open <b>Honee</b> web app</li>
                                 <li>Press <b>Sign Up</b></li>
                                 <li>Save the generated seed phrase somewhere safe (it is this phrase that you’ll be using to log in to your newly created wallet)</li>
+                                <li>Hit <b>Launch</b> once you’ve double-checked that your seed phrase has been written down or copy-pasted to someplace safe and made sure you’re the only one who can access it.</li>
                             </ol>
                         </div>
                         <div class="article-picture-box-img wallet-bitcoin-1"><img src="/img/articles/buy-bitcoin-1.png" alt="how to create and set up a bitcoin wallet in 2022" /></div>
                     </div>
-                    <p>Hit <b>Launch</b> once you’ve double-checked that your seed phrase has been written down or copy-pasted to someplace safe and made sure you’re the only one who can access it.</p>
                 </section>
                 <section class="article-last-block">
-                    <p class="subtitle-h1">We hope that now that you’ve finished scrolling down this page, you have an actionable understanding of which Bitcoin wallet is the best. In 2022, Honee Alpha hits the market—meaning storing BTC will get much more user-friendly!</p>
+                    <p class="subtitle-h1">We hope that now that you’ve finished scrolling down this page, you have an actionable understanding of which Bitcoin wallet is the best. In 2022, Honee release version hits the market—meaning storing BTC will get much more user-friendly!</p>
                     <div class="cta-center">
                         <a class="btn btn-2" href="#">{{ $td('Launch Honee', 'index.steps-button')}}</a>
                     </div>

@@ -30,7 +30,7 @@ export default {
             <div class="container">
                 <div class="top-line">
                     <div class="logo">
-                        <img src="/img/logo-honee.svg" alt="" width="122" height="24"/>
+                        <a href="/"><img src="/img/logo-honee.svg" alt="" width="122" height="24"/></a>
                     </div>
                     <div class="share">
                         <span>Share</span>
@@ -89,7 +89,7 @@ export default {
                         <li>In the <b>Buy Bitcoin</b> card (or when you press <b>Swap</b>)</li>
                         <li>On the balance page, click on BTC to see Bitcoin’s price chart</li>
                     </ol>
-                    <p class="subtitle-h1">We hope that now that you’ve finished scrolling down this page, you have an actionable understanding of how to buy Bitcoin. In 2022, Honee Alpha hits the market—meaning this process will get much more user-friendly!</p>
+                    <p class="subtitle-h1">We hope that now that you’ve finished scrolling down this page, you have an actionable understanding of how to buy Bitcoin. In 2022, Honee release version hits the market—meaning this process will get much more user-friendly!</p>
                     <div class="cta-center">
                         <a class="btn btn-2" href="#">{{ $td('Launch Honee', 'index.steps-button')}}</a>
                     </div>

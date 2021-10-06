@@ -33,7 +33,7 @@ export default {
             <div class="container">
                 <div class="top-line">
                     <div class="logo">
-                        <img src="/img/logo-honee.svg" alt="" width="122" height="24"/>
+                        <a href="/"><img src="/img/logo-honee.svg" alt="" width="122" height="24"/></a>
                     </div>
                     <div class="share">
                         <span>Поделиться</span>
@@ -105,14 +105,14 @@ export default {
                                 <li>Откройте веб-приложение Honee</li>
                                 <li>Нажмите <b>Зарегистрироваться</b></li>
                                 <li>Сохраните сгенерированную seed-фразу в надежное место (с помощью этой фразы вы будете авторизовываться в кошельке)</li>
+                                <li>Нажмите <b>Запуск</b>, убедившись, что ваша seed-фраза сохранена в надежном месте и доступ к ней имеете только вы.</li>
                             </ol>
                         </div>
                         <div class="article-picture-box-img wallet-bitcoin-1"><img src="/img/articles/buy-bitcoin-1.png" alt="как создать биткойн-кошелек в 2022" /></div>
                     </div>
-                    <p>Нажмите <b>Запуск</b>, убедившись, что ваша seed-фраза сохранена в надежном месте и доступ к ней имеете только вы.</p>
                 </section>
                 <section class="article-last-block">
-                    <p class="subtitle-h1">Мы надеемся, что после прочтения этой статьи у вас появилось практическое представление о том, какой же он — лучший биткоин-кошелек. В 2022 году на рынок выйдет Honee Alpha, а значит, хранение BTC станет намного удобнее!</p>
+                    <p class="subtitle-h1">Мы надеемся, что после прочтения этой статьи у вас появилось практическое представление о том, какой же он — лучший биткоин-кошелек. В 2022 году на рынок выйдет релизная версия Honee, а значит, хранение BTC станет намного удобнее!</p>
                     <div class="cta-center">
                         <a class="btn btn-2" href="#">{{ $td('Launch Honee', 'index.steps-button')}}</a>
                     </div>

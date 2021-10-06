@@ -33,7 +33,7 @@ export default {
             <div class="container">
                 <div class="top-line">
                     <div class="logo">
-                        <img src="/img/logo-honee.svg" alt="" width="122" height="24"/>
+                        <a href="/"><img src="/img/logo-honee.svg" alt="" width="122" height="24"/></a>
                     </div>
                     <div class="share">
                         <span>Поделиться</span>
@@ -46,7 +46,7 @@ export default {
                 </div>
                 <section class="article-header">
                     <h1>Как купить Биткоин (BTC) в 2022</h1>
-                    <p class="subtitle-h1">С помощью этой пошаговой инструкции вы сможете купить Биткоин за любые токены, доступные в криптокошельке Honee.</p>
+                    <p class="subtitle-h1">С помощью этой пошаговой инструкции вы узнаете, как купить Биткоин в 2022 году за любые токены, доступные в криптокошельке Honee.</p>
                 </section>
                 <section class="article-picture-box">
                     <div class="article-picture-box-content">
@@ -92,7 +92,7 @@ export default {
                         <li>В карточке <b>Купить Bitcoin</b> (или при нажатии кнопки <b>Обмен</b>)</li>
                         <li>На странице баланса, при нажатии на BTC откроется страница с графиком и ценой Биткоина</li>
                     </ol>
-                    <p class="subtitle-h1">Мы надеемся, что после прочтения этой статьи у вас появилось практическое понимание того, как купить биткоин. В 2022 году на рынок выйдет Honee Alpha, а значит, этот процесс станет намного удобнее!</p>
+                    <p class="subtitle-h1">Мы надеемся, что после прочтения этой статьи у вас появилось практическое понимание того, как купить биткоин. В 2022 году на рынок выйдет релизная версия Honee, а значит, этот процесс станет намного удобнее!</p>
                     <div class="cta-center">
                         <a class="btn btn-2" href="#">{{ $td('Launch Honee', 'index.steps-button')}}</a>
                     </div>
