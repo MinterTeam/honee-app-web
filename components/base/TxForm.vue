@@ -305,9 +305,6 @@ function clearEmptyFields(obj) {
                             {{ $td('Add message', 'form.toggle-advanced-mode') }}
                         </button>
                     </div>
-                    <div class="u-cell u-cell--1-2 u-cell--xlarge--1-4 u-cell--order-2 u-hidden-xlarge-down" v-if="!showSwitcherAdvanced"><!--placeholder--></div>
-                    <div class="u-cell u-cell--1-2 u-cell--xlarge--1-4 u-cell--order-2">
-                    </div>
                     <div class="u-cell u-cell--xlarge--1-2 u-cell--order-2">
                         <button
                             class="button button--main button--full"

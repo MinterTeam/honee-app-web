@@ -19,7 +19,7 @@
     import BaseAmount from '@/components/base/BaseAmount.vue';
     import BaseLoader from '@/components/base/BaseLoader.vue';
     import Modal from '@/components/base/Modal.vue';
-    import FieldSwap from '@/components/base/FieldSwap.vue';
+    import FieldCombined from '~/components/base/FieldCombined.vue';
 
     const isValidAmount = withParams({type: 'validAmount'}, (value) => {
         return parseFloat(value) >= 0;
@@ -36,7 +36,7 @@
             BaseAmount,
             BaseLoader,
             Modal,
-            FieldSwap,
+            FieldCombined,
         },
         mixins: [validationMixin],
         directives: {
@@ -447,7 +447,7 @@
                 <template v-if="params.coinToBuy">for {{ params.coinToBuy.toUpperCase() }}</template>
             </h1>
 <!--            <h2 class="u-h5 u-mb-10">You pay</h2>-->
-            <FieldSwap
+            <FieldCombined
                 :coin.sync="form.coinFrom"
                 :$coin="$v.form.coinFrom"
                 :coinList="$store.state.balance"
@@ -471,7 +471,7 @@
             </button>
 
             <template v-if="!params.coinToBuy">
-                <FieldSwap
+                <FieldCombined
                     class="u-mb-10"
                     :coin.sync="form.coinTo"
                     :$coin="$v.form.coinTo"

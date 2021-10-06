@@ -1,4 +1,4 @@
-import {TX_TYPE} from 'minterjs-tx/src/tx-types';
+import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {getBalance, getAddressStakeList, getAddressTransactionList, getCoinList, getValidatorMetaList} from "~/api/explorer.js";
 
 

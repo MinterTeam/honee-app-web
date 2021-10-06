@@ -12,9 +12,8 @@ import checkEmpty from '~/assets/v-check-empty.js';
 import BaseAmount from '~/components/base/BaseAmount.vue';
 import TxForm from '~/components/base/TxForm.vue';
 import TxFormBlocksToUpdateStake from '~/components/base/TxFormBlocksToUpdateStake.vue';
-import FieldCoin from '~/components/base/FieldCoin.vue';
-import FieldRecipient from '@/components/base/FieldRecipient.vue';
-import FieldUseMax from '~/components/base/FieldUseMax.vue';
+import FieldCombined from '~/components/base/FieldCombined.vue';
+import FieldValidator from '~/components/base/FieldValidator.vue';
 
 export default {
     TX_TYPE,
@@ -22,15 +21,17 @@ export default {
         BaseAmount,
         TxForm,
         TxFormBlocksToUpdateStake,
-        FieldCoin,
-        FieldRecipient,
-        FieldUseMax,
+        FieldCombined,
+        FieldValidator,
     },
     directives: {
         checkEmpty,
         autosize,
     },
     mixins: [validationMixin],
+    fetch() {
+        this.$store.dispatch('FETCH_VALIDATOR_META_LIST');
+    },
     props: {
         params: {
             type: Object,
@@ -81,17 +82,6 @@ export default {
             return result;
         },
     },
-    mounted() {
-        eventBus.on('activate-delegate', ({hash}) => {
-            this.form.publicKey = hash;
-
-            const inputEl = this.$refs.fieldCoin.$el.querySelector('select, input');
-            focusElement(inputEl);
-        });
-    },
-    destroyed() {
-        eventBus.off('activate-delegate');
-    },
     methods: {
         clearForm() {
             this.form.publicKey = '';
@@ -119,39 +109,29 @@ export default {
             </p>
         </template>
 
-        <template v-slot:default="{fee}">
-            <div class="u-cell u-cell--xlarge--1-2">
-                <FieldRecipient
-                    v-model.trim="form.publicKey"
-                    :$value="$v.form.publicKey"
-                    valueType="publicKey"
-                    :label="$td('Public key', 'form.masternode-public')"
-                />
-            </div>
-            <div class="u-cell u-cell--small--1-2 u-cell--xlarge--1-4">
-                <FieldCoin
-                    ref="fieldCoin"
-                    v-model="form.coin"
-                    :$value="$v.form.coin"
-                    :label="$td('Coin', 'form.coin')"
-                    :coin-list="$store.state.balance"
-                    :select-mode="true"
+        <template v-slot:default>
+            <div class="u-cell">
+                <FieldCombined
+                    :coin.sync="form.coin"
+                    :$coin="$v.form.coin"
+                    :coinList="$store.state.balance"
                     coin-type="coin"
+                    :amount.sync="form.stake"
+                    :$amount="$v.form.stake"
+                    :useBalanceForMaxValue="true"
+                    :label="$td('Stake', 'form.masternode-stake')"
                 />
                 <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
                 <span class="form-field__error" v-else-if="$v.form.coin.$dirty && !$v.form.coin.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
-                <!--<span class="form-field__error" v-else-if="$v.form.coin.$dirty && !$v.form.coin.maxLength">{{ $td('Max 10 letters', 'form.coin-error-max') }}</span>-->
-            </div>
-            <div class="u-cell u-cell--small--1-2 u-cell--xlarge--1-4">
-                <FieldUseMax
-                    v-model="form.stake"
-                    :$value="$v.form.stake"
-                    :label="$td('Stake', 'form.masternode-stake')"
-                    :selected-coin-symbol="form.coin"
-                    :fee="fee"
-                    :address-balance="$store.state.balance"
-                />
                 <span class="form-field__error" v-if="$v.form.stake.$dirty && !$v.form.stake.required">{{ $td('Enter stake', 'form.masternode-stake-error-required') }}</span>
+            </div>
+
+            <div class="u-cell">
+                <FieldValidator
+                    v-model.trim="form.publicKey"
+                    :$value="$v.form.publicKey"
+                    :label="$td('To validator', 'form.masternode-public')"
+                />
             </div>
         </template>
 

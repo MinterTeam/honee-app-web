@@ -1,7 +1,6 @@
 <script>
-import checkEmpty from 'assets/v-check-empty.js';
-import {pretty} from 'assets/utils.js';
-import {COIN_TYPE} from 'assets/variables.js';
+import _get from 'lodash-es/get.js';
+import checkEmpty from '~/assets/v-check-empty.js';
 import InputUppercase from '@/components/base/InputUppercase.vue';
 
 const MAX_ITEM_COUNT = 6;
@@ -19,21 +18,28 @@ export default {
             type: Boolean,
             required: true,
         },
-        /**
-         * Flat array or array of balance items
-         * @type Array<string>|Array<BalanceItem>
-         * */
-        coinList: {
+        list: {
             type: Array,
             default: () => [],
         },
-        coinType: {
-            type: String,
-            default: COIN_TYPE.ANY,
+        maxSuggestions: {
+            type: Number,
+            default: MAX_ITEM_COUNT,
         },
-        fallbackToFullList: {
+        filter: {
+            type: Function,
+        },
+        valueAttribute: {
+            type: String,
+            default: 'value',
+        },
+        inputUppercase: {
             type: Boolean,
             default: true,
+        },
+        inputPlaceholder: {
+            type: String,
+            default: 'Search…',
         },
     },
     data() {
@@ -43,25 +49,11 @@ export default {
         };
     },
     computed: {
-        useSpecifiedCoinList() {
-            if (!this.fallbackToFullList) {
-                return true;
-            }
-            return this.coinList && this.coinList.length;
-        },
-        currentCoinList() {
-            if (this.useSpecifiedCoinList) {
-                return this.coinList
-                    .filter((balanceItem) => typeof balanceItem === 'object' ? ofType(balanceItem.coin.type, this.coinType) : true);
-            } else {
-                return this.$store.state.explorer.coinList
-                    .filter((coin) => ofType(coin.type, this.coinType))
-                    .map((item) => item.symbol);
-            }
-        },
-        coinListFinal() {
-            return this.currentCoinList
-                .filter((item) => this.suggestionFilter(item, this.value))
+        suggestionListFinal() {
+            const suggestionFilter = typeof this.filter === 'function' ? this.filter : this.suggestionFilterDefault;
+
+            return this.list
+                .filter((item) => suggestionFilter(item, this.value))
                 .sort((a, b) => {
                     // set coin from query on first position
                     if (a === this.value) {
@@ -73,9 +65,6 @@ export default {
                     }
                 })
                 .slice(0, this.maxSuggestions);
-        },
-        maxSuggestions() {
-            return this.useSpecifiedCoinList ? 100 : MAX_ITEM_COUNT;
         },
     },
     watch: {
@@ -101,19 +90,16 @@ export default {
         window.document.documentElement.removeEventListener('keydown', this.handleEscape);
     },
     methods: {
-        getCoinIconUrl(coin) {
-            return this.$store.getters['explorer/getCoinIcon'](coin);
-        },
-        suggestionFilter(item, query) {
+        suggestionFilterDefault(item, query) {
             if (!query) {
                 return true;
             }
             // keep only values started with query (e.g. remove "WALLET" for "LET" query)
-            return this.getSuggestionCoin(item).indexOf(query) === 0;
+            return this.getSuggestionValue(item).toLowerCase().indexOf(query.toLowerCase()) === 0;
         },
         handleSuggestionClick(value) {
             if (value) {
-                this.$emit('select', value.coin?.symbol || value);
+                this.$emit('select', this.getSuggestionValue(value));
             } else {
                 // this.$emit('cancel');
             }
@@ -144,44 +130,54 @@ export default {
             this.$emit('update:isOpen', false);
             this.value = '';
         },
-        getSuggestionCoin(suggestion) {
-            return suggestion.coin?.symbol || suggestion;
-        },
-        getSuggestionAmount(suggestion) {
-            const amount = suggestion.value || suggestion.amount;
-            return amount ? `(${pretty(amount)})` : '';
+        getSuggestionValue(suggestion) {
+            if (!this.valueAttribute || typeof suggestion !== 'object') {
+                return suggestion;
+            }
+            return _get(suggestion, this.valueAttribute);
         },
     },
 };
-
-function ofType(coinType, selectedType) {
-    if (selectedType === COIN_TYPE.ANY) {
-        return true;
-    } else if (selectedType === COIN_TYPE.ANY_TOKEN) {
-        return coinType === COIN_TYPE.TOKEN || coinType === COIN_TYPE.POOL_TOKEN;
-    } else {
-        return coinType === selectedType;
-    }
-}
 </script>
 
 <template>
-    <div class="amount-field__select" ref="suggestionPanel" v-show="isOpen">
-        <div class="amount-field__select-field">
+    <div class="h-field__dropdown" ref="suggestionPanel" v-show="isOpen">
+        <div class="h-field__dropdown-field">
             <InputUppercase
-                class="amount-field__select-input" type="text" placeholder="Search token…"
+                v-if="inputUppercase"
                 ref="input"
+                class="h-field__dropdown-input" type="text"
+                :placeholder="inputPlaceholder"
                 v-bind="$attrs"
                 v-model="value"
                 @keyup.enter="handleSuggestionClick(value)"
             />
-            <img class="amount-field__select-field-icon" src="/img/icon-search.svg" alt="" role="presentation">
+            <input
+                v-else
+                ref="input"
+                class="h-field__dropdown-input" type="text"
+                :placeholder="inputPlaceholder"
+                v-bind="$attrs"
+                v-model="value"
+                @keyup.enter="handleSuggestionClick(value)"
+                @blur="$emit('blur', $event)"
+                @focus="$emit('focus', $event)"
+            >
+            <img class="h-field__dropdown-field-icon" src="/img/icon-search.svg" alt="" role="presentation">
         </div>
 
-        <button class="amount-field__suggestion-item u-semantic-button" type="button" v-for="suggestion in coinListFinal" :key="suggestion.coin ? suggestion.coin.symbol : suggestion" @click="handleSuggestionClick(suggestion)">
-            <img class="amount-field__suggestion-icon" :src="getCoinIconUrl(getSuggestionCoin(suggestion))" width="32" height="32" alt="" role="presentation">
-            <span class="amount-field__suggestion-symbol">{{ getSuggestionCoin(suggestion) }}</span>
-            <span v-if="getSuggestionAmount(suggestion)">{{ getSuggestionAmount(suggestion) }}</span>
+        <!-- @TODO keyboard support -->
+        <button
+            class="h-field__suggestion-item u-semantic-button" type="button"
+            v-for="suggestion in suggestionListFinal"
+            :key="getSuggestionValue(suggestion)"
+            @click="handleSuggestionClick(suggestion)"
+        >
+            <slot name="suggestion-item"
+                  :suggestion="suggestion"
+            >
+                <span>{{ getSuggestionValue(suggestion) }}</span>
+            </slot>
         </button>
     </div>
 </template>

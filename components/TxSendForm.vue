@@ -9,18 +9,16 @@ import {isValidAddress} from "minterjs-util/src/prefix.js";
 import {prettyExact} from "~/assets/utils.js";
 import BaseAmount from '~/components/base/BaseAmount.vue';
 import TxForm from '~/components/base/TxForm.vue';
-import FieldCoin from '~/components/base/FieldCoin.vue';
-import FieldRecipient from '~/components/base/FieldRecipient.vue';
-import FieldUseMax from '~/components/base/FieldUseMax.vue';
+import FieldCombined from '~/components/base/FieldCombined.vue';
+import FieldAddress from '~/components/base/FieldAddress.vue';
 
 export default {
     TX_TYPE,
     components: {
         BaseAmount,
         TxForm,
-        FieldCoin,
-        FieldRecipient,
-        FieldUseMax,
+        FieldCombined,
+        FieldAddress,
     },
     directives: {
         autosize,
@@ -82,37 +80,29 @@ export default {
             </p>
         </template>
 
-        <template v-slot:default="{fee}">
-            <div class="u-cell u-cell--xlarge--1-2">
-                <FieldRecipient
-                    v-model.trim="form.address"
-                    :$value="$v.form.address"
-                    valueType="address"
-                    :label="$td('Address', 'form.wallet-send-address')"
-                />
-            </div>
-            <div class="u-cell u-cell--xlarge--1-4 u-cell--small--1-2">
-                <FieldCoin
-                    v-model="form.coinSymbol"
-                    :$value="$v.form.coinSymbol"
-                    :label="$td('Coin', 'form.coin')"
-                    :coin-list="$store.state.balance"
-                    :select-mode="true"
+        <template v-slot:default>
+            <div class="u-cell">
+                <FieldCombined
+                    :coin.sync="form.coinSymbol"
+                    :$coin="$v.form.coinSymbol"
+                    :coinList="$store.state.balance"
+                    :amount.sync="form.amount"
+                    :$amount="$v.form.amount"
+                    :useBalanceForMaxValue="true"
+                    :label="$td('Amount', 'form.wallet-send-amount')"
                 />
                 <span class="form-field__error" v-if="$v.form.coinSymbol.$dirty && !$v.form.coinSymbol.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
                 <span class="form-field__error" v-else-if="$v.form.coinSymbol.$dirty && !$v.form.coinSymbol.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
-                <!--<span class="form-field__error" v-else-if="$v.form.coinSymbol.$dirty && !$v.form.coinSymbol.maxLength">{{ $td('Max 10 letters', 'form.coin-error-max') }}</span>-->
-            </div>
-            <div class="u-cell u-cell--xlarge--1-4 u-cell--small--1-2">
-                <FieldUseMax
-                    v-model="form.amount"
-                    :$value="$v.form.amount"
-                    :label="$td('Amount', 'form.wallet-send-amount')"
-                    :selected-coin-symbol="form.coinSymbol"
-                    :fee="fee"
-                    :address-balance="$store.state.balance"
-                />
                 <span class="form-field__error" v-if="$v.form.amount.$dirty && !$v.form.amount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
+            </div>
+
+            <div class="u-cell">
+                <FieldAddress
+                    v-model.trim="form.address"
+                    :$value="$v.form.address"
+                    valueType="address"
+                    :label="$td('To the address', 'form.wallet-send-address')"
+                />
             </div>
         </template>
 

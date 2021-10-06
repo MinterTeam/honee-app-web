@@ -1,13 +1,13 @@
 <script>
 import checkEmpty from '~/assets/v-check-empty.js';
-import {pretty} from '~/assets/utils.js';
-import FieldSwapAmount from '@/components/base/FieldSwapAmount.vue';
-import FieldSwapCoinSelect from '@/components/base/FieldSwapCoinSelect.vue';
+import {COIN_TYPE} from '~/assets/variables.js';
+import FieldCombinedBaseAmount from '~/components/base/FieldCombinedBaseAmount.vue';
+import FieldCombinedCoinDropdown from '@/components/base/FieldCombinedCoinDropdown.vue';
 
 export default {
     components: {
-        FieldSwapAmount,
-        FieldSwapCoinSelect,
+        FieldCombinedBaseAmount,
+        FieldCombinedCoinDropdown,
     },
     directives: {
         checkEmpty,
@@ -34,14 +34,18 @@ export default {
                 return {$touch: () => {}};
             },
         },
+        /**
+         * Flat array or array of balance items
+         * @type Array<string>|Array<BalanceItem>|Array<Coin>
+         * */
         coinList: {
             type: Array,
             default: () => [],
         },
-        // coinType: {
-        //     type: String,
-        //     default: COIN_TYPE.ANY,
-        // },
+        coinType: {
+            type: String,
+            default: COIN_TYPE.ANY,
+        },
         maxValue: {
             type: [String, Number],
             default: undefined,
@@ -84,10 +88,10 @@ export default {
         }
     },
     methods: {
-        getCoinIconUrl(coin) {
+        getIconUrl(coin) {
             return this.$store.getters['explorer/getCoinIcon'](coin);
         },
-        openCoinSelection() {
+        openDropdown() {
             if (this.isSelectDisabled) {
                 return;
             }
@@ -97,7 +101,6 @@ export default {
             this.$emit('update:coin', coin.coin?.symbol || coin);
         },
         handleUseMax(value) {
-            console.log('reimeit', value);
             this.$emit('update:is-use-max', value);
             if (value) {
                 this.$emit('use-max');
@@ -108,32 +111,33 @@ export default {
 </script>
 
 <template>
-    <div class="amount-field" :class="{'amount-field--is-readonly': isEstimation}">
-        <div class="amount-field__content">
-            <div class="amount-field__coin">
-                <div class="amount-field__coin-name">{{ label }}</div>
-                <button class="amount-field__coin-button u-semantic-button" type="button" @click="openCoinSelection()" :disabled="isSelectDisabled">
-                    <img class="amount-field__coin-icon" :src="getCoinIconUrl(coin)" width="32" height="32" alt="" role="presentation" v-if="coin">
-                    <span class="amount-field__coin-symbol">{{ coin || 'Select coin' }}</span>
-                    <img class="amount-field__icon-dropdown" src="/img/icon-dropdown.svg" alt="" role="presentation" width="24" height="24" v-if="!isSelectDisabled">
-                </button>
-            </div>
-            <FieldSwapAmount
-                :value="amount"
-                :$value="$amount"
-                :address-balance="useBalanceForMaxValue ? $store.state.balance : undefined"
-                :selected-coin-symbol="coin"
-                :max-value="maxValue"
-                :is-estimation="isEstimation"
-                :is-loading="isLoading"
-                @input="$emit('update:amount', $event)"
-                @input-native="$emit('input-native', $event)"
-                @update:is-use-max="handleUseMax($event)"
-            />
+    <div class="h-field" :class="{'h-field--is-readonly': isEstimation}">
+        <!-- @TODO handle blur (amount blur fires and coin blur not) (maybe not fire blur at all?)-->
+        <div class="h-field__content">
+            <div class="h-field__title">{{ label }}</div>
+            <button class="h-field__select-button u-semantic-button" type="button" @click="openDropdown()" :disabled="isSelectDisabled">
+                <img class="h-field__select-icon" :src="getIconUrl(coin)" width="24" height="24" alt="" role="presentation" v-if="coin">
+                <span class="h-field__select-value">{{ coin || 'Select coin' }}</span>
+                <img class="h-field__select-icon-arrow" src="/img/icon-dropdown.svg" alt="" role="presentation" width="24" height="24" v-if="!isSelectDisabled">
+            </button>
         </div>
-        <FieldSwapCoinSelect
+        <FieldCombinedBaseAmount
+            :value="amount"
+            :$value="$amount"
+            :address-balance="useBalanceForMaxValue ? $store.state.balance : undefined"
+            :selected-coin-symbol="coin"
+            :max-value="maxValue"
+            :is-estimation="isEstimation"
+            :is-loading="isLoading"
+            @input="$emit('update:amount', $event)"
+            @input-native="$emit('input-native', $event)"
+            @update:is-use-max="handleUseMax($event)"
+        />
+
+        <FieldCombinedCoinDropdown
             :is-open.sync="isSelectVisible"
             :coin-list="coinList"
+            :coin-type="coinType"
             :fallback-to-full-list="fallbackToFullList"
             @select="handleSelect"
         />

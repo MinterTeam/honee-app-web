@@ -16,7 +16,7 @@ import {decreasePrecisionSignificant, pretty, prettyExact} from "~/assets/utils.
 import {getErrorText} from '~/assets/server-error.js';
 import BaseAmount from '~/components/base/BaseAmount.vue';
 import TxForm from '~/components/base/TxForm.vue';
-import FieldSwap from '~/components/base/FieldSwap.vue';
+import FieldCombined from '~/components/base/FieldCombined.vue';
 
 let watcherTimer;
 
@@ -31,7 +31,7 @@ export default {
     components: {
         BaseAmount,
         TxForm,
-        FieldSwap,
+        FieldCombined,
     },
     directives: {
         checkEmpty,
@@ -237,7 +237,7 @@ export default {
         </template>
 
         <template v-slot:extra-panel>
-            <FieldSwap
+            <FieldCombined
                 :coin.sync="form.coin0"
                 :$coin="$v.form.coin0"
                 :coinList="availableCoinList"
@@ -256,7 +256,7 @@ export default {
                 <img class="" src="/img/icon-reverse.svg" width="24" height="24" alt="⇅">
             </button>
 
-            <FieldSwap
+            <FieldCombined
                 :coin.sync="form.coin1"
                 :$coin="$v.form.coin1"
                 :coinList="availableCoinList"

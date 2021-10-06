@@ -30,7 +30,7 @@ import BaseAmount from '@/components/base/BaseAmount.vue';
 import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '@/components/base/Modal.vue';
 import ButtonCopyIcon from '~/components/base/ButtonCopyIcon.vue';
-import FieldSwap from '~/components/base/FieldSwap.vue';
+import FieldCombined from '~/components/base/FieldCombined.vue';
 import HubBuyTxListItem from '@/components/HubBuyTxListItem.vue';
 
 
@@ -97,7 +97,7 @@ export default {
         Loader,
         Modal,
         ButtonCopyIcon,
-        FieldSwap,
+        FieldCombined,
         HubBuyTxListItem,
     },
     directives: {
@@ -909,7 +909,7 @@ function getSwapOutput(receipt) {
                 <div class="u-grid u-grid--vertical-margin">
 
                     <div class="u-cell">
-                        <FieldSwap
+                        <FieldCombined
                             :coin="$options.DEPOSIT_SYMBOL"
                             :coin-list="[$options.DEPOSIT_SYMBOL]"
                             :amount.sync="form.amountEth"
@@ -924,7 +924,7 @@ function getSwapOutput(receipt) {
                         <!--                        <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && !$v.form.amountEth.maxValue">Not enough {{ form.coinToGet }} (max {{ pretty(maxAmount) }})</span>-->
                     </div>
                     <div class="u-cell">
-                        <FieldSwap
+                        <FieldCombined
                             :coin.sync="form.coinToGet"
                             :$coin="$v.form.coinToGet"
                             :amount="decreasePrecisionSignificant(estimation || 0)"

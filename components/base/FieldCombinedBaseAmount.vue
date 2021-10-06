@@ -1,6 +1,7 @@
 <script>
     import Big from '~/assets/big.js';
     import {isCoinId} from 'minter-js-sdk/src/utils.js';
+    import stripZeros from 'pretty-num/src/strip-zeros.js';
     import checkEmpty from '~/assets/v-check-empty';
     import {pretty} from '~/assets/utils.js';
     import InputMaskedAmount from '~/components/base/InputMaskedAmount.vue';
@@ -86,25 +87,19 @@
             isMaxValueRounded() {
                 return this.isMaxValueDefined && !(new Big(this.maxValueComputed).eq(pretty(this.maxValueComputed).replace(/\s/g, '')));
             },
-        },
-        watch: {
-            value(newVal) {
-                if (!newVal && newVal !== 0) {
-                    this.isUseMax = false;
-                    return;
+            isValueEqualToMaxValue() {
+                if (!(this.value > 0)) {
+                    return false;
                 }
                 if (!this.isMaxValueDefined) {
-                    this.isUseMax = false;
-                    return;
+                    return false;
                 }
-                if (!new Big(newVal).eq(this.maxValueComputed)) {
-                    this.isUseMax = false;
-                }
+                return new Big(this.value).eq(this.maxValueComputed);
             },
-            maxValueComputed(newVal) {
-                if (this.isMaxValueDefined && this.isUseMax) {
-                    this.useMax();
-                }
+        },
+        watch: {
+            isValueEqualToMaxValue(newVal) {
+                this.isUseMax = newVal;
             },
             isUseMax(newVal) {
                 this.$emit('update:is-use-max', newVal);
@@ -120,7 +115,7 @@
                     return false;
                 }
                 this.isUseMax = true;
-                this.$emit('input', this.maxValueComputed);
+                this.$emit('input', stripZeros(this.maxValueComputed));
                 this.$value.$touch();
             },
         },
@@ -146,29 +141,32 @@
 </script>
 
 <template>
-    <div class="amount-field__amount" :class="{'is-error': $value.$error}">
-        <div class="amount-field__amount-balance">
+    <div class="h-field__aside" :class="{'is-error': $value.$error}">
+        <div class="h-field__aside-caption">
             <Loader
-                class="amount-field__amount-loader"
+                class="h-field__aside-loader"
                 v-if="isLoading"
                 :isLoading="true"
             />
-            <template v-else-if="isMaxValueDefined">
+            <button
+                class="h-field__aside-max u-semantic-button" type="button"
+                v-else-if="isMaxValueDefined && !isUseMax"
+                @click="useMax"
+            >
                 Balance: {{ isMaxValueRounded ? '≈' : '' }}{{ pretty(maxValueComputed) }}
-                <button class="amount-field__amount-max" type="button" @click="useMax">Max</button>
-            </template>
-            <template v-else>&nbsp;</template>
+            </button>
+<!--            <template v-else>&nbsp;</template>-->
         </div>
         <InputMaskedAmount
             v-if="!isEstimation"
-            class="amount-field__amount-input" type="text" inputmode="decimal" placeholder="0.00"
+            class="h-field__input h-field__aside-input" type="text" inputmode="decimal" placeholder="0.00"
             v-bind="$attrs"
             :value="value"
             @input="$emit('input', $event)"
             @input.native="$emit('input-native', $event)"
             @blur="$value.$touch(); $emit('blur', $event)"
         />
-        <div class="amount-field__amount-input" v-else>
+        <div class="h-field__input h-field__aside-input" v-else>
             ≈{{ pretty(value || 0) }}
         </div>
     </div>

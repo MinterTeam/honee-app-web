@@ -9,6 +9,7 @@ const less = require('gulp-less');
 const postcss = require('gulp-postcss');
 const postcssNormalize = require('postcss-normalize');
 const autoprefixer = require('autoprefixer');
+const postcssPresetEnv = require('postcss-preset-env');
 const cleanCss = require('gulp-clean-css');
 // images
 const del = require('del');
@@ -47,6 +48,16 @@ gulp.task('less', function() {
         .pipe(postcss([
             autoprefixer({cascade: false}),
             postcssNormalize({forceImport: true}),
+            postcssPresetEnv({
+                stage: 2,
+                features: {
+                    'all-property': false,
+                    'case-insensitive-attributes': false,
+                    'focus-visible-pseudo-class': false,
+                    'focus-within-pseudo-class': false,
+                    'matches-pseudo-class': false,
+                },
+            }),
         ]))
         .pipe(cleanCss({
             level: {

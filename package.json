@@ -91,6 +91,7 @@
     "imagemin-jpegtran": "^7.0.0",
     "imagemin-mozjpeg": "^9.0.0",
     "postcss-normalize": "^9.0.0",
+    "postcss-preset-env": "^6.7.0",
     "pre-commit": "^1.2.2"
   },
   "browserslist": [

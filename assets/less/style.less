@@ -268,48 +268,63 @@
 .estimation__coin-icon {margin-right: 8px; border-radius: 50%;}
 .estimation__coin-symbol {}
 
-
-.amount-field {position: relative;}
-.amount-field, .amount-field__select {background: #fff; padding: 6px 14px 14px; border-radius: 12px; box-shadow: 0 4px 4px rgba(0,0,0,0.05); border: 2px solid transparent;}
-.amount-field--is-readonly {box-shadow: none; border: 2px dashed @c-border;}
-.amount-field__content {display: flex;}
-.amount-field__coin {font-weight: 600; flex-shrink: 0;}
-.amount-field__coin-name {font-weight: 700; color: @c-black-light; line-height: 24px; margin-bottom: 8px;}
-.amount-field__coin-button {
-    display: flex; align-items: center;
+@h-field-title-height: 16px;
+@h-field-title-margin: 6px;
+@h-field-input-height: 24px;
+.h-field {position: relative; display: flex; width: 100%;}
+.h-field, .h-field__dropdown {background: #fff; padding: (12px - 2px) (16px - 2px) (12px - 2px); border-radius: 12px; box-shadow: 0 4px 4px rgba(0,0,0,0.05); border: 2px solid transparent;}
+.h-field--is-readonly {box-shadow: none; border: 2px dashed @c-border;}
+.h-field__content {font-weight: 600; flex-grow: 2; max-width: 100%;}
+.h-field__title {font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: @c-black-light; line-height: @h-field-title-height; margin-bottom: @h-field-title-margin;}
+.h-field__select-button {
+    display: flex; align-items: center; max-width: 100%;
     &[disabled] {cursor: default;}
 }
-.amount-field__coin-icon {margin-right: 8px; border-radius: 50%;}
-.amount-field__coin-symbol {font-size: 20px;}
-.amount-field__icon-dropdown {margin-left: 8px;}
-
-.amount-field__amount {flex-grow: 2; margin-left: 20px;}
-.amount-field__amount-balance {line-height: 24px; margin-bottom: 8px; display: flex; align-items: center; justify-content: right; color: @c-black-light;}
-.amount-field__amount-loader {width: 24px; height: 24px; margin: 0;}
-.amount-field__amount-max {
-    font-size: 10px; line-height: 12px; font-weight: 700; text-transform: uppercase; border: 1px solid @c-main; background: transparent; border-radius: 8px; color: @c-main; padding: 5px 7px; margin-left: 8px; transition: 0.1s;
-    &:hover, &:focus {background: fade(@c-main, 20%);}
-    &:active {background: fade(@c-main, 40%);}
-}
-.amount-field__amount-input {
-    font-weight: 600; font-size: 30px; line-height: 32px; height: 32px; text-align: right; width: 100%; color: currentColor; padding: 0; background: transparent; border: none; opacity: 1; /* safari disabled fix */ -webkit-text-fill-color: currentcolor; /* safari disabled fix */ -webkit-appearance: none; /* ios shadow fix */
+.h-field__select-icon {margin-right: 8px; border-radius: 50%;}
+.h-field__select-value {font-size: 18px; line-height: @h-field-input-height; overflow: hidden; overflow-wrap: break-word;}
+.h-field__select-icon-arrow {margin-left: 8px;}
+.h-field__input {
+    font-weight: 600; font-size: 24px; line-height: @h-field-input-height; width: 100%; color: currentColor; padding: 0; background: transparent; border: none;
+    font-feature-settings: "calt" off;
+    /* safari disabled fix */
+    opacity: 1; -webkit-text-fill-color: currentcolor;
+    /* ios shadow fix */
+    -webkit-appearance: none;
+    // fix input letter size not to be larger than line-height
+    input& {height: @h-field-input-height;}
+    // fix firefox incorrectly set scrollHeight and cause incorrect autosize
+    textarea& {line-height: (@h-field-input-height + 6px); margin-top: -3px; margin-bottom: -3px;}
     &::placeholder {color: @c-black-light;}
     &:focus::placeholder {color: transparent;}
 }
 
-.amount-field__select {position: absolute; left: -2px; right: -2px; /* border size */ padding-top: 16px; z-index: 1;}
-.amount-field__select-field {position: relative;}
-.amount-field__select-field-icon {position: absolute; right: 16px; top: 8px; pointer-events: none;}
-.amount-field__select-input {
-    border-radius: 12px; border: none; padding: 10px 16px; padding-right: (24px + 16px); background: @c-border; font-size: 16px; line-height: 20px; font-weight: 600; height: 40px; width: 100%; margin-bottom: 16px;
+.h-field__aside {margin-left: 20px; flex-shrink: 9999; display: flex; flex-direction: column; justify-content: center; align-items: flex-end;}
+//.h-field__aside--with-input {flex-grow: 3;}
+.h-field__aside-caption {margin-bottom: @h-field-title-margin; font-size: 12px; line-height: @h-field-title-height; letter-spacing: 0.2px; }
+.h-field__aside-loader {width: @h-field-title-height; height: @h-field-title-height; margin: 0;}
+.h-field__aside-max {
+    color: @c-black-light; transition: 0.1s;
+    &:hover, &:focus {color: @c-main;}
+    &:active {color: fade(@c-main, 40%);}
+}
+.h-field__aside-input {
+    text-align: right; margin-top: auto;
+}
+.h-field__aside-control {font-size: 0;}
+
+.h-field__dropdown {position: absolute; top: 100%; left: -2px; right: -2px; /* border size */ padding-top: 16px; margin-top: -1 * (16px - 2px); z-index: 1;}
+.h-field__dropdown-field {position: relative; margin-bottom: 16px;}
+.h-field__dropdown-field-icon {position: absolute; right: 16px; top: 8px; pointer-events: none;}
+.h-field__dropdown-input {
+    border-radius: 12px; border: none; padding: 10px 16px; padding-right: (24px + 16px); background: @c-border; font-size: 16px; line-height: 20px; font-weight: 600; height: 40px; width: 100%;;
     &::placeholder {color: @c-black;}
 }
-.amount-field__suggestion-item {
-    display: flex; align-items: center;
+.h-field__suggestion-item {
+    display: flex; align-items: center; max-width: 100%;
     &+& {margin-top: 16px;}
 }
-.amount-field__suggestion-icon {flex-shrink: 0; margin-right: 8px; border-radius: 50%;}
-.amount-field__suggestion-symbol {font-weight: 600; font-size: 20px;}
+.h-field__suggestion-icon {flex-shrink: 0; margin-right: 8px; border-radius: 50%;}
+.h-field__suggestion-symbol {font-size: 18px; font-weight: 600; line-height: @h-field-input-height;}
 
 
 
