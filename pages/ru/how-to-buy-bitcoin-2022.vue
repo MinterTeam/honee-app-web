@@ -5,13 +5,13 @@ export default {
     layout: 'landing',
     nuxtI18n: {
         paths: {
-            ru: '/kak-kupit-bitkoin-2021',
+            ru: '/kak-kupit-bitkoin-2022',
         },
         locales: ['ru'],
     },
     head() {
-        const title = getTitle('Как купить Биткоин 2021');
-        const description = 'Один из способов, как купить биткоин в 2021 году — это используя карточки заработка в Honee.';
+        const title = getTitle('Как купить Биткоин 2022');
+        const description = 'Один из способов, как купить биткоин в 2022 году — это используя карточки заработка в Honee.';
 
         return {
             title: title,
@@ -37,25 +37,25 @@ export default {
                     </div>
                     <div class="share">
                         <span>Поделиться</span>
-                        <a href="https://twitter.com/intent/tweet?url=https://honee.app/how-to-buy-bitcoin-2021&text=How+to+Buy+Bitcoin+2021" target="_blank" rel="nofollow"><img src="/img/landing/twitter.svg" alt="Поделиться в Twitter" width="40" height="40"></a>
-                        <a href="https://www.facebook.com/share.php?u=https://honee.app/how-to-buy-bitcoin-2021&quote=How+to+Buy+Bitcoin+2021" target="_blank" rel="nofollow"><img src="/img/landing/facebook.svg" alt="Поделиться в Facebook" width="40" height="40"></a>
-                        <a href="tg://msg_url?url=https://honee.app/how-to-buy-bitcoin-2021&text=How+to+Buy+Bitcoin+2021" rel="nofollow"><img src="/img/landing/telegram.svg" alt="Поделиться в Telegram" width="40" height="40"></a>
-                        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://honee.app/how-to-buy-bitcoin-2021" target="_blank" rel="nofollow"><img src="/img/landing/linkedin.svg" alt="Поделиться в Linkedin" width="40" height="40"></a>
+                        <a href="https://twitter.com/intent/tweet?url=https://honee.app/how-to-buy-bitcoin-2022&text=How+to+Buy+Bitcoin+2022" target="_blank" rel="nofollow"><img src="/img/landing/twitter.svg" alt="Поделиться в Twitter" width="40" height="40"></a>
+                        <a href="https://www.facebook.com/share.php?u=https://honee.app/how-to-buy-bitcoin-2022&quote=How+to+Buy+Bitcoin+2022" target="_blank" rel="nofollow"><img src="/img/landing/facebook.svg" alt="Поделиться в Facebook" width="40" height="40"></a>
+                        <a href="tg://msg_url?url=https://honee.app/how-to-buy-bitcoin-2022&text=How+to+Buy+Bitcoin+2022" rel="nofollow"><img src="/img/landing/telegram.svg" alt="Поделиться в Telegram" width="40" height="40"></a>
+                        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://honee.app/how-to-buy-bitcoin-2022" target="_blank" rel="nofollow"><img src="/img/landing/linkedin.svg" alt="Поделиться в Linkedin" width="40" height="40"></a>
                         <!--<a href="" rel="nofollow"><img src="/img/landing/copy-link.svg" alt="Скопировать ссылку" width="40" height="40"></a>-->
                     </div>
                 </div>
                 <section class="article-header">
-                    <h1>Как купить Биткоин (BTC) в 2021</h1>
+                    <h1>Как купить Биткоин (BTC) в 2022</h1>
                     <p class="subtitle-h1">С помощью этой пошаговой инструкции вы сможете купить Биткоин за любые токены, доступные в криптокошельке Honee.</p>
                 </section>
-                <section class="article-picture-box article-buy-bitcoin">
+                <section class="article-picture-box">
                     <div class="article-picture-box-content">
                         <h2><span class="h2-badge">1</span>Депозит</h2>
                         <p>Для покупки BTC вам понадобится адрес в криптокошельке Honee. Вы можете зарегистрировать новый или войти с уже имеющимся.</p>
                     </div>
-                    <img src="/img/articles/buy-bitcoin-1.png" alt="лучший способ купить биткоин 2021" />
+                    <div class="article-picture-box-img buy-bitcoin-1"><img src="/img/articles/buy-bitcoin-1.png" alt="лучший способ купить биткоин 2022" /></div>
                 </section>
-                <section class="article-picture-box article-buy-bitcoin-2 box-reverse">
+                <section class="article-picture-box box-reverse">
                     <div class="article-picture-box-content">
                         <p>После авторизации вы попадете в свой персональный кошелек. Теперь вам необходимо пополнить его нужной вам криптовалютой, например, USDT. Для этого:</p>
                         <ol>
@@ -65,10 +65,10 @@ export default {
                         </ol>
                         <p>После того, как транзакция будет совершена, на вашем балансе отобразится сумма депозита.</p>
                     </div>
-                    <img src="/img/articles/buy-bitcoin-2.png" alt="как купить биткоин 2021" />
+                    <div class="article-picture-box-img buy-bitcoin-2"><img src="/img/articles/buy-bitcoin-2.png" alt="как купить биткоин 2022" /></div>
                 </section>
-                <section class="article-buy-bitcoin-3">
-                    <h2><span class="h2-badge">2</span>Как купить Биткоин 2021</h2>
+                <section>
+                    <h2><span class="h2-badge">2</span>Как купить Биткоин 2022</h2>
                     <div class="article-picture-box">
                         <div class="article-picture-box-content">
                             <p>После того, как на вашем балансе появились токены, которые вы хотите обменять на Биткоин (например, USDT), нажмите на кнопку “Обмен” или выберите карточку “Купить Биткоин”.</p>
@@ -82,7 +82,7 @@ export default {
                             </ol>
                             <p>После этого транзакция покупки Биткоина будет совершена и BTC появится на вашем балансе.</p>
                         </div>
-                        <img src="/img/articles/buy-bitcoin-3.png" alt="как купить биткойн 2021" class="img-deposit" />
+                        <div class="article-picture-box-img buy-bitcoin-3"><img src="/img/articles/buy-bitcoin-3.png" alt="как купить биткойн 2022" class="img-deposit" /></div>
                     </div>
                 </section>
                 <section class="article-last-block">
@@ -92,7 +92,7 @@ export default {
                         <li>В карточке <b>Купить Bitcoin</b> (или при нажатии кнопки <b>Обмен</b>)</li>
                         <li>На странице баланса, при нажатии на BTC откроется страница с графиком и ценой Биткоина</li>
                     </ol>
-                    <p class="subtitle-h1">Мы надеемся, что после прочтения этой статьи у вас появилось практическое понимание того, как купить биткоин. В 2021 году на рынок выйдет Honee Alpha, а значит, этот процесс станет намного удобнее!</p>
+                    <p class="subtitle-h1">Мы надеемся, что после прочтения этой статьи у вас появилось практическое понимание того, как купить биткоин. В 2022 году на рынок выйдет Honee Alpha, а значит, этот процесс станет намного удобнее!</p>
                     <div class="cta-center">
                         <a class="btn btn-2" href="#">{{ $td('Launch Honee', 'index.steps-button')}}</a>
                     </div>

@@ -461,7 +461,7 @@
         .subtitle-h1 {
             font-size: 20px;
             line-height: 24px;
-            margin: 0 0 75px 0;
+            margin: 0 0 34px 0;
         }
         h2 {
             font-size: 22px;
@@ -482,8 +482,22 @@
             padding: .5em .5em;
             margin: 0 16px 0 0;
         }
+        h3 {
+            margin: 0 0 16px;
+        }
         section {
-            margin: 0 0 120px 0;
+            margin: 0 0 64px 0;
+
+            a {
+                text-decoration: none;
+                font-weight: 600;
+                color: #FF8A00;
+                border-bottom: 1px solid rgb(255 138 0 / 50%);
+                overflow-wrap: anywhere;
+                &:hover {
+                    border-bottom: 0;
+                }
+            }
         }
         .article-header {
             margin: 0 0 64px 0;
@@ -531,31 +545,100 @@
             max-width: 309px;
             width: 100%;
         }
+        .article-picture-box-img {
+            width: 100%;
+            img {
+                position: absolute;
+            }
+        }
         .box-reverse {
             flex-direction: row-reverse;
         }
-        .article-buy-bitcoin {
+
+        .buy-bitcoin-1 {
             height: 230px;
-            margin: 0 0 83px 0;
             img {
-                position: absolute;
                 max-width: 319px;
                 right: -30px;
             }
         }
-        .article-buy-bitcoin-2 {
+        .buy-bitcoin-2 {
             height: 408px;
             img {
-                position: absolute;
                 max-width: 345px;
                 left: -71px;
             }
         }
-        .article-buy-bitcoin-3 {
+        .buy-bitcoin-3 {
+            height: 349px;
             img {
-                position: absolute;
                 max-width: 285px;
                 right: -30px;
+                top: 0;
+            }
+        }
+        .earn-bitcoin-1 {
+            height: 313px;
+            img {
+                max-width: 285px;
+                right: 5px;
+            }
+        }
+        .earn-bitcoin-2 {
+            height: 324px;
+            img {
+                max-width: 358px;
+                left: -100px;
+            }
+        }
+        .earn-bitcoin-3 {
+            height: 406px;
+            img {
+                max-width: 346px;
+                right: -30px;
+                top: 0;
+            }
+        }
+        .wallet-bitcoin-1 {
+            height: 230px;
+            margin: 0 0 30px 0;
+            img {
+                max-width: 319px;
+                right: -30px;
+            }
+        }
+        .asset-block {
+            display: flex;
+            flex-wrap: wrap;
+            font-size: 20px;
+            line-height: 24px;
+
+            img {
+                width: 107px;
+                height: 84px;
+                margin: 0 32px 24px 0;
+            }
+            .asset-info {
+                display: flex;
+                flex-direction: column;
+
+                .asset-info-data {
+                    display: flex;
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                    margin: 0 0 12px 0;
+                }
+                .asset-info-links {
+                    display: flex;
+                    flex-direction: row;
+                    flex-wrap: wrap;
+                }
+                .item-label {
+                    color: #838383;
+                }
+                .asset-info-item {
+                    padding: 0 24px 12px 0;
+                }
             }
         }
 
@@ -565,13 +648,13 @@
             }
         }
 
-        @media (max-width: 634px) {
+        @media (max-width: 658px) {
             padding: 24px 0 0 0;
             .container {
                 padding: 0 24px;
             }
             section {
-                margin: 0 0 64px 0;
+                margin: 0 0 50px 0;
             }
             .article-picture-box {
                 display: block;
@@ -581,12 +664,15 @@
             .article-picture-box-content {
                 max-width: 100%;
             }
-            .article-picture-box img {
-                max-width: 60%;
-                display: block;
-                position: relative;
-                left: 0;
-                margin: 0 auto;
+            .article-picture-box-img {
+                height: 100%;
+                img {
+                    max-width: 60%;
+                    display: block;
+                    position: relative;
+                    left: 0;
+                    margin: 0 auto;
+                }
             }
         }
     }

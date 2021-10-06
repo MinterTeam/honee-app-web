@@ -44,20 +44,20 @@ export default {
                         <h3>{{ $td('Useful Information', 'index.footer-menu-useful')}}</h3>
                         <div class="footer-link-box">
                             <div class="buy-links">
-                                <a :href="$i18nGetPreferredPath('/how-to-buy-bitcoin-2021')">{{ $td('Buy Bitcoin', 'index.footer-link-box-buy-bitcoin')}}</a>
-                                <!--<a href="/how-to-buy-ethereum-2021">Buy Ethereum</a>
-                                <a href="/how-to-buy-usdt-2021">Buy USDT</a>-->
+                                <a :href="$i18nGetPreferredPath('/how-to-buy-bitcoin-2022')">{{ $td('Buy Bitcoin', 'index.footer-link-box-buy-bitcoin')}}</a>
+                                <!--<a href="/how-to-buy-ethereum-2022">Buy Ethereum</a>
+                                <a href="/how-to-buy-usdt-2022">Buy USDT</a>-->
                             </div>
-                            <!--<div class="earn-links">
-                                <a href="/how-to-earn-bitcoin-2021">Earn Bitcoin</a>
-                                <a href="/how-to-earn-ethereum-2021">Earn Ethereum</a>
-                                <a href="/how-to-earn-usdt-2021">Earn USDT</a>
+                            <div class="earn-links">
+                                <a :href="$i18nGetPreferredPath('/how-to-earn-bitcoin-2022')">{{ $td('Earn Bitcoin', 'index.footer-link-box-earn-bitcoin')}}</a>
+                                <!--<a href="/how-to-earn-ethereum-2022">Earn Ethereum</a>
+                                <a href="/how-to-earn-usdt-2022">Earn USDT</a>-->
                             </div>
                             <div class="wallet-links">
-                                <a href="/best-bitcoin-wallet-2021">Bitcoin Wallet</a>
-                                <a href="/best-ethereum-wallet-2021">Ethereum Wallet</a>
-                                <a href="/best-usdt-wallet-2021">USDT Wallet</a>
-                            </div>-->
+                                <a :href="$i18nGetPreferredPath('/best-bitcoin-wallet-2022')">{{ $td('Bitcoin Wallet', 'index.footer-link-box-wallet-bitcoin')}}</a>
+                                <!--<a href="/best-ethereum-wallet-2022">Ethereum Wallet</a>
+                                <a href="/best-usdt-wallet-2022">USDT Wallet</a>-->
+                            </div>
                         </div>
                     </div>
                     <div class="about-links">

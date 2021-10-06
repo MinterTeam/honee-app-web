@@ -69,6 +69,8 @@ export default {
 		'footer-menu-contacts': 'Контакты',
 
 		'footer-link-box-buy-bitcoin': 'Купить Биткоин',
+		'footer-link-box-earn-bitcoin': 'Заработать Биткоин',
+		'footer-link-box-wallet-bitcoin': 'Биткоин кошелек',
 	},
 	form: {
 		'toggle-simple-mode': 'Убрать сообщение',
