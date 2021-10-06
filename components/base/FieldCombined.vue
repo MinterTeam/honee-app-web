@@ -25,7 +25,7 @@ export default {
             },
         },
         amount: {
-            type: [Number, String],
+            type: [Number, String, Boolean],
             default: '',
         },
         $amount: {
@@ -122,6 +122,7 @@ export default {
             </button>
         </div>
         <FieldCombinedBaseAmount
+            v-if="amount !== false"
             :value="amount"
             :$value="$amount"
             :address-balance="useBalanceForMaxValue ? $store.state.balance : undefined"

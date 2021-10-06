@@ -1,28 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-	xmlns:xhtml="http://www.w3.org/1999/xhtml">
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://honee.app</loc>
     <xhtml:link
-               rel="alternate"
-               hreflang="ru"
-               href="https://honee.app/ru"/>
+            rel="alternate"
+            hreflang="ru"
+            href="https://honee.app/ru"/>
     <xhtml:link
-               rel="alternate"
-               hreflang="en"
-               href="https://honee.app"/>
-    <lastmod>2021-09-28</lastmod>
+            rel="alternate"
+            hreflang="en"
+            href="https://honee.app"/>
+    <lastmod>2021-10-06</lastmod>
   </url>
   <url>
-    <loc>https://honee.app/how-to-buy-bitcoin-2021</loc>
+    <loc>https://honee.app/ru</loc>
     <xhtml:link
-               rel="alternate"
-               hreflang="ru"
-               href="https://honee.app/ru/kak-kupit-bitkoin-2021"/>
+            rel="alternate"
+            hreflang="en"
+            href="https://honee.app"/>
     <xhtml:link
-               rel="alternate"
-               hreflang="en"
-               href="https://honee.app/how-to-buy-bitcoin-2021"/>
-    <lastmod>2021-09-29</lastmod>
+            rel="alternate"
+            hreflang="ru"
+            href="https://honee.app/ru"/>
+    <lastmod>2021-10-06</lastmod>
+  </url>
+  <url>
+    <loc>https://honee.app/how-to-buy-bitcoin-2022</loc>
+    <xhtml:link
+            rel="alternate"
+            hreflang="ru"
+            href="https://honee.app/ru/kak-kupit-bitkoin-2022"/>
+    <xhtml:link
+            rel="alternate"
+            hreflang="en"
+            href="https://honee.app/how-to-buy-bitcoin-2022"/>
+    <lastmod>2021-10-06</lastmod>
+  </url>
+  <url>
+    <loc>https://honee.app/ru/kak-kupit-bitkoin-2022</loc>
+    <xhtml:link
+            rel="alternate"
+            hreflang="en"
+            href="https://honee.app/how-to-buy-bitcoin-2022"/>
+    <xhtml:link
+            rel="alternate"
+            hreflang="ru"
+            href="https://honee.app/ru/kak-kupit-bitkoin-2022"/>
+    <lastmod>2021-10-06</lastmod>
+  </url>
+  <url>
+    <loc>https://honee.app/how-to-earn-bitcoin-2022</loc>
+    <xhtml:link
+            rel="alternate"
+            hreflang="ru"
+            href="https://honee.app/ru/kak-zarabotat-bitkoin-2022"/>
+    <xhtml:link
+            rel="alternate"
+            hreflang="en"
+            href="https://honee.app/how-to-earn-bitcoin-2022"/>
+    <lastmod>2021-10-06</lastmod>
+  </url>
+  <url>
+    <loc>https://honee.app/ru/kak-zarabotat-bitkoin-2022</loc>
+    <xhtml:link
+            rel="alternate"
+            hreflang="en"
+            href="https://honee.app/how-to-earn-bitcoin-2022"/>
+    <xhtml:link
+            rel="alternate"
+            hreflang="ru"
+            href="https://honee.app/ru/kak-zarabotat-bitkoin-2022"/>
+    <lastmod>2021-10-06</lastmod>
+  </url>
+  <url>
+    <loc>https://honee.app/best-bitcoin-wallet-2022</loc>
+    <xhtml:link
+            rel="alternate"
+            hreflang="ru"
+            href="https://honee.app/ru/luchshiy-bitkoin-koshelek-2022"/>
+    <xhtml:link
+            rel="alternate"
+            hreflang="en"
+            href="https://honee.app/best-bitcoin-wallet-2022"/>
+    <lastmod>2021-10-06</lastmod>
+  </url>
+  <url>
+    <loc>https://honee.app/ru/luchshiy-bitkoin-koshelek-2022</loc>
+    <xhtml:link
+            rel="alternate"
+            hreflang="en"
+            href="https://honee.app/best-bitcoin-wallet-2022"/>
+    <xhtml:link
+            rel="alternate"
+            hreflang="ru"
+            href="https://honee.app/ru/luchshiy-bitkoin-koshelek-2022"/>
+    <lastmod>2021-10-06</lastmod>
   </url>
 </urlset>

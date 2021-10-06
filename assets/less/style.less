@@ -5,7 +5,7 @@
 @import (inline) '../../node_modules/@material/list/dist/mdc.list.css';
 @import "include/variables";
 @import "include/utils";
-@import "include/suggest";
+//@import "include/suggest";
 @import "include/general";
 //@import "include/forms";
 @import "include/modal";
@@ -297,6 +297,7 @@
     &::placeholder {color: @c-black-light;}
     &:focus::placeholder {color: transparent;}
 }
+.h-field__range {margin-top: 12px;}
 
 .h-field__aside {margin-left: 20px; flex-shrink: 9999; display: flex; flex-direction: column; justify-content: center; align-items: flex-end;}
 //.h-field__aside--with-input {flex-grow: 3;}
@@ -310,6 +311,8 @@
 .h-field__aside-input {
     text-align: right; margin-top: auto;
 }
+// possibly can be replaced with max value in pseudo content
+.h-field__aside-range {min-width: 102px;}
 .h-field__aside-control {font-size: 0;}
 
 .h-field__dropdown {position: absolute; top: 100%; left: -2px; right: -2px; /* border size */ padding-top: 16px; margin-top: -1 * (16px - 2px); z-index: 1;}
