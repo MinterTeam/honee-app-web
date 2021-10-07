@@ -18,7 +18,6 @@ metadata:
     # name of the secret that contains the user/password definitions
     nginx.ingress.kubernetes.io/auth-secret: basic-auth
     {{- end }}
-    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
 spec:
   rules:
     - host: "{{ .Values.ingress.domain }}"
@@ -31,5 +30,4 @@ spec:
   tls:
     - hosts:
         - {{ .Values.ingress.domain }}
-        - www.{{ .Values.ingress.domain }}
       secretName: {{ .Values.ingress.tlsname }}

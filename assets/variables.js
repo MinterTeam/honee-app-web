@@ -29,7 +29,7 @@ export const LANGUAGE_COOKIE_KEY = 'minter-language';
 export const I18N_ROUTE_NAME_SEPARATOR = '___';
 
 export const STAKE_RECALCULATE_BLOCK_COUNT = 720;
-export const DASHBOARD_URL = '/dashboard';
+export const DASHBOARD_URL = '/';
 
 export const SWAP_TYPE = {
     BANCOR: 'bancor',

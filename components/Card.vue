@@ -22,7 +22,7 @@ export default {
             return icon.indexOf('/') >= 0 ? icon : this.$store.getters['explorer/getCoinIcon'](icon);
         },
         pageUrl(page) {
-            return this.$i18nGetPreferredPath(DASHBOARD_URL + page);
+            return this.$i18nGetPreferredPath((DASHBOARD_URL + page).replace('//', '/'));
         },
     },
 };

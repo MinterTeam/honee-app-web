@@ -9,9 +9,9 @@ export default function({app, store, route, redirect, error}) {
     console.log('-- path', route.path);
 
     const urlRequiresNonAuth = /^(\/ru)?\/auth(\/|$)/.test(route.path);
-    const urlRequiresAuth = /^(\/ru)?\/dashboard(\/|$)/.test(route.path);
+    // const urlRequiresAuth = /^(\/ru)?\/dashboard(\/|$)/.test(route.path);
 
-    if (!store.getters.isAuthorized && urlRequiresAuth) {
+    if (!store.getters.isAuthorized && !urlRequiresNonAuth) {
         console.log('-- restricted: redirect to auth');
         store.commit('SET_AUTH_REDIRECT_PATH', route.fullPath);
         return redirect(app.i18nGetPreferredPath({path: '/auth'}));

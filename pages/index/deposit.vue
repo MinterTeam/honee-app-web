@@ -69,7 +69,7 @@
             <button class="button button--ghost-main button--full" @click="shareAddress">Share address</button>
         </div>
 
-        <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath($options.DASHBOARD_URL + '/buy')">
+        <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath($options.DASHBOARD_URL + 'buy')">
             Top up with ETH
         </nuxt-link>
     </Modal>

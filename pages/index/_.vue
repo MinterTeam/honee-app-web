@@ -67,14 +67,19 @@ const actionList = {
 export default {
     DASHBOARD_URL,
     components: {
-        TxStakeDelegateForm,
         Modal,
     },
     fetchOnServer: false,
     async fetch() {
+        this.action = null;
+        this.faq = null;
         // remove ending slash
         if (!this.$route.params.pathMatch) {
-            return this.$router.replace(this.$i18nGetPreferredPath({path: DASHBOARD_URL}));
+            const path = this.$i18nGetPreferredPath({path: DASHBOARD_URL});
+            if (path !== this.$route.path) {
+                return this.$router.replace(path);
+            }
+            return;
         }
         const [actionType, ...actionParams] = this.$route.params.pathMatch.split('/').filter((item) => !!item);
         const action = actionList[actionType];
@@ -148,24 +153,36 @@ export default {
         this.faq = Object.freeze(faq);
     },
     head() {
+        if (!this.action) {
+            return {};
+        }
         return {
-            title: getTitle(this.action?.title),
+            title: getTitle(this.action.title),
             meta: [
-                { hid: 'og-title', name: 'og:title', content: getTitle(this.action?.title) },
+                { hid: 'og-title', name: 'og:title', content: getTitle(this.action.title) },
             ],
         };
     },
     data() {
+        // https://github.com/nuxt/nuxt.js/issues/2444
         return {
-            action: null,
-            faq: null,
+            action: this.action || null,
+            faq: this.faq || null,
         };
+    },
+    watch: {
+        '$route.params.pathMatch': {
+            handler() {
+                this.$fetch();
+            },
+        },
     },
 };
 </script>
 
 <template>
     <Modal
+        v-if="$route.params.pathMatch"
         :isOpen="true"
         :hideCloseButton="false"
         :disableOutsideClick="true"
