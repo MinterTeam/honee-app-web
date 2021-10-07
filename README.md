@@ -1,6 +1,6 @@
-# Honee
+# Honee app
 
-[honee.app](https://honee.app)
+[my.honee.app](https://my.honee.app)
 
 ## Install
 

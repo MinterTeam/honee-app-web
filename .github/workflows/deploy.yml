@@ -5,9 +5,9 @@ on:
     branches: [ master, dev, testnet ]
 env:
   PRODUCTION_BRANCH: "master"
-  INGRESS_DOMAIN_master: "honee.app"
+  INGRESS_DOMAIN_master: "my.honee.app"
   INGRESS_DOMAIN_dev: "honee.dev"
-  INGRESS_DOMAIN_testnet: "honee.kubernetes.icu"
+  INGRESS_DOMAIN_testnet: "honee-app.kubernetes.icu"
   KUBE_NAMESPACE_master: "honee"
   KUBE_NAMESPACE_dev: "default"
   KUBE_NAMESPACE_testnet: "testnet"

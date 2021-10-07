@@ -1,12 +1,12 @@
 version: 1.0.0
 apiVersion: v2
-name: honee-web
-icon: https://explorer.minter.network/img/minter-logo-circle.svg
+name: honee-app-web
+icon: https://honee.app/favicon.png
 description: A Helm chart for Honee App Web
 
 appVersion: v1.0.0
 
-home: https://github.com/MinterTeam/honee-web
+home: https://github.com/MinterTeam/honee-app-web
 keywords:
   - minter
   - honee

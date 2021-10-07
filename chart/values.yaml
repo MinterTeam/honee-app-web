@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: registry.minter.network/honee-web
+  repository: registry.minter.network/honee-app-web
   pullPolicy: Always
   tag: latest
 
