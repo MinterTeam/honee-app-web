@@ -1,64 +1,63 @@
 <script>
-    import {validationMixin} from 'vuelidate';
-    import withParams from 'vuelidate/lib/withParams';
-    import {req} from 'vuelidate/lib/validators/common';
-    import * as clipboard from 'clipbrd';
-    import {generateMnemonic} from 'minterjs-wallet';
-    import getTitle from '~/assets/get-title';
-    import {DASHBOARD_URL} from '~/assets/variables.js';
-    import BaseButtonCopy from '~/components/base/BaseButtonCopy.vue';
+import {validationMixin} from 'vuelidate';
+import withParams from 'vuelidate/lib/withParams';
+import {req} from 'vuelidate/lib/validators/common';
+import {generateMnemonic} from 'minterjs-wallet';
+import getTitle from '~/assets/get-title.js';
+import {DASHBOARD_URL} from '~/assets/variables.js';
+import BaseButtonCopy from '~/components/base/BaseButtonCopy.vue';
 
-    // checkbox validator
-    const checked = withParams({ type: 'checked' }, (value) => {
-        return !req(value) || value === true;
-    });
+// checkbox validator
+const checked = withParams({ type: 'checked' }, (value) => {
+    return !req(value) || value === true;
+});
 
-    export default {
-        PAGE_TITLE: 'Sign up',
-        layout: 'splash',
-        components: {
-            BaseButtonCopy,
+export default {
+    PAGE_TITLE: 'Sign up',
+    layout: 'splash',
+    components: {
+        BaseButtonCopy,
+    },
+    mixins: [validationMixin],
+    head() {
+        return {
+            title: getTitle(this.$options.PAGE_TITLE),
+            meta: [
+                { hid: 'og-title', name: 'og:title', content: getTitle(this.$options.PAGE_TITLE) },
+            ],
+        };
+    },
+    data() {
+        return {
+            mnemonic: '',
+            isMnemonicSaved: false,
+            isToastVisible: false,
+        };
+    },
+    validations: {
+        isMnemonicSaved: {
+            checked,
         },
-        mixins: [validationMixin],
-        head() {
-            return {
-                title: getTitle(this.$options.PAGE_TITLE),
-                meta: [
-                    { hid: 'og-title', name: 'og:title', content: getTitle(this.$options.PAGE_TITLE) },
-                ],
-            };
+    },
+    mounted() {
+        this.mnemonic = generateMnemonic();
+    },
+    methods: {
+        authorize() {
+            if (this.$v.$invalid) {
+                this.$v.$touch();
+                return;
+            }
+            // clear old format stored data
+            this.$store.commit('LOGOUT');
+            this.$store.commit('ADD_AUTH_ADVANCED', this.mnemonic);
+            // redirect
+            const authRedirectPath = this.$store.state.authRedirectPath || DASHBOARD_URL;
+            this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
+            this.$router.push(this.$i18nGetPreferredPath({path: authRedirectPath}));
         },
-        data() {
-            return {
-                mnemonic: '',
-                isMnemonicSaved: false,
-                isToastVisible: false,
-            };
-        },
-        validations: {
-            isMnemonicSaved: {
-                checked,
-            },
-        },
-        mounted() {
-            this.mnemonic = generateMnemonic();
-        },
-        methods: {
-            authorize() {
-                if (this.$v.$invalid) {
-                    this.$v.$touch();
-                    return;
-                }
-                // clear old format stored data
-                this.$store.commit('LOGOUT');
-                this.$store.commit('ADD_AUTH_ADVANCED', this.mnemonic);
-                // redirect
-                const authRedirectPath = this.$store.state.authRedirectPath || DASHBOARD_URL;
-                this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
-                this.$router.push(this.$i18nGetPreferredPath({path: authRedirectPath}));
-            },
-        },
-    };
+    },
+};
 </script>
 
 <template>
@@ -84,7 +83,7 @@
             <button class="button button--main button--full" :class="{'is-disabled': !isMnemonicSaved}" @click="authorize">Launch Honee</button>
             <div class="form__error u-mt-05 u-text-center" v-if="$v.isMnemonicSaved.$error">You must save the phrase</div>
 
-            <nuxt-link class="button button--ghost button--full u-mt-05" to="/auto">Back</nuxt-link>
+            <nuxt-link class="button button--ghost button--full u-mt-05" :to="$i18nGetPreferredPath('/auth')">Back</nuxt-link>
         </div>
 
 

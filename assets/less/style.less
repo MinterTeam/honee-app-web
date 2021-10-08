@@ -93,7 +93,7 @@
 
 
 .splash-layout {}
-.splash-layout__container {min-height: 100vh; display: flex; align-items: center;}
+.splash-layout__wrap {min-height: 100vh; display: flex; flex-direction: column; align-items: center;}
 .splash-layout__inner {width: 100%;}
 
 .simple-layout {background: #fff;}
@@ -101,10 +101,13 @@
 .default-layout {overflow-y: scroll;}
 
 // auth
-.auth__body {background-image: url(../img/auth-bg.svg); background-position: 50% 42%; background-repeat: no-repeat;}
+.auth__body {}
 //.auth__bg {position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin-top: 40px; margin-left: -3px; z-index: -1;}
 .auth__bee {position: absolute; bottom: 100%; right: 10px; margin-bottom: 8px;}
 .auth__logo {display: block; margin-inline: auto; margin-bottom: 64px; margin-top: 60px;}
+@media (min-width: @breakpoint-medium-up) {
+    .auth__body {background-image: url(../img/auth-bg.svg); background-position: 50% 10%; background-repeat: no-repeat;}
+}
 
 
 .v-transition-toast-enter-active, .v-transition-toast-leave-active {

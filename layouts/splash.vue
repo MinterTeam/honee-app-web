@@ -16,14 +16,12 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div class="splash-layout__wrap">
         <div class="u-container u-container--wide header__language-container">
             <Language/>
         </div>
-        <div class="splash-layout__container u-container u-container--small">
-            <div class="splash-layout__inner">
-                <nuxt/>
-            </div>
+        <div class="u-container u-container--small">
+            <nuxt/>
 
             <Snackbar/>
         </div>
