@@ -27,7 +27,7 @@ export default {
         },
         logout() {
             this.$store.commit('LOGOUT');
-            this.$router.push('/auth');
+            this.$router.push(this.$i18nGetPreferredPath('/auth'));
         },
     },
 };

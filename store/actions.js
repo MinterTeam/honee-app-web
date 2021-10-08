@@ -4,6 +4,9 @@ import {getBalance, getAddressStakeList, getAddressTransactionList, getCoinList,
 
 export default {
     FETCH_TRANSACTION_LIST: ({ commit, dispatch, getters }, page = 1) => {
+        if (!getters.address) {
+            return;
+        }
         // use only 1 address
         return getAddressTransactionList(getters.address, {
             page: page || 1,
@@ -28,6 +31,9 @@ export default {
             });
     },
     FETCH_BALANCE: ({ commit, getters }) => {
+        if (!getters.address) {
+            return;
+        }
         // use only 1 address
         return getBalance(getters.address)
             .then((balanceResponse) => {
@@ -38,6 +44,9 @@ export default {
             });
     },
     FETCH_STAKE_LIST: ({ commit, getters }) => {
+        if (!getters.address) {
+            return;
+        }
         return getAddressStakeList(getters.address)
             .then((stakeList) => {
                 commit('SET_STAKE_LIST', stakeList);
