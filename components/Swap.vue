@@ -455,15 +455,15 @@
                 :$amount="$v.form.sellAmount"
                 :useBalanceForMaxValue="true"
                 :isUseMax.sync="isUseMax"
-                label="You pay"
+                :label="$td('You pay', 'form.swap-sell-coin')"
                 @input-native="isSelling = true"
                 @use-max="isSelling = true"
                 @blur="inputBlur()"
             />
-            <span class="form-field__error" v-if="$v.form.coinFrom.$dirty && !$v.form.coinFrom.required">Enter coin</span>
-            <span class="form-field__error" v-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.required">Enter amount</span>
-            <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.validAmount">Wrong amount</span>
-            <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.minValue">Not enough to pay transaction fee: {{ pretty(fee.value) }} {{ fee.coinSymbol}}</span>
+            <span class="form-field__error" v-if="$v.form.coinFrom.$dirty && !$v.form.coinFrom.required">{{ $td('Enter coin', 'form.coin-error-required') }}</span>
+            <span class="form-field__error" v-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
+            <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
+            <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.minValue">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol}}</span>
             <!--        <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.maxAmount">Not enough coins</span>-->
 
             <button class="button button--white convert__reverse-button" type="button" @click="reverseCoins()" v-if="!params.coinToSell && !params.coinToBuy">
@@ -477,7 +477,7 @@
                     :$coin="$v.form.coinTo"
                     :amount.sync="form.buyAmount"
                     :$amount="$v.form.buyAmount"
-                    label="You receive"
+                    :label="$td('You receive', 'form.swap-buy-coin')"
                     @input-native="isSelling = false"
                     @blur="inputBlur()"
                 />
@@ -489,7 +489,7 @@
             </template>
 
             <div class="estimation u-mt-10" v-if="params.coinToSell || params.coinToBuy">
-                <h3 class="estimation__title">You get approximately</h3>
+                <h3 class="estimation__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                 <div class="estimation__item">
                     <div class="estimation__coin">
                         <img class="estimation__coin-icon" :src="$store.getters['explorer/getCoinIcon'](form.coinTo)" width="20" height="20" alt="" role="presentation">
@@ -499,7 +499,7 @@
                 </div>
             </div>
 
-            <p class="u-text-center u-text-muted u-text-small u-mt-10">The final amount depends on&nbsp;the&nbsp;exchange rate at&nbsp;the&nbsp;moment of&nbsp;transaction.</p>
+            <p class="u-text-center u-text-muted u-text-small u-mt-10">{{ $td('The final amount depends on&nbsp;the&nbsp;exchange rate at&nbsp;the&nbsp;moment of&nbsp;transaction.', 'form.swap-confirm-note') }}</p>
 
             <div class="u-section--small">
                 <button class="button button--main button--full" :class="{'is-loading': isFormSending || isEstimationWaiting, 'is-disabled': $v.$invalid}">

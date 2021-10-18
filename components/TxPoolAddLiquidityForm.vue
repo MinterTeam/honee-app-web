@@ -244,7 +244,7 @@ export default {
                 :amount.sync="form.volume0"
                 :$amount="$v.form.volume0"
                 :useBalanceForMaxValue="true"
-                label="First coin"
+                :label="$td('First coin', 'form.pool-first-coin')"
                 @input-native="selectedInput = $options.INPUT_TYPE.AMOUNT0"
                 @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT0"
             />
@@ -263,7 +263,7 @@ export default {
                 :amount.sync="formAmount1"
                 :$amount="$v.formAmount1"
                 :useBalanceForMaxValue="true"
-                label="Second coin"
+                :label="$td('Second coin', 'form.pool-second-coin')"
                 @input-native="selectedInput = $options.INPUT_TYPE.AMOUNT1"
                 @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT1"
             />

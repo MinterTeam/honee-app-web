@@ -62,6 +62,8 @@ const scriptCSP = NUXT_LOADING_INLINE_SCRIPT_SHA.map((item) => {
 
 
 module.exports = {
+    ssr: false,
+    telemetry: false,
     /*
     ** Headers of the page
     */
@@ -194,6 +196,9 @@ module.exports = {
     ** Build configuration
     */
     build: {
+        extractCSS: true,
+        optimizeCSS: false,
+        postcss: false,
         watch: [
             './api/',
             // `./lang/`, // this watcher dont-work yet
@@ -206,6 +211,8 @@ module.exports = {
         },
         plugins: [
             new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
+            new webpack.IgnorePlugin(/^\.\/genesisStates\/\w+\.json/, /@ethereumjs\/common/),
+            new webpack.IgnorePlugin(/^\.\/\w+\.json/, /@ethereumjs\/common\/dist\.browser\/genesisStates/),
         ],
         babel: {
             presets: [
@@ -225,6 +232,7 @@ module.exports = {
         },
         transpile: [
             /es6-promise|\.(?!(?:js|json)$).{1,5}$/i,
+            '@material/',
             '/base-x/',
             'date-fns/esm',
             'vue-simple-suggest/dist/es7',
