@@ -72,7 +72,7 @@ export default {
     <div>
         <div class="card">
             <div class="card__content">
-                <h2 class="u-h--uppercase">Total balance</h2>
+                <h2 class="u-h--uppercase">{{ $td('Total balance', 'index.total-balance') }}</h2>
                 <div class="wallet__balance-wrap">
                     <div class="wallet__balance">
                         <div class="wallet__balance-value">
@@ -82,7 +82,7 @@ export default {
                     <div class="wallet__balance-links">
                         <nuxt-link class="button button--yellow-light button--full-mobile" :to="pageUrl('buy')">
                             <img class="button__icon" src="/img/icon-category-buy.svg" width="24" height="24" alt="" role="presentation">
-                            Buy BIP, HUB, & BEE
+                            {{ $td('Buy BIP, HUB, & BEE', 'index.wallet-balance-links') }}
                         </nuxt-link>
                     </div>
                 </div>
@@ -91,15 +91,15 @@ export default {
                 <div class="button-group button-group--center">
                     <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('deposit')">
                         <img class="button__icon" src="/img/icon-white-deposit.svg" width="24" height="24" alt="" role="presentation">
-                        Deposit
+                        {{ $td('Deposit', 'index.deposit') }}
                     </nuxt-link>
                     <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('swap')">
                         <img class="button__icon" src="/img/icon-white-swap.svg" width="24" height="24" alt="" role="presentation">
-                        Swap
+                        {{ $td('Swap', 'index.swap') }}
                     </nuxt-link>
                     <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('send')">
                         <img class="button__icon" src="/img/icon-white-send.svg" width="24" height="24" alt="" role="presentation">
-                        Send
+                        {{ $td('Send', 'index.send') }}
                     </nuxt-link>
                 </div>
             </div>
