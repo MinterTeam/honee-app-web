@@ -222,6 +222,11 @@ blockquote {
         &:not(.is-loading) {color: shade(#fff, 35%); background: transparent; border-color: shade(#fff, 25%);}
     }
 }
+.button--ghost-white {
+    color: #fff; background: transparent; border-color: #fff;
+    &:hover, &:focus {background: fade(#fff, 20%);}
+    &:active {background: fade(#fff, 40%);}
+}
 .button--ghost-green {
     color: @c-green; background: transparent; border-color: @c-green;
     &:hover, &:focus {background: fade(@c-green, 20%);}

@@ -22,6 +22,12 @@ export default {
         pretty,
         uppercase: (value) => value.toUpperCase(),
     },
+    fetch() {
+        return Promise.all([
+            this.$store.dispatch('FETCH_STAKE_LIST'),
+            this.$store.dispatch('FETCH_LIQUIDITY_LIST'),
+        ]);
+    },
     props: {
 
     },
@@ -39,7 +45,6 @@ export default {
                         ...card,
                         category: categorySlug,
                         actionType: card.action.replace(/\?.*/, '').split('/').filter((item) => !!item)[0],
-                        action: this.pageUrl(card.action),
                     };
                 });
             }
@@ -49,9 +54,9 @@ export default {
     },
     watch: {
         // update tx list on balance updated
-        "$store.state.balance": function() {
-            this.$store.dispatch('FETCH_TRANSACTION_LIST');
-        },
+        // "$store.state.balance": function() {
+        //     this.$store.dispatch('FETCH_TRANSACTION_LIST');
+        // },
     },
     methods: {
         pretty,

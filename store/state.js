@@ -9,6 +9,8 @@ export default function() {
         lastUpdateTime: 9999999999999,
         /** @type Array<StakeItem> */
         stakeList: [],
+        /** @type Array<PoolProvider> */
+        liquidityList: [],
         /** @type Array<ValidatorMeta> */
         validatorMetaList: [],
         // store only first page here

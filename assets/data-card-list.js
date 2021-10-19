@@ -1,15 +1,17 @@
+import {BASE_COIN} from '~/assets/variables.js';
+
 export default {
     swap: [
         {
-            title: 'Buy BIP',
+            title: `Buy ${BASE_COIN}`,
             description: 'Top up your balance with any of the supported cryptos to buy BIP.',
-            icon: 'BIP',
+            icon: BASE_COIN,
             // color: '#fa5a00',
             stats: {
-                price: 'BIP',
+                price: BASE_COIN,
             },
-            tags: ['Exchange', 'BIP'],
-            action: '/swap/BIP',
+            tags: ['Exchange', BASE_COIN],
+            action: `/swap/${BASE_COIN}`,
         },
         {
             title: 'Buy HUB',
@@ -36,16 +38,16 @@ export default {
     ],
     earn: [
         {
-            title: 'Delegate BIP',
+            title: `Delegate ${BASE_COIN}`,
             description: '‘Tie’ your BIP to any validator of the Minter Network and start getting rewards every hour.',
-            icon: 'BIP',
+            icon: BASE_COIN,
             color: '#fa5a00',
             stats: {
                 caption: 'APY',
                 value: '40%',
             },
-            tags: ['Staking', 'BIP'],
-            action: '/delegate/BIP',
+            tags: ['Staking', BASE_COIN],
+            action: `/delegate/${BASE_COIN}`,
         },
         {
             title: 'Yield farming BEE / MUSD',

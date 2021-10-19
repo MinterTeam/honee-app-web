@@ -1,5 +1,5 @@
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import {getBalance, getAddressStakeList, getAddressTransactionList, getCoinList, getValidatorMetaList} from "~/api/explorer.js";
+import {getBalance, getAddressStakeList, getAddressTransactionList, getCoinList, getValidatorMetaList, getProviderPoolList} from "~/api/explorer.js";
 
 
 export default {
@@ -51,6 +51,17 @@ export default {
             .then((stakeList) => {
                 commit('SET_STAKE_LIST', stakeList);
                 return stakeList;
+            });
+    },
+    FETCH_LIQUIDITY_LIST: ({ commit, getters }) => {
+        if (!getters.address) {
+            return;
+        }
+        //@TODO fetch all pages
+        return getProviderPoolList(getters.address, {limit: 150})
+            .then((info) => {
+                commit('SET_LIQUIDITY_LIST', info.data);
+                return info.data;
             });
     },
     FETCH_COIN_LIST: () => {

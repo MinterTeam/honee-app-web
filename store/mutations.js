@@ -36,6 +36,9 @@ export default {
     SET_STAKE_LIST: (state, stakeList) => {
         state.stakeList = Object.freeze(stakeList);
     },
+    SET_LIQUIDITY_LIST: (state, liquidityList) => {
+        state.liquidityList = Object.freeze(liquidityList);
+    },
     SET_VALIDATOR_META_LIST(state, validatorList) {
         state.validatorMetaList = Object.freeze(validatorList);
     },
