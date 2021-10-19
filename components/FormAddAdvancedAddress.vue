@@ -54,12 +54,12 @@
                       v-model.trim="mnemonic"
                       @blur="$v.mnemonic.$touch()"
             ></textarea>
-            <span class="form-field__label">Enter your seed phrase</span>
-            <span class="form-field__error" v-if="$v.mnemonic.$dirty && !$v.mnemonic.required">Enter phrase</span>
-            <span class="form-field__error" v-if="$v.mnemonic.$dirty && $v.mnemonic.required && !$v.mnemonic.validMnemonic">Invalid phrase</span>
+            <span class="form-field__label">{{ $td('Enter your seed phrase', 'index.enter-seed') }}</span>
+            <span class="form-field__error" v-if="$v.mnemonic.$dirty && !$v.mnemonic.required">{{ $td('Enter phrase', 'index.seed-not-entered') }}</span>
+            <span class="form-field__error" v-if="$v.mnemonic.$dirty && $v.mnemonic.required && !$v.mnemonic.validMnemonic">{{ $td('Invalid phrase', 'index.invalid-seed') }}</span>
         </label>
         <div class="form-row">
-            <button class="button button--main button--full" :class="{'is-disabled': $v.$invalid}">Sign in</button>
+            <button class="button button--main button--full" :class="{'is-disabled': $v.$invalid}">{{ $td('Sign in', 'index.sign-in') }}</button>
         </div>
     </form>
 </template>
