@@ -71,8 +71,14 @@ export default {
 		'footer-link-box-buy-bitcoin': 'Купить Биткоин',
 		'footer-link-box-earn-bitcoin': 'Заработать Биткоин',
 		'footer-link-box-wallet-bitcoin': 'Биткоин кошелек',
+        
+        'total-balance': 'Общий баланс',
+        'wallet-balance-links': 'Купить BIP, HUB & BEE',
+        'deposit': 'Пополнить',
+        'swap': 'Обменять',
+        'send': 'Отправить',
 	},
-	form: {
+	form: {        
 		'toggle-simple-mode': 'Убрать сообщение',
 		'toggle-advanced-mode': 'Добавить сообщение',
 
