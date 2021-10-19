@@ -8,17 +8,18 @@
 
     export default {
         DASHBOARD_URL,
-        PAGE_TITLE: 'Receive coins',
         components: {
             QrcodeVue,
             Modal,
             BaseButtonCopy,
         },
         head() {
+        const title = getTitle(this.$td('Receive coins', 'index.receive-coins'));
+        
             return {
-                title: getTitle(this.$options.PAGE_TITLE),
+                title,
                 meta: [
-                    { hid: 'og-title', name: 'og:title', content: getTitle(this.$options.PAGE_TITLE) },
+                    { hid: 'og-title', name: 'og:title', content: title },
                 ],
             };
         },
@@ -41,7 +42,7 @@
             },
             shareAddress() {
                 window.navigator.share({
-                    title: 'My address',
+                    title: this.$td('My address', 'index.my-address'),
                     text: this.$store.getters.address,
                 });
             },
@@ -58,7 +59,7 @@
     >
         <div class="form-field form-field--with-icon u-text-left">
             <div class="form-field__input is-not-empty">{{ $store.getters.address }}</div>
-            <div class="form-field__label">Your address</div>
+            <div class="form-field__label">{{ $td('Your address', 'index.your-address') }}</div>
             <BaseButtonCopy class="form-field__icon form-field__icon--copy u-semantic-button link--opacity" :copy-text="$store.getters.address">
                 <img src="/img/icon-copy.svg" alt="Copy">
             </BaseButtonCopy>
@@ -66,11 +67,11 @@
         <qrcode-vue class="u-mt-10 u-text-center" :value="$store.getters.address" :size="160" level="L"/>
 
         <div class="u-mt-10" v-if="isShareSupported">
-            <button class="button button--ghost-main button--full" @click="shareAddress">Share address</button>
+            <button class="button button--ghost-main button--full" @click="shareAddress">{{ $td('Share address', 'index.share-address') }}</button>
         </div>
 
         <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath($options.DASHBOARD_URL + 'buy')">
-            Top up with ETH
+            {{ $td('Top up with ETH', 'index.top-up-with-eth') }}
         </nuxt-link>
     </Modal>
 </template>
