@@ -77,6 +77,9 @@ export default {
         'deposit': 'Пополнить',
         'swap': 'Обменять',
         'send': 'Отправить',
+        
+        'sign-up': 'Зарегистрируйтесь',
+        'or': 'или',
 	},
 	form: {        
 		'toggle-simple-mode': 'Убрать сообщение',
