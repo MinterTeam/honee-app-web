@@ -20,7 +20,7 @@ export default {
     mixins: [validationMixin],
     head() {
         const title = getTitle(this.$td('Sign up', 'index.sign-up'));
-        
+
         return {
             title,
             meta: [
@@ -77,7 +77,7 @@ export default {
         <div class="form-row">
             <label class="form-check">
                 <input class="form-check__input" type="checkbox" v-model="isMnemonicSaved">
-                <span class="form-check__label form-check__label--checkbox">{{ $td('I've saved the phrase!', 'index.save-phrase-checkbox') }}</span>
+                <span class="form-check__label form-check__label--checkbox">{{ $td('I\'ve saved the phrase!', 'index.save-phrase-checkbox') }}</span>
             </label>
         </div>
         <div class="form-row">
