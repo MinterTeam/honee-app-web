@@ -13,7 +13,7 @@ const checked = withParams({ type: 'checked' }, (value) => {
 });
 
 export default {
-    PAGE_TITLE: '{{ $td('Sign up', 'index.sign-up') }}',
+    PAGE_TITLE: this.$td('Sign up', 'index.sign-up'),
     layout: 'splash',
     components: {
         BaseButtonCopy,
