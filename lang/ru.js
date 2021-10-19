@@ -104,7 +104,13 @@ export default {
         'delegate': 'Делегируйте',
         'unbond': 'Отзовите монеты из делегирования',
         'action-not-found': 'Действие не найдено',
-        'loading': 'Загрузка…',    
+        'loading': 'Загрузка…',
+        
+        'receive-coins': 'Получить монеты',
+        'my-address': 'Мой адрес',
+        'your-address': 'Ваш адрес',
+        'share-address': 'Поделиться',
+        'top-up-with-eth': 'Пополнить через ETH',
 	},
 	form: {        
 		'toggle-simple-mode': 'Убрать сообщение',
