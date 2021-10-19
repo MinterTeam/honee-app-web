@@ -33,6 +33,9 @@ export default {
         this.$store.dispatch('FETCH_VALIDATOR_META_LIST');
     },
     props: {
+        action: {
+            type: Object,
+        },
         params: {
             type: Object,
             default: () => ({}),
@@ -102,7 +105,7 @@ export default {
     >
         <template v-slot:panel-header>
             <h1 class="panel__header-title">
-                {{ $td('Delegate', 'delegation.delegate-title') }}
+                {{ action ? $td(action.title, action.langKey) : $td('Delegate', 'delegation.delegate-title') }}
             </h1>
             <p class="panel__header-description">
                 {{ $td('You can delegate your tokens to validators and receive related payments in accordance with the terms of participation.', 'delegation.delegate-description') }}

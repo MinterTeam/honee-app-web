@@ -24,6 +24,15 @@ export default {
         autosize,
     },
     mixins: [validationMixin],
+    props: {
+        action: {
+            type: Object,
+        },
+        params: {
+            type: Object,
+            default: () => ({}),
+        },
+    },
     data() {
         return {
             form: {
@@ -73,7 +82,7 @@ export default {
     >
         <template v-slot:panel-header>
             <h1 class="panel__header-title">
-                {{ $td('Send coins', 'wallet.send-title') }}
+                {{ action ? $td(action.title, action.langKey) : $td('Send coins', 'wallet.send-title') }}
             </h1>
             <p class="panel__header-description">
                 {{ $td('Transfer your coins to whomever you want—friends, family members, or business partners.', 'wallet.send-description') }}

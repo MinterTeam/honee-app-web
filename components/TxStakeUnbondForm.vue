@@ -34,6 +34,9 @@
             return this.$store.dispatch('FETCH_STAKE_LIST');
         },
         props: {
+            action: {
+                type: Object,
+            },
             params: {
                 type: Object,
                 default: () => ({}),
@@ -163,7 +166,7 @@
         >
             <template v-slot:panel-header>
                 <h1 class="panel__header-title">
-                    {{ $td('Unbond', 'delegation.unbond-title') }}
+                    {{ action ? $td(action.title, action.langKey) : $td('Unbond', 'delegation.unbond-title') }}
                 </h1>
                 <p class="panel__header-description">
                     {{ $td('In case you don’t want the validator to handle your holdings anymore, all you need to do is submit the request for unbonding. The process will be finalized within 30 days after the request has been sent.', 'delegation.unbond-description') }}

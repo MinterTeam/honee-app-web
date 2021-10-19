@@ -44,7 +44,7 @@ export default {
         <p class="">{{ card.description }}</p>
 
         <div class="card__action-tag-list">
-            <div class="card__action-tag" v-for="tag in card.tags" :key="tag">{{ tag }}</div>
+            <div class="card__action-tag" v-for="tag in card.tags" :key="tag">{{ $td(tag, `action.tag-${tag.toLowerCase()}`) }}</div>
         </div>
 
         <nuxt-link class="button button--full u-mt-15" :to="card.action">

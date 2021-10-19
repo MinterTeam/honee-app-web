@@ -42,6 +42,9 @@
         directives: {
         },
         props: {
+            action: {
+                type: Object,
+            },
             params: {
                 type: Object,
                 default: () => ({}),
@@ -441,10 +444,17 @@
     <div>
         <form novalidate @submit.prevent="openConfirmation()">
             <h1 class="u-h3 u-mb-10">
+                {{ $t(action.langKey + '-combined', {
+                    coin0: params.coinToSell ? params.coinToSell.toUpperCase() : $td('coins', action.langKey + '-coin0-empty'),
+                    conjunction: params.coinToBuy ? $td('for', action.langKey + '-conjunction') : undefined,
+                    coin1: params.coinToBuy ? params.coinToBuy.toUpperCase() : undefined,
+                }) }}
+                <!--
                 Swap
                 <template v-if="params.coinToSell">{{ params.coinToSell.toUpperCase() }}</template>
                 <template v-if="params.coinToBuy && !params.coinToSell">coins</template>
                 <template v-if="params.coinToBuy">for {{ params.coinToBuy.toUpperCase() }}</template>
+                -->
             </h1>
 <!--            <h2 class="u-h5 u-mb-10">You pay</h2>-->
             <FieldCombined

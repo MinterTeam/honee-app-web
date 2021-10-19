@@ -1,4 +1,5 @@
 <script>
+import { waitUntil } from 'async-wait-until';
 import getTitle from '~/assets/get-title.js';
 import {DASHBOARD_URL} from '~/assets/variables.js';
 import cardList from '~/assets/data-card-list.js';
@@ -11,54 +12,59 @@ import TxStakeDelegateForm from '~/components/TxStakeDelegateForm.vue';
 import TxStakeUnbondForm from '~/components/TxStakeUnbondForm.vue';
 import Modal from '~/components/base/Modal.vue';
 
+// treat such param value as not defined
+const OMIT_PARAM_SYMBOL = '-';
+// uppercase such param values
+const COIN_PARAMS = ['coin', 'coin0', 'coin1', 'coinToSell', 'coinToBuy'];
+
 const addLiquidityAction = {
-    title: this.$td('Provide liquidity to pool', 'index.provide-liquidity-to-pool'),
+    title: 'Provide liquidity to pool',
     params: ['coin0', 'coin1'],
     component: TxPoolAddLiquidityForm,
 };
 
 const actionList = {
     buy: {
-        title: this.$td('Buy BIP, HUB, & BEE for ETH', 'index.buy-bip-hub-bee-for-eth'),
+        title: 'Buy BIP, HUB, & BEE for ETH',
         params: [],
         component: HubBuyForm,
         tags: [],
     },
     swap: {
-        title: this.$td('Swap coins', 'index.swap-coins'),
+        title: 'Swap coins',
         params: ['coinToBuy', 'coinToSell'],
         component: Swap,
         tags: ['exchange'],
     },
     send: {
-        title: this.$td('Send coins', 'index.send-coins'),
+        title: 'Send coins',
         params: [],
         component: TxSendForm,
     },
     'add-liquidity': addLiquidityAction,
     win: {
         ...addLiquidityAction,
-        title: this.$td('Win', 'index.win'),
+        title: 'Win',
         tags: ['lottery'],
     },
     farm: {
         ...addLiquidityAction,
-        title: this.$td('Farm', 'index.farm'),
+        title: 'Farm',
         tags: ['farming'],
     },
     'remove-liquidity': {
-        title: this.$td('Remove liquidity from pool', 'index.remove-liquidity-from-pool'),
+        title: 'Remove liquidity from pool',
         params: ['coin0', 'coin1'],
         component: TxPoolRemoveLiquidityForm,
     },
     delegate: {
-        title: this.$td('Delegate', 'index.delegate'),
+        title: 'Delegate',
         params: ['coin', 'publicKey'],
         component: TxStakeDelegateForm,
         tags: ['staking'],
     },
     unbond: {
-        title: this.$td('Unbond', 'index.unbond'),
+        title: 'Unbond',
         params: ['coin', 'publicKey'],
         component: TxStakeUnbondForm,
     },
@@ -81,22 +87,38 @@ export default {
             }
             return;
         }
-        const [actionType, ...actionParams] = this.$route.params.pathMatch.split('/').filter((item) => !!item);
+        const [actionType, ...actionQueryParams] = this.$route.params.pathMatch.split('/').filter((item) => !!item);
         const action = actionList[actionType];
         if (!action) {
             this.$nuxt.error({
                 status: 404,
-                message: this.$td('Action not found', 'index.action-not-found'),
+                message: this.$td('Action not found', 'action.title-not-found'),
             });
         }
 
         // action params
         let pathParams = {};
+        let shouldRedirect = false;
         action.params.forEach((paramKey, paramIndex) => {
-            if (actionParams[paramIndex]) {
-                pathParams[paramKey] = actionParams[paramIndex];
+            const value = actionQueryParams[paramIndex];
+            const isCoinParam = COIN_PARAMS.includes(paramKey);
+            if (isCoinParam && value.toUpperCase() !== value) {
+                shouldRedirect = true;
+                actionQueryParams[paramIndex] = value.toUpperCase();
+            }
+            if (value && value !== OMIT_PARAM_SYMBOL) {
+                pathParams[paramKey] = value;
             }
         });
+        if (shouldRedirect) {
+            let newPathMatch = [actionType, ...actionQueryParams].join('/');
+            this.$router.replace({
+                ...this.$route,
+                params: {pathMatch: newPathMatch},
+            });
+            this.isRedirecting = true;
+            return;
+        }
         const params = {
             ...this.$route.query,
             ...pathParams,
@@ -113,6 +135,7 @@ export default {
             ...action,
             title,
             params,
+            langKey: `action.title-${actionType}`,
         });
 
         const flatCardList = [].concat(...Object.values(cardList));
@@ -156,10 +179,12 @@ export default {
         if (!this.action) {
             return {};
         }
+
+        const title = getTitle(this.$td(this.action.title, this.action.langKey));
         return {
-            title: getTitle(this.action.title),
+            title,
             meta: [
-                { hid: 'og-title', name: 'og:title', content: getTitle(this.action.title) },
+                { hid: 'og-title', name: 'og:title', content: title },
             ],
         };
     },
@@ -168,12 +193,16 @@ export default {
         return {
             action: this.action || null,
             faq: this.faq || null,
+            isRedirecting: false,
         };
     },
     watch: {
         '$route.params.pathMatch': {
             handler() {
-                this.$fetch();
+                waitUntil(() => !this.$fetchState.pending)
+                    .then(() => {
+                        this.$fetch();
+                    });
             },
         },
     },
@@ -193,13 +222,14 @@ export default {
             <component
                 class="card__content"
                 :is="action.component"
+                :action="action"
                 :params="action.params"
             />
 
             <nuxt-content class="card__content" :document="faq" v-if="faq"/>
         </div>
-        <div v-else-if="$fetchState.pending">{{ $td('Loading…', 'index.loading') }}</div>
-        <div v-else>{{ $td('Action not found', 'index.action-not-found') }}</div>
+        <div v-else-if="$fetchState.pending || isRedirecting">{{ $td('Loading…', 'index.loading') }}</div>
+        <div v-else>{{ $td('Action not found', 'action.title-not-found') }}</div>
 
 
 

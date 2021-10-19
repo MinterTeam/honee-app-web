@@ -119,6 +119,15 @@ export default {
                 // this.fetchUniswapPair(),
             ]));
     },
+    props: {
+        action: {
+            type: Object,
+        },
+        params: {
+            type: Object,
+            default: () => ({}),
+        },
+    },
     data() {
         return {
             coinToDepositBalance: 0,
@@ -891,7 +900,7 @@ function getSwapOutput(receipt) {
 <template>
     <div>
         <h1 class="panel__header-title u-mb-10">
-            Buy BIP, HUB, or BEE for ETH
+            {{ $td(action.title, action.langKey) }}
         </h1>
 
         <div class="u-grid u-grid--small u-grid--vertical-margin--small" v-if="recovery">
