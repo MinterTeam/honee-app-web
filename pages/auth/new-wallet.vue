@@ -13,17 +13,18 @@ const checked = withParams({ type: 'checked' }, (value) => {
 });
 
 export default {
-    PAGE_TITLE: this.$td('Sign up', 'index.sign-up'),
     layout: 'splash',
     components: {
         BaseButtonCopy,
     },
     mixins: [validationMixin],
     head() {
+        const title = getTitle(this.$td('Sign up', 'index.sign-up'));
+        
         return {
-            title: getTitle(this.$options.PAGE_TITLE),
+            title,
             meta: [
-                { hid: 'og-title', name: 'og:title', content: getTitle(this.$options.PAGE_TITLE) },
+                { hid: 'og-title', name: 'og:title', content: title },
             ],
         };
     },
