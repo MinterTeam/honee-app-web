@@ -12,53 +12,53 @@ import TxStakeUnbondForm from '~/components/TxStakeUnbondForm.vue';
 import Modal from '~/components/base/Modal.vue';
 
 const addLiquidityAction = {
-    title: 'Provide liquidity to pool',
+    title: this.$td('Provide liquidity to pool', 'index.provide-liquidity-to-pool'),
     params: ['coin0', 'coin1'],
     component: TxPoolAddLiquidityForm,
 };
 
 const actionList = {
     buy: {
-        title: 'Buy BIP, HUB, & BEE for ETH',
+        title: this.$td('Buy BIP, HUB, & BEE for ETH', 'index.buy-bip-hub-bee-for-eth'),
         params: [],
         component: HubBuyForm,
         tags: [],
     },
     swap: {
-        title: 'Swap coins',
+        title: this.$td('Swap coins', 'index.swap-coins'),
         params: ['coinToBuy', 'coinToSell'],
         component: Swap,
         tags: ['exchange'],
     },
     send: {
-        title: 'Send coins',
+        title: this.$td('Send coins', 'index.send-coins'),
         params: [],
         component: TxSendForm,
     },
     'add-liquidity': addLiquidityAction,
     win: {
         ...addLiquidityAction,
-        title: 'Win',
+        title: this.$td('Win', 'index.win'),
         tags: ['lottery'],
     },
     farm: {
         ...addLiquidityAction,
-        title: 'Farm',
+        title: this.$td('Farm', 'index.farm'),
         tags: ['farming'],
     },
     'remove-liquidity': {
-        title: 'Remove liquidity from pool',
+        title: this.$td('Remove liquidity from pool', 'index.remove-liquidity-from-pool'),
         params: ['coin0', 'coin1'],
         component: TxPoolRemoveLiquidityForm,
     },
     delegate: {
-        title: 'Delegate',
+        title: this.$td('Delegate', 'index.delegate'),
         params: ['coin', 'publicKey'],
         component: TxStakeDelegateForm,
         tags: ['staking'],
     },
     unbond: {
-        title: 'Unbond',
+        title: this.$td('Unbond', 'index.unbond'),
         params: ['coin', 'publicKey'],
         component: TxStakeUnbondForm,
     },
@@ -86,7 +86,7 @@ export default {
         if (!action) {
             this.$nuxt.error({
                 status: 404,
-                message: 'Action not found',
+                message: this.$td('Action not found', 'index.action-not-found'),
             });
         }
 
@@ -198,8 +198,8 @@ export default {
 
             <nuxt-content class="card__content" :document="faq" v-if="faq"/>
         </div>
-        <div v-else-if="$fetchState.pending">Loading…</div>
-        <div v-else>Action not found</div>
+        <div v-else-if="$fetchState.pending">{{ $td('Loading…', 'index.loading') }}</div>
+        <div v-else>{{ $td('Action not found', 'index.action-not-found') }}</div>
 
 
 
