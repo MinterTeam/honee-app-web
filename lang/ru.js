@@ -93,6 +93,18 @@ export default {
         'seed-not-entered': 'Сид-фраза не введена',
         'invalid-seed': 'Неверная сид-фраза',
         'sign-in': 'Войти',
+        
+        'provide-liquidity-to-pool': 'Предоставьте ликвидность в пул',
+        'buy-bip-hub-bee-for-eth': 'Купите BIP, HUB & BEE за ETH',
+        'swap-coins': 'Обменяйте монеты',
+        'send-coins': 'Отправьте монеты',
+        'win': 'Выигрывайте',
+        'farm': 'Участвуйте в доходном фермерстве',
+        'remove-liquidity-from-pool': 'Отзовите ликвидность из пула',
+        'delegate': 'Делегируйте',
+        'unbond': 'Отзовите монеты из делегирования',
+        'action-not-found': 'Действие не найдено',
+        'loading': 'Загрузка…',    
 	},
 	form: {        
 		'toggle-simple-mode': 'Убрать сообщение',
