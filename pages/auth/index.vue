@@ -32,10 +32,10 @@ export default {
             <img class="auth__logo" src="/img/logo-honee.svg" alt="Honee" width="244" height="48">
         </div>
 
-        <nuxt-link class="button button--main button--full button--large" :to="$i18nGetPreferredPath('/auth/new-wallet')">Sign up</nuxt-link>
+        <nuxt-link class="button button--main button--full button--large" :to="$i18nGetPreferredPath('/auth/new-wallet')">{{ $td('Sign up', 'index.sign-up') }}</nuxt-link>
 
         <div class="u-section-divider-text">
-            <div class="u-section-divider-text__inner">or</div>
+            <div class="u-section-divider-text__inner">{{ $td('or', 'index.or') }}</div>
         </div>
 
         <FormAddAdvancedAddress/>

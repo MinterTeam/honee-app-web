@@ -61,6 +61,9 @@ export default {
             });
     },
     props: {
+        action: {
+            type: Object,
+        },
         params: {
             type: Object,
             default: () => ({}),
@@ -273,7 +276,7 @@ export default {
     >
         <template v-slot:panel-header>
             <h1 class="panel__header-title">
-                {{ $td('Remove liquidity from swap pool', 'pool.remove-title') }}
+                {{ action ? $td(action.title, action.langKey) : $td('Remove liquidity from swap pool', 'pool.remove-title') }}
             </h1>
             <!--            <p class="panel__header-description">-->
             <!--                {{ $td('Choose one of the coins that you own and specify the amount you would like to add.', 'swap.remove-description') }}-->

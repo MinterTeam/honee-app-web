@@ -1,4 +1,5 @@
 <script>
+import { waitUntil } from 'async-wait-until';
 import getTitle from '~/assets/get-title.js';
 import {DASHBOARD_URL} from '~/assets/variables.js';
 import cardList from '~/assets/data-card-list.js';
@@ -10,6 +11,11 @@ import TxPoolRemoveLiquidityForm from '~/components/TxPoolRemoveLiquidityForm.vu
 import TxStakeDelegateForm from '~/components/TxStakeDelegateForm.vue';
 import TxStakeUnbondForm from '~/components/TxStakeUnbondForm.vue';
 import Modal from '~/components/base/Modal.vue';
+
+// treat such param value as not defined
+const OMIT_PARAM_SYMBOL = '-';
+// uppercase such param values
+const COIN_PARAMS = ['coin', 'coin0', 'coin1', 'coinToSell', 'coinToBuy'];
 
 const addLiquidityAction = {
     title: 'Provide liquidity to pool',
@@ -81,22 +87,38 @@ export default {
             }
             return;
         }
-        const [actionType, ...actionParams] = this.$route.params.pathMatch.split('/').filter((item) => !!item);
+        const [actionType, ...actionQueryParams] = this.$route.params.pathMatch.split('/').filter((item) => !!item);
         const action = actionList[actionType];
         if (!action) {
             this.$nuxt.error({
                 status: 404,
-                message: 'Action not found',
+                message: this.$td('Action not found', 'action.title-not-found'),
             });
         }
 
         // action params
         let pathParams = {};
+        let shouldRedirect = false;
         action.params.forEach((paramKey, paramIndex) => {
-            if (actionParams[paramIndex]) {
-                pathParams[paramKey] = actionParams[paramIndex];
+            const value = actionQueryParams[paramIndex];
+            const isCoinParam = COIN_PARAMS.includes(paramKey);
+            if (isCoinParam && value.toUpperCase() !== value) {
+                shouldRedirect = true;
+                actionQueryParams[paramIndex] = value.toUpperCase();
+            }
+            if (value && value !== OMIT_PARAM_SYMBOL) {
+                pathParams[paramKey] = value;
             }
         });
+        if (shouldRedirect) {
+            let newPathMatch = [actionType, ...actionQueryParams].join('/');
+            this.$router.replace({
+                ...this.$route,
+                params: {pathMatch: newPathMatch},
+            });
+            this.isRedirecting = true;
+            return;
+        }
         const params = {
             ...this.$route.query,
             ...pathParams,
@@ -113,6 +135,7 @@ export default {
             ...action,
             title,
             params,
+            langKey: `action.title-${actionType}`,
         });
 
         const flatCardList = [].concat(...Object.values(cardList));
@@ -156,10 +179,12 @@ export default {
         if (!this.action) {
             return {};
         }
+
+        const title = getTitle(this.$td(this.action.title, this.action.langKey));
         return {
-            title: getTitle(this.action.title),
+            title,
             meta: [
-                { hid: 'og-title', name: 'og:title', content: getTitle(this.action.title) },
+                { hid: 'og-title', name: 'og:title', content: title },
             ],
         };
     },
@@ -168,12 +193,16 @@ export default {
         return {
             action: this.action || null,
             faq: this.faq || null,
+            isRedirecting: false,
         };
     },
     watch: {
         '$route.params.pathMatch': {
             handler() {
-                this.$fetch();
+                waitUntil(() => !this.$fetchState.pending)
+                    .then(() => {
+                        this.$fetch();
+                    });
             },
         },
     },
@@ -193,13 +222,14 @@ export default {
             <component
                 class="card__content"
                 :is="action.component"
+                :action="action"
                 :params="action.params"
             />
 
             <nuxt-content class="card__content" :document="faq" v-if="faq"/>
         </div>
-        <div v-else-if="$fetchState.pending">Loading…</div>
-        <div v-else>Action not found</div>
+        <div v-else-if="$fetchState.pending || isRedirecting">{{ $td('Loading…', 'index.loading') }}</div>
+        <div v-else>{{ $td('Action not found', 'action.title-not-found') }}</div>
 
 
 

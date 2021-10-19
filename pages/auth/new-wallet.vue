@@ -13,17 +13,18 @@ const checked = withParams({ type: 'checked' }, (value) => {
 });
 
 export default {
-    PAGE_TITLE: 'Sign up',
     layout: 'splash',
     components: {
         BaseButtonCopy,
     },
     mixins: [validationMixin],
     head() {
+        const title = getTitle(this.$td('Sign up', 'index.sign-up'));
+
         return {
-            title: getTitle(this.$options.PAGE_TITLE),
+            title,
             meta: [
-                { hid: 'og-title', name: 'og:title', content: getTitle(this.$options.PAGE_TITLE) },
+                { hid: 'og-title', name: 'og:title', content: title },
             ],
         };
     },
@@ -64,8 +65,8 @@ export default {
     <div class="u-section">
 
         <div class="form-row u-text-center">
-            <h1 class="u-h3 u-mb-05">Sign up</h1>
-            <p>Save this seed phrase to access your funds in the future.</p>
+            <h1 class="u-h3 u-mb-05">{{ $td('Sign up', 'index.sign-up-2') }}</h1>
+            <p>{{ $td('Save this seed phrase to access your funds in the future.', 'index.save-phrase-warning') }}</p>
         </div>
         <div class="form-field form-field--with-icon form-field--without-label form-row">
             <div class="form-field__input is-not-empty">{{ mnemonic }}</div>
@@ -76,20 +77,20 @@ export default {
         <div class="form-row">
             <label class="form-check">
                 <input class="form-check__input" type="checkbox" v-model="isMnemonicSaved">
-                <span class="form-check__label form-check__label--checkbox">I've saved the phrase!</span>
+                <span class="form-check__label form-check__label--checkbox">{{ $td('I\'ve saved the phrase!', 'index.save-phrase-checkbox') }}</span>
             </label>
         </div>
         <div class="form-row">
-            <button class="button button--main button--full" :class="{'is-disabled': !isMnemonicSaved}" @click="authorize">Launch Honee</button>
-            <div class="form__error u-mt-05 u-text-center" v-if="$v.isMnemonicSaved.$error">You must save the phrase</div>
+            <button class="button button--main button--full" :class="{'is-disabled': !isMnemonicSaved}" @click="authorize">{{ $td('Launch Honee', 'index.launch-honee') }}</button>
+            <div class="form__error u-mt-05 u-text-center" v-if="$v.isMnemonicSaved.$error">{{ $td('You must save the phrase', 'index.save-phrase-error') }}</div>
 
-            <nuxt-link class="button button--ghost button--full u-mt-05" :to="$i18nGetPreferredPath('/auth')">Back</nuxt-link>
+            <nuxt-link class="button button--ghost button--full u-mt-05" :to="$i18nGetPreferredPath('/auth')">{{ $td('Back', 'index.back') }}</nuxt-link>
         </div>
 
 
 
 
-        <p class="u-mt-20">We do not provide custody services for any virtual assets. It is your sole responsibility to store your seed phrase in a safe location. You should backup your seed phrase immediately upon its generation. If you lose your seed phrase, you will not be able to restore it and will lose all of your funds stored in the respective wallet.</p>
+        <p class="u-mt-20">{{ $td('We do not provide custody services for any virtual assets. It is your sole responsibility to store your seed phrase in a safe location. You should backup your seed phrase immediately upon its generation. If you lose your seed phrase, you will not be able to restore it and will lose all of your funds stored in the respective wallet.', 'index.create-wallet-disclaimer') }}</p>
     </div>
 </template>
 

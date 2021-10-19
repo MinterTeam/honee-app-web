@@ -90,7 +90,7 @@ function poolHasCoin(pool, symbol) {
         <p class="">{{ card.description }}</p>
 
         <div class="card__action-tag-list">
-            <div class="card__action-tag" v-for="tag in card.tags" :key="tag">{{ tag }}</div>
+            <div class="card__action-tag" v-for="tag in card.tags" :key="tag">{{ $td(tag, `action.tag-${tag.toLowerCase()}`) }}</div>
         </div>
 
         <div class="u-mt-15">
