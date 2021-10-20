@@ -124,6 +124,9 @@ export default {
         'tag-staking': 'Стейкинг',
         'tag-farming': 'Доходное фермерство',
         'tag-lottery': 'Лотерея',
+        'category-swap': 'Обмен',
+        'category-earn': 'Заработок',
+        'category-win': 'Розыгрыш',
     },
     form: {
         'toggle-simple-mode': 'Убрать сообщение',
