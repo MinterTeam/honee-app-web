@@ -101,12 +101,15 @@ export default {
         let shouldRedirect = false;
         action.params.forEach((paramKey, paramIndex) => {
             const value = actionQueryParams[paramIndex];
+            if (!value) {
+                return;
+            }
             const isCoinParam = COIN_PARAMS.includes(paramKey);
             if (isCoinParam && value.toUpperCase() !== value) {
                 shouldRedirect = true;
                 actionQueryParams[paramIndex] = value.toUpperCase();
             }
-            if (value && value !== OMIT_PARAM_SYMBOL) {
+            if (value !== OMIT_PARAM_SYMBOL) {
                 pathParams[paramKey] = value;
             }
         });
