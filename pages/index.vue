@@ -135,7 +135,7 @@ export default {
 
                     <div class="card card__content--small" v-if="card === $options.BASE_CARD.DELEGATION">
                         <h3 class="card__action-title">{{ $td('Delegation', 'index.delegation') }}</h3>
-                        <p class="">{{ $td('Bonding your BIP or custom coins to a network validator and getting rewards (portion of block rewards + transaction fees). The returns are shared among all delegators proportionally to their stake, minus validator's fee.', 'index.delegation-desc') }}</p>
+                        <p class="">{{ $td('Bonding your BIP or custom coins to a network validator and getting rewards (portion of block rewards + transaction fees). The returns are shared among all delegators proportionally to their stake, minus validator’s fee.', 'index.delegation-desc') }}</p>
 
                         <nuxt-link class="button button--main button--full u-mt-10" :to="pageUrl('delegate')">
                             {{ $td('Delegate', 'index.delegate') }}
