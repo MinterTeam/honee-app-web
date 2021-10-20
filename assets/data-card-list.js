@@ -12,6 +12,10 @@ export default {
             },
             tags: ['Exchange', BASE_COIN],
             action: `/swap/${BASE_COIN}`,
+            ru: {
+                title: 'Купить BIP',
+                description: 'Купите основную монету сети Minter и заработайте на росте курса.',
+            },
         },
         {
             title: 'Buy HUB',
@@ -23,6 +27,10 @@ export default {
             },
             tags: ['Exchange', 'HUB'],
             action: '/swap/HUB',
+            ru: {
+                title: 'Купить HUB',
+                description: 'Купите основную монету сайдчейна Minter Hub и заработайте на росте курса.',
+            },
         },
         {
             title: 'Buy BEE',
@@ -34,6 +42,10 @@ export default {
             },
             tags: ['Exchange', 'BEE'],
             action: '/swap/BEE',
+            ru: {
+                title: 'Купить BEE',
+                description: 'Купите основную монету кошелька Honee и заработайте на росте курса.',
+            },
         },
     ],
     earn: [

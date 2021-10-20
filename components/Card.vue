@@ -66,6 +66,21 @@ export default {
         pageUrl(page) {
             return this.$i18nGetPreferredPath((DASHBOARD_URL + page).replace('//', '/'));
         },
+        translate(key) {
+            const localeData = this.$i18n.locale === 'en' ? this.card : this.card[this.$i18n.locale];
+            if (localeData?.[key]) {
+                return localeData[key];
+            }
+            // fallback to en locale
+            return this.card[key];
+        },
+        $ts(locales) {
+            if (locales[this.$i18n.locale]) {
+                return locales[this.$i18n.locale];
+            }
+
+            return locales.en;
+        },
     },
 };
 
@@ -86,8 +101,8 @@ function poolHasCoin(pool, symbol) {
                 <div class="card__action-stats-value">{{ card.stats.value }}</div>
             </div>
         </div>
-        <h3 class="card__action-title">{{ card.title }}</h3>
-        <p class="">{{ card.description }}</p>
+        <h3 class="card__action-title">{{ translate('title') }}</h3>
+        <p class="">{{ translate('description') }}</p>
 
         <div class="card__action-tag-list">
             <div class="card__action-tag" v-for="tag in card.tags" :key="tag">{{ $td(tag, `action.tag-${tag.toLowerCase()}`) }}</div>
