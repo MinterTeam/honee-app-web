@@ -103,7 +103,8 @@ export default {
         'share-address': 'Поделиться',
         'top-up-with-eth': 'Пополнить через ETH',
         
-        'alpha-banner': 'Honee в альфа-стадии. <a class="link--default u-display-ib" href="https://minter.link/HoneeTests" target="_blank">Помогайте с тестированием и получайте крипту за фидбэк.</a>',
+        'alpha-banner-text': 'Honee в альфа-стадии.',
+        'alpha-banner-link': 'Помогайте с тестированием и получайте крипту за фидбэк.',
     },
     action: {
         'title-add-liquidity': 'Предоставьте ликвидность в пул',
