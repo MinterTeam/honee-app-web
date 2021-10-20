@@ -121,6 +121,9 @@ export default {
         'liquidity-pools': 'Пулы ликвидности',
         'farming-programs': 'Фарминг-программы',
         'giveaway-programs': 'Лотереи',
+        
+        'coins': 'Монеты',
+        'view-all': 'Посмотреть все',
     },
     action: {
         'title-add-liquidity': 'Предоставьте ликвидность в пул',
