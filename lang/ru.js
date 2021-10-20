@@ -78,6 +78,12 @@ export default {
         'deposit': 'Пополнить',
         'swap': 'Обменять',
         'send': 'Отправить',
+        
+        'add-liquidity': 'Добавить ликвидность',
+        'delegate': 'Делегировать',
+        'participate': 'Участвовать',
+        'withdraw-unbond': 'Отозвать',
+        
 
         'sign-up': 'Зарегистрируйтесь',
         'or': 'или',
