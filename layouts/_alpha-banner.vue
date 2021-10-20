@@ -23,7 +23,7 @@ export default {
             <div class="alpha-banner__placeholder u-hidden-medium-down"></div>
             <div class="alpha-banner__content">
                 <img class="alpha-banner__icon" src="/img/icon-alpha-banner.svg" alt="" role="presentation">
-                <div class="alpha-banner__text">{{ $td('Honee\'s in alpha. <a class="link--default u-display-ib" href="https://minter.link/HoneeTests" target="_blank">Join testing and get crypto for feedback.</a>', 'index.alpha-banner') }}</div>
+                <div class="alpha-banner__text">{{ $td('Honee is in alpha. <a class="link--default u-display-ib" href="https://minter.link/HoneeTests" target="_blank">Join testing and get crypto for feedback.</a>', 'index.alpha-banner') }}</div>
             </div>
             <button class="alpha-banner__close u-semantic-button link--opacity" type="button" @click="close()">
                 <span class="alpha-banner__close-icon">{{ $td('Close', 'common.close') }}</span>
