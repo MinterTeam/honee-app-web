@@ -121,6 +121,9 @@ export default {
         'title-unbond': 'Отзовите монеты из делегирования',
         'title-not-found': 'Действие не найдено',
         'tag-exchange': 'Обмен',
+        'tag-staking': 'Стейкинг',
+        'tag-farming': 'Доходное фермерство',
+        'tag-lottery': 'Лотерея',
     },
     form: {
         'toggle-simple-mode': 'Убрать сообщение',
