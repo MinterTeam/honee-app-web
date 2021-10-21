@@ -39,7 +39,6 @@ export default {
         },
         inputPlaceholder: {
             type: String,
-            default: this.$td('Search…', 'common.search'),
         },
     },
     data() {
@@ -147,7 +146,7 @@ export default {
                 v-if="inputUppercase"
                 ref="input"
                 class="h-field__dropdown-input" type="text"
-                :placeholder="inputPlaceholder"
+                :placeholder="inputPlaceholder || $td('Search…', 'common.search')"
                 v-bind="$attrs"
                 v-model="value"
                 @keyup.enter="handleSuggestionClick(value)"
@@ -156,7 +155,7 @@ export default {
                 v-else
                 ref="input"
                 class="h-field__dropdown-input" type="text"
-                :placeholder="inputPlaceholder"
+                :placeholder="inputPlaceholder || $td('Search…', 'common.search')"
                 v-bind="$attrs"
                 v-model="value"
                 @keyup.enter="handleSuggestionClick(value)"
