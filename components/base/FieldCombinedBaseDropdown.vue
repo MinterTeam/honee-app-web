@@ -39,7 +39,7 @@ export default {
         },
         inputPlaceholder: {
             type: String,
-            const default = getDefault(this.$td('Search…', 'common.search')),
+            default: const title = getTitle(this.$td('Search…', 'common.search')),
         },
     },
     data() {
