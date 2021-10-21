@@ -39,7 +39,7 @@ export default {
         },
         inputPlaceholder: {
             type: String,
-            default: 'Search…',
+            default: this.$td('Search…', 'common.search'),
         },
     },
     data() {
