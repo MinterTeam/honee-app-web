@@ -262,6 +262,7 @@ export default {
         'eth-waiting': 'Ожидание ETH-депозита',
         
         'select-validator': 'Выберите валидатора',
+        'select-coin': 'Выберите монету',
 
 
         'enter-amount': 'Введите сумму',
@@ -293,7 +294,7 @@ export default {
         'masternode-public': 'Публичный ключ',
         'masternode-public-error-required': 'Укажите публичный ключ',
         'masternode-public-error-invalid': 'Некорректный публичный ключ',
-        'masternode-stake': 'Стэйк',
+        'masternode-stake': 'Стейк',
         'masternode-stake-error-required': 'Укажите количество',
         'masternode-fee-same': 'та же, что и в стэйке',
         'masternode-commission': 'Комиссия',
