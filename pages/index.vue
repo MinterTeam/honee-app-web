@@ -134,45 +134,45 @@ export default {
                     <Card :card="card" v-if="card.action"/>
 
                     <div class="card card__content--small" v-if="card === $options.BASE_CARD.DELEGATION">
-                        <h3 class="card__action-title">Delegation</h3>
-                        <p class="">Bonding your BIP or custom coins to a network validator and getting rewards (block rewards + portion of transaction fees). The returns are shared among all delegators proportionally to their stake, minus validator's fee.</p>
+                        <h3 class="card__action-title">{{ $td('Delegation', 'index.delegation') }}</h3>
+                        <p class="">{{ $td('Bonding your BIP or custom coins to a network validator and getting rewards (portion of block rewards + transaction fees). The returns are shared among all delegators proportionally to their stake, minus validator’s fee.', 'index.delegation-desc') }}</p>
 
                         <nuxt-link class="button button--main button--full u-mt-10" :to="pageUrl('delegate')">
-                            Delegate
+                            {{ $td('Delegate', 'index.delegate') }}
                         </nuxt-link>
                         <nuxt-link class="button button--main button--full u-mt-05" :to="pageUrl('unbond')">
-                            Unbond
+                            {{ $td('Unbond', 'index.withdraw-unbond') }}
                         </nuxt-link>
                         <a class="button button--ghost-main button--full u-mt-05" href="https://chainik.io/validators" target="_blank">
-                            Validators
+                            {{ $td('Validators', 'index.validators') }}
                         </a>
                     </div>
 
                     <div class="card card__content--small" v-if="card === $options.BASE_CARD.LIQUIDITY">
-                        <h3 class="card__action-title">Providing liquidity</h3>
+                        <h3 class="card__action-title">{{ $td('Providing liquidity', 'index.providing-liquidity') }}</h3>
                         <p class="">
                             <template v-if="$i18n.locale === 'en'">
-                                Liquidity providers deposit a pair coins and in return they collect <a class="link--default" href="https://www.minter.network/earn/lp-fees" target="_blank">fee rewards</a> paid by users who use that pool to swap between coins. On top of this fee some pools may have additional incentive programs: <a class="link--default" href="https://www.minter.network/earn/farm" target="_blank">farming</a> and  <a class="link--default" href="https://www.minter.network/earn/giveaway" target="_blank">giveaways</a>.
+                                Liquidity providers deposit both coins in a pair and in return, collect <a class="link--default" href="https://www.minter.network/earn/lp-fees" target="_blank">fee rewards</a> paid by traders who use that pool to make swaps. On top of this fee, some pools may have additional incentive programs such as <a class="link--default" href="https://www.minter.network/earn/farm" target="_blank">farming</a> and <a class="link--default" href="https://www.minter.network/earn/giveaway" target="_blank">giveaways</a>.
                             </template>
                             <template v-if="$i18n.locale === 'ru'">
-                                todo ru text
+                                Поставщики ликвидности размещают обе монеты в паре и взамен собирают <a class="link--default" href="https://www.minter.network/ru/earn/lp-fees" target="_blank">комиссию</a>, оплачиваемую трейдерами, которые делают обмены в этом пуле. Вдобавок в некоторых пулах могут быть дополнительные программы стимулирования, такие как <a class="link--default" href="https://www.minter.network/ru/earn/farm" target="_blank">доходное фермерство</a> и <a class="link--default" href="https://www.minter.network/ru/earn/giveaway" target="_blank">лотереи</a>.
                             </template>
                         </p>
 
                         <nuxt-link class="button button--main button--full u-mt-10" :to="pageUrl('add-liquidity')">
-                            Provide liquidity
+                            {{ $td('Provide liquidity', 'index.provide-liquidity') }}
                         </nuxt-link>
                         <nuxt-link class="button button--main button--full u-mt-05" :to="pageUrl('remove-liquidity')">
-                            Withdraw liquidity
+                            {{ $td('Withdraw liquidity', 'index.withdraw-liquidity') }}
                         </nuxt-link>
                         <a class="button button--ghost-main button--full u-mt-05" href="https://explorer.minter.network/pools" target="_blank">
-                            Liquidity pools
+                            {{ $td('Liquidity pools', 'index.liquidity-pools') }}
                         </a>
                         <a class="button button--ghost-main button--full u-mt-05" href="https://explorer.minter.network/farming" target="_blank">
-                            Farming programs
+                            {{ $td('Farming programs', 'index.farming-programs') }}
                         </a>
                         <a class="button button--ghost-main button--full u-mt-05" href="https://chainik.io/lottery/" target="_blank">
-                            Giveaway programs
+                            {{ $td('Giveaway programs', 'index.giveaway-programs') }}
                         </a>
                     </div>
                 </div>

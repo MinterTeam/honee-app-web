@@ -112,16 +112,16 @@ function poolHasCoin(pool, symbol) {
             <div class="u-grid">
                 <div class="u-cell" :class="isUndoAvailable ? 'u-cell--6-10': ''">
                     <nuxt-link class="button button--full " :to="pageUrl(card.action)">
-                        <template v-if="card.actionType === $options.ACTION_TYPE.SWAP">Swap</template>
-                        <template v-if="card.actionType === $options.ACTION_TYPE.FARM">Add liquidity</template>
-                        <template v-if="card.actionType === $options.ACTION_TYPE.DELEGATE">Delegate</template>
-                        <template v-if="card.actionType === $options.ACTION_TYPE.WIN">Participate</template>
+                        <template v-if="card.actionType === $options.ACTION_TYPE.SWAP">{{ $td('Swap', 'index.swap') }}</template>
+                        <template v-if="card.actionType === $options.ACTION_TYPE.FARM">{{ $td('Add liquidity', 'index.add-liquidity') }}</template>
+                        <template v-if="card.actionType === $options.ACTION_TYPE.DELEGATE">{{ $td('Delegate', 'index.delegate') }}</template>
+                        <template v-if="card.actionType === $options.ACTION_TYPE.WIN">{{ $td('Participate', 'index.participate') }}</template>
                     </nuxt-link>
                 </div>
                 <div class="u-cell u-cell--4-10" v-if="isUndoAvailable">
                     <nuxt-link class="button button--full button--ghost-white" :to="pageUrl(undoActionUrl)">
-                        <template v-if="undoActionType === $options.ACTION_TYPE.REMOVE_LIQUIDITY">Withdraw</template>
-                        <template v-if="undoActionType === $options.ACTION_TYPE.UNBOND">Unbond</template>
+                        <template v-if="undoActionType === $options.ACTION_TYPE.REMOVE_LIQUIDITY">{{ $td('Withdraw', 'index.withdraw-unbond') }}</template>
+                        <template v-if="undoActionType === $options.ACTION_TYPE.UNBOND">{{ $td('Unbond', 'index.withdraw-unbond') }}</template>
                     </nuxt-link>
                 </div>
             </div>

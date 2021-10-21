@@ -2,6 +2,7 @@ export default {
     common: {
         'logout': 'Выйти',
         'copy': 'Копировать',
+        'close': 'Закрыть',
     },
     error: {
         'title-error': 'Ошибка',
@@ -77,6 +78,12 @@ export default {
         'deposit': 'Пополнить',
         'swap': 'Обменять',
         'send': 'Отправить',
+        
+        'add-liquidity': 'Добавить ликвидность',
+        'delegate': 'Делегировать',
+        'participate': 'Участвовать',
+        'withdraw-unbond': 'Отозвать',
+        
 
         'sign-up': 'Зарегистрируйтесь',
         'or': 'или',
@@ -101,6 +108,22 @@ export default {
         'your-address': 'Ваш адрес',
         'share-address': 'Поделиться',
         'top-up-with-eth': 'Пополнить через ETH',
+        
+        'alpha-banner-text': 'Honee в альфа-стадии.',
+        'alpha-banner-link': 'Помогайте с тестированием и получайте крипту за фидбэк.',
+        
+        'delegation': 'Делегирование',
+        'delegation-desc': 'Привязка ваших BIP или кастомных монет к валидатору сети для получения вознаграждений (часть наград за блоки + комиссий за транзакции). Распределяются между всеми делегаторами пропорционально их стейку за вычетом комиссии валидатора.',
+        'validators': 'Валидаторы',
+        'providing-liquidity': 'Предоставление ликвидности',
+        'provide-liquidity': 'Предоставить ликвидность',
+        'withdraw-liquidity': 'Отозвать ликвидность',
+        'liquidity-pools': 'Пулы ликвидности',
+        'farming-programs': 'Фарминг-программы',
+        'giveaway-programs': 'Лотереи',
+        
+        'coins': 'Монеты',
+        'view-all': 'Посмотреть все',
     },
     action: {
         'title-add-liquidity': 'Предоставьте ликвидность в пул',
@@ -117,6 +140,12 @@ export default {
         'title-unbond': 'Отзовите монеты из делегирования',
         'title-not-found': 'Действие не найдено',
         'tag-exchange': 'Обмен',
+        'tag-staking': 'Стейкинг',
+        'tag-farming': 'Доходное фермерство',
+        'tag-lottery': 'Лотерея',
+        'category-swap': 'Обмен',
+        'category-earn': 'Заработок',
+        'category-win': 'Розыгрыш',
     },
     form: {
         'toggle-simple-mode': 'Убрать сообщение',

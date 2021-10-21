@@ -28,7 +28,7 @@
 
 <template>
     <section>
-        <div class="u-h--uppercase u-mb-10">Coins</div>
+        <div class="u-h--uppercase u-mb-10">{{ $td('Coins', 'index.coins') }}</div>
         <div class="wallet__coin-list" v-if="coinList.length">
             <div class="wallet__coin-row" v-for="coinItem in coinList" :key="coinItem.coin.id">
                 <div class="wallet__coin">
@@ -43,8 +43,7 @@
             </div>
         </div>
         <div class="u-text-right u-mt-20" v-if="coinList.length < $store.state.balance.length">
-            <button class="link--default u-semantic-button" @click="isFullListActive = true">View all coins</button>
+            <button class="link--default u-semantic-button" @click="isFullListActive = true">{{ $td('View all', 'index.view-all') }}</button>
         </div>
     </section>
 </template>
-
