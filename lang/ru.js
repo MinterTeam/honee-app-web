@@ -4,6 +4,9 @@ export default {
         'copy': 'Копировать',
         'close': 'Закрыть',
         'search': 'Поиск…',
+        'continue': 'Продолжить',
+        'finish': 'Завершить',
+        'retry': 'Попробовать снова',
     },
     error: {
         'title-error': 'Ошибка',
@@ -14,6 +17,7 @@ export default {
         'refresh-link': 'Обновить страницу',
         'return-link': 'Перейти на главную',
         'not-synchronized-with-network': 'Не синхронизировано с сетью',
+        'no-internet-connection': 'Отсутствует соединение с Интернетом',
     },
     index: {
         'title': 'Крипто-кошелек, помогающий зарабатывать',
@@ -104,6 +108,7 @@ export default {
         'sign-in': 'Войти',
 
         'loading': 'Загрузка…',
+        'keep-page-active': 'Не закрывайте и не обновляйте страницу, в противном случае прогресс может быть утерян.',
 
         'receive-coins': 'Получить монеты',
         'my-address': 'Мой адрес',
@@ -186,6 +191,12 @@ export default {
         'message-help': 'Сообщение к транзакции. Произвольный набор символов. Обратите внимание, что информация, находящаяся здесь, будет видна всем участникам&nbsp;сети.',
         'help-default': 'По-умолчанию:',
         'tx-sent': 'Транзакция отправлена:',
+        'to-address': 'На адрес',
+        
+        'unfinished-purchase': 'У вас имеется неоконченная покупка, желаете продолжить?',
+        'current-balance': 'Текущий баланс',
+        'required-balance': 'Необходимый баланс',
+        
 
         'checks-issue-nonce': 'Nonce',
         'checks-issue-nonce-error-required': 'Укажите nonce',
@@ -230,6 +241,7 @@ export default {
         'swap-buy-coin-error': 'Нет монет для траты',
         'swap-buy-coin-confirm': 'Вы получите',
         'swap-button': 'Продать',
+        'buy-button': 'Купить',
         'swap-confirm': 'Подтвердить обмен',
         'swap-confirm-receive-estimation': 'Вы получите примерно',
         'swap-confirm-pay-estimation': 'Вы заплатите примерно',
@@ -237,19 +249,37 @@ export default {
         'cannot-calculate-swap-limits': 'Невозможно просчитать границы обмена',
         'invalid-swap-limit': 'Неверные границы обмена',
         'you-will-spend': 'Вы потратите',
+        'you-spend': 'Вы тратите',
         'you-will-get': 'Вы получите',
+        'you-receive': 'Чтобы получить',
         'rate': 'Курс',
         'reserves': 'Резерв',
         'tx-fee': 'Комиссия',
         'tx-fee-high': 'Транзакция потребует высокой комиссии.',
         'read-understood': 'Нажатием этой кнопки вы подтверждаете, что прочитали текст ниже и поняли его.',
+        'high-eth-fee': 'Высокая комиссия в сети Ethereum. Она поглотит',
+        'high-eth-fee-percentage': 'ваших ETH',
+        'eth-waiting': 'Ожидание ETH-депозита',
         
         'select-validator': 'Выберите валидатора',
 
 
+        'enter-amount': 'Введите сумму',
+        'invalid-amount': 'Некорректная сумма',
+        'not-enough-to-pay-fee': 'Недостаточно для оплаты комиссии',
+        'not-enough': 'Недостаточно',
+        'max': 'макс.',
+        'enter-coin-symbol': 'Введите символ монеты',
+        'min-3-chars': 'Мин. 3 символа',
+        'not-supported-to-buy': 'Покупка не поддерживается',
+        
         'swap-confirm-note': 'Итоговая сумма зависит от курса в момент обмена и может отличаться от представленной выше.',
         'swap-confirm-note-2': 'Финальная сумма зависит от текущего курса непосредственно в момент обмена. Она может отличаться от представленной выше, но не может превысить лимит.',
 
+        'bridge-output': 'К зачислению через мост',
+        'bridge-fee': 'Комиссия, удерживаемая мостом',
+        'ethereum-fee': 'Комиссия в сети Ethereum',
+        
         'masternode-address': 'Адрес',
         'masternode-address-help': 'Адрес владельца мастерноды, куда будет приходить&nbsp;награда',
         'masternode-address-error-required': 'Укажите адрес',
