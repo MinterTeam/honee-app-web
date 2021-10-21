@@ -450,13 +450,13 @@
                     coin1: params.coinToBuy ? params.coinToBuy.toUpperCase() : undefined,
                 }) }}
                 <!--
-                Swap
+                {{ $td('Swap', 'index.swap') }}
                 <template v-if="params.coinToSell">{{ params.coinToSell.toUpperCase() }}</template>
-                <template v-if="params.coinToBuy && !params.coinToSell">coins</template>
+                <template v-if="params.coinToBuy && !params.coinToSell">{{ $td('coins', 'form.coins-2') }}</template>
                 <template v-if="params.coinToBuy">for {{ params.coinToBuy.toUpperCase() }}</template>
                 -->
             </h1>
-<!--            <h2 class="u-h5 u-mb-10">You pay</h2>-->
+<!--            <h2 class="u-h5 u-mb-10">{{ $td('You pay', 'form.swap-sell-coin') }}</h2>-->
             <FieldCombined
                 :coin.sync="form.coinFrom"
                 :$coin="$v.form.coinFrom"
@@ -474,7 +474,7 @@
             <span class="form-field__error" v-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
             <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
             <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.minValue">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol}}</span>
-            <!--        <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.maxAmount">Not enough coins</span>-->
+            <!--        <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.maxAmount">{{ $td('Not enough coins', 'form.not-enough-coins') }}</span>-->
 
             <button class="button button--white convert__reverse-button" type="button" @click="reverseCoins()" v-if="!params.coinToSell && !params.coinToBuy">
                 <img class="" src="/img/icon-reverse.svg" width="24" height="24" alt="⇅">
@@ -494,8 +494,8 @@
 
 <!--                @TODO minimumValueToBuy, minimumValueToSell in estimation-->
                 <div class="convert__panel u-text-error" v-if="!$v.form.$invalid && isEstimationErrorVisible">{{ estimationError }}</div>
-                <div class="convert__panel u-text-error" v-else-if="$v.minimumValueToBuy.$dirty && !$v.minimumValueToBuy.required">Can't calculate swap limits</div>
-                <div class="convert__panel u-text-error" v-else-if="$v.minimumValueToBuy.$dirty && !$v.minimumValueToBuy.minValue">Invalid swap limit</div>
+                <div class="convert__panel u-text-error" v-else-if="$v.minimumValueToBuy.$dirty && !$v.minimumValueToBuy.required">{{ $td('Can’t calculate swap limits', 'form.cannot-calculate-swap-limits') }}</div>
+                <div class="convert__panel u-text-error" v-else-if="$v.minimumValueToBuy.$dirty && !$v.minimumValueToBuy.minValue">{{ $td('Invalid swap limit', 'form.invalid-swap-limit') }}</div>
             </template>
 
             <div class="estimation u-mt-10" v-if="params.coinToSell || params.coinToBuy">
@@ -513,12 +513,12 @@
 
             <div class="u-section--small">
                 <button class="button button--main button--full" :class="{'is-loading': isFormSending || isEstimationWaiting, 'is-disabled': $v.$invalid}">
-                    <span class="button__content">Swap</span>
+                    <span class="button__content">{{ $td('Swap', 'index.swap') }}</span>
                     <BaseLoader class="button__loader" :isLoading="true"/>
                 </button>
                 <span class="bip-form__error" v-if="serverError">{{ serverError }}</span>
             </div>
-            <p class="u-text-center u-text-muted u-text-small">By clicking this button you confirm that you’ve read and understood the text below.</p>
+            <p class="u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the text below.', 'form.read-understood') }}</p>
         </form>
 
         <!-- Confirm Modal -->
@@ -526,7 +526,7 @@
             <div class="panel">
                 <div class="panel__header">
                     <h1 class="panel__header-title u-mb-10">
-                        Confirm swap
+                        {{ $td('Confirm swap', 'form.swap-confirm') }}
                     </h1>
                 </div>
                 <div class="panel__section">
@@ -535,7 +535,7 @@
                             <div class="u-cell">
                                 <label class="form-field form-field--dashed">
                                     <BaseAmount tag="div" class="form-field__input is-not-empty" :coin="form.coinFrom" :amount="form.sellAmount" :exact="true"/>
-                                    <span class="form-field__label">You will spend</span>
+                                    <span class="form-field__label">{{ $td('You will spend', 'form.you-will-spend') }}</span>
                                 </label>
                             </div>
                             <div class="u-cell">
@@ -545,11 +545,11 @@
                                         <span class="u-text-muted u-display-ib">(min: {{ prettyExact(txData.minimumValueToBuy) }})</span>
                                     </div>
                                     <div class="form-field__label">
-                                        You will get approximately *
+                                        {{ $td('You will get approximately', 'form.swap-confirm-receive-estimation') }} *
                                     </div>
                                 </div>
                                 <div class="form-field__help u-text-left">
-                                    * The result amount depends on the current rate at the time of the exchange and may differ from the above but can't exceed the limit.
+                                    * {{ $td('The result amount depends on the rate at the time of the exchange and may differ from the above but can’t exceed the limit.', 'form.swap-confirm-note-2') }}
                                 </div>
                             </div>
                         </template>
@@ -561,30 +561,30 @@
                                         <span class="u-text-muted u-display-ib">(max: {{ prettyExact(txData.maximumValueToSell) }})</span>
                                     </div>
                                     <div class="form-field__label">
-                                        You will pay approximately *
+                                        {{ $td('You will pay approximately', 'form.swap-confirm-pay-estimation') }} *
                                     </div>
                                 </div>
                                 <div class="form-field__help u-text-left">
-                                    * The result amount depends on the current rate at the time of the exchange and may differ from the above but can't exceed the limit.
+                                    * {{ $td('The result amount depends on the rate at the time of the exchange and may differ from the above but can’t exceed the limit.', 'form.swap-confirm-note-2') }}
                                 </div>
                             </div>
                             <div class="u-cell">
                                 <label class="form-field form-field--dashed">
                                     <BaseAmount tag="div" class="form-field__input is-not-empty" :coin="form.coinTo" :amount="form.buyAmount" :exact="true"/>
-                                    <span class="form-field__label">You will get</span>
+                                    <span class="form-field__label">{{ $td('You will get', 'form.you-will-get') }}</span>
                                 </label>
                             </div>
                         </template>
                         <div class="u-cell u-cell--1-2">
                             <div class="form-field form-field--dashed">
                                 <BaseAmount tag="div" class="form-field__input is-not-empty" :coin="form.coinTo" :amount="form.buyAmount / form.sellAmount"/>
-                                <div class="form-field__label">1 {{ form.coinFrom }} rate</div>
+                                <div class="form-field__label">{{ $td('Rate of', 'form.rate') }} 1 {{ form.coinFrom }}</div>
                             </div>
                         </div>
                         <div class="u-cell u-cell--1-2">
                             <div class="form-field form-field--dashed">
                                 <BaseAmount tag="div" class="form-field__input is-not-empty" :coin="form.coinFrom" :amount="form.sellAmount / form.buyAmount"/>
-                                <div class="form-field__label">1 {{ form.coinTo }} rate</div>
+                                <div class="form-field__label">{{ $td('Rate of', 'form.rate') }} 1 {{ form.coinTo }}</div>
                             </div>
                         </div>
 
@@ -595,9 +595,9 @@
                                         Pools:
                                         {{ estimationRoute ? estimationRoute.map((coin) => coin.symbol).join(' > ') : form.coinFrom + ' > ' + form.coinTo }}
                                     </template>
-                                    <template v-else>Reserves</template>
+                                    <template v-else>{{ $td('Reserves', 'form.reserves') }}</template>
                                 </div>
-                                <div class="form-field__label">Swap type</div>
+                                <div class="form-field__label">{{ $td('Swap type', 'form.swap-type') }}</div>
                             </div>
                         </div>
                         <div class="u-cell">
@@ -606,9 +606,9 @@
                                     <BaseAmount :coin="fee.coinSymbol" :amount="fee.value" :base-coin-amount="fee.baseCoinValue"/>
                                     <span class="u-display-ib" v-if="fee.priceCoin.id > 0">({{ pretty(fee.priceCoinValue) }} {{ fee.priceCoin.symbol }})</span>
                                 </div>
-                                <span class="form-field__label">Transaction fee</span>
+                                <span class="form-field__label">{{ $td('Transaction fee', 'form.tx-fee') }}</span>
                             </div>
-                            <div class="u-mt-10 u-fw-700" v-if="fee.isHighFee"><span class="u-emoji">⚠️</span> Transaction requires high fee.</div>
+                            <div class="u-mt-10 u-fw-700" v-if="fee.isHighFee"><span class="u-emoji">⚠️</span> {{ $td('Transaction requires high fee.', 'form.tx-fee-high') }}</div>
                         </div>
                     </div>
                 </div>
@@ -617,11 +617,11 @@
                         :class="{'is-loading': isFormSending}"
                         @click="submit()"
                 >
-                    <span class="button__content">Confirm</span>
+                    <span class="button__content">{{ $td('Confirm', 'form.submit-confirm-button') }}</span>
                     <BaseLoader class="button__loader" :isLoading="true"/>
                 </button>
                 <button class="button button--ghost-main button--full u-mt-10" type="button" v-if="!isFormSending" @click="isConfirmModalVisible = false">
-                    Cancel
+                    {{ $td('Cancel', 'form.submit-cancel-button') }}
                 </button>
             </div>
         </Modal>
@@ -629,9 +629,9 @@
         <!-- success modal -->
         <Modal :isOpen.sync="isSuccessModalVisible" :hideCloseButton="true">
             <div class="modal__panel">
-                <h3 class="modal__title u-h2">Success</h3>
+                <h3 class="modal__title u-h2">{{ $td('Success', 'form.success-title') }}</h3>
                 <div class="modal__content u-mb-10">
-                    <p>Coins successfully exchanged!</p>
+                    <p>{{ $td('Coins successfully exchanged!', 'form.success-desc') }}</p>
                 </div>
                 <div class="modal__footer">
                     <a class="button button--main button--full" :href="getExplorerTxUrl(serverSuccess.hash)" target="_blank" v-if="serverSuccess">
