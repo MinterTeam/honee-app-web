@@ -3,6 +3,7 @@ export default {
         'logout': 'Выйти',
         'copy': 'Копировать',
         'close': 'Закрыть',
+        'search': 'Поиск…',
     },
     error: {
         'title-error': 'Ошибка',
