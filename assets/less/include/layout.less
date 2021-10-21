@@ -42,6 +42,10 @@
     display: flex; flex-wrap: wrap; margin-left: -@grid-horizontal-margin;
     & > .u-cell { padding-left: @grid-horizontal-margin;}
 }
+.u-grid--medium {
+    margin-left: -24px;
+    & > .u-cell { padding-left: 24px;}
+}
 .u-grid--vertical-margin {
     margin-top: -@grid-vertical-margin;
     & > .u-cell { padding-top: @grid-vertical-margin;}
@@ -50,9 +54,14 @@
     margin-top: -10px;
     & > .u-cell { padding-top: 10px;}
 }
+.u-grid--vertical-margin--medium {
+    margin-top: -24px;
+    & > .u-cell { padding-top: 24px;}
+}
 .u-grid--align-center {align-items: center;}
 
 .u-cell { width: 100%;}
+.u-cell--auto { width: auto;}
 .u-cell--1-2 { width: 50%;}
 .u-cell--1-3 { width: 33.3333%;}
 .u-cell--2-3 { width: 66.6666%;}
