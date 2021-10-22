@@ -274,7 +274,7 @@ export default {
             <span class="form-field__error" v-else-if="$v.form.coin1.$dirty && !$v.form.coin1.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
 
             <p class="u-text-center u-text-muted u-text-small u-mt-10">
-                {{ $td('Second coin amount is estimated and depends on the pool ratio at the moment of transaction.', 'form.pool-remove-amount-help') }}
+                {{ $td('Second coin amount is estimated and depends on&nbsp;the&nbsp;pool ratio at&nbsp;the&nbsp;moment of&nbsp;transaction.', 'form.pool-remove-amount-help') }}
             </p>
         </template>
 
