@@ -1142,7 +1142,7 @@ function getSwapOutput(receipt) {
                 </div>
             </div>
             <div class="form-row panel__section panel__section--tint u-fw-500" v-if="loadingStage !== $options.LOADING_STAGE.WAIT_ETH && loadingStage !== $options.LOADING_STAGE.FINISH">
-                <span class="u-emoji">⚠️</span> {{ $td('Please keep this page active, otherwise progress may be lost.', 'index.keep-page-active') }}
+                <span class="u-emoji">⚠️</span> {{ $td('Please keep this page active, otherwise progress may&nbsp;be&nbsp;lost.', 'index.keep-page-active') }}
             </div>
             <div class="form-row panel__section" v-if="loadingStage === $options.LOADING_STAGE.FINISH">
                 <button class="button button--ghost-main button--full" type="button" @click="finishSending()">
