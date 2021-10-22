@@ -54,26 +54,26 @@ export default {
                 <Loader class="hub__buy-loader" :is-loading="!step.finished"/>
 
                 <template v-if="loadingStage === $options.LOADING_STAGE.WRAP_ETH">
-                    Wrap {{ pretty(step.amount) }} ETH
+                    {{ $td('Wrap', 'form.stage-wrap') }} {{ pretty(step.amount) }} ETH
                 </template>
                 <template v-if="loadingStage === $options.LOADING_STAGE.SWAP_ETH">
-                    Swap {{ pretty(step.amount0) }} {{ step.coin0 }} for {{ step.coin1 }}
+                    {{ $td('Swap', 'form.stage-swap') }} {{ pretty(step.amount0) }} {{ step.coin0 }} {{ $td('for', 'form.stage-for') }} {{ step.coin1 }}
                 </template>
                 <template v-if="loadingStage === $options.LOADING_STAGE.APPROVE_BRIDGE">
-                    Approve {{ step.coin }}
+                    {{ $td('Approve', 'form.stage-approve') }} {{ step.coin }}
                 </template>
                 <template v-if="loadingStage === $options.LOADING_STAGE.SEND_BRIDGE">
-                    Send {{ pretty(step.amount) }} {{ step.coin }} to bridge
+                    {{ $td('Send', 'form.stage-send') }} {{ pretty(step.amount) }} {{ step.coin }} {{ $td('to bridge', 'form.stage-to-bridge') }}
                 </template>
                 <template v-if="loadingStage === $options.LOADING_STAGE.WAIT_BRIDGE">
-                    <template v-if="!step.finished">Waiting {{ step.coin }} from bridge</template>
-                    <template v-else>Received {{ pretty(step.amount) }} {{ step.coin }} from bridge</template>
+                    <template v-if="!step.finished">{{ $td('Waiting', 'form.stage-waiting') }} {{ step.coin }} {{ $td('from bridge', 'form.stage-from-bridge') }}</template>
+                    <template v-else>{{ $td('Received', 'form.stage-received') }} {{ pretty(step.amount) }} {{ step.coin }} {{ $td('from bridge', 'form.stage-from-bridge') }}</template>
                 </template>
                 <template v-if="loadingStage === $options.LOADING_STAGE.SWAP_MINTER">
-                    Swap {{ pretty(step.amount0) }} {{ step.coin0 }} for {{ step.coin1 }}
+                    {{ $td('Swap', 'form.stage-swap') }} {{ pretty(step.amount0) }} {{ step.coin0 }} {{ $td('for', 'form.stage-for') }} {{ step.coin1 }}
                 </template>
                 <template v-if="loadingStage === $options.LOADING_STAGE.FINISH">
-                    Received {{ pretty(step.amount) }} {{ step.coin }}
+                    {{ $td('Received', 'form.stage-received') }} {{ pretty(step.amount) }} {{ step.coin }}
                 </template>
             </div>
         </div>
