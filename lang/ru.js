@@ -266,6 +266,16 @@ export default {
         'high-eth-fee-percentage': 'ваших ETH',
         'eth-waiting': 'Ожидание ETH-депозита',
         
+        'stage-wrap': 'Оборачивание',
+        'stage-swap': 'Обмен',
+        'stage-approve': 'Одобрение',
+        'stage-send': 'Отправка',
+        'stage-for': 'на',
+        'stage-to-bridge': 'мосту',
+        'stage-from-bridge': 'из моста',
+        'stage-waiting': 'Ожидание',
+        'stage-received': 'Получено',
+        
         'pool-coin0': 'Первая монета',
         'pool-coin1': 'Вторая монета',
         'pool-remove-liquidity-percent': 'Сумма к возврату',
