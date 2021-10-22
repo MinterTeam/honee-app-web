@@ -105,7 +105,7 @@
             <div class="qr-scan__wrap">
                 <div class="qr-scan__notice">
                     <BaseLoader :isLoading="true"/>
-                    <div v-if="cameraError">Allow camera access</div>
+                    <div v-if="cameraError">{{ $td('Allow camera access', 'index.cam-allow') }}</div>
                 </div>
                 <video class="qr-scan__video" ref="qrVideo" autoplay playsinline muted></video>
                 <div ref="overlay" class="qr-scan__overlay" v-show="isPlaying">
