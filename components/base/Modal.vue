@@ -101,7 +101,7 @@
                      @keydown="handleModalKeydown"
                 >
                     <button class="modal__close u-semantic-button link--opacity" type="button" v-if="!hideCloseButton" ref="modalCloseButton">
-                        <span class="modal__close-icon">Close</span>
+                        <span class="modal__close-icon">{{ $td('Close', 'common.close') }}</span>
                     </button>
                     <div class="modal__wrap">
                         <div class="modal__container" ref="modalContainer" :class="modalContainerClass">
