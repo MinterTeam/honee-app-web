@@ -2,8 +2,12 @@ export default {
     common: {
         'logout': 'Выйти',
         'copy': 'Копировать',
+        'clipboard': 'Скопировано в буфер обмена',
         'close': 'Закрыть',
         'search': 'Поиск…',
+        'continue': 'Продолжить',
+        'finish': 'Завершить',
+        'retry': 'Попробовать снова',
     },
     error: {
         'title-error': 'Ошибка',
@@ -14,6 +18,7 @@ export default {
         'refresh-link': 'Обновить страницу',
         'return-link': 'Перейти на главную',
         'not-synchronized-with-network': 'Не синхронизировано с сетью',
+        'no-internet-connection': 'Отсутствует соединение с Интернетом',
     },
     index: {
         'title': 'Крипто-кошелек, помогающий зарабатывать',
@@ -76,6 +81,7 @@ export default {
         'footer-link-box-wallet-bitcoin': 'Биткоин кошелек',
 
         'total-balance': 'Общий баланс',
+        'balance': 'Баланс',
         'wallet-balance-links': 'Купить BIP, HUB & BEE',
         'deposit': 'Пополнить',
         'swap': 'Обменять',
@@ -104,6 +110,7 @@ export default {
         'sign-in': 'Войти',
 
         'loading': 'Загрузка…',
+        'keep-page-active': 'Не закрывайте и не обновляйте страницу, в противном случае прогресс может быть утерян.',
 
         'receive-coins': 'Получить монеты',
         'my-address': 'Мой адрес',
@@ -126,6 +133,8 @@ export default {
         
         'coins': 'Монеты',
         'view-all': 'Посмотреть все',
+        
+        'cam-allow': 'Разрешите доступ к камере',
     },
     action: {
         'title-add-liquidity': 'Предоставьте ликвидность в пул',
@@ -186,6 +195,12 @@ export default {
         'message-help': 'Сообщение к транзакции. Произвольный набор символов. Обратите внимание, что информация, находящаяся здесь, будет видна всем участникам&nbsp;сети.',
         'help-default': 'По-умолчанию:',
         'tx-sent': 'Транзакция отправлена:',
+        'to-address': 'На адрес',
+        
+        'unfinished-purchase': 'У вас имеется неоконченная покупка, желаете продолжить?',
+        'current-balance': 'Текущий баланс',
+        'required-balance': 'Необходимый баланс',
+        
 
         'checks-issue-nonce': 'Nonce',
         'checks-issue-nonce-error-required': 'Укажите nonce',
@@ -230,26 +245,75 @@ export default {
         'swap-buy-coin-error': 'Нет монет для траты',
         'swap-buy-coin-confirm': 'Вы получите',
         'swap-button': 'Продать',
+        'buy-button': 'Купить',
         'swap-confirm': 'Подтвердить обмен',
         'swap-confirm-receive-estimation': 'Вы получите примерно',
         'swap-confirm-pay-estimation': 'Вы заплатите примерно',
+        'swap-add-description': 'Выберите пару из монет, которые у вас есть, и укажите объемы, которые вы хотели бы добавить.',
         'not-enough-coins': 'Недостаточно монет',
         'cannot-calculate-swap-limits': 'Невозможно просчитать границы обмена',
         'invalid-swap-limit': 'Неверные границы обмена',
         'you-will-spend': 'Вы потратите',
+        'you-spend': 'Вы тратите',
         'you-will-get': 'Вы получите',
+        'you-receive': 'Чтобы получить',
         'rate': 'Курс',
         'reserves': 'Резерв',
         'tx-fee': 'Комиссия',
         'tx-fee-high': 'Транзакция потребует высокой комиссии.',
         'read-understood': 'Нажатием этой кнопки вы подтверждаете, что прочитали текст ниже и поняли его.',
+        'high-eth-fee': 'Высокая комиссия в сети Ethereum. Она поглотит',
+        'high-eth-fee-percentage': 'ваших ETH',
+        'eth-waiting': 'Ожидание ETH-депозита',
+        
+        'stage-wrap': 'Оборачивание',
+        'stage-swap': 'Обмен',
+        'stage-approve': 'Одобрение',
+        'stage-send': 'Отправка',
+        'stage-for': 'на',
+        'stage-to-bridge': 'мосту',
+        'stage-from-bridge': 'из моста',
+        'stage-waiting': 'Ожидание',
+        'stage-received': 'Получено',
+        
+        'pool-coin0': 'Первая монета',
+        'pool-coin1': 'Вторая монета',
+        'pool-remove-liquidity-percent': 'Сумма к возврату',
+        'pool-remove-liquidity-error-required': 'Укажите объем',
+        'percent-error-min': 'Минимум 0%',
+        'percent-error-max': 'Максимум 100%',
+        'pool-remove-liquidity-error-pool': 'В указанной паре ликвидность провайдера не обнаружена',
+        'you-return': 'Вы забираете',
+        'lp-tokens': 'LP-токенов',
+        'pool-remove-button': 'Отозвать',
+        'pool-remove-title': 'Отозвать ликвидность из пула обменов',
+        'pool-remove-amount-help': 'Объем второй монеты рассчитывается и зависит от курса в пуле на момент транзакции.',
+        'pool-add-title': 'Добавить ликвидность в пул обменов',
+        'pool-add-button': 'Добавить',
         
         'select-validator': 'Выберите валидатора',
+        'select-coin': 'Выберите монету',
 
 
+        'enter-amount': 'Введите сумму',
+        'invalid-amount': 'Некорректная сумма',
+        'not-enough-to-pay-fee': 'Недостаточно для оплаты комиссии',
+        'not-enough': 'Недостаточно',
+        'max': 'макс.',
+        'enter-coin-symbol': 'Введите символ монеты',
+        'min-3-chars': 'Мин. 3 символа',
+        'not-supported-to-buy': 'Покупка не поддерживается',
+        
         'swap-confirm-note': 'Итоговая сумма зависит от курса в момент обмена и может отличаться от представленной выше.',
         'swap-confirm-note-2': 'Финальная сумма зависит от текущего курса непосредственно в момент обмена. Она может отличаться от представленной выше, но не может превысить лимит.',
 
+        'bridge-output': 'К зачислению через мост',
+        'bridge-fee': 'Комиссия, удерживаемая мостом',
+        'ethereum-fee': 'Комиссия в сети Ethereum',
+        
+        'wallet-send-description': 'Отправляйте монеты кому пожелаете — друзьям, семье, бизнес-партнерам.',
+        'delegate-description': 'Делегируйте свои токены, чтобы получать выплаты в соответствии с условиями участия.',
+        
         'masternode-address': 'Адрес',
         'masternode-address-help': 'Адрес владельца мастерноды, куда будет приходить&nbsp;награда',
         'masternode-address-error-required': 'Укажите адрес',
@@ -263,7 +327,7 @@ export default {
         'masternode-public': 'Публичный ключ',
         'masternode-public-error-required': 'Укажите публичный ключ',
         'masternode-public-error-invalid': 'Некорректный публичный ключ',
-        'masternode-stake': 'Стэйк',
+        'masternode-stake': 'Стейк',
         'masternode-stake-error-required': 'Укажите количество',
         'masternode-fee-same': 'та же, что и в стэйке',
         'masternode-commission': 'Комиссия',
@@ -292,6 +356,13 @@ export default {
         'delegation-reinvest-start-list-error-required': 'Введите список транзакций',
         'delegation-reinvest-start-button': 'Запуск автоделегирования',
         'delegation-reinvest-start-success': 'Автоделегирование запущено',
+        'stake-update-eta': 'Ваш стейк будет обновлен через',
+        'stake-update-eta-blocks': 'блока(-ов)',
+        'stake-update-eta-minutes': 'минут(-ы)',
+        
+        'unbond-description': 'В случае если вы больше не хотите, чтобы валидатор управлял вашими сбережениями, просто отправьте заявку на отвязку. Процесс будет завершен через 30 дней с момента подачи.',
+        'coins-will-return': 'Монеты вернутся на ваш адрес через 518 400 блоков (около 30 дней).',
+        'nothing-to-unbond': 'Нечего отзывать.',
 
         'coiner-create-name': 'Название монеты',
         'coiner-create-name-error-required': 'Укажите название',

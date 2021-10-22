@@ -904,12 +904,12 @@ function getSwapOutput(receipt) {
         </h1>
 
         <div class="u-grid u-grid--small u-grid--vertical-margin--small" v-if="recovery">
-            <div class="u-cell">You have unfinished purchase, do you want to continue?</div>
+            <div class="u-cell">{{ $td('You have unfinished purchase, do you want to continue?', 'form.unfinished-purchase') }}</div>
             <div class="u-cell u-cell--medium--1-4">
-                <button class="button button--main button--full" type="button" @click="recoverPurchase()">Continue</button>
+                <button class="button button--main button--full" type="button" @click="recoverPurchase()">{{ $td('Continue', 'common.continue') }}</button>
             </div>
             <div class="u-cell u-cell--medium--1-4">
-                <button class="button button--ghost button--full" type="button" @click="cancelRecovery()">Cancel</button>
+                <button class="button button--ghost button--full" type="button" @click="cancelRecovery()">{{ $td('Cancel', 'form.submit-cancel-button') }}</button>
             </div>
         </div>
 
@@ -923,21 +923,21 @@ function getSwapOutput(receipt) {
                             :coin-list="[$options.DEPOSIT_SYMBOL]"
                             :amount.sync="form.amountEth"
                             :$amount="$v.form.amountEth"
-                            label="You spend"
+                            :label="$td('You spend', 'form.you-spend')"
                             :max-value="maxAmount"
                             @blur="inputBlur(); $v.form.buyAmount.$touch()"
                         />
-                        <span class="form-field__error" v-if="$v.form.amountEth.$dirty && !$v.form.amountEth.required">Enter amount</span>
-                        <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && (!$v.form.amountEth.validAmount || !$v.form.amountEth.minValue)">Invalid amount</span>
-                        <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && !$v.form.amountEth.enoughToPayFee">Not enough to pay fee</span>
-                        <!--                        <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && !$v.form.amountEth.maxValue">Not enough {{ form.coinToGet }} (max {{ pretty(maxAmount) }})</span>-->
+                        <span class="form-field__error" v-if="$v.form.amountEth.$dirty && !$v.form.amountEth.required">{{ $td('Enter amount', 'form.enter-amount') }}</span>
+                        <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && (!$v.form.amountEth.validAmount || !$v.form.amountEth.minValue)">{{ $td('Invalid amount', 'form.invalid-amount') }}</span>
+                        <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && !$v.form.amountEth.enoughToPayFee">{{ $td('Not enough to pay fee', 'form.not-enough-to-pay-fee') }}</span>
+                        <!--                        <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && !$v.form.amountEth.maxValue">{{ $td('Not enough', 'form.not-enough') }} {{ form.coinToGet }} ({{ $td('max.', 'form.max') }} {{ pretty(maxAmount) }})</span>-->
                     </div>
                     <div class="u-cell">
                         <FieldCombined
                             :coin.sync="form.coinToGet"
                             :$coin="$v.form.coinToGet"
                             :amount="decreasePrecisionSignificant(estimation || 0)"
-                            label="You receive"
+                            :label="$td('You receive', 'form.you-receive')"
                             :coin-list="suggestionList"
                             :fallback-to-full-list="false"
                             :is-estimation="true"
@@ -945,12 +945,12 @@ function getSwapOutput(receipt) {
                             @blur="inputBlur(); $v.form.buyAmount.$touch()"
                         />
 
-                        <span class="form-field__error" v-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.required">Enter coin symbol</span>
-                        <span class="form-field__error" v-else-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.minLength">Min 3 letters</span>
-                        <span class="form-field__error" v-else-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.supported">Not supported to buy</span>
+                        <span class="form-field__error" v-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.required">{{ $td('Enter coin symbol', 'form.enter-coin-symbol') }}</span>
+                        <span class="form-field__error" v-else-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.minLength">{{ $td('Min. 3 characters', 'form.min-3-chars') }}</span>
+                        <span class="form-field__error" v-else-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.supported">{{ $td('Not supported to buy', 'form.not-supported-to-buy') }}</span>
 
                         <div class="u-text-center u-text-small u-fw-400 u-text-muted u-mt-10" v-if="!isEstimationErrorVisible">
-                            The final amount depends on the exchange rate at the moment of transaction.
+                            {{ $td('The final amount depends on the exchange rate at the moment of transaction.', 'form.swap-confirm-note') }}
                         </div>
                         <span class="form-field__error u-text-center u-mt-10" v-else>{{ estimationError }}</span>
                     </div>
@@ -960,12 +960,12 @@ function getSwapOutput(receipt) {
                             class="button button--main button--full"
                             :class="{'is-loading': isFormSending, 'is-disabled': ($v.$invalid || !$store.state.onLine)}"
                         >
-                            <span class="button__content">Buy</span>
+                            <span class="button__content">{{ $td('Buy', 'form.buy-button') }}</span>
                             <Loader class="button__loader" :isLoading="true"/>
                         </button>
                     </div>
                     <div class="u-cell form__error send__text" v-if="serverError || !$store.state.onLine">
-                        <template v-if="!$store.state.onLine">No internet connection</template>
+                        <template v-if="!$store.state.onLine">{{ $td('No Internet connection', 'error.no-internet-connection') }}</template>
                         <template v-else>{{ serverError }}</template>
                     </div>
                 </div>
@@ -975,7 +975,7 @@ function getSwapOutput(receipt) {
                 <div class="u-cell u-cell--large--1-4 u-cell--small--1-2">
                     <div class="form-field form-field--dashed">
                         <div class="form-field__input is-not-empty">≈{{ pretty(ethTotalFee) }} ETH</div>
-                        <div class="form-field__label">Ethereum fee</div>
+                        <div class="form-field__label">{{ $td('Ethereum fee', 'form.ethereum-fee') }}</div>
                     </div>
                 </div>
                 <!--
@@ -1001,14 +1001,14 @@ function getSwapOutput(receipt) {
                 <div class="u-cell u-cell--large--1-4 u-cell--small--1-2">
                     <div class="form-field form-field--dashed">
                         <div class="form-field__input is-not-empty">≈{{ pretty(coinAmountAfterBridge) }} {{ $options.DEPOSIT_SYMBOL }}</div>
-                        <span class="form-field__label">Bridge output</span>
+                        <span class="form-field__label">{{ $td('Bridge output', 'form.bridge-output') }}</span>
                     </div>
                 </div>
                 <div class="u-cell u-cell--large--1-4 u-cell--small--1-2">
                     <div class="form-field form-field--dashed">
                         <div class="form-field__input is-not-empty">≈{{ pretty(hubFee) }} {{ $options.DEPOSIT_SYMBOL }}</div>
                         <span class="form-field__label">
-                                Bridge fee
+                                {{ $td('Bridge fee', 'form.bridge-fee') }}
                                 ({{ prettyRound(hubFeeRate * 100) }}%)
                             </span>
                     </div>
@@ -1032,38 +1032,38 @@ function getSwapOutput(receipt) {
         <!-- Confirm modal -->
         <Modal v-bind:isOpen.sync="isConfirmModalVisible">
             <h1 class="form-row">
-                Buy {{ form.coinToGet }}
+                {{ $td('Buy', 'form.buy-button') }} {{ form.coinToGet }}
             </h1>
 
             <div class="form-row">
                 <div class="form-field form-field--dashed">
                     <BaseAmount class="form-field__input is-not-empty" coin="ETH" :amount="form.amountEth"/>
-                    <div class="form-field__label">You will spend</div>
+                    <div class="form-field__label">{{ $td('You will spend', 'form.you-will-spend') }}</div>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-field form-field--dashed">
                     <BaseAmount class="form-field__input is-not-empty" :coin="form.coinToGet" :amount="currentEstimation" prefix="≈"/>
-                    <div class="form-field__label">You will get</div>
+                    <div class="form-field__label">{{ $td('You will get', 'form.you-will-get') }}</div>
                     <Loader class="form-field__icon form-field__icon--loader" :isLoading="isEstimationWaiting"/>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-field form-field--dashed">
                     <BaseAmount class="form-field__input is-not-empty" coin="ETH" :amount="ethTotalFee"/>
-                    <div class="form-field__label">Ethereum fee</div>
+                    <div class="form-field__label">{{ $td('Ethereum fee', 'form.ethereum-fee') }}</div>
                 </div>
-                <div class="u-mt-10 u-fw-700" v-if="ethFeeImpact > 10"><span class="u-emoji">⚠️</span> High Ethereum fee, it consumes {{ prettyRound(ethFeeImpact) }}% of your ETH</div>
+                <div class="u-mt-10 u-fw-700" v-if="ethFeeImpact > 10"><span class="u-emoji">⚠️</span> {{ $td('High Ethereum fee, it will consume', 'form.high-eth-fee') }} {{ prettyRound(ethFeeImpact) }}% {{ $td('of your ETH', 'form.high-eth-fee-percentage') }}</div>
             </div>
 
             <div class="form-row">
                 <button class="button button--main button--full" type="button" data-focus-on-open
                         @click="submit()"
                 >
-                    Confirm
+                    {{ $td('Confirm', 'form.submit-confirm-button') }}
                 </button>
                 <button class="button button--ghost-main button--full u-mt-05" type="button" @click="isConfirmModalVisible = false">
-                    Cancel
+                    {{ $td('Cancel', 'form.submit-cancel-button') }}
                 </button>
             </div>
         </Modal>
@@ -1073,30 +1073,30 @@ function getSwapOutput(receipt) {
             <h1 class="panel__header-title u-mb-10">
                 <template v-if="loadingStage === $options.LOADING_STAGE.WAIT_ETH">
                     <Loader class="panel__header-loader" :is-loading="true"/>
-                    Waiting ETH deposit
+                    {{ $td('Waiting ETH deposit', 'form.eth-waiting') }}
                 </template>
                 <template v-else-if="loadingStage === $options.LOADING_STAGE.FINISH">
-                    Success!
+                    {{ $td('Success', 'form.success-title') }}!
                 </template>
-                <template v-else>Buy {{ form.coinToGet }}</template>
+                <template v-else>{{ $td('Buy', 'form.buy-button') }} {{ form.coinToGet }}</template>
             </h1>
             <template v-if="loadingStage === $options.LOADING_STAGE.WAIT_ETH">
                 <div class="form-row">
                     <div class="form-field form-field--dashed form-field--with-icon">
                         <div class="form-field__input is-not-empty">{{ prettyExact(ethToTopUp) }} ETH</div>
-                        <span class="form-field__label">Send</span>
+                        <span class="form-field__label">{{ $td('Send', 'form.wallet-send-button') }}</span>
                         <ButtonCopyIcon class="form-field__icon form-field__icon--copy" :copy-text="ethToTopUp.toString()"/>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-field form-field--dashed form-field--with-icon">
                         <div class="form-field__input is-not-empty">{{ ethAddress }}</div>
-                        <span class="form-field__label">To the address</span>
+                        <span class="form-field__label">{{ $td('To the address', 'form.to-address') }}</span>
                         <ButtonCopyIcon class="form-field__icon form-field__icon--copy" :copy-text="ethAddress"/>
                     </div>
                 </div>
                 <div class="form-row u-fw-700" v-if="ethFeeImpact > 10">
-                    <span class="u-emoji">⚠️</span> High Ethereum fee, it consumes {{ prettyRound(ethFeeImpact) }}% of your ETH
+                    <span class="u-emoji">⚠️</span> {{ $td('High Ethereum fee, it will consume', 'form.high-eth-fee') }} {{ prettyRound(ethFeeImpact) }}% {{ $td('of your ETH', 'form.high-eth-fee-percentage') }}
                 </div>
                 <div class="form-row">
                     <QrcodeVue class="u-mb-10 u-text-center" :value="deepLink" :size="160" level="L"/>
@@ -1104,14 +1104,14 @@ function getSwapOutput(receipt) {
                 </div>
                 <!--                    <div class="" v-if="ethBalance > 0">
                     <div class="form-field__input is-not-empty">{{ prettyExact(ethBalance) }} ETH</div>
-                        <span class="form-field__label">Current balance</span>
+                        <span class="form-field__label">{{ $td('Current balance', 'form.current-balance') }}</span>
 
                        <div class="form-field__input is-not-empty">{{ prettyExact(form.amountEth) }} ETH</div>
-                       <span class="form-field__label">Required balance</span>
+                       <span class="form-field__label">{{ $td('Required balance', 'form.required-balance') }}</span>
                 </div>-->
                 <div class="form-row">
                     <button class="button button--ghost-main button--full" type="button" @click="finishSending()">
-                        Cancel
+                        {{ $td('Cancel', 'form.submit-cancel-button') }}
                     </button>
                 </div>
             </template>
@@ -1126,27 +1126,27 @@ function getSwapOutput(receipt) {
             <div class="form-row" v-if="serverError || !$store.state.onLine">
                 <div class="u-grid u-grid--small u-grid--vertical-margin--small">
                     <div class="u-cell u-text-error u-fw-500">
-                        <template v-if="!$store.state.onLine">No internet connection</template>
+                        <template v-if="!$store.state.onLine">{{ $td('No Internet connection', 'error.no-internet-connection') }}</template>
                         <template v-else>{{ serverError }}</template>
                     </div>
                     <div class="u-cell u-cell--1-2">
                         <button class="button button--main button--full" type="button" :class="{'is-disabled': !$store.state.onLine}" @click="retrySending()">
-                            Retry
+                            {{ $td('Retry', 'common.retry') }}
                         </button>
                     </div>
                     <div class="u-cell u-cell--1-2">
                         <button class="button button--ghost button--full" type="button" @click="finishSending()">
-                            Finish
+                            {{ $td('Finish', 'common.finish') }}
                         </button>
                     </div>
                 </div>
             </div>
             <div class="form-row panel__section panel__section--tint u-fw-500" v-if="loadingStage !== $options.LOADING_STAGE.WAIT_ETH && loadingStage !== $options.LOADING_STAGE.FINISH">
-                <span class="u-emoji">⚠️</span> Please keep this page active, otherwise progress may&nbsp;be&nbsp;lost.
+                <span class="u-emoji">⚠️</span> {{ $td('Please keep this page active, otherwise progress may&nbsp;be&nbsp;lost.', 'index.keep-page-active') }}
             </div>
             <div class="form-row panel__section" v-if="loadingStage === $options.LOADING_STAGE.FINISH">
                 <button class="button button--ghost-main button--full" type="button" @click="finishSending()">
-                    Close
+                    {{ $td('Close', 'common.close') }}
                 </button>
             </div>
         </Modal>

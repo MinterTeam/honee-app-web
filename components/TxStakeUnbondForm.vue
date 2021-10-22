@@ -166,10 +166,10 @@
         >
             <template v-slot:panel-header>
                 <h1 class="panel__header-title">
-                    {{ action ? $td(action.title, action.langKey) : $td('Unbond', 'delegation.unbond-title') }}
+                    {{ action ? $td(action.title, action.langKey) : $td('Unbond', 'action.title-unbond') }}
                 </h1>
                 <p class="panel__header-description">
-                    {{ $td('In case you don’t want the validator to handle your holdings anymore, all you need to do is submit the request for unbonding. The process will be finalized within 30 days after the request has been sent.', 'delegation.unbond-description') }}
+                    {{ $td('In case you don’t want the validator to handle your holdings anymore, all you need to do is submit the request for unbonding. The process will be finalized in 30 days since the request has been sent.', 'form.unbond-description') }}
                 </p>
             </template>
 
@@ -200,13 +200,13 @@
             </template>
 
             <template v-slot:submit-title>
-                {{ $td('Unbond', `form.delegation-unbond-button`) }}
+                {{ $td('Unbond', 'form.delegation-unbond-button') }}
             </template>
 
             <template v-slot:confirm-modal-header>
                 <h1 class="panel__header-title">
                     <!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-unbond.svg`" alt="" role="presentation" width="40" height="40">-->
-                    {{ $td('Unbond', 'delegation.unbond-title') }}
+                    {{ $td('Unbond', 'action.title-unbond') }}
                 </h1>
             </template>
 
@@ -236,11 +236,11 @@
                 <div v-if="successTx">
                     <TxFormBlocksToUpdateStake :success-tx="successTx"/>
 
-                    Coins will return to your address in 518&#x202F;400 blocks (~30 days).
+                    {{ $td('Coins will return to your address in 518,400 blocks (~30 days).', 'form.coins-will-return') }}
                 </div>
             </template>
         </TxForm>
-        <div v-else-if="$fetchState.pending">Loading…</div>
-        <div v-else>Nothing to unbond</div>
+        <div v-else-if="$fetchState.pending">{{ $td('Loading…', 'index.loading') }}</div>
+        <div v-else>{{ $td('Nothing to unbond.', 'form.nothing-to-unbond') }}</div>
     </div>
 </template>

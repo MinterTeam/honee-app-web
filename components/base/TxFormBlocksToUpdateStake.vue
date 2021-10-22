@@ -33,7 +33,7 @@ export default {
 <template>
     <p style="font-size: 12px;">
         <slot :blocksToUpdate="blocksToUpdate" :timeToUpdate="timeToUpdate">
-            You stake will be updated in <strong>{{ blocksToUpdate }}</strong> blocks (~{{ timeToUpdate }} minutes)
+            {{ $td('Your stake will be updated in', 'form.stake-update-eta') }} <strong>{{ blocksToUpdate }}</strong> {{ $td('blocks', 'form.stake-update-eta-blocks') }} (~{{ timeToUpdate }} {{ $td('minutes', 'form.stake-update-eta-minutes') }})
         </slot>
     </p>
 </template>

@@ -85,7 +85,7 @@ export default {
                 {{ action ? $td(action.title, action.langKey) : $td('Send coins', 'wallet.send-title') }}
             </h1>
             <p class="panel__header-description">
-                {{ $td('Transfer your coins to whomever you want—friends, family members, or business partners.', 'wallet.send-description') }}
+                {{ $td('Transfer your coins to whomever you want—friends, family members, or business partners.', 'form.wallet-send-description') }}
             </p>
         </template>
 

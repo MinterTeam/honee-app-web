@@ -153,7 +153,7 @@
                 v-else-if="isMaxValueDefined && !isUseMax"
                 @click="useMax"
             >
-                Balance: {{ isMaxValueRounded ? '≈' : '' }}{{ pretty(maxValueComputed) }}
+                {{ $td('Balance', 'index.balance') }}: {{ isMaxValueRounded ? '≈' : '' }}{{ pretty(maxValueComputed) }}
             </button>
 <!--            <template v-else>&nbsp;</template>-->
         </div>

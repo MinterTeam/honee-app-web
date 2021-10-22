@@ -235,7 +235,7 @@ export default {
                 {{ action ? $td(action.title, action.langKey) : $td('Add liquidity to swap pool', 'pool.add-title') }}
             </h1>
             <p class="panel__header-description">
-                {{ $td('Choose pair of coins the coins that you own and specify the amount you would like to add.', 'pool.add-description') }}
+                {{ $td('Choose the pair of coins that you own and specify the amount you would like to add.', 'form.swap-add-description') }}
             </p>
         </template>
 
@@ -247,7 +247,7 @@ export default {
                 :amount.sync="form.volume0"
                 :$amount="$v.form.volume0"
                 :useBalanceForMaxValue="true"
-                :label="$td('First coin', 'form.pool-first-coin')"
+                :label="$td('First coin', 'form.pool-coin0')"
                 @input-native="selectedInput = $options.INPUT_TYPE.AMOUNT0"
                 @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT0"
             />
@@ -266,7 +266,7 @@ export default {
                 :amount.sync="formAmount1"
                 :$amount="$v.formAmount1"
                 :useBalanceForMaxValue="true"
-                :label="$td('Second coin', 'form.pool-second-coin')"
+                :label="$td('Second coin', 'form.pool-coin1')"
                 @input-native="selectedInput = $options.INPUT_TYPE.AMOUNT1"
                 @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT1"
             />
@@ -274,7 +274,7 @@ export default {
             <span class="form-field__error" v-else-if="$v.form.coin1.$dirty && !$v.form.coin1.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
 
             <p class="u-text-center u-text-muted u-text-small u-mt-10">
-                {{ $td('Second coin amount is estimated and depends on&nbsp;the&nbsp;pool ratio at&nbsp;the&nbsp;moment of&nbsp;transaction', 'form.pool-remove-amount-help') }}
+                {{ $td('Second coin amount is estimated and depends on&nbsp;the&nbsp;pool ratio at&nbsp;the&nbsp;moment of&nbsp;transaction.', 'form.pool-remove-amount-help') }}
             </p>
         </template>
 
@@ -288,7 +288,7 @@ export default {
         <template v-slot:confirm-modal-header>
             <h1 class="panel__header-title">
 <!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-feature-pool.svg`" alt="" role="presentation" width="40" height="40">-->
-                {{ $td('Add liquidity to swap pool', 'pool.add-title') }}
+                {{ $td('Add liquidity to swap pool', 'form.pool-add-title') }}
             </h1>
         </template>
 

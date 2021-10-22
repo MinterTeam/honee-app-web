@@ -108,7 +108,7 @@ export default {
                 {{ action ? $td(action.title, action.langKey) : $td('Delegate', 'delegation.delegate-title') }}
             </h1>
             <p class="panel__header-description">
-                {{ $td('You can delegate your tokens to validators and receive related payments in accordance with the terms of participation.', 'delegation.delegate-description') }}
+                {{ $td('You can delegate your tokens to validators and receive related payments in accordance with the terms of participation.', 'form.delegate-description') }}
             </p>
         </template>
 
@@ -145,7 +145,7 @@ export default {
         <template v-slot:confirm-modal-header>
             <h1 class="panel__header-title">
 <!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-delegate.svg`" alt="" role="presentation" width="40" height="40">-->
-                {{ $td('Delegate', 'delegation.delegate-title') }}
+                {{ $td('Delegate', 'action.title-delegate') }}
             </h1>
         </template>
 
