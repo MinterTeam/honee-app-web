@@ -42,12 +42,12 @@
                  role="status"
                  aria-live="polite"
             >
-                Copied to clipboard
+                {{ $td('Copied to clipboard', 'common.clipboard') }}
             </div>
             <div class="mdc-snackbar__actions">
                 <button class="mdc-snackbar__dismiss u-semantic-button" title="Dismiss">
                     <span class="mdc-snackbar__dismiss-icon">
-                        Close
+                        {{ $td('Close', 'common.close') }}
                     </span>
                 </button>
             </div>
