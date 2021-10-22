@@ -261,6 +261,18 @@ export default {
         'high-eth-fee-percentage': 'ваших ETH',
         'eth-waiting': 'Ожидание ETH-депозита',
         
+        'pool-coin0': 'Первая монета',
+        'pool-coin1': 'Вторая монета',
+        'pool-remove-liquidity-percent': 'Сумма к возврату',
+        'pool-remove-liquidity-error-required': 'Укажите объем',
+        'percent-error-min': 'Минимум 0%',
+        'percent-error-max': 'Максимум 100%',
+        'pool-remove-liquidity-error-pool': 'В указанной паре ликвидность провайдера не обнаружена',
+        'you-return': 'Вы забираете',
+        'lp-tokens': 'LP-токенов',
+        'pool-remove-button': 'Отозвать',
+        'pool-remove-title': 'Отозвать ликвидность из пула обменов',
+        
         'select-validator': 'Выберите валидатора',
         'select-coin': 'Выберите монету',
 
