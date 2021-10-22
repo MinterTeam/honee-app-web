@@ -342,6 +342,10 @@ export default {
         'delegation-reinvest-start-list-error-required': 'Введите список транзакций',
         'delegation-reinvest-start-button': 'Запуск автоделегирования',
         'delegation-reinvest-start-success': 'Автоделегирование запущено',
+        
+        'unbond-description': 'В случае если вы больше не хотите, чтобы валидатор управлял вашими сбережениями, просто отправьте заявку на отвязку. Процесс будет завершен через 30 дней с момента подачи.',
+        'coins-will-return': 'Монеты вернутся на ваш адрес через 518 400 блоков (около 30 дней).',
+        'nothing-to-unbond': 'Нечего отзывать.',
 
         'coiner-create-name': 'Название монеты',
         'coiner-create-name-error-required': 'Укажите название',
