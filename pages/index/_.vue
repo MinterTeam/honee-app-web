@@ -153,7 +153,8 @@ export default {
         }
 
         // faq
-        let faqItems = await this.$content('faq').where({ 'slug': { $in: actionTags } }).fetch();
+        const localePrefix = this.$i18n.locale === this.$i18n.defaultLocale ? '' : this.$i18n.locale + '/';
+        let faqItems = await this.$content(localePrefix + 'faq').where({ 'slug': { $in: actionTags } }).fetch();
         if (!faqItems) {
             return;
         }
