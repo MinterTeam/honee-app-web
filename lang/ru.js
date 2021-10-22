@@ -275,6 +275,7 @@ export default {
         'pool-remove-title': 'Отозвать ликвидность из пула обменов',
         'pool-remove-amount-help': 'Объем второй монеты рассчитывается и зависит от курса в пуле на момент транзакции.',
         'pool-add-title': 'Добавить ликвидность в пул обменов',
+        'pool-add-button': 'Добавить',
         
         'select-validator': 'Выберите валидатора',
         'select-coin': 'Выберите монету',
@@ -295,6 +296,8 @@ export default {
         'bridge-output': 'К зачислению через мост',
         'bridge-fee': 'Комиссия, удерживаемая мостом',
         'ethereum-fee': 'Комиссия в сети Ethereum',
+        
+        'wallet-send-description': 'Отправляйте монеты кому пожелаете — друзьям, семье, бизнес-партнерам.',
         
         'masternode-address': 'Адрес',
         'masternode-address-help': 'Адрес владельца мастерноды, куда будет приходить&nbsp;награда',
