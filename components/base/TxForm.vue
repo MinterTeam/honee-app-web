@@ -351,9 +351,9 @@ function clearEmptyFields(obj) {
                             <BaseAmount :coin="fee.coinSymbol" :amount="fee.value" :base-coin-amount="fee.baseCoinValue"/>
                             <span class="u-display-ib" v-if="fee.priceCoin.id > 0">({{ pretty(fee.priceCoinValue) }} {{ fee.priceCoin.symbol }})</span>
                         </div>
-                        <span class="form-field__label">{{ $td('Fee', 'form.fee-amount') }}</span>
+                        <span class="form-field__label">{{ $td('Fee', 'form.tx-fee') }}</span>
                     </div>
-                    <div class="u-mt-10 u-fw-700" v-if="fee.isHighFee"><span class="u-emoji">⚠️</span> Transaction requires high fee.</div>
+                    <div class="u-mt-10 u-fw-700" v-if="fee.isHighFee"><span class="u-emoji">⚠️</span> {{ $td('Transaction requires high fee.', 'form.tx-fee-high') }}</div>
                 </div>
                 <div class="panel__section">
                     <button class="button button--main button--full" type="button" data-focus-on-open
