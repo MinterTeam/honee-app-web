@@ -108,7 +108,7 @@ export default {
                 {{ action ? $td(action.title, action.langKey) : $td('Delegate', 'delegation.delegate-title') }}
             </h1>
             <p class="panel__header-description">
-                {{ $td('You can delegate your tokens to validators and receive related payments in accordance with the terms of participation.', 'delegation.delegate-description') }}
+                {{ $td('You can delegate your tokens to validators and receive related payments in accordance with the terms of participation.', 'form.delegate-description') }}
             </p>
         </template>
 
