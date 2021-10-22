@@ -333,22 +333,22 @@ export default {
                 @blur="$v.formLiquidityPercent.$touch()"
                 -->
                 <span class="form-field__error" v-if="$v.form.liquidity.$dirty && !$v.form.liquidity.required">{{ $td('Enter liquidity amount', 'form.pool-remove-liquidity-error-required') }}</span>
-                <span class="form-field__error" v-else-if="$v.formLiquidityPercent.$dirty && !$v.formLiquidityPercent.minValue">{{ $td('Min value 0%', 'form.percent-error-min') }}</span>
+                <span class="form-field__error" v-else-if="$v.formLiquidityPercent.$dirty && !$v.formLiquidityPercent.minValue">{{ $td('Min. value 0%', 'form.percent-error-min') }}</span>
                 <span class="form-field__error" v-else-if="$v.formLiquidityPercent.$dirty && !$v.formLiquidityPercent.maxValue">{{ $td('Maximum 100%', 'form.percent-error-max') }}</span>
             </div>
             <div class="u-cell" v-if="form.coin0 && form.coin1">
-                <span class="form__error" v-if="$v.isPoolLoaded.$dirty && !$v.isPoolLoaded.success">{{ $td('Provider\'s liquidity not found for selected pair', 'form.pool-remove-liquidity-error-pool') }}</span>
+                <span class="form__error" v-if="$v.isPoolLoaded.$dirty && !$v.isPoolLoaded.success">{{ $td('Provider’s liquidity not found for selected pair', 'form.pool-remove-liquidity-error-pool') }}</span>
                 <div class="estimation u-mt-10">
-                    <h3 class="estimation__title">You return</h3>
+                    <h3 class="estimation__title">{{ $td('You return', 'form.you-return') }}</h3>
                     <div class="estimation__item">
                         <div class="estimation__coin">
                             <img class="estimation__coin-icon" src="/img/icon-coin-lp.svg" width="20" height="20" alt="" role="presentation">
-                            <div class="estimation__coin-symbol">LP tokens</div>
+                            <div class="estimation__coin-symbol">{{ $td('LP tokens', 'form.lp-tokens') }}</div>
                         </div>
                         <div class="u-fw-600 u-text-number">{{ pretty(form.liquidity || 0) }}</div>
                     </div>
 
-                    <h3 class="estimation__title">You get approximately</h3>
+                    <h3 class="estimation__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                     <div class="estimation__item">
                         <div class="estimation__coin">
                             <img class="estimation__coin-icon" :src="$store.getters['explorer/getCoinIcon'](form.coin0)" width="20" height="20" alt="" role="presentation">
@@ -374,7 +374,7 @@ export default {
         <template v-slot:confirm-modal-header>
             <h1 class="panel__header-title">
 <!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-feature-pool.svg`" alt="" role="presentation" width="40" height="40">-->
-                {{ $td('Remove liquidity from swap pool', 'pool.remove-title') }}
+                {{ $td('Remove liquidity from swap pool', 'form.pool-remove-title') }}
             </h1>
         </template>
 
