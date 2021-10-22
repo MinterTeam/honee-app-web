@@ -2,6 +2,7 @@ export default {
     common: {
         'logout': 'Выйти',
         'copy': 'Копировать',
+        'clipboard': 'Скопировано в буфер обмена',
         'close': 'Закрыть',
         'search': 'Поиск…',
         'continue': 'Продолжить',
@@ -80,6 +81,7 @@ export default {
         'footer-link-box-wallet-bitcoin': 'Биткоин кошелек',
 
         'total-balance': 'Общий баланс',
+        'balance': 'Баланс',
         'wallet-balance-links': 'Купить BIP, HUB & BEE',
         'deposit': 'Пополнить',
         'swap': 'Обменять',
@@ -131,6 +133,8 @@ export default {
         
         'coins': 'Монеты',
         'view-all': 'Посмотреть все',
+        
+        'cam-allow': 'Разрешите доступ к камере',
     },
     action: {
         'title-add-liquidity': 'Предоставьте ликвидность в пул',
@@ -342,6 +346,9 @@ export default {
         'delegation-reinvest-start-list-error-required': 'Введите список транзакций',
         'delegation-reinvest-start-button': 'Запуск автоделегирования',
         'delegation-reinvest-start-success': 'Автоделегирование запущено',
+        'stake-update-eta': 'Ваш стейк будет обновлен через',
+        'stake-update-eta-blocks': 'блока(-ов)',
+        'stake-update-eta-minutes': 'минут(-ы)',
         
         'unbond-description': 'В случае если вы больше не хотите, чтобы валидатор управлял вашими сбережениями, просто отправьте заявку на отвязку. Процесс будет завершен через 30 дней с момента подачи.',
         'coins-will-return': 'Монеты вернутся на ваш адрес через 518 400 блоков (около 30 дней).',
