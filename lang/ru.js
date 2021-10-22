@@ -298,6 +298,7 @@ export default {
         'ethereum-fee': 'Комиссия в сети Ethereum',
         
         'wallet-send-description': 'Отправляйте монеты кому пожелаете — друзьям, семье, бизнес-партнерам.',
+        'delegate-description': 'Делегируйте свои токены, чтобы получать выплаты в соответствии с условиями участия.',
         
         'masternode-address': 'Адрес',
         'masternode-address-help': 'Адрес владельца мастерноды, куда будет приходить&nbsp;награда',
