@@ -245,6 +245,7 @@ export default {
         'swap-confirm': 'Подтвердить обмен',
         'swap-confirm-receive-estimation': 'Вы получите примерно',
         'swap-confirm-pay-estimation': 'Вы заплатите примерно',
+        'swap-add-description': 'Выберите пару из монет, которые у вас есть, и укажите объемы, которые вы хотели бы добавить.',
         'not-enough-coins': 'Недостаточно монет',
         'cannot-calculate-swap-limits': 'Невозможно просчитать границы обмена',
         'invalid-swap-limit': 'Неверные границы обмена',
@@ -272,6 +273,8 @@ export default {
         'lp-tokens': 'LP-токенов',
         'pool-remove-button': 'Отозвать',
         'pool-remove-title': 'Отозвать ликвидность из пула обменов',
+        'pool-remove-amount-help': 'Объем второй монеты рассчитывается и зависит от курса в пуле на момент транзакции.',
+        'pool-add-title': 'Добавить ликвидность в пул обменов',
         
         'select-validator': 'Выберите валидатора',
         'select-coin': 'Выберите монету',
