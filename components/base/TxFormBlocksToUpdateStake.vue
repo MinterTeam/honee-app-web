@@ -1,5 +1,5 @@
 <script>
-import {STAKE_RECALCULATE_BLOCK_COUNT} from 'assets/variables.js';
+import {STAKE_RECALCULATE_BLOCK_COUNT} from '~/assets/variables.js';
 
 export default {
     props: {
@@ -31,9 +31,9 @@ export default {
 </script>
 
 <template>
-    <p style="font-size: 12px;">
+    <p class="">
         <slot :blocksToUpdate="blocksToUpdate" :timeToUpdate="timeToUpdate">
-            {{ $td('Your stake will be updated in', 'form.stake-update-eta') }} <strong>{{ blocksToUpdate }}</strong> {{ $td('blocks', 'form.stake-update-eta-blocks') }} (~{{ timeToUpdate }} {{ $td('minutes', 'form.stake-update-eta-minutes') }})
+            {{ $td('Your stake will be updated in', 'form.stake-update-eta') }} <strong>{{ blocksToUpdate }}</strong> {{ $td('blocks', 'form.stake-update-eta-blocks') }} (≈{{ timeToUpdate }} {{ $td('minutes', 'form.stake-update-eta-minutes') }})
         </slot>
     </p>
 </template>

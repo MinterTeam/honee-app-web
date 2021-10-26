@@ -86,12 +86,12 @@ export default {
         'deposit': 'Пополнить',
         'swap': 'Обменять',
         'send': 'Отправить',
-        
+
         'add-liquidity': 'Добавить ликвидность',
         'delegate': 'Делегировать',
         'participate': 'Участвовать',
         'withdraw-unbond': 'Отозвать',
-        
+
 
         'sign-up': 'Зарегистрируйтесь',
         'or': 'или',
@@ -117,10 +117,10 @@ export default {
         'your-address': 'Ваш адрес',
         'share-address': 'Поделиться',
         'top-up-with-eth': 'Пополнить через ETH',
-        
+
         'alpha-banner-text': 'Honee в альфа-стадии.',
         'alpha-banner-link': 'Помогайте с тестированием и получайте крипту за фидбэк.',
-        
+
         'delegation': 'Делегирование',
         'delegation-desc': 'Привязка ваших BIP или кастомных монет к валидатору сети для получения вознаграждений (часть наград за блоки + комиссий за транзакции). Распределяются между всеми делегаторами пропорционально их стейку за вычетом комиссии валидатора.',
         'validators': 'Валидаторы',
@@ -130,10 +130,10 @@ export default {
         'liquidity-pools': 'Пулы ликвидности',
         'farming-programs': 'Фарминг-программы',
         'giveaway-programs': 'Лотереи',
-        
+
         'coins': 'Монеты',
         'view-all': 'Посмотреть все',
-        
+
         'cam-allow': 'Разрешите доступ к камере',
     },
     action: {
@@ -146,9 +146,9 @@ export default {
         'title-send': 'Отправьте монеты',
         'title-win': 'Выигрывайте',
         'title-farm': 'Участвуйте в доходном фермерстве',
-        'title-remove-liquidity': 'Отзовите ликвидность из пула',
+        'title-remove-liquidity': 'Отзыв ликвидности из пула',
         'title-delegate': 'Делегируйте',
-        'title-unbond': 'Отзовите монеты из делегирования',
+        'title-unbond': 'Отзыв монет из делегирования',
         'title-not-found': 'Действие не найдено',
         'tag-exchange': 'Обмен',
         'tag-staking': 'Стейкинг',
@@ -196,11 +196,11 @@ export default {
         'help-default': 'По-умолчанию:',
         'tx-sent': 'Транзакция отправлена:',
         'to-address': 'На адрес',
-        
+
         'unfinished-purchase': 'У вас имеется неоконченная покупка, желаете продолжить?',
         'current-balance': 'Текущий баланс',
         'required-balance': 'Необходимый баланс',
-        
+
 
         'checks-issue-nonce': 'Nonce',
         'checks-issue-nonce-error-required': 'Укажите nonce',
@@ -216,6 +216,8 @@ export default {
         'checks-issue-result-link-warning': 'Внимание! Пароль содержится в ссылке. Отправляйте ссылку только непосредственно получателю.',
         'checks-issue-button': 'Создать',
 
+        'wallet-send-title': 'Отправить монеты',
+        'wallet-send-description': 'Отправляйте монеты кому пожелаете — друзьям, семье, бизнес-партнерам.',
         'wallet-send-address': 'Адрес',
         'wallet-send-address-error-required': 'Укажите адрес',
         'wallet-send-address-error-invalid': 'Некорректный адрес',
@@ -237,7 +239,7 @@ export default {
 
         'swap-type': 'Тип обмена',
         'swap-sell-amount': 'Сколько продаем',
-        'swap-sell-coin': 'Какую монету продаем',
+        'swap-sell-coin': 'Что продаем',
         'swap-sell-coin-error': 'Нет монет для продажи',
         'swap-sell-coin-confirm': 'Вы отправляете',
         'swap-buy-amount': 'Сколько покупаем',
@@ -247,12 +249,14 @@ export default {
         'swap-button': 'Продать',
         'buy-button': 'Купить',
         'swap-confirm': 'Подтвердить обмен',
+        'swap-confirm-spend-estimation': 'Вы потратите примерно',
         'swap-confirm-receive-estimation': 'Вы получите примерно',
         'swap-confirm-pay-estimation': 'Вы заплатите примерно',
         'swap-add-description': 'Выберите пару из монет, которые у вас есть, и укажите объемы, которые вы хотели бы добавить.',
         'not-enough-coins': 'Недостаточно монет',
-        'cannot-calculate-swap-limits': 'Невозможно просчитать границы обмена',
-        'invalid-swap-limit': 'Неверные границы обмена',
+        'estimation-error': 'Ошибка оценки',
+        'estimation-error-limit-required': 'Невозможно просчитать лимит затрат',
+        'estimation-error-limit-invalid': 'Неверный лимит затрат',
         'you-will-spend': 'Вы потратите',
         'you-spend': 'Вы тратите',
         'you-will-get': 'Вы получите',
@@ -265,7 +269,7 @@ export default {
         'high-eth-fee': 'Высокая комиссия в сети Ethereum. Она поглотит',
         'high-eth-fee-percentage': 'ваших ETH',
         'eth-waiting': 'Ожидание ETH-депозита',
-        
+
         'stage-wrap': 'Оборачивание',
         'stage-swap': 'Обмен',
         'stage-approve': 'Одобрение',
@@ -275,22 +279,22 @@ export default {
         'stage-from-bridge': 'из моста',
         'stage-waiting': 'Ожидание',
         'stage-received': 'Получено',
-        
+
         'pool-coin0': 'Первая монета',
         'pool-coin1': 'Вторая монета',
-        'pool-remove-liquidity-percent': 'Сумма к возврату',
+        'pool-remove-liquidity-percent': 'Количество к возврату',
         'pool-remove-liquidity-error-required': 'Укажите объем',
         'percent-error-min': 'Минимум 0%',
         'percent-error-max': 'Максимум 100%',
         'pool-remove-liquidity-error-pool': 'В указанной паре ликвидность провайдера не обнаружена',
-        'you-return': 'Вы забираете',
+        'you-return': 'Вы возвращаете',
         'lp-tokens': 'LP-токенов',
         'pool-remove-button': 'Отозвать',
         'pool-remove-title': 'Отозвать ликвидность из пула обменов',
         'pool-remove-amount-help': 'Объем второй монеты рассчитывается и зависит от курса в пуле на момент транзакции.',
-        'pool-add-title': 'Добавить ликвидность в пул обменов',
+        'pool-add-title': 'Добавить ликвидность в пул',
         'pool-add-button': 'Добавить',
-        
+
         'select-validator': 'Выберите валидатора',
         'select-coin': 'Выберите монету',
 
@@ -303,17 +307,15 @@ export default {
         'enter-coin-symbol': 'Введите символ монеты',
         'min-3-chars': 'Мин. 3 символа',
         'not-supported-to-buy': 'Покупка не поддерживается',
-        
+
         'swap-confirm-note': 'Итоговая сумма зависит от курса в момент обмена и может отличаться от представленной выше.',
-        'swap-confirm-note-2': 'Финальная сумма зависит от текущего курса непосредственно в момент обмена. Она может отличаться от представленной выше, но не может превысить лимит.',
 
         'bridge-output': 'К зачислению через мост',
         'bridge-fee': 'Комиссия, удерживаемая мостом',
         'ethereum-fee': 'Комиссия в сети Ethereum',
-        
-        'wallet-send-description': 'Отправляйте монеты кому пожелаете — друзьям, семье, бизнес-партнерам.',
+
         'delegate-description': 'Делегируйте свои токены, чтобы получать выплаты в соответствии с условиями участия.',
-        
+
         'masternode-address': 'Адрес',
         'masternode-address-help': 'Адрес владельца мастерноды, куда будет приходить&nbsp;награда',
         'masternode-address-error-required': 'Укажите адрес',
@@ -342,9 +344,9 @@ export default {
         'delegation-delegate-button': 'Делегировать',
         'delegation-delegate-confirm-amount': 'Вы делегируете',
         'delegation-delegate-confirm-address': 'В мастерноду',
-        'delegation-delegate-confirm-note': 'В случае отзыва монет, они вернутся на ваш кошелек примерно через <strong>30&nbsp;дней</strong> (518&#x202F;400&nbsp;блоков) и не&nbsp;будут приносить награды в течение этого времени.',
+        'delegation-delegate-confirm-note': 'В случае отзыва монет, они вернутся на ваш кошелек примерно через <strong>30&nbsp;дней</strong> (518&#x202F;400&nbsp;блоков) и не&nbsp;будут приносить награды в&nbsp;течение этого&nbsp;времени.',
         'delegation-unbond-button': 'Отозвать',
-        'delegation-unbond-confirm-description': 'Вы уверены, что хотите отозвать монеты? Отозванные&nbsp;монеты вернутся на ваш кошелек примерно через <strong>30&nbsp;дней</strong> (518&#x202F;400&nbsp;блоков) и не&nbsp;будут приносить награды в течение этого времени.',
+        'delegation-unbond-confirm-description': 'Отозванные&nbsp;монеты вернутся на ваш кошелек примерно через <strong>30&nbsp;дней</strong> (518&#x202F;400&nbsp;блоков) и не&nbsp;будут приносить награды в&nbsp;течение этого&nbsp;времени.',
         'delegation-unbond-confirm-amount': 'Вы отзываете',
         'delegation-unbond-confirm-address': 'Из мастерноды',
         'delegation-move-confirm-description': 'Вы уверены, что хотите перенести монеты? Отозванные&nbsp;монеты перейдут к новой мастерноде примерно через <strong>30&nbsp;дней</strong> (518&#x202F;400&nbsp;блоков) и не&nbsp;будут приносить награды в течение этого времени.',
@@ -359,7 +361,7 @@ export default {
         'stake-update-eta': 'Ваш стейк будет обновлен через',
         'stake-update-eta-blocks': 'блока(-ов)',
         'stake-update-eta-minutes': 'минут(-ы)',
-        
+
         'unbond-description': 'В случае если вы больше не хотите, чтобы валидатор управлял вашими сбережениями, просто отправьте заявку на отвязку. Процесс будет завершен через 30 дней с момента подачи.',
         'coins-will-return': 'Монеты вернутся на ваш адрес через 518 400 блоков (около 30 дней).',
         'nothing-to-unbond': 'Нечего отзывать.',

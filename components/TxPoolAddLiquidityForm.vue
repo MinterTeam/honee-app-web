@@ -14,7 +14,7 @@ import {getPool, getSwapCoinList} from '@/api/explorer.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import {decreasePrecisionSignificant, pretty, prettyExact} from "~/assets/utils.js";
 import {getErrorText} from '~/assets/server-error.js';
-import BaseAmount from '~/components/base/BaseAmount.vue';
+import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import TxForm from '~/components/base/TxForm.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 
@@ -29,7 +29,7 @@ export default {
     TX_TYPE,
     INPUT_TYPE,
     components: {
-        BaseAmount,
+        BaseAmountEstimation,
         TxForm,
         FieldCombined,
     },
@@ -231,84 +231,80 @@ export default {
         @clear-form="clearForm()"
     >
         <template v-slot:panel-header>
-            <h1 class="panel__header-title">
+            <h1 class="u-h3 u-mb-10">
                 {{ action ? $td(action.title, action.langKey) : $td('Add liquidity to swap pool', 'pool.add-title') }}
             </h1>
+            <!--
             <p class="panel__header-description">
                 {{ $td('Choose the pair of coins that you own and specify the amount you would like to add.', 'form.swap-add-description') }}
             </p>
+            -->
         </template>
 
-        <template v-slot:extra-panel>
-            <FieldCombined
-                :coin.sync="form.coin0"
-                :$coin="$v.form.coin0"
-                :coinList="availableCoinList"
-                :amount.sync="form.volume0"
-                :$amount="$v.form.volume0"
-                :useBalanceForMaxValue="true"
-                :label="$td('First coin', 'form.pool-coin0')"
-                @input-native="selectedInput = $options.INPUT_TYPE.AMOUNT0"
-                @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT0"
-            />
-            <span class="form-field__error" v-if="$v.form.coin0.$dirty && !$v.form.coin0.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
-            <span class="form-field__error" v-else-if="$v.form.coin0.$dirty && !$v.form.coin0.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
-            <span class="form-field__error" v-if="$v.form.volume0.$dirty && !$v.form.volume0.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
+        <template v-slot:default>
+            <div class="form-row">
+                <FieldCombined
+                    :coin.sync="form.coin0"
+                    :$coin="$v.form.coin0"
+                    :coinList="availableCoinList"
+                    :amount.sync="form.volume0"
+                    :$amount="$v.form.volume0"
+                    :useBalanceForMaxValue="true"
+                    :label="$td('First coin', 'form.pool-coin0')"
+                    @input-native="selectedInput = $options.INPUT_TYPE.AMOUNT0"
+                    @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT0"
+                />
+                <span class="form-field__error" v-if="$v.form.coin0.$dirty && !$v.form.coin0.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
+                <span class="form-field__error" v-else-if="$v.form.coin0.$dirty && !$v.form.coin0.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
+                <span class="form-field__error" v-if="$v.form.volume0.$dirty && !$v.form.volume0.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
+            </div>
 
-            <button class="button button--white convert__reverse-button" type="button" @click="reverseCoins()">
+            <button class="form-row button button--white convert__reverse-button" type="button" @click="reverseCoins()">
                 <img class="" src="/img/icon-reverse.svg" width="24" height="24" alt="⇅">
             </button>
 
-            <FieldCombined
-                :coin.sync="form.coin1"
-                :$coin="$v.form.coin1"
-                :coinList="availableCoinList"
-                :amount.sync="formAmount1"
-                :$amount="$v.formAmount1"
-                :useBalanceForMaxValue="true"
-                :label="$td('Second coin', 'form.pool-coin1')"
-                @input-native="selectedInput = $options.INPUT_TYPE.AMOUNT1"
-                @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT1"
-            />
-            <span class="form-field__error" v-if="$v.form.coin1.$dirty && !$v.form.coin1.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
-            <span class="form-field__error" v-else-if="$v.form.coin1.$dirty && !$v.form.coin1.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
+            <div class="form-row">
+                <FieldCombined
+                    :coin.sync="form.coin1"
+                    :$coin="$v.form.coin1"
+                    :coinList="availableCoinList"
+                    :amount.sync="formAmount1"
+                    :$amount="$v.formAmount1"
+                    :useBalanceForMaxValue="true"
+                    :label="$td('Second coin', 'form.pool-coin1')"
+                    @input-native="selectedInput = $options.INPUT_TYPE.AMOUNT1"
+                    @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT1"
+                />
+                <span class="form-field__error" v-if="$v.form.coin1.$dirty && !$v.form.coin1.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
+                <span class="form-field__error" v-else-if="$v.form.coin1.$dirty && !$v.form.coin1.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
+            </div>
 
-            <p class="u-text-center u-text-muted u-text-small u-mt-10">
+            <p class="form-row u-text-center u-text-muted u-text-small">
                 {{ $td('Second coin amount is estimated and depends on&nbsp;the&nbsp;pool ratio at&nbsp;the&nbsp;moment of&nbsp;transaction.', 'form.pool-remove-amount-help') }}
             </p>
         </template>
-
-        <!--        <template v-slot:default="{fee, addressBalance}">-->
-        <!--        </template>-->
 
         <template v-slot:submit-title>
             {{ $td('Add', 'form.pool-add-button') }}
         </template>
 
         <template v-slot:confirm-modal-header>
-            <h1 class="panel__header-title">
+            <h2 class="u-h3 u-mb-10">
 <!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-feature-pool.svg`" alt="" role="presentation" width="40" height="40">-->
                 {{ $td('Add liquidity to swap pool', 'form.pool-add-title') }}
-            </h1>
+            </h2>
         </template>
 
         <template v-slot:confirm-modal-body>
-            <div class="u-grid u-grid--small u-grid--vertical-margin u-text-left">
-                <div class="u-cell">
-                    <div class="form-field form-field--dashed">
-                        <BaseAmount tag="div" class="form-field__input is-not-empty" :coin="form.coin0" :amount="form.volume0" :exact="true"/>
-                        <div class="form-field__label">{{ $td('First coin', 'form.pool-coin0') }}</div>
-                    </div>
-                </div>
-                <div class="u-cell">
-                    <div class="form-field form-field--dashed">
-                        <div class="form-field__input is-not-empty">
-                            ≈<BaseAmount :coin="form.coin1" :amount="formAmount1"/>
-                            <span class="u-text-muted">({{ maximumVolume1 }} maximum)</span>
-                        </div>
-                        <div class="form-field__label">{{ $td('Second coin', 'form.pool-coin1') }}</div>
-                    </div>
-                </div>
+            <div class="estimation form-row">
+                <h3 class="estimation__title">{{ $td('First coin', 'form.pool-coin0') }}</h3>
+                <BaseAmountEstimation :coin="form.coin0" :amount="form.volume0" format="exact"/>
+
+                <h3 class="estimation__title">{{ $td('Second coin', 'form.pool-coin1') }}</h3>
+                <BaseAmountEstimation :coin="form.coin1" :amount="formAmount1" format="approx"/>
+                <!--
+                <span class="u-text-muted">({{ maximumVolume1 }} maximum)</span>
+                -->
             </div>
         </template>
     </TxForm>

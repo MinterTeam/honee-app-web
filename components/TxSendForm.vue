@@ -7,7 +7,7 @@ import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {isValidAddress} from "minterjs-util/src/prefix.js";
 import {prettyExact} from "~/assets/utils.js";
-import BaseAmount from '~/components/base/BaseAmount.vue';
+import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import TxForm from '~/components/base/TxForm.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import FieldAddress from '~/components/base/FieldAddress.vue';
@@ -15,7 +15,7 @@ import FieldAddress from '~/components/base/FieldAddress.vue';
 export default {
     TX_TYPE,
     components: {
-        BaseAmount,
+        BaseAmountEstimation,
         TxForm,
         FieldCombined,
         FieldAddress,
@@ -81,16 +81,18 @@ export default {
         @clear-form="clearForm()"
     >
         <template v-slot:panel-header>
-            <h1 class="panel__header-title">
-                {{ action ? $td(action.title, action.langKey) : $td('Send coins', 'wallet.send-title') }}
+            <h1 class="u-h3 u-mb-10">
+                {{ action ? $td(action.title, action.langKey) : $td('Send coins', 'form.wallet-send-title') }}
             </h1>
+            <!--
             <p class="panel__header-description">
                 {{ $td('Transfer your coins to whomever you want—friends, family members, or business partners.', 'form.wallet-send-description') }}
             </p>
+            -->
         </template>
 
         <template v-slot:default>
-            <div class="u-cell">
+            <div class="form-row">
                 <FieldCombined
                     :coin.sync="form.coinSymbol"
                     :$coin="$v.form.coinSymbol"
@@ -105,7 +107,7 @@ export default {
                 <span class="form-field__error" v-if="$v.form.amount.$dirty && !$v.form.amount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
             </div>
 
-            <div class="u-cell">
+            <div class="form-row">
                 <FieldAddress
                     v-model.trim="form.address"
                     :$value="$v.form.address"
@@ -116,29 +118,20 @@ export default {
         </template>
 
         <template v-slot:confirm-modal-header>
-            <h1 class="panel__header-title">
+            <h2 class="u-h3 u-mb-10">
 <!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-send.svg`" alt="" role="presentation" width="40" height="40">-->
-                {{ $td('Send coins', 'wallet.send-title') }}
-            </h1>
+                {{ $td('Send coins', 'form.wallet-send-title') }}
+            </h2>
         </template>
 
         <template v-slot:confirm-modal-body>
-            <div class="u-grid u-grid--small u-grid--vertical-margin u-text-left">
-                <div class="u-cell">
-                    <div class="form-field form-field--dashed">
-                        <BaseAmount tag="div" class="form-field__input is-not-empty" :coin="form.coinSymbol" :amount="form.amount" :exact="true"/>
-                        <div class="form-field__label">{{ $td('You send', 'form.wallet-send-confirm-amount') }}</div>
-                    </div>
-                </div>
-                <div class="u-cell">
-                    <label class="form-field form-field--dashed">
-                        <textarea
-                            class="form-field__input is-not-empty" autocapitalize="off" spellcheck="false" readonly tabindex="-1" rows="1"
-                            v-autosize
-                            :value="form.address"
-                        ></textarea>
-                        <span class="form-field__label">{{ $td('To the address', 'form.wallet-send-confirm-address') }}</span>
-                    </label>
+            <div class="estimation form-row">
+                <h3 class="estimation__title">{{ $td('You send', 'form.wallet-send-confirm-amount') }}</h3>
+                <BaseAmountEstimation :coin="form.coinSymbol" :amount="form.amount" format="exact"/>
+
+                <h3 class="estimation__title">{{ $td('To the address', 'form.wallet-send-confirm-address') }}</h3>
+                <div class="estimation__item estimation__item--content u-text-wrap">
+                    {{ form.address }}
                 </div>
             </div>
         </template>

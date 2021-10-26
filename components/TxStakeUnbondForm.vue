@@ -6,11 +6,9 @@
     import autosize from 'v-autosize';
     import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
     import {isValidPublic} from "minterjs-util/src/public";
-    import eventBus from '~/assets/event-bus';
-    import focusElement from '~/assets/focus-element';
     import checkEmpty from '~/assets/v-check-empty';
     import {pretty, prettyExact} from "~/assets/utils";
-    import BaseAmount from '~/components/base/BaseAmount.vue';
+    import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
     import TxForm from '~/components/base/TxForm.vue';
     import TxFormBlocksToUpdateStake from '~/components/base/TxFormBlocksToUpdateStake.vue';
     import FieldCombined from '~/components/base/FieldCombined.vue';
@@ -19,7 +17,7 @@
     export default {
         TX_TYPE,
         components: {
-            BaseAmount,
+            BaseAmountEstimation,
             TxForm,
             TxFormBlocksToUpdateStake,
             FieldCombined,
@@ -135,6 +133,22 @@
                     return undefined;
                 }
             },
+            selectedValidatorName() {
+                if (this.$v.form.publicKey.$invalid) {
+                    return null;
+                }
+                const validator = this.$store.state.validatorMetaList.find((item) => item.publicKey === this.form.publicKey);
+                return validator?.name;
+            },
+            validatorFullName() {
+                let result = '';
+                if (this.selectedValidatorName) {
+                    result += this.selectedValidatorName + '\n';
+                }
+                result += this.form.publicKey;
+
+                return result;
+            },
         },
         watch: {
             'form.publicKey': function(newVal) {
@@ -165,16 +179,18 @@
             @clear-form="clearForm()"
         >
             <template v-slot:panel-header>
-                <h1 class="panel__header-title">
+                <h1 class="u-h3 u-mb-10">
                     {{ action ? $td(action.title, action.langKey) : $td('Unbond', 'action.title-unbond') }}
                 </h1>
+                <!--
                 <p class="panel__header-description">
                     {{ $td('In case you don’t want the validator to handle your holdings anymore, all you need to do is submit the request for unbonding. The process will be finalized in 30 days since the request has been sent.', 'form.unbond-description') }}
                 </p>
+                -->
             </template>
 
             <template v-slot:default>
-                <div class="u-cell">
+                <div class="form-row">
                     <FieldValidator
                         v-model.trim="form.publicKey"
                         :$value="$v.form.publicKey"
@@ -182,7 +198,7 @@
                         :label="$td('From validator', 'form.masternode-public')"
                     />
                 </div>
-                <div class="u-cell">
+                <div class="form-row">
                     <FieldCombined
                         :coin.sync="form.coin"
                         :$coin="$v.form.coin"
@@ -204,32 +220,24 @@
             </template>
 
             <template v-slot:confirm-modal-header>
-                <h1 class="panel__header-title">
+                <h2 class="u-h3 u-mb-10">
                     <!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-unbond.svg`" alt="" role="presentation" width="40" height="40">-->
                     {{ $td('Unbond', 'action.title-unbond') }}
-                </h1>
+                </h2>
             </template>
 
             <template v-slot:confirm-modal-body>
-                <div class="u-grid u-grid--small u-grid--vertical-margin u-text-left">
-                    <div class="u-cell u-text-left" v-html="$td('', 'form.delegation-unbond-confirm-description')"></div>
-                    <div class="u-cell">
-                        <div class="form-field form-field--dashed">
-                            <BaseAmount tag="div" class="form-field__input is-not-empty" :coin="form.coin" :amount="form.stake" :exact="true"/>
-                            <div class="form-field__label">{{ $td('You unbond', 'form.delegation-unbond-confirm-amount') }}</div>
-                        </div>
-                    </div>
-                    <div class="u-cell">
-                        <label class="form-field form-field--dashed">
-                        <textarea
-                            class="form-field__input is-not-empty" autocapitalize="off" spellcheck="false" readonly tabindex="-1" rows="1"
-                            v-autosize
-                            :value="form.publicKey"
-                        ></textarea>
-                            <span class="form-field__label">{{ $td('From the masternode', 'form.delegation-unbond-confirm-address') }}</span>
-                        </label>
+                <div class="estimation form-row">
+                    <h3 class="estimation__title">{{ $td('You unbond', 'form.delegation-unbond-confirm-amount') }}</h3>
+                    <BaseAmountEstimation :coin="form.coin" :amount="form.stake" format="exact"/>
+
+                    <h3 class="estimation__title">{{ $td('From the masternode', 'form.delegation-unbond-confirm-address') }}</h3>
+                    <div class="estimation__item estimation__item--content u-text-wrap">
+                        {{ validatorFullName }}
                     </div>
                 </div>
+
+                <div class="form-row u-text-muted u-text-small u-text-center" v-html="$td('', 'form.delegation-unbond-confirm-description')"></div>
             </template>
 
             <template v-slot:success-modal-body-extra="{successTx}">

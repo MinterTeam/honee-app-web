@@ -10,12 +10,11 @@ import minValue from 'vuelidate/lib/validators/minValue.js';
 import maxValue from 'vuelidate/lib/validators/maxValue.js';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import eventBus from 'assets/event-bus.js';
-import focusElement from 'assets/focus-element.js';
 import {getPoolProvider, getProviderPoolList} from '~/api/explorer.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import {getErrorText} from "~/assets/server-error.js";
 import {decreasePrecisionFixed, decreasePrecisionSignificant, pretty, prettyExact} from "~/assets/utils.js";
-import BaseAmount from '~/components/base/BaseAmount.vue';
+import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import TxForm from '~/components/base/TxForm.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import FieldRange from '~/components/base/FieldRange.vue';
@@ -33,7 +32,7 @@ export default {
     TX_TYPE,
     INPUT_TYPE,
     components: {
-        BaseAmount,
+        BaseAmountEstimation,
         TxForm,
         FieldCombined,
         FieldRange,
@@ -275,7 +274,7 @@ export default {
         @clear-form="clearForm()"
     >
         <template v-slot:panel-header>
-            <h1 class="panel__header-title">
+            <h1 class="u-h3 u-mb-10">
                 {{ action ? $td(action.title, action.langKey) : $td('Remove liquidity from swap pool', 'pool.remove-title') }}
             </h1>
             <!--            <p class="panel__header-description">-->
@@ -284,7 +283,7 @@ export default {
         </template>
 
         <template v-slot:default>
-            <div class="u-cell">
+            <div class="form-row">
                 <FieldCombined
                     :coin.sync="form.coin0"
                     :$coin="$v.form.coin0"
@@ -303,7 +302,7 @@ export default {
                 @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT0"
                 -->
             </div>
-            <div class="u-cell">
+            <div class="form-row">
                 <FieldCombined
                     :coin.sync="form.coin1"
                     :$coin="$v.form.coin1"
@@ -322,7 +321,7 @@ export default {
                 @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT1"
                 -->
             </div>
-            <div class="u-cell">
+            <div class="form-row">
                 <FieldRange
                     v-model="formLiquidityPercent"
                     unit="%"
@@ -336,7 +335,7 @@ export default {
                 <span class="form-field__error" v-else-if="$v.formLiquidityPercent.$dirty && !$v.formLiquidityPercent.minValue">{{ $td('Min. value 0%', 'form.percent-error-min') }}</span>
                 <span class="form-field__error" v-else-if="$v.formLiquidityPercent.$dirty && !$v.formLiquidityPercent.maxValue">{{ $td('Maximum 100%', 'form.percent-error-max') }}</span>
             </div>
-            <div class="u-cell" v-if="form.coin0 && form.coin1">
+            <div class="form-row" v-if="form.coin0 && form.coin1">
                 <span class="form__error" v-if="$v.isPoolLoaded.$dirty && !$v.isPoolLoaded.success">{{ $td('Provider’s liquidity not found for selected pair', 'form.pool-remove-liquidity-error-pool') }}</span>
                 <div class="estimation u-mt-10">
                     <h3 class="estimation__title">{{ $td('You return', 'form.you-return') }}</h3>
@@ -349,20 +348,8 @@ export default {
                     </div>
 
                     <h3 class="estimation__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
-                    <div class="estimation__item">
-                        <div class="estimation__coin">
-                            <img class="estimation__coin-icon" :src="$store.getters['explorer/getCoinIcon'](form.coin0)" width="20" height="20" alt="" role="presentation">
-                            <div class="estimation__coin-symbol">{{ form.coin0 }}</div>
-                        </div>
-                        <div class="u-fw-600 u-text-number">≈{{ pretty(formAmount0 || 0) }}</div>
-                    </div>
-                    <div class="estimation__item">
-                        <div class="estimation__coin">
-                            <img class="estimation__coin-icon" :src="$store.getters['explorer/getCoinIcon'](form.coin1)" width="20" height="20" alt="" role="presentation">
-                            <div class="estimation__coin-symbol">{{ form.coin1 }}</div>
-                        </div>
-                        <div class="u-fw-600 u-text-number">≈{{ pretty(formAmount1 || 0) }}</div>
-                    </div>
+                    <BaseAmountEstimation :coin="form.coin0" :amount="formAmount0" format="approx"/>
+                    <BaseAmountEstimation :coin="form.coin1" :amount="formAmount1" format="approx"/>
                 </div>
             </div>
         </template>
@@ -372,40 +359,26 @@ export default {
         </template>
 
         <template v-slot:confirm-modal-header>
-            <h1 class="panel__header-title">
+            <h2 class="u-h3 u-mb-10">
 <!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-feature-pool.svg`" alt="" role="presentation" width="40" height="40">-->
                 {{ $td('Remove liquidity from swap pool', 'form.pool-remove-title') }}
-            </h1>
+            </h2>
         </template>
 
         <template v-slot:confirm-modal-body>
-            <div class="u-grid u-grid--small u-grid--vertical-margin u-text-left">
-                <div class="u-cell">
-                    <div class="form-field form-field--dashed">
-                        <div class="form-field__input is-not-empty">
-                            {{ formLiquidityPercent }}%
-                        </div>
-                        <div class="form-field__label">{{ $td('Liquidity', 'form.pool-remove-liquidity-percent') }}</div>
+            <div class="estimation form-row">
+                <h3 class="estimation__title">{{ $td('You return', 'form.you-return') }}</h3>
+                <div class="estimation__item">
+                    <div class="estimation__coin">
+                        <img class="estimation__coin-icon" src="/img/icon-coin-lp.svg" width="20" height="20" alt="" role="presentation">
+                        <div class="estimation__coin-symbol">{{ $td('LP tokens', 'form.lp-tokens') }}</div>
                     </div>
+                    <div class="u-fw-600 u-text-number">{{ prettyExact(form.liquidity || 0) }}</div>
                 </div>
-                <div class="u-cell">
-                    <div class="form-field form-field--dashed">
-                        <div class="form-field__input is-not-empty">
-                            ≈<BaseAmount :coin="form.coin0" :amount="formAmount0"/>
-                            <span class="u-text-muted">({{ minimumVolume0 }} minimum)</span>
-                        </div>
-                        <div class="form-field__label">{{ $td('First coin', 'form.pool-coin0') }}</div>
-                    </div>
-                </div>
-                <div class="u-cell">
-                    <div class="form-field form-field--dashed">
-                        <div class="form-field__input is-not-empty">
-                            ≈<BaseAmount :coin="form.coin1" :amount="formAmount1"/>
-                            <span class="u-text-muted">({{ minimumVolume1 }} minimum)</span>
-                        </div>
-                        <div class="form-field__label">{{ $td('Second coin', 'form.pool-coin1') }}</div>
-                    </div>
-                </div>
+
+                <h3 class="estimation__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
+                <BaseAmountEstimation :coin="form.coin0" :amount="formAmount0" format="approx"/>
+                <BaseAmountEstimation :coin="form.coin1" :amount="formAmount1" format="approx"/>
             </div>
         </template>
     </TxForm>
