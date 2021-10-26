@@ -47,6 +47,36 @@ export default {
                 description: 'Приобретите основную монету Honee — простейшего криптокошелька, который помогает вам зарабатывать.',
             },
         },
+        {
+            title: 'Buy BTC',
+            description: 'Buy Bitcoin, the first cryptocurrency.',
+            icon: 'BTC',
+            // color: '#fa5a00',
+            stats: {
+                price: 'BTC',
+            },
+            tags: ['Exchange', 'BTC'],
+            action: '/swap/BTC',
+            ru: {
+                title: 'Купить BTC',
+                description: 'Приобретите Bitcoin, первую криптовалюту.',
+            },
+        },
+        {
+            title: 'Buy ETH',
+            description: 'Buy Ether.',
+            icon: 'ETH',
+            // color: '#fa5a00',
+            stats: {
+                price: 'ETH',
+            },
+            tags: ['Exchange', 'ETH'],
+            action: '/swap/ETH',
+            ru: {
+                title: 'Купить ETH',
+                description: 'Приобретите основную монету сети Ethereum.',
+            },
+        },
     ],
     earn: [
         {
@@ -101,7 +131,7 @@ export default {
     win: [
         {
             title: 'DONUT',
-            description: 'Provide liquidity to the DONUT-BIP pool to take part in weekly giveaways. The more liquidity you provide, the better the chances you have!',
+            description: 'Provide liquidity to the DONUT-BIP pool to take part in daily giveaways. The more liquidity you provide, the better the chances you have!',
             icon: 'DONUT',
             color: '#c71b6e',
             stats: {
@@ -112,7 +142,23 @@ export default {
             action: '/win/DONUT/BIP',
             ru: {
                 title: 'DONUT',
-                description: 'Предоставляйте ликвидность в пул DONUT-BIP, чтобы участвовать в еженедельной лотерее. Чем выше ликвидность, тем больше шансов!',
+                description: 'Предоставляйте ликвидность в пул DONUT-BIP, чтобы участвовать в ежедневной лотерее. Чем выше ликвидность, тем больше шансов!',
+            },    
+        },
+        {
+            title: 'BEE',
+            description: 'Provide liquidity to the BEE-MUSD pool to take part in daily giveaways. The more liquidity you provide, the better the chances you have!',
+            icon: 'BEE',
+            color: '#c71b6e',
+            stats: {
+                caption: 'GIVEAWAY',
+                value: 'Up to 1%',
+            },
+            tags: ['Lottery', 'BEE'],
+            action: '/win/BEE/MUSD',
+            ru: {
+                title: 'BEE',
+                description: 'Предоставляйте ликвидность в пул BEE-MUSD, чтобы участвовать в ежедневной лотерее. Чем выше ликвидность, тем больше шансов!',
             },    
         },
     ],
