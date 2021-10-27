@@ -166,17 +166,19 @@ export default {
         </div>
 
         <!-- @TODO keyboard support -->
-        <button
-            class="h-field__suggestion-item u-semantic-button" type="button"
-            v-for="suggestion in suggestionListFinal"
-            :key="getSuggestionValue(suggestion)"
-            @click="handleSuggestionClick(suggestion)"
-        >
-            <slot name="suggestion-item"
-                  :suggestion="suggestion"
+        <div class="h-field__suggestion-list">
+            <button
+                class="h-field__suggestion-item u-semantic-button" type="button"
+                v-for="suggestion in suggestionListFinal"
+                :key="getSuggestionValue(suggestion)"
+                @click="handleSuggestionClick(suggestion)"
             >
-                <span>{{ getSuggestionValue(suggestion) }}</span>
-            </slot>
-        </button>
+                <slot name="suggestion-item"
+                      :suggestion="suggestion"
+                >
+                    <span>{{ getSuggestionValue(suggestion) }}</span>
+                </slot>
+            </button>
+        </div>
     </div>
 </template>

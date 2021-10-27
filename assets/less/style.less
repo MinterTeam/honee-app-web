@@ -123,7 +123,7 @@
 @card-padding-large: 32px;
 @card-chevron-width: 8px;
 .card {
-    background: #fff; color: @c-black; box-shadow: 0 4px 4px rgba(0,0,0,0.05); position: relative; border-radius: 16px; overflow: hidden; display: block;
+    background: #fff; color: @c-black; box-shadow: 0 4px 4px rgba(0,0,0,0.05); position: relative; border-radius: 16px; /*overflow: hidden;*/ display: block;
     &::before {content: ''; display: table;} // fix firefox incorrect collapsing negative margin
 }
 .card--invert {background: @c-black; color: #fff;}
@@ -317,8 +317,9 @@
 @h-field-title-margin: 6px;
 @h-field-input-height: 24px;
 @h-field-vertical-padding: 12px;
-.h-field {position: relative; display: flex; width: 100%;}
-.h-field, .h-field__dropdown {background: #fff; padding: (@h-field-vertical-padding - 2px) (16px - 2px); border-radius: 12px; box-shadow: 0 4px 4px rgba(0,0,0,0.05); border: 2px solid transparent;}
+@h-field-horizontal-padding: 16px;
+.h-field {position: relative; display: flex; width: 100%; padding: (@h-field-vertical-padding - 2px) (@h-field-horizontal-padding - 2px); border: 2px solid transparent;}
+.h-field, .h-field__dropdown {background: #fff; border-radius: 12px; box-shadow: 0 4px 4px rgba(0,0,0,0.05);}
 .h-field--is-readonly {box-shadow: none; border: 2px dashed @c-border;}
 .h-field__content {font-weight: 600; flex-grow: 2; max-width: 100%;}
 .h-field__title {font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: @c-black-light; line-height: @h-field-title-height; margin-bottom: @h-field-title-margin;}
@@ -361,16 +362,18 @@
 .h-field__aside-range {min-width: 102px;}
 .h-field__aside-control {font-size: 0;}
 
-.h-field__dropdown {position: absolute; top: 100%; left: -2px; right: -2px; /* border size */ padding-top: (16px - 2px); margin-top: -1 * (@h-field-vertical-padding - 2px); z-index: 1;}
-.h-field__dropdown-field {position: relative; margin-bottom: 16px;}
+.h-field__dropdown {position: absolute; top: 100%; left: -2px; right: -2px; /* border size */ padding: 16px @h-field-horizontal-padding 8px; margin-top: -1 * (@h-field-vertical-padding - 2px); z-index: 1;}
+.h-field__dropdown-field {position: relative;}
 .h-field__dropdown-field-icon {position: absolute; right: 16px; top: 8px; pointer-events: none;}
 .h-field__dropdown-input {
     border-radius: 12px; border: none; padding: 10px 16px; padding-right: (24px + 16px); background: @c-border; font-size: 16px; line-height: 20px; font-weight: 600; height: 40px; width: 100%;;
     &::placeholder {color: @c-black;}
 }
+.h-field__suggestion-list {margin-top: 8px; margin-inline: -1 * @h-field-horizontal-padding; overflow: auto; max-height: 60vh;}
 .h-field__suggestion-item {
-    display: flex; align-items: center; max-width: 100%;
-    &+& {margin-top: 16px;}
+    display: flex; align-items: center; max-width: 100%; padding: 8px @h-field-horizontal-padding; transition: 0.1s;
+    //&+& {margin-top: 16px;}
+    &:hover {background-color: rgba(0,0,0,0.1);}
 }
 .h-field__suggestion-icon {flex-shrink: 0; margin-right: 8px; border-radius: 50%;}
 .h-field__suggestion-symbol {font-size: 18px; font-weight: 600; line-height: @h-field-input-height;}
