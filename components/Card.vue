@@ -1,5 +1,6 @@
 <script>
 import {DASHBOARD_URL} from '~/assets/variables.js';
+import hashColor from '~/assets/hash-color.js';
 
 const ACTION_TYPE = {
     SWAP: 'swap',
@@ -19,6 +20,9 @@ export default {
         },
     },
     computed: {
+        color() {
+            return hashColor(this.card.action);
+        },
         iconList() {
             if (typeof this.card.icon === 'string') {
                 return [this.card.icon];
@@ -90,7 +94,7 @@ function poolHasCoin(pool, symbol) {
 </script>
 
 <template>
-    <div class="card card--invert card__content--small" :style="`background-color: ${card.color};`">
+    <div class="card card--invert card__content--small" :style="`background-color: ${color};`">
         <div class="card__action-head">
             <img class="card__action-logo" alt=""
                  v-for="icon in iconList" :key="icon"
