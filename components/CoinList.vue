@@ -1,7 +1,10 @@
 <script>
     import {pretty} from '~/assets/utils.js';
 
+    const SHORT_COUNT = 5;
+
     export default {
+        SHORT_COUNT,
         components: {
         },
         data() {
@@ -11,7 +14,7 @@
         },
         computed: {
             coinList() {
-                return this.isFullListActive ? this.$store.state.balance : this.$store.state.balance.slice(0, 5);
+                return this.isFullListActive ? this.$store.state.balance : this.$store.state.balance.slice(0, SHORT_COUNT);
             },
         },
         methods: {
@@ -42,8 +45,9 @@
                 </div>
             </div>
         </div>
-        <div class="u-text-right u-mt-20" v-if="coinList.length < $store.state.balance.length">
-            <button class="link--default u-semantic-button" @click="isFullListActive = true">{{ $td('View all', 'index.view-all') }}</button>
+        <div class="u-text-right u-mt-15" v-if="$options.SHORT_COUNT < $store.state.balance.length">
+            <button class="link--default u-semantic-button" @click="isFullListActive = true" v-if="!isFullListActive">{{ $td('View all', 'index.view-all') }}</button>
+            <button class="link--default u-semantic-button" @click="isFullListActive = false" v-else>{{ $td('View less', 'index.view-less') }}</button>
         </div>
     </section>
 </template>
