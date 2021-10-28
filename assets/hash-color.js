@@ -1,12 +1,18 @@
 import murmurhash from 'murmurhash-js';
 import {LCH_to_sRGB_string} from '~/assets/csswg-color4.js';
 
+const COLORS = ["#3f9c37", "#cb1736", "#6f33bc", "#3b9bb9", "#ffa800", "#c71b6e", "#0061f5", "#2ea496", "#fa5a00"];
 /**
- *
  * @param {string} str
  * @return {string}
  */
 export default function hashColor(str) {
+    const hash = Math.abs(murmurhash.murmur2(str));
+    const index = hash % COLORS.length;
+    console.log(index, COLORS[index], str);
+    return COLORS[index];
+}
+function hashColor2(str) {
     const hash = Math.abs(murmurhash.murmur2(str));
     const BASE_L = 40;
     // lightness 40-60
