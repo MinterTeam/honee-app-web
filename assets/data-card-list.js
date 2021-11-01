@@ -136,20 +136,5 @@ export default {
                 description: 'Предоставляйте ликвидность в пул DONUT-BIP, чтобы участвовать в ежедневной лотерее. Чем выше ликвидность, тем больше шансов!',
             },
         },
-        {
-            title: 'BEE',
-            description: 'Provide liquidity to the BEE-MUSD pool to take part in daily giveaways. The more liquidity you provide, the better the chances you have!',
-            icon: 'BEE',
-            stats: {
-                caption: 'GIVEAWAY',
-                value: 'Up to 1%',
-            },
-            tags: ['Lottery', 'BEE'],
-            action: '/win/BEE/MUSD',
-            ru: {
-                title: 'BEE',
-                description: 'Предоставляйте ликвидность в пул BEE-MUSD, чтобы участвовать в ежедневной лотерее. Чем выше ликвидность, тем больше шансов!',
-            },
-        },
     ],
 };
