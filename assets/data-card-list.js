@@ -72,6 +72,34 @@ export default {
                 description: 'Приобретите основную монету сети Ethereum.',
             },
         },
+        {
+            title: 'Buy SQD',
+            description: 'Buy a Minter-powered meme token brought to you by fans of a popular series Squid Game.',
+            icon: 'SQD',
+            stats: {
+                price: 'SQD',
+            },
+            tags: ['Exchange', 'SQD'],
+            action: '/swap/SQD',
+            ru: {
+                title: 'Купить SQD',
+                description: 'Приобретите мем-коин фан-клуба популярного сериала «Игра в кальмара», выпущенный на блокчейне Minter.',
+            },
+        },
+        {
+            title: 'Buy ARCONA',
+            description: 'Get a native token of ARCONA metaverse  that allows you to purchase digital lands and place any models.',
+            icon: 'ARCONA',
+            stats: {
+                price: 'ARCONA',
+            },
+            tags: ['Exchange', 'ARCONA'],
+            action: '/swap/ARCONA',
+            ru: {
+                title: 'Купить ARCONA',
+                description: 'Приобретите нативный токен метавселенной ARCONA, позволяющий покупать цифровые земли и размещать любые модели.',
+            },
+        },
     ],
     earn: [
         {
@@ -134,6 +162,21 @@ export default {
             ru: {
                 title: 'DONUT',
                 description: 'Предоставляйте ликвидность в пул DONUT-BIP, чтобы участвовать в ежедневной лотерее. Чем выше ликвидность, тем больше шансов!',
+            },
+        },
+        {
+            title: 'HUBABUBA',
+            description: 'Provide liquidity to the HUBABUBA-HUB pool to take part in daily giveaways. The more liquidity you provide, the better the chances you have!',
+            icon: 'HUBABUBA',
+            stats: {
+                caption: 'GIVEAWAY',
+                value: 'Up to 1%',
+            },
+            tags: ['Lottery', 'HUBABUBA'],
+            action: '/win/HUBABUBA/HUB',
+            ru: {
+                title: 'HUBABUBA',
+                description: 'Предоставляйте ликвидность в пул HUBABUBA-HUB, чтобы участвовать в ежедневной лотерее. Чем выше ликвидность, тем больше шансов!',
             },
         },
     ],
