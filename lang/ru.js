@@ -132,7 +132,8 @@ export default {
         'giveaway-programs': 'Лотереи',
 
         'coins': 'Монеты',
-        'view-all': 'Посмотреть все',
+        'view-all': 'Показать все',
+        'view-less': 'Показать меньше',
 
         'cam-allow': 'Разрешите доступ к камере',
     },
