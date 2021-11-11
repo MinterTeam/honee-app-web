@@ -78,12 +78,16 @@ export default {
     },
     computed: {
         isSelectDisabled() {
+            // 0 is disabled only if no fallback
+            if (!this.fallbackToFullList && this.coinList.length === 0) {
+                return true;
+            }
             // 0 and >1 are OK (enabled)
             return this.coinList.length === 1;
         },
     },
     mounted() {
-        if (this.isSelectDisabled) {
+        if (this.isSelectDisabled && this.coinList[0]) {
             this.handleSelect(this.coinList[0]);
         }
     },

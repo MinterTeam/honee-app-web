@@ -106,6 +106,12 @@ export default {
     },
     mixins: [validationMixin],
     fetch() {
+        // replace deprecated query with params
+        if (this.$route.query.coin) {
+            const newPath = this.$route.path.replace(/\/*$/, `/${this.$route.query.coin}`);
+            this.$router.replace(newPath);
+        }
+
         return Promise.all([getOracleCoinList(), getOraclePriceList()])
             .then(([coinList, priceList]) => {
                 this.hubCoinList = coinList;
@@ -138,7 +144,7 @@ export default {
             allowanceRequest: null,
             form: {
                 amountEth: '',
-                coinToGet: this.$route.query.coin || '',
+                coinToGet: this.params.coinToGet?.toUpperCase() || '',
                 amountToGet: '',
             },
             /** @type Array<HubCoinItem> */
@@ -173,7 +179,7 @@ export default {
                 coinToGet: {
                     required,
                     minLength: minLength(3),
-                    supported: (symbol) => this.suggestionList.includes(symbol),
+                    // supported: (symbol) => this.suggestionList.includes(symbol),
                 },
                 amountToGet: {},
             },
@@ -296,6 +302,9 @@ export default {
             // return selectedUnlocked.gt(0) && selectedUnlocked.gt(this.uniswapEstimation?.output * 2);
         },
         suggestionList() {
+            if (this.params.coinToGet) {
+                return [];
+            }
             return [this.$store.getters.BASE_COIN, 'HUB', 'BEE'];
         },
         // stage() {
@@ -900,7 +909,8 @@ function getSwapOutput(receipt) {
 <template>
     <div>
         <h1 class="panel__header-title u-mb-10">
-            {{ $td(action.title, action.langKey) }}
+            <!-- @TODO get title from card -->
+            {{ params.coinToGet ? `Buy ${params.coinToGet} with ETH` : action.title }}
         </h1>
 
         <div class="u-grid u-grid--small u-grid--vertical-margin--small" v-if="recovery">
@@ -947,7 +957,7 @@ function getSwapOutput(receipt) {
 
                         <span class="form-field__error" v-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.required">{{ $td('Enter coin symbol', 'form.enter-coin-symbol') }}</span>
                         <span class="form-field__error" v-else-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.minLength">{{ $td('Min. 3 characters', 'form.min-3-chars') }}</span>
-                        <span class="form-field__error" v-else-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.supported">{{ $td('Not supported to buy', 'form.not-supported-to-buy') }}</span>
+<!--                        <span class="form-field__error" v-else-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.supported">{{ $td('Not supported to buy', 'form.not-supported-to-buy') }}</span>-->
 
                         <div class="u-text-center u-text-small u-fw-400 u-text-muted u-mt-10" v-if="!isEstimationErrorVisible">
                             {{ $td('The final amount depends on the exchange rate at the moment of transaction.', 'form.swap-confirm-note') }}
@@ -1100,7 +1110,7 @@ function getSwapOutput(receipt) {
                 </div>
                 <div class="form-row">
                     <QrcodeVue class="u-mb-10 u-text-center" :value="deepLink" :size="160" level="L"/>
-                    <a class="link--default u-text-break-all" :href="deepLink" target="_blank">{{ deepLink }}</a>
+                    <a class="link--default u-text-wrap" :href="deepLink" target="_blank">{{ deepLink }}</a>
                 </div>
                 <!--                    <div class="" v-if="ethBalance > 0">
                     <div class="form-field__input is-not-empty">{{ prettyExact(ethBalance) }} ETH</div>

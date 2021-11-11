@@ -82,7 +82,7 @@ export default {
     >
         <template v-slot:panel-header>
             <h1 class="u-h3 u-mb-10">
-                {{ action ? $td(action.title, action.langKey) : $td('Send coins', 'form.wallet-send-title') }}
+                {{ action.title || $td('Send coins', 'form.wallet-send-title') }}
             </h1>
             <!--
             <p class="panel__header-description">

@@ -101,6 +101,20 @@ export default {
             },
         },
         {
+            title: 'Buy TON for ETH',
+            description: 'Get a base coin of the TON Blockchain, a project that aims to unite all existing blockchains and the Internet itself into a single Web 3.0 network.',
+            icon: 'TON',
+            stats: {
+                price: 'TON',
+            },
+            tags: ['Deposit', 'TON'],
+            action: '/buy/TON',
+            ru: {
+                title: 'Купить TON',
+                description: 'Приобретите базовую монету TON — проекта, который стремится объединить все существующие блокчейны и сам Интернет в единую Web 3.0-сеть.',
+            },
+        },
+        {
             title: 'Buy TON',
             description: 'Get a base coin of the TON Blockchain, a project that aims to unite all existing blockchains and the Internet itself into a single Web 3.0 network.',
             icon: 'TON',

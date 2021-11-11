@@ -180,7 +180,7 @@
         >
             <template v-slot:panel-header>
                 <h1 class="u-h3 u-mb-10">
-                    {{ action ? $td(action.title, action.langKey) : $td('Unbond', 'action.title-unbond') }}
+                    {{ action.title || $td('Unbond', 'action.title-unbond') }}
                 </h1>
                 <!--
                 <p class="panel__header-description">

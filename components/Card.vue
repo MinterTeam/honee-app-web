@@ -3,6 +3,7 @@ import {DASHBOARD_URL} from '~/assets/variables.js';
 import hashColor from '~/assets/hash-color.js';
 
 const ACTION_TYPE = {
+    DEPOSIT: 'buy',
     SWAP: 'swap',
     FARM: 'farm',
     DELEGATE: 'delegate',
@@ -94,7 +95,7 @@ function poolHasCoin(pool, symbol) {
 </script>
 
 <template>
-    <div class="card card--invert card__content--small" :style="`background-color: ${color};`">
+    <div class="card card--action card--invert card__content--small" :style="`background-color: ${color};`">
         <div class="card__action-head">
             <img class="card__action-logo" alt=""
                  v-for="icon in iconList" :key="icon"
@@ -106,7 +107,7 @@ function poolHasCoin(pool, symbol) {
             </div>
         </div>
         <h3 class="card__action-title">{{ translate('title') }}</h3>
-        <p class="">{{ translate('description') }}</p>
+        <p class="card__action-description">{{ translate('description') }}</p>
 
         <div class="card__action-tag-list">
             <div class="card__action-tag" v-for="tag in card.tags" :key="tag">{{ $td(tag, `action.tag-${tag.toLowerCase()}`) }}</div>
@@ -116,6 +117,7 @@ function poolHasCoin(pool, symbol) {
             <div class="u-grid">
                 <div class="u-cell" :class="isUndoAvailable ? 'u-cell--6-10': ''">
                     <nuxt-link class="button button--full " :to="pageUrl(card.action)">
+                        <template v-if="card.actionType === $options.ACTION_TYPE.DEPOSIT">{{ $td('Buy with ETH', 'index.card-button-deposit') }}</template>
                         <template v-if="card.actionType === $options.ACTION_TYPE.SWAP">{{ $td('Swap', 'index.swap') }}</template>
                         <template v-if="card.actionType === $options.ACTION_TYPE.FARM">{{ $td('Add liquidity', 'index.add-liquidity') }}</template>
                         <template v-if="card.actionType === $options.ACTION_TYPE.DELEGATE">{{ $td('Delegate', 'index.delegate') }}</template>

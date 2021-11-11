@@ -232,7 +232,7 @@ export default {
     >
         <template v-slot:panel-header>
             <h1 class="u-h3 u-mb-10">
-                {{ action ? $td(action.title, action.langKey) : $td('Add liquidity to swap pool', 'pool.add-title') }}
+                {{ action.title || $td('Add liquidity to swap pool', 'pool.add-title') }}
             </h1>
             <!--
             <p class="panel__header-description">
