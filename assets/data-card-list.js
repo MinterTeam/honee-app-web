@@ -100,6 +100,20 @@ export default {
                 description: 'Приобретите нативный токен метавселенной ARCONA, позволяющий покупать цифровые земли и размещать любые модели.',
             },
         },
+        {
+            title: 'Buy TON',
+            description: 'Get a base coin of the TON Blockchain, a project that aims to unite all existing blockchains and the Internet itself into a single Web 3.0 network.',
+            icon: 'TON',
+            stats: {
+                price: 'TON',
+            },
+            tags: ['Exchange', 'TON'],
+            action: '/swap/TON',
+            ru: {
+                title: 'Купить TON',
+                description: 'Приобретите базовую монету TON — проекта, который стремится объединить все существующие блокчейны и сам Интернет в единую Web 3.0-сеть.',
+            },
+        },
     ],
     earn: [
         {
@@ -145,6 +159,21 @@ export default {
             ru: {
                 title: 'Фарминг USDTE / USDCE',
                 description: 'Положите свои USDT и USDC в пул ликвидности и начните получать дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
+            title: 'Yield farming TON / BIP',
+            description: 'Put your TON and BIP into a liquidity pool to start getting extra daily rewards.',
+            icon: ['TON', 'BIP'],
+            stats: {
+                caption: 'APR in BIP',
+                value: '124%',
+            },
+            tags: ['Farming', 'TON', 'BIP'],
+            action: '/farm/TON/BIP',
+            ru: {
+                title: 'Фарминг TON / BIP',
+                description: 'Положите свои TON и BIP в пул ликвидности и начните получать дополнительные вознаграждения ежедневно.',
             },
         },
     ],
