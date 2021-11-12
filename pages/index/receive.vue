@@ -15,7 +15,7 @@
         },
         head() {
         const title = getTitle(this.$td('Receive coins', 'index.receive-coins'));
-        
+
             return {
                 title,
                 meta: [
@@ -54,7 +54,7 @@
     <Modal
         :isOpen="true"
         :hideCloseButton="false"
-        :disableOutsideClick="true"
+        :disableOutsideClick="false"
         @modal-close="$router.push($i18nGetPreferredPath({path: $options.DASHBOARD_URL}))"
     >
         <div class="form-field form-field--with-icon u-text-left">

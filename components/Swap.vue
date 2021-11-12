@@ -509,7 +509,7 @@
                 </template>
             </div>
 
-            <div class="estimation form-row" v-if="params.coinToSell || params.coinToBuy">
+            <div class="estimation form-row" v-else-if="params.coinToSell || params.coinToBuy">
                 <template v-if="params.coinToSell">
                     <h3 class="estimation__title">{{ $td('You spend approximately', 'form.swap-confirm-spend-estimation') }}</h3>
                     <div class="estimation__item">
@@ -520,7 +520,7 @@
                         <div class="u-fw-600 u-text-number">≈{{ pretty(form.sellAmount || 0) }}</div>
                     </div>
                 </template>
-                <tempalte v-if="params.coinToBuy">
+                <template v-if="params.coinToBuy">
                     <h3 class="estimation__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                     <div class="estimation__item">
                         <div class="estimation__coin">
@@ -529,7 +529,7 @@
                         </div>
                         <div class="u-fw-600 u-text-number">≈{{ pretty(form.buyAmount || 0) }}</div>
                     </div>
-                </tempalte>
+                </template>
             </div>
 
             <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('The final amount depends on&nbsp;the&nbsp;exchange rate at&nbsp;the&nbsp;moment of&nbsp;transaction.', 'form.swap-confirm-note') }}</p>
@@ -612,7 +612,7 @@
         </Modal>
 
         <!-- success modal -->
-        <Modal :isOpen.sync="isSuccessModalVisible" :hideCloseButton="true">
+        <Modal :isOpen.sync="isSuccessModalVisible">
             <h2 class="u-h3 u-mb-10">{{ $td('Success', 'form.success-title') }}</h2>
             <p class="u-mb-10">{{ $td('Coins successfully exchanged!', 'form.success-desc') }}</p>
 

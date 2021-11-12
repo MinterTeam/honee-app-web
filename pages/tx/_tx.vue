@@ -468,7 +468,7 @@
         </form>
 
         <!-- confirm send modal -->
-        <Modal :isOpen.sync="isModalOpen" :hideCloseButton="true">
+        <Modal :isOpen.sync="isModalOpen">
             <div class="modal__panel">
                 <h3 class="modal__title u-h2">Confirm</h3>
                 <div class="modal__content">
@@ -482,7 +482,7 @@
         </Modal>
 
         <!-- wait modal -->
-        <Modal :isOpen="isFormSending" :hideCloseButton="true">
+        <Modal :isOpen="isFormSending" :disable-outside-click="true" :hideCloseButton="true">
             <div class="modal__panel">
                 <h3 class="modal__title u-h2">Please wait</h3>
                 <div class="modal__content">
@@ -495,7 +495,7 @@
         </Modal>
 
         <!-- success modal -->
-        <Modal :isOpen="!!serverSuccess" :hideCloseButton="true">
+        <Modal :isOpen="!!serverSuccess">
             <div class="modal__panel">
                 <h3 class="modal__title u-h2">Success</h3>
                 <div class="modal__content">
