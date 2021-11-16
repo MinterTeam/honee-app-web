@@ -128,6 +128,34 @@ export default {
                 description: 'Приобретите базовую монету TON — проекта, который стремится объединить все существующие блокчейны и сам Интернет в единую Web 3.0-сеть.',
             },
         },
+        {
+            title: 'Buy SHIB for ETH',
+            description: 'SHIBA INU is a 2020–2021 crypto phenomenon. A memecoin first, it soon became legendary making it in the top 10 cryptos and getting listed on the largest exchanges such as Coinbase.',
+            icon: 'SHIB',
+            stats: {
+                price: 'SHIB',
+            },
+            tags: ['Deposit', 'SHIB'],
+            action: '/buy/SHIB',
+            ru: {
+                title: 'Купить SHIB',
+                description: 'SHIBA INU — крипто-феномен 2020–2021. Мемкойн, который вскоре стал легендарным и занял строчку в топ-10 криптовалют, а также был добавлен на крупнейшие биржи, такие как Coinbase.',
+            },
+        },
+        {
+            title: 'Buy SHIB',
+            description: 'SHIBA INU is a 2020–2021 crypto phenomenon. A memecoin first, it soon became legendary making it in the top 10 cryptos and getting listed on the largest exchanges such as Coinbase.',
+            icon: 'SHIB',
+            stats: {
+                price: 'SHIB',
+            },
+            tags: ['Exchange', 'SHIB'],
+            action: '/swap/SHIB',
+            ru: {
+                title: 'Купить SHIB',
+                description: 'SHIBA INU — крипто-феномен 2020–2021. Мемкойн, который вскоре стал легендарным и занял строчку в топ-10 криптовалют, а также был добавлен на крупнейшие биржи, такие как Coinbase.',
+            },
+        },
     ],
     earn: [
         {
@@ -188,6 +216,21 @@ export default {
             ru: {
                 title: 'Фарминг TON / BIP',
                 description: 'Положите свои TON и BIP в пул ликвидности и начните получать дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
+            title: 'Yield farming SHIB / BIP',
+            description: 'Put your SHIB and BIP into a liquidity pool to start getting extra daily rewards.',
+            icon: ['SHIB', 'BIP'],
+            stats: {
+                caption: 'APR in BIP',
+                value: '124%',
+            },
+            tags: ['Farming', 'SHIB', 'BIP'],
+            action: '/farm/SHIB/BIP',
+            ru: {
+                title: 'Фарминг SHIB / BIP',
+                description: 'Положите свои SHIB и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
             },
         },
     ],
