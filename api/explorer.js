@@ -98,7 +98,7 @@ export function getTransaction(hash) {
  * @return {Promise<{data: BalanceData, latestBlockTime: string}>}
  */
 export async function getBalance(address) {
-    const response = await explorer.get('addresses/' + address + '?with_sum=true');
+    const response = await explorer.get('addresses/' + address);
     response.data.data.balances = await prepareBalance(response.data.data.balances);
     return response.data;
 }
