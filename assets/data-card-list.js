@@ -110,7 +110,7 @@ export default {
             tags: ['Deposit', 'TON'],
             action: '/buy/TON',
             ru: {
-                title: 'Купить TON',
+                title: 'Купить TON за ETH',
                 description: 'Приобретите базовую монету TON — проекта, который стремится объединить все существующие блокчейны и сам Интернет в единую Web 3.0-сеть.',
             },
         },
@@ -138,7 +138,7 @@ export default {
             tags: ['Deposit', 'SHIB'],
             action: '/buy/SHIB',
             ru: {
-                title: 'Купить SHIB',
+                title: 'Купить SHIB за ETH',
                 description: 'SHIBA INU — крипто-феномен 2020–2021. Мемкойн, который вскоре стал легендарным и занял строчку в топ-10 криптовалют, а также был добавлен на крупнейшие биржи, такие как Coinbase.',
             },
         },
@@ -154,6 +154,34 @@ export default {
             ru: {
                 title: 'Купить SHIB',
                 description: 'SHIBA INU — крипто-феномен 2020–2021. Мемкойн, который вскоре стал легендарным и занял строчку в топ-10 криптовалют, а также был добавлен на крупнейшие биржи, такие как Coinbase.',
+            },
+        },
+        {
+            title: 'Buy METAINDEX for ETH',
+            description: 'METAINDEX (MVI on Ethereum) represents a basket of tokens of virtual worlds also known as metaverses.',
+            icon: 'METAINDEX',
+            stats: {
+                price: 'METAINDEX',
+            },
+            tags: ['Deposit', 'METAINDEX'],
+            action: '/buy/METAINDEX',
+            ru: {
+                title: 'Купить METAINDEX за ETH',
+                description: 'METAINDEX (MVI на Ethereum) представляет собой корзину токенов виртуальных миров (метавселенных).',
+            },
+        },
+        {
+            title: 'Buy METAINDEX',
+            description: 'METAINDEX (MVI on Ethereum) represents a basket of tokens of virtual worlds also known as metaverses.',
+            icon: 'METAINDEX',
+            stats: {
+                price: 'METAINDEX',
+            },
+            tags: ['Exchange', 'METAINDEX'],
+            action: '/swap/METAINDEX',
+            ru: {
+                title: 'Купить METAINDEX',
+                description: 'METAINDEX (MVI на Ethereum) представляет собой корзину токенов виртуальных миров (метавселенных).',
             },
         },
     ],
@@ -231,6 +259,21 @@ export default {
             ru: {
                 title: 'Фарминг SHIB / BIP',
                 description: 'Положите свои SHIB и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
+            title: 'Yield farming METAINDEX / BIP',
+            description: 'Put your METAINDEX and BIP into a liquidity pool to start getting extra daily rewards.',
+            icon: ['METAINDEX', 'BIP'],
+            stats: {
+                caption: 'APR in BIP',
+                value: '124%',
+            },
+            tags: ['Farming', 'METAINDEX', 'BIP'],
+            action: '/farm/METAINDEX/BIP',
+            ru: {
+                title: 'Фарминг METAINDEX / BIP',
+                description: 'Положите свои METAINDEX и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
             },
         },
     ],
