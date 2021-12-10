@@ -163,6 +163,7 @@ module.exports = {
     plugins: [
         { src: '~/plugins/i18n-mock-preferred.js'},
         { src: '~/plugins/base-url-prefix.js'},
+        { src: '~/plugins/composition-api.js'},
         { src: '~/plugins/online.js', ssr: false },
         { src: '~/plugins/custom-event-polyfill.js', ssr: false },
         { src: '~/plugins/persistedState.js', ssr: false },
