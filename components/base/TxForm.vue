@@ -4,16 +4,15 @@ import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {isValidMnemonic} from 'minterjs-wallet';
 import {postTx} from '~/api/gate.js';
-import FeeBus from '~/assets/fee.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import {getErrorText} from "~/assets/server-error.js";
 import {getExplorerTxUrl, pretty, prettyExact} from "~/assets/utils.js";
+import useFee from '~/composables/use-fee.js';
 // import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 
 export default {
-    feeBus: null,
     components: {
         // BaseAmountEstimation,
         Loader,
@@ -55,6 +54,14 @@ export default {
             default: false,
         },
     },
+    setup() {
+        const {fee, feeProps} = useFee();
+
+        return {
+            fee,
+            feeProps,
+        };
+    },
     data() {
         return {
             isFormSending: false,
@@ -67,8 +74,6 @@ export default {
                 payload: '',
             },
             isModeAdvanced: false,
-            /** @type FeeData */
-            fee: {},
             isConfirmModalVisible: false,
             isSuccessModalVisible: false,
         };
@@ -124,11 +129,10 @@ export default {
     watch: {
         feeBusParams: {
             handler(newVal) {
-                if (this.$options.feeBus && typeof this.$options.feeBus.$emit === 'function') {
-                    this.$options.feeBus.$emit('update-params', newVal);
-                }
+                Object.assign(this.feeProps, newVal);
             },
             deep: true,
+            immediate: true,
         },
         form: {
             handler(newVal) {
@@ -136,13 +140,6 @@ export default {
             },
             deep: true,
         },
-    },
-    created() {
-        this.$options.feeBus = new FeeBus(this.feeBusParams);
-        this.fee = this.$options.feeBus.fee;
-        this.$options.feeBus.$on('update-fee', (newVal) => {
-            this.fee = newVal;
-        });
     },
     methods: {
         pretty: (val) => pretty(val, undefined, true),

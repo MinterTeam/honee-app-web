@@ -13,9 +13,9 @@
     import debounce from '~/assets/lodash5-debounce.js';
     import Big from '~/assets/big.js';
     import {postTx, estimateCoinSell, estimateCoinBuy} from '~/api/gate.js';
-    import FeeBus from '~/assets/fee';
     import {getErrorText} from "~/assets/server-error";
     import {pretty, prettyExact, prettyPrecise, decreasePrecisionSignificant, getExplorerTxUrl} from '~/assets/utils.js';
+    import useFee from '~/composables/use-fee.js';
     import BaseAmountEstimation from '@/components/base/BaseAmountEstimation.vue';
     import BaseLoader from '@/components/base/BaseLoader.vue';
     import Modal from '@/components/base/Modal.vue';
@@ -24,8 +24,6 @@
     const isValidAmount = withParams({type: 'validAmount'}, (value) => {
         return parseFloat(value) >= 0;
     });
-
-    let feeBus;
 
     let estimationCancel;
     const CANCEL_MESSAGE = 'Cancel previous request';
@@ -50,6 +48,14 @@
                 default: () => ({}),
             },
         },
+        setup() {
+            const {fee, feeProps} = useFee();
+
+            return {
+                fee,
+                feeProps,
+            };
+        },
         data() {
             const coinList = this.$store.state.balance;
             let firstBalanceSymbol = coinList?.length ? coinList[0].coin.symbol : '';
@@ -68,8 +74,6 @@
                     buyAmount: this.params.valueToBuy || '',
                 },
                 isSelling: true,
-                /** @type FeeData */
-                fee: {},
                 estimation: null,
                 estimationType: null,
                 estimationRoute: null,
@@ -137,11 +141,10 @@
             },
             feeBusParams: {
                 handler(newVal) {
-                    if (feeBus && typeof feeBus.$emit === 'function') {
-                        feeBus.$emit('update-params', newVal);
-                    }
+                    Object.assign(this.feeProps, newVal);
                 },
                 deep: true,
+                immediate: true,
             },
         },
         computed: {
@@ -239,12 +242,6 @@
             },
         },
         created() {
-            feeBus = new FeeBus(this.feeBusParams);
-            this.fee = feeBus.fee;
-            feeBus.$on('update-fee', (newVal) => {
-                this.fee = newVal;
-            });
-
             this.debouncedGetEstimation = debounce(this.getEstimation, 1000);
         },
         methods: {
