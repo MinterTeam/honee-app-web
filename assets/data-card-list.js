@@ -184,6 +184,20 @@ export default {
                 description: 'METAINDEX (MVI на Ethereum) представляет собой корзину токенов виртуальных миров (метавселенных).',
             },
         },
+        {
+            title: 'Buy BNB',
+            description: 'BNB is the cryptocurrency coin that powers the Binance ecosystem. BNB is one of the world\'s most popular utility tokens.',
+            icon: 'BNB',
+            stats: {
+                price: 'BNB',
+            },
+            tags: ['Exchange', 'BNB'],
+            action: '/swap/BNB',
+            ru: {
+                title: 'Купить BNB',
+                description: 'BNB — это криптовалюта, которая поддерживает экосистему Binance. BNB является одним из самых популярных utility-токенов в мире.',
+            },
+        },
     ],
     earn: [
         {
@@ -274,6 +288,21 @@ export default {
             ru: {
                 title: 'Фарминг METAINDEX / BIP',
                 description: 'Положите свои METAINDEX и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
+            title: 'Yield farming BNB / BIP',
+            description: 'Put your BNB and BIP into a liquidity pool to start getting extra daily rewards.',
+            icon: ['BNB', 'BIP'],
+            stats: {
+                caption: 'APR in BNB',
+                value: '36.5%',
+            },
+            tags: ['Farming', 'BNB', 'BIP'],
+            action: '/farm/BNB/BIP',
+            ru: {
+                title: 'Фарминг BNB / BIP',
+                description: 'Положите свои BNB и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
             },
         },
     ],
