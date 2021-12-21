@@ -1,55 +1,90 @@
 <script>
-    const NOTICE_DELAY = 5; // time to reconnect after switching back to the tab
-    const NOTICE_TIME = 25 - NOTICE_DELAY;
+import {support} from '~/assets/utils-support.js';
+import useLastUpdateTime from '~/composables/use-last-update-time.js';
 
-    let timeInterval = null;
-    let openingDelay = null;
+const NOTICE_DELAY_STARTUP = 5; // time to app startup
+const NOTICE_DELAY_RECONNECT = 20; // time to reconnect after switching back to the tab
+const NOTICE_TIME = 25;
 
-    export default {
-        data() {
-            return {
-                isNoticeOpen: false,
-            };
+let operatingDelay = null;
+
+export default {
+    setup() {
+        const {lastUpdateTimeToNow, isLastUpdateTimeChanged} = useLastUpdateTime();
+
+        return {
+            lastUpdateTimeToNow,
+            isLastUpdateTimeChanged,
+        };
+    },
+    data() {
+        return {
+            isNoticeOpen: false,
+            isOperatingNormally: false,
+            noticeDelay: NOTICE_DELAY_STARTUP,
+        };
+    },
+    watch: {
+        lastUpdateTimeToNow: function() {
+            this.checkTime();
         },
-        watch: {
-            "$store.state.lastUpdateTime": function() {
-                this.checkTime();
-            },
-            isNoticeOpen(newVal) {
-                if (newVal) {
-                    this.$root.$el.classList.add('is-connection-notice-open');
-                } else {
-                    this.$root.$el.classList.remove('is-connection-notice-open');
-                }
-            },
+        isNoticeOpen(newVal) {
+            if (newVal) {
+                this.$root.$el.classList.add('is-connection-notice-open');
+            } else {
+                this.$root.$el.classList.remove('is-connection-notice-open');
+            }
         },
-        beforeMount() {
-            // update timestamps if no new data from server
-            timeInterval = setInterval(() => {
-                this.checkTime();
-            }, 2000);
+    },
+    beforeMount() {
+        this.setStartupDelay();
+        if (support.visibilityChange) {
+            document.addEventListener(support.visibilityChange, this.handleVisibilityChange);
+        }
+    },
+    destroyed() {
+        clearTimeout(operatingDelay);
+        this.$root.$el.classList.remove('is-connection-notice-open');
+        if (support.visibilityChange) {
+            document.removeEventListener(support.visibilityChange, this.handleVisibilityChange);
+        }
+    },
+    methods: {
+        checkTime() {
+            // Do nothing in offline mode. Should lead to the following behavior:
+            // All time offline device:
+            // - no notice
+            // Online device which goes offline:
+            // - notice can be shown if enough time has passed before switched to offline
+            if (this.$store.getters.isOfflineMode && !this.isLastUpdateTimeChanged) {
+                return;
+            }
+            const shouldOpenNotice = this.lastUpdateTimeToNow > NOTICE_TIME * 1000;
+            // show notice only if operating normally
+            if (shouldOpenNotice && this.isOperatingNormally) {
+                this.isNoticeOpen = true;
+            }
+            if (!shouldOpenNotice) {
+                this.isNoticeOpen = false;
+            }
         },
-        destroyed() {
-            clearInterval(timeInterval);
-            this.$root.$el.classList.remove('is-connection-notice-open');
+        handleVisibilityChange() {
+            if (document[support.hidden]) {
+                this.isOperatingNormally = false;
+                this.noticeDelay = NOTICE_DELAY_RECONNECT;
+            } else {
+                this.setStartupDelay();
+            }
         },
-        methods: {
-            checkTime() {
-                const shouldOpenNotice = Date.now() - this.$store.state.lastUpdateTime > NOTICE_TIME * 1000;
-                if (shouldOpenNotice && !this.isNoticeOpen && !openingDelay) {
-                    openingDelay = setTimeout(() => {
-                        this.isNoticeOpen = true;
-                        openingDelay = null;
-                    }, NOTICE_DELAY * 1000);
-                }
-                if (!shouldOpenNotice && (this.isNoticeOpen || openingDelay)) {
-                    this.isNoticeOpen = false;
-                    clearTimeout(openingDelay);
-                    openingDelay = null;
-                }
-            },
+        // during startup delay notice will not be opened
+        setStartupDelay() {
+            operatingDelay = setTimeout(() => {
+                this.isOperatingNormally = true;
+                operatingDelay = null;
+            }, this.noticeDelay * 1000);
         },
-    };
+    },
+};
 </script>
 
 <template>
@@ -57,7 +92,7 @@
         <div class="connection-notice">
             <div class="connection-notice__container u-container u-container--large">
                 <span class="connection-notice__icon u-emoji">⚠️</span>
-                <span class="connection-notice__caption">{ $td('Not synchronized with network', 'error.not-synchronized-with-network') }}</span>
+                <span class="connection-notice__caption">{{ $td('Not synchronized with network', 'error.not-synchronized-with-network') }}</span>
             </div>
         </div>
     </transition>

@@ -1,6 +1,3 @@
-import Vue from 'vue';
-import {getTimeOffset} from '~/assets/axios-time-offset.js';
-
 export default {
     ADD_AUTH_ADVANCED: (state, mnemonic) => {
         state.auth = mnemonic;
@@ -29,9 +26,6 @@ export default {
     },
     SET_BALANCE_DISPLAY_TYPE: (state, balanceDisplayType) => {
         state.balanceDisplayType = balanceDisplayType;
-    },
-    SET_LAST_UPDATE_TIME: (state, timestamp) => {
-        state.lastUpdateTime = timestamp - getTimeOffset();
     },
     SET_STAKE_LIST: (state, stakeList) => {
         state.stakeList = Object.freeze(stakeList);

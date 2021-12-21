@@ -6,7 +6,6 @@ export default function() {
         totalBalanceSum: '0',
         totalBalanceSumUsd: '0',
         balanceDisplayType: 0,
-        lastUpdateTime: 9999999999999,
         /** @type Array<StakeItem> */
         stakeList: [],
         /** @type Array<PoolProvider> */

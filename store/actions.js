@@ -1,6 +1,6 @@
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {getBalance, getAddressStakeList, getAddressTransactionList, getCoinList, getValidatorMetaList, getProviderPoolList} from "~/api/explorer.js";
-
+import {setLastUpdateTime} from '~/composables/use-last-update-time.js';
 
 export default {
     FETCH_TRANSACTION_LIST: ({ commit, dispatch, getters }, page = 1) => {
@@ -39,7 +39,7 @@ export default {
             .then((balanceResponse) => {
                 commit('SET_BALANCE', balanceResponse.data.balances);
                 commit('SET_BALANCE_TOTAL', balanceResponse.data);
-                commit('SET_LAST_UPDATE_TIME', new Date(balanceResponse.latestBlockTime).getTime());
+                setLastUpdateTime(new Date(balanceResponse.latestBlockTime).getTime());
                 return balanceResponse.data.balances;
             });
     },
