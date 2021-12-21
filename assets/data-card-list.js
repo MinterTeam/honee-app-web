@@ -216,6 +216,21 @@ export default {
             },
         },
         {
+            title: 'Yield farming HUB / BIP',
+            description: 'Put your HUB and BIP into a liquidity pool to start getting extra daily rewards.',
+            icon: ['HUB', 'BIP'],
+            stats: {
+                caption: 'APR in BIP',
+                value: '36.5%',
+            },
+            tags: ['Farming', 'HUB', 'BIP'],
+            action: '/farm/HUB/BIP',
+            ru: {
+                title: 'Фарминг HUB / BIP',
+                description: 'Положите свои HUB и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
             title: 'Yield farming BEE / MUSD',
             description: 'Put your BEE and MUSD into a liquidity pool to start getting extra daily rewards.',
             icon: ['BEE', 'MUSD'],
@@ -243,51 +258,6 @@ export default {
             ru: {
                 title: 'Фарминг USDTE / USDCE',
                 description: 'Положите свои USDT и USDC в пул ликвидности и начните получать дополнительные вознаграждения ежедневно.',
-            },
-        },
-        {
-            title: 'Yield farming TON / BIP',
-            description: 'Put your TON and BIP into a liquidity pool to start getting extra daily rewards.',
-            icon: ['TON', 'BIP'],
-            stats: {
-                caption: 'APR in BIP',
-                value: '124%',
-            },
-            tags: ['Farming', 'TON', 'BIP'],
-            action: '/farm/TON/BIP',
-            ru: {
-                title: 'Фарминг TON / BIP',
-                description: 'Положите свои TON и BIP в пул ликвидности и начните получать дополнительные вознаграждения ежедневно.',
-            },
-        },
-        {
-            title: 'Yield farming SHIB / BIP',
-            description: 'Put your SHIB and BIP into a liquidity pool to start getting extra daily rewards.',
-            icon: ['SHIB', 'BIP'],
-            stats: {
-                caption: 'APR in BIP',
-                value: '124%',
-            },
-            tags: ['Farming', 'SHIB', 'BIP'],
-            action: '/farm/SHIB/BIP',
-            ru: {
-                title: 'Фарминг SHIB / BIP',
-                description: 'Положите свои SHIB и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-            },
-        },
-        {
-            title: 'Yield farming METAINDEX / BIP',
-            description: 'Put your METAINDEX and BIP into a liquidity pool to start getting extra daily rewards.',
-            icon: ['METAINDEX', 'BIP'],
-            stats: {
-                caption: 'APR in BIP',
-                value: '124%',
-            },
-            tags: ['Farming', 'METAINDEX', 'BIP'],
-            action: '/farm/METAINDEX/BIP',
-            ru: {
-                title: 'Фарминг METAINDEX / BIP',
-                description: 'Положите свои METAINDEX и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
             },
         },
         {
