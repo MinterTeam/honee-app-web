@@ -231,36 +231,6 @@ export default {
             },
         },
         {
-            title: 'Yield farming BEE / MUSD',
-            description: 'Put your BEE and MUSD into a liquidity pool to start getting extra daily rewards.',
-            icon: ['BEE', 'MUSD'],
-            stats: {
-                caption: 'APR in BEE',
-                value: '100%',
-            },
-            tags: ['Farming', 'BEE', 'MUSD'],
-            action: '/farm/BEE/MUSD',
-            ru: {
-                title: 'Фарминг BEE / MUSD',
-                description: 'Положите свои BEE и MUSD в пул ликвидности и начните получать дополнительные вознаграждения ежедневно.',
-            },
-        },
-        {
-            title: 'Yield farming USDTE / USDCE',
-            description: 'Put your USDTE and USDCE into a liquidity pool to start getting extra daily rewards.',
-            icon: ['USDTE', 'USDCE'],
-            stats: {
-                caption: 'APR in BIP',
-                value: '36.5%',
-            },
-            tags: ['Farming', 'USDTE', 'USDCE'],
-            action: '/farm/USDTE/USDCE',
-            ru: {
-                title: 'Фарминг USDTE / USDCE',
-                description: 'Положите свои USDT и USDC в пул ликвидности и начните получать дополнительные вознаграждения ежедневно.',
-            },
-        },
-        {
             title: 'Yield farming BNB / BIP',
             description: 'Put your BNB and BIP into a liquidity pool to start getting extra daily rewards.',
             icon: ['BNB', 'BIP'],
