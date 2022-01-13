@@ -3,8 +3,6 @@ export const TESTNET = 'testnet';
 export const NETWORK = process.env.APP_ENV === MAINNET ? MAINNET : TESTNET;
 export const BASE_TITLE = 'Honee';
 export const BASE_DESCRIPTION = '';
-export const SUBSCRIBE_API_URL = process.env.APP_SUBSCRIBE_API_URL;
-export const SUBSCRIBE_API_PROJECT_NAME = process.env.APP_ENV === MAINNET ? 'honee_first_promo' : 'test';
 export const ACCOUNTS_API_URL = process.env.APP_ACCOUNTS_API_URL;
 export const GATE_API_URL = process.env.APP_GATE_API_URL;
 export const EXPLORER_API_URL = process.env.APP_EXPLORER_API_URL;
