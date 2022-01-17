@@ -166,7 +166,7 @@ module.exports = {
         { src: '~/plugins/composition-api.js'},
         { src: '~/plugins/online.js', ssr: false },
         { src: '~/plugins/custom-event-polyfill.js', ssr: false },
-        { src: '~/plugins/persistedState.js', ssr: false },
+        { src: '~/plugins/persisted-state.js', ssr: false },
         { src: '~/plugins/click-blur.js', ssr: false },
     ],
     content: {

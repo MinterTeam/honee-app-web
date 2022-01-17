@@ -1,5 +1,5 @@
 <script>
-import {shortHashFilter, getTime, getEtherscanTxUrl, getExplorerTxUrl, pretty} from '~/assets/utils.js';
+import {shortHashFilter, getTime, getEvmTxUrl, getExplorerTxUrl, pretty} from '~/assets/utils.js';
 import Loader from '@/components/base/BaseLoader.vue';
 import {HUB_BUY_STAGE as LOADING_STAGE} from '~/assets/variables.js';
 
@@ -40,7 +40,7 @@ export default {
     },
     methods: {
         pretty,
-        getEtherscanTxUrl,
+        getEvmTxUrl,
         getExplorerTxUrl,
         formatHash: (value) => shortHashFilter(value, 8),
     },
@@ -79,7 +79,8 @@ export default {
         </div>
         <div class="hub__buy-transaction-row hub__preview-transaction-meta">
             <div>
-                <a v-if="hash.indexOf('0x') === 0" :href="getEtherscanTxUrl(hash)" class="link--main link--hover" target="_blank">{{ formatHash(hash) }}</a>
+<!-- @TODO chainId -->
+                <a v-if="hash.indexOf('0x') === 0" :href="getEvmTxUrl(1, hash)" class="link--main link--hover" target="_blank">{{ formatHash(hash) }}</a>
                 <a v-if="hash.indexOf('Mt') === 0" :href="getExplorerTxUrl(hash)" class="link--main link--hover" target="_blank">{{ formatHash(hash) }}</a>
             </div>
             <div class="hub__buy-time">
