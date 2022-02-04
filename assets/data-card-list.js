@@ -101,20 +101,6 @@ export default {
             },
         },
         {
-            title: 'Buy TON for ETH',
-            description: 'Get a base coin of the TON Blockchain, a project that aims to unite all existing blockchains and the Internet itself into a single Web 3.0 network.',
-            icon: 'TON',
-            stats: {
-                price: 'TON',
-            },
-            tags: ['Deposit', 'TON'],
-            action: '/buy/TON',
-            ru: {
-                title: 'Купить TON за ETH',
-                description: 'Приобретите базовую монету TON — проекта, который стремится объединить все существующие блокчейны и сам Интернет в единую Web 3.0-сеть.',
-            },
-        },
-        {
             title: 'Buy TON',
             description: 'Get a base coin of the TON Blockchain, a project that aims to unite all existing blockchains and the Internet itself into a single Web 3.0 network.',
             icon: 'TON',
@@ -126,20 +112,6 @@ export default {
             ru: {
                 title: 'Купить TON',
                 description: 'Приобретите базовую монету TON — проекта, который стремится объединить все существующие блокчейны и сам Интернет в единую Web 3.0-сеть.',
-            },
-        },
-        {
-            title: 'Buy SHIB for ETH',
-            description: 'SHIBA INU is a 2020–2021 crypto phenomenon. A memecoin first, it soon became legendary making it in the top 10 cryptos and getting listed on the largest exchanges such as Coinbase.',
-            icon: 'SHIB',
-            stats: {
-                price: 'SHIB',
-            },
-            tags: ['Deposit', 'SHIB'],
-            action: '/buy/SHIB',
-            ru: {
-                title: 'Купить SHIB за ETH',
-                description: 'SHIBA INU — крипто-феномен 2020–2021. Мемкойн, который вскоре стал легендарным и занял строчку в топ-10 криптовалют, а также был добавлен на крупнейшие биржи, такие как Coinbase.',
             },
         },
         {
@@ -155,21 +127,7 @@ export default {
                 title: 'Купить SHIB',
                 description: 'SHIBA INU — крипто-феномен 2020–2021. Мемкойн, который вскоре стал легендарным и занял строчку в топ-10 криптовалют, а также был добавлен на крупнейшие биржи, такие как Coinbase.',
             },
-        },
-        {
-            title: 'Buy METAINDEX for ETH',
-            description: 'METAINDEX (MVI on Ethereum) represents a basket of tokens of virtual worlds also known as metaverses.',
-            icon: 'METAINDEX',
-            stats: {
-                price: 'METAINDEX',
-            },
-            tags: ['Deposit', 'METAINDEX'],
-            action: '/buy/METAINDEX',
-            ru: {
-                title: 'Купить METAINDEX за ETH',
-                description: 'METAINDEX (MVI на Ethereum) представляет собой корзину токенов виртуальных миров (метавселенных).',
-            },
-        },
+        },  
         {
             title: 'Buy METAINDEX',
             description: 'METAINDEX (MVI on Ethereum) represents a basket of tokens of virtual worlds also known as metaverses.',
@@ -305,36 +263,19 @@ export default {
                 description: 'Положите свои CAKEBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
             },
         },
-    ],
-    win: [
         {
-            title: 'DONUT',
-            description: 'Provide liquidity to the DONUT-BIP pool to take part in daily giveaways. The more liquidity you provide, the better the chances you have!',
-            icon: 'DONUT',
+            title: 'Yield farming HUB / BNB',
+            description: 'Put your HUB and BNB into a liquidity pool to start getting extra daily rewards.',
+            icon: ['HUB', 'BNB'],
             stats: {
-                caption: 'GIVEAWAY',
-                value: '1%',
+                caption: 'APR in HUB',
+                value: '36.5%',
             },
-            tags: ['Lottery', 'DONUT'],
-            action: '/win/DONUT/BIP',
+            tags: ['Farming', 'HUB', 'BNB'],
+            action: '/farm/HUB/BNB',
             ru: {
-                title: 'DONUT',
-                description: 'Предоставляйте ликвидность в пул DONUT-BIP, чтобы участвовать в ежедневной лотерее. Чем выше ликвидность, тем больше шансов!',
-            },
-        },
-        {
-            title: 'HUBABUBA',
-            description: 'Provide liquidity to the HUBABUBA-HUB pool to take part in daily giveaways. The more liquidity you provide, the better the chances you have!',
-            icon: 'HUBABUBA',
-            stats: {
-                caption: 'GIVEAWAY',
-                value: 'Up to 1%',
-            },
-            tags: ['Lottery', 'HUBABUBA'],
-            action: '/win/HUBABUBA/HUB',
-            ru: {
-                title: 'HUBABUBA',
-                description: 'Предоставляйте ликвидность в пул HUBABUBA-HUB, чтобы участвовать в ежедневной лотерее. Чем выше ликвидность, тем больше шансов!',
+                title: 'Фарминг HUB / BNB',
+                description: 'Положите свои HUB и BNB в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
             },
         },
     ],
