@@ -153,7 +153,6 @@ export default {
     },
     data() {
         return {
-            //@TODO store balances for each chainId
             balances: {},
             uniswapPair: null,
             balanceRequest: null,
@@ -350,19 +349,19 @@ export default {
             if (this.isEthSelected) {
                 return new Big(this.selectedWrapped).plus(this.selectedNative).toString();
             } else {
-                return this.balances[this.externalTokenSymbol] || 0;
+                return this.balances[this.chainId]?.[this.externalTokenSymbol] || 0;
             }
         },
         selectedWrapped() {
             if (this.isEthSelected) {
-                return this.balances[this.externalTokenSymbol] || 0;
+                return this.balances[this.chainId]?.[this.externalTokenSymbol] || 0;
             }
 
             return 0;
         },
         selectedNative() {
             if (this.isEthSelected) {
-                return this.balances[0] || 0;
+                return this.balances[this.chainId]?.[0] || 0;
             }
 
             return 0;
@@ -374,7 +373,11 @@ export default {
             }
             return /*this.form.isUnwrapAll ? this.selectedWrapped : */amountToUnwrapMinimum;
         },
-        //@TODO allow sending wrapped ERC-20 WETH directly without unwrap if it is enough (more than amount to spend) (extra unlock tx will be needed instead of unwrap tx, but we may save on gas fee: transferToChain should be cheaper than transferETHToChain)
+        /**
+         * Disabled sending wrapped ERC-20 WETH directly
+         * it may save 5-10k of gas ($1-2), but not worth it, because of complicated codebase and need of native ETH predictions to pay fee
+         * @return {boolean}
+         */
         isUnwrapRequired() {
             if (!this.isEthSelected) {
                 return false;
@@ -433,6 +436,9 @@ export default {
             // eip-681
             return `ethereum:${this.ethAddress}?value=${this.ethToTopUp*1e18}&amount=${this.ethToTopUp}`;
         },
+        whatAffectsBalance() {
+            return this.chainId.toString() + this.coinContractAddress;
+        },
     },
     watch: {
         'form.coinToGet': {
@@ -445,22 +451,17 @@ export default {
                 this.watchEstimation();
             },
         },
-        chainId: {
-            handler(newVal) {
-                if (newVal === ETHEREUM_CHAIN_ID) {
+        whatAffectsBalance: {
+            handler() {
+                if (this.chainId === ETHEREUM_CHAIN_ID) {
                     web3.eth.setProvider(ETHEREUM_API_URL);
                 }
-                if (newVal === BSC_CHAIN_ID) {
+                if (this.chainId === BSC_CHAIN_ID) {
                     web3.eth.setProvider(BSC_API_URL);
                 }
                 this.serverError = '';
 
-                if (newVal === ETHEREUM_CHAIN_ID || newVal === BSC_CHAIN_ID) {
-                    // @TODO store balances for each chainId
-                    // - then no need to flush them
-                    // - then no need to handle pending balance request for the wrong chain
-                    this.balances = {};
-                    this.allowanceList = {};
+                if (this.chainId === ETHEREUM_CHAIN_ID || this.chainId === BSC_CHAIN_ID) {
                     this.updateBalance();
                     this.getAllowance();
                 }
@@ -516,11 +517,14 @@ export default {
         getEvmTxUrl,
         shortHashFilter,
         updateBalance() {
+            const chainId = this.chainId;
+            const contractAddress = this.coinContractAddress;
+
             if (!this.coinContractAddress) {
                 return Promise.reject();
             }
 
-            if (this.balanceRequest?.promiseStatus === PROMISE_PENDING) {
+            if (this.balanceRequest?.contractAddress === contractAddress && this.balanceRequest?.chainId === chainId && this.balanceRequest?.promiseStatus === PROMISE_PENDING) {
                 return this.balanceRequest.promise;
             }
 
@@ -531,25 +535,48 @@ export default {
                 this.isEthSelected ? web3.eth.getBalance(this.ethAddress) : Promise.resolve(),
             ])
                 .then(([balance, ethBalance]) => {
-                    this.$set(this.balances, coinSymbol, fromErcDecimals(balance, decimals));
-                    this.$set(this.balances, 0, web3.utils.fromWei(ethBalance));
-                    this.balanceRequest = {
-                        promiseStatus: PROMISE_FINISHED,
-                        promise: balancePromise,
-                    };
+                    if (!this.balances[chainId]) {
+                        this.$set(this.balances, chainId, {});
+                    }
+                    this.$set(this.balances[chainId], coinSymbol, fromErcDecimals(balance, decimals));
+                    if (ethBalance) {
+                        this.$set(this.balances[chainId], 0, web3.utils.fromWei(ethBalance));
+                    }
+                    if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
+                        this.balanceRequest = {
+                            chainId,
+                            contractAddress,
+                            promiseStatus: PROMISE_FINISHED,
+                            promise: balancePromise,
+                        };
+                    }
                 })
                 .catch((error) => {
                     console.log(error);
-                    this.balanceRequest = {
-                        promiseStatus: PROMISE_REJECTED,
-                        promise: balancePromise,
-                    };
-                    this.serverError = 'Can\'t get balance';
+                    if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
+                        this.balanceRequest = {
+                            chainId,
+                            contractAddress,
+                            promiseStatus: PROMISE_REJECTED,
+                            promise: balancePromise,
+                        };
+                        this.serverError = 'Can\'t get balance';
+                    }
                 });
+
+            this.balanceRequest = {
+                chainId,
+                contractAddress,
+                promiseStatus: PROMISE_PENDING,
+                promise: balancePromise,
+            };
 
             return balancePromise;
         },
         getAllowance() {
+            const chainId = this.chainId;
+            const contractAddress = this.coinContractAddress;
+
             if (!this.coinContractAddress) {
                 return;
             }
@@ -557,29 +584,45 @@ export default {
             if (this.isEthSelected) {
                 return;
             }
-            if (this.allowanceRequest?.promiseStatus === PROMISE_PENDING) {
-                return;
+            if (this.allowanceRequest.contractAddress === contractAddress && this.allowanceRequest.chainId === chainId && this.allowanceRequest?.promiseStatus === PROMISE_PENDING) {
+                return this.allowanceRequest.promise;
             }
 
             const allowancePromise = coinContract(this.coinContractAddress).methods.allowance(this.ethAddress, this.hubAddress).call()
                 .then((allowanceValue) => {
-                    this.coinToDepositUnlocked = fromErcDecimals(allowanceValue, this.coinDecimals);
-                    this.allowanceRequest = {
-                        promiseStatus: PROMISE_FINISHED,
-                        promise: allowancePromise,
-                    };
+                    // @TODO store allowance for each chainId
+                    // this.$set(this.allowanceList, selectedCoin, allowanceValue);
+                    // coin not changed
+                    if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
+                        this.coinToDepositUnlocked = fromErcDecimals(allowanceValue, this.coinDecimals);
+                        this.allowanceRequest = {
+                            chainId,
+                            contractAddress,
+                            promiseStatus: PROMISE_FINISHED,
+                            promise: allowancePromise,
+                        };
+                    }
+
                 })
                 .catch((error) => {
                     console.log(error);
-                    this.coinToDepositUnlocked = 0;
-                    this.allowanceRequest = {
-                        promiseStatus: PROMISE_REJECTED,
-                        promise: allowancePromise,
-                    };
-                    this.serverError = 'Can\'t get allowance';
+                    // this.$set(this.allowanceList, selectedCoin, null);
+                    // coin not changed
+                    if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
+                        this.coinToDepositUnlocked = 0;
+                        this.allowanceRequest = {
+                            chainId,
+                            contractAddress,
+                            promiseStatus: PROMISE_REJECTED,
+                            promise: allowancePromise,
+                        };
+                        this.serverError = 'Can\'t get allowance';
+                    }
                 });
 
             this.allowanceRequest = {
+                chainId,
+                contractAddress,
                 promiseStatus: PROMISE_PENDING,
                 promise: allowancePromise,
             };
@@ -1229,7 +1272,11 @@ function getSwapOutput(receipt) {
                     <h3 class="estimation__title">{{ $td('Estimated price', 'form.swap-confirm-price-estimation') }}</h3>
                     <div class="estimation__item">
                         <div class="estimation__coin">
-                            <div class="estimation__coin-symbol">{{ form.coinToGet }} rate</div>
+                            <div class="estimation__coin-symbol">
+                                <template v-if="form.coinToGet">{{ form.coinToGet }}</template>
+                                <template v-else>Coin</template>
+                                rate
+                            </div>
                         </div>
                         <div class="u-fw-600 u-text-number">≈ ${{ pretty(currentPrice) }}</div>
                     </div>
