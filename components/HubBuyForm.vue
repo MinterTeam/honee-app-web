@@ -32,6 +32,7 @@ import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '@/components/base/Modal.vue';
 import ButtonCopyIcon from '~/components/base/ButtonCopyIcon.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
+import FieldSelect from '~/components/base/FieldSelect.vue';
 import HubBuyTxListItem from '@/components/HubBuyTxListItem.vue';
 import HubBuySpeedup from '@/components/HubBuySpeedup.vue';
 
@@ -105,6 +106,7 @@ export default {
         Modal,
         ButtonCopyIcon,
         FieldCombined,
+        FieldSelect,
         HubBuyTxListItem,
         HubBuySpeedup,
     },
@@ -648,8 +650,7 @@ export default {
 
             return Promise.all([/*uniswapPairPromise, */allowancePromise]);
         },
-        recoverPurchase() {
-            // @TODO check proper chainId recovery
+        async recoverPurchase() {
             if (!this.$store.state.onLine) {
                 return;
             }
@@ -657,10 +658,13 @@ export default {
             this.steps = this.recovery.steps;
             this.recovery = null;
 
+            // ensure watchers on computed to run (chainId change web3 provider)
+            await this.$nextTick();
+
             //@TODO consider saving old gasPrice to recovery and use it later
             //@TODO check if current gasPrice differ from recovery gasPrice
             //@TODO txs may be forked
-            this.submit({fromRecovery: true});
+            return this.submit({fromRecovery: true});
         },
         waitEnoughEth() {
             // save request if balance already enough
@@ -1219,13 +1223,24 @@ function getSwapOutput(receipt) {
         <template v-else>
             <form @submit.prevent="submitConfirm()">
                 <div class="form-row">
-                    <label class="form-field">
-                        <select class="form-field__input form-field__input--select" v-model="form.selectedHubNetwork" v-check-empty>
-                            <option :value="$options.HUB_CHAIN_ID.ETHEREUM">{{ $options.HUB_CHAIN_DATA[$options.HUB_CHAIN_ID.ETHEREUM].name }}</option>
-                            <option :value="$options.HUB_CHAIN_ID.BSC">{{ $options.HUB_CHAIN_DATA[$options.HUB_CHAIN_ID.BSC].name }}</option>
-                        </select>
-                        <span class="form-field__label">Select network</span>
-                    </label>
+                    <FieldSelect
+                        v-model="form.selectedHubNetwork"
+                        :label="$td('Select network', 'form.select-network')"
+                        :suggestion-list="[
+                            {
+                                value: $options.HUB_CHAIN_ID.ETHEREUM,
+                                name: $options.HUB_CHAIN_DATA[$options.HUB_CHAIN_ID.ETHEREUM].name,
+                                shortName: $options.HUB_CHAIN_DATA[$options.HUB_CHAIN_ID.ETHEREUM].shortName,
+                                icon: `/img/icon-network-${$options.HUB_CHAIN_ID.ETHEREUM}.svg`,
+                            },
+                            {
+                                value: $options.HUB_CHAIN_ID.BSC,
+                                name: $options.HUB_CHAIN_DATA[$options.HUB_CHAIN_ID.BSC].name,
+                                shortName: $options.HUB_CHAIN_DATA[$options.HUB_CHAIN_ID.BSC].shortName,
+                                icon: `/img/icon-network-${$options.HUB_CHAIN_ID.BSC}.svg`,
+                            },
+                        ]"
+                    />
                 </div>
                 <div class="form-row">
                     <FieldCombined

@@ -299,6 +299,8 @@ export default {
 
         'select-validator': 'Выберите валидатора',
         'select-coin': 'Выберите монету',
+        'select-value': 'Выберите значение',
+        'select-network': 'Выберите сеть',
 
 
         'enter-amount': 'Введите сумму',
