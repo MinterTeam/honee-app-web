@@ -98,7 +98,7 @@ export default {
                         </div>
                     </div>
                     <div class="wallet__balance-links">
-                        <nuxt-link class="button button--yellow-light button--full-mobile" :to="pageUrl('buy')">
+                        <nuxt-link class="button button--yellow-light button--full-mobile u-text-nowrap" :to="pageUrl('buy')">
                             <img class="button__icon" src="/img/icon-category-buy.svg" width="24" height="24" alt="" role="presentation">
                             {{ $td('Buy BIP, HUB, & BEE', 'index.wallet-balance-links') }}
                         </nuxt-link>

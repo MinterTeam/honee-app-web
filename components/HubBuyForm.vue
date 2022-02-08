@@ -27,6 +27,7 @@ import {NETWORK, MAINNET, ETHEREUM_CHAIN_ID, ETHEREUM_API_URL, BSC_CHAIN_ID, BSC
 import {getErrorText} from '~/assets/server-error.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import useHubDiscount from '@/composables/use-hub-discount.js';
+import useWeb3Balance from '~/composables/use-web3-balance.js';
 import BaseAmountEstimation from '@/components/base/BaseAmountEstimation.vue';
 import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '@/components/base/Modal.vue';
@@ -131,7 +132,7 @@ export default {
             .then(() => wait(1))
             .then(() => Promise.all([
                 this.updateBalance(),
-                this.getAllowance(),
+                this.updateAllowance(),
                 // this.fetchUniswapPair(),
             ]));
     },
@@ -146,19 +147,21 @@ export default {
     },
     setup() {
         const { discount, discountProps, discountUpsidePercent } = useHubDiscount();
+        const { web3Balance, web3Allowance, getBalance, getAllowance} = useWeb3Balance();
 
         return {
             discount,
             discountProps,
             discountUpsidePercent,
+            web3Balance,
+            web3Allowance,
+            getBalance,
+            getAllowance,
         };
     },
     data() {
         return {
-            balances: {},
             uniswapPair: null,
-            balanceRequest: null,
-            coinToDepositUnlocked: 0,
             allowanceRequest: null,
             form: {
                 selectedHubNetwork: HUB_CHAIN_ID.ETHEREUM,
@@ -334,6 +337,9 @@ export default {
         coinDecimals() {
             return this.externalToken ? Number(this.externalToken.externalDecimals) : undefined;
         },
+        coinToDepositUnlocked() {
+            return this.web3Allowance[this.chainId]?.[this.externalTokenSymbol] || 0;
+        },
         isCoinApproved() {
             const selectedUnlocked = new Big(this.coinToDepositUnlocked);
             // uniswap not used anymore
@@ -351,19 +357,19 @@ export default {
             if (this.isEthSelected) {
                 return new Big(this.selectedWrapped).plus(this.selectedNative).toString();
             } else {
-                return this.balances[this.chainId]?.[this.externalTokenSymbol] || 0;
+                return this.web3Balance[this.chainId]?.[this.externalTokenSymbol] || 0;
             }
         },
         selectedWrapped() {
             if (this.isEthSelected) {
-                return this.balances[this.chainId]?.[this.externalTokenSymbol] || 0;
+                return this.web3Balance[this.chainId]?.[this.externalTokenSymbol] || 0;
             }
 
             return 0;
         },
         selectedNative() {
             if (this.isEthSelected) {
-                return this.balances[this.chainId]?.[0] || 0;
+                return this.web3Balance[this.chainId]?.[0] || 0;
             }
 
             return 0;
@@ -465,7 +471,7 @@ export default {
 
                 if (this.chainId === ETHEREUM_CHAIN_ID || this.chainId === BSC_CHAIN_ID) {
                     this.updateBalance();
-                    this.getAllowance();
+                    this.updateAllowance();
                 }
             },
         },
@@ -492,7 +498,7 @@ export default {
                 return;
             }
             this.updateBalance();
-            this.getAllowance();
+            this.updateAllowance();
             // this.fetchUniswapPair();
         }, 60 * 1000);
         timer2 = setInterval(() => {
@@ -526,110 +532,32 @@ export default {
                 return Promise.reject();
             }
 
-            if (this.balanceRequest?.contractAddress === contractAddress && this.balanceRequest?.chainId === chainId && this.balanceRequest?.promiseStatus === PROMISE_PENDING) {
-                return this.balanceRequest.promise;
-            }
-
-            const coinSymbol = this.externalTokenSymbol;
-            const decimals = this.coinDecimals;
-            const balancePromise = Promise.all([
-                coinContract(this.coinContractAddress).methods.balanceOf(this.ethAddress).call(),
-                this.isEthSelected ? web3.eth.getBalance(this.ethAddress) : Promise.resolve(),
-            ])
-                .then(([balance, ethBalance]) => {
-                    if (!this.balances[chainId]) {
-                        this.$set(this.balances, chainId, {});
-                    }
-                    this.$set(this.balances[chainId], coinSymbol, fromErcDecimals(balance, decimals));
-                    if (ethBalance) {
-                        this.$set(this.balances[chainId], 0, web3.utils.fromWei(ethBalance));
-                    }
-                    if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
-                        this.balanceRequest = {
-                            chainId,
-                            contractAddress,
-                            promiseStatus: PROMISE_FINISHED,
-                            promise: balancePromise,
-                        };
-                    }
-                })
+            return this.getBalance(this.ethAddress, this.chainId, this.coinContractAddress, this.externalTokenSymbol, this.coinDecimals)
                 .catch((error) => {
-                    console.log(error);
                     if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
-                        this.balanceRequest = {
-                            chainId,
-                            contractAddress,
-                            promiseStatus: PROMISE_REJECTED,
-                            promise: balancePromise,
-                        };
                         this.serverError = 'Can\'t get balance';
                     }
                 });
-
-            this.balanceRequest = {
-                chainId,
-                contractAddress,
-                promiseStatus: PROMISE_PENDING,
-                promise: balancePromise,
-            };
-
-            return balancePromise;
         },
-        getAllowance() {
+        updateAllowance() {
             const chainId = this.chainId;
             const contractAddress = this.coinContractAddress;
 
             if (!this.coinContractAddress) {
                 return;
             }
+            //@TODO allowance not used yet (will be used only for erc20 tokens)
             // allowance not needed for native coins
             if (this.isEthSelected) {
                 return;
             }
-            if (this.allowanceRequest.contractAddress === contractAddress && this.allowanceRequest.chainId === chainId && this.allowanceRequest?.promiseStatus === PROMISE_PENDING) {
-                return this.allowanceRequest.promise;
-            }
 
-            const allowancePromise = coinContract(this.coinContractAddress).methods.allowance(this.ethAddress, this.hubAddress).call()
-                .then((allowanceValue) => {
-                    // @TODO store allowance for each chainId
-                    // this.$set(this.allowanceList, selectedCoin, allowanceValue);
-                    // coin not changed
-                    if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
-                        this.coinToDepositUnlocked = fromErcDecimals(allowanceValue, this.coinDecimals);
-                        this.allowanceRequest = {
-                            chainId,
-                            contractAddress,
-                            promiseStatus: PROMISE_FINISHED,
-                            promise: allowancePromise,
-                        };
-                    }
-
-                })
+            return this.getAllowance(this.ethAddress, this.chainId, this.coinContractAddress, this.externalTokenSymbol, this.coinDecimals)
                 .catch((error) => {
-                    console.log(error);
-                    // this.$set(this.allowanceList, selectedCoin, null);
-                    // coin not changed
                     if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
-                        this.coinToDepositUnlocked = 0;
-                        this.allowanceRequest = {
-                            chainId,
-                            contractAddress,
-                            promiseStatus: PROMISE_REJECTED,
-                            promise: allowancePromise,
-                        };
                         this.serverError = 'Can\'t get allowance';
                     }
                 });
-
-            this.allowanceRequest = {
-                chainId,
-                contractAddress,
-                promiseStatus: PROMISE_PENDING,
-                promise: allowancePromise,
-            };
-
-            return allowancePromise;
         },
         fetchUniswapPair() {
             if (!this.coinContractAddress || ! this.coinDecimals) {
@@ -646,7 +574,8 @@ export default {
             }
 
             // const uniswapPairPromise = this.uniswapPair ? Promise.resolve() : this.fetchUniswapPair();
-            const allowancePromise = this.allowanceRequest && this.allowanceRequest.promiseStatus !== PROMISE_REJECTED ? this.allowanceRequest.promise : this.getAllowance();
+            //@TODO handle change to composable (maybe promises should be exposed in web3Allowance?)
+            const allowancePromise = this.allowanceRequest && this.allowanceRequest.promiseStatus !== PROMISE_REJECTED ? this.allowanceRequest.promise : this.updateAllowance();
 
             return Promise.all([/*uniswapPairPromise, */allowancePromise]);
         },
