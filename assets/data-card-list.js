@@ -156,6 +156,62 @@ export default {
                 description: 'BNB — это криптовалюта, которая поддерживает экосистему Binance. BNB является одним из самых популярных utility-токенов в мире.',
             },
         },
+        {
+            title: 'Buy UNIBSC',
+            description: 'The UNI token serves the purpose of enabling shared community ownership in the growth and development of the Uniswap decentralized protocol.',
+            icon: 'UNIBSC',
+            stats: {
+                price: 'UNIBSC',
+            },
+            tags: ['Exchange', 'UNIBSC'],
+            action: '/swap/UNIBSC',
+            ru: {
+                title: 'Купить UNIBSC',
+                description: 'Токен UNI служит для обеспечения совместного участия сообщества в росте и развитии децентрализованного протокола Uniswap.',
+            },
+        },
+        {
+            title: 'Buy DOGEBSC',
+            description: 'Dogecoin (DOGE) is based on the popular "doge" Internet meme "doge", one of the most popular meme-tokens.',
+            icon: 'DOGEBSC',
+            stats: {
+                price: 'DOGEBSC',
+            },
+            tags: ['Exchange', 'DOGEBSC'],
+            action: '/swap/DOGEBSC',
+            ru: {
+                title: 'Купить DOGEBSC',
+                description: 'Dogecoin (DOGE) родился из популярного интернет-мема «doge», один из самых популярных мем-токенов.',
+            },
+        },
+        {
+            title: 'Buy MATICBSC',
+            description: 'The MATIC tokens are used for payment services on Polygon and as a settlement currency between users who operate within the Polygon ecosystem.',
+            icon: 'MATICBSC',
+            stats: {
+                price: 'MATICBSC',
+            },
+            tags: ['Exchange', 'MATICBSC'],
+            action: '/swap/MATICBSC',
+            ru: {
+                title: 'Купить MATICBSC',
+                description: 'Токены MATIC используются для платежей на Polygon и в качестве валюты расчетов между пользователями, которые работают в экосистеме Polygon.',
+            },
+        },
+        {
+            title: 'Buy CAKEBSC',
+            description: 'The PancakeSwap token CAKE is a BEP20 token that originally launched on Binance Smart Chain. The main function of CAKE is to incentivize the liquidity provision to the PancakeSwap platform.',
+            icon: 'CAKEBSC',
+            stats: {
+                price: 'CAKEBSC',
+            },
+            tags: ['Exchange', 'CAKEBSC'],
+            action: '/swap/CAKEBSC',
+            ru: {
+                title: 'Купить CAKEBSC',
+                description: 'Токен PancakeSwap CAKE — это токен BEP20, который изначально был запущен на Binance Smart Chain. Основная функция CAKE — стимулировать предоставление ликвидности платформе PancakeSwap.',
+            },
+        },
     ],
     earn: [
         {
