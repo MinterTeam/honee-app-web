@@ -98,7 +98,7 @@ export default {
                         </div>
                     </div>
                     <div class="wallet__balance-links">
-                        <nuxt-link class="button button--yellow-light button--full-mobile" :to="pageUrl('buy')">
+                        <nuxt-link class="button button--yellow-light button--full-mobile u-text-nowrap" :to="pageUrl('buy')">
                             <img class="button__icon" src="/img/icon-category-buy.svg" width="24" height="24" alt="" role="presentation">
                             {{ $td('Buy BIP, HUB, & BEE', 'index.wallet-balance-links') }}
                         </nuxt-link>
@@ -107,9 +107,9 @@ export default {
             </div>
             <div class="card__content">
                 <div class="button-group button-group--center">
-                    <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('deposit')">
+                    <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('receive')">
                         <img class="button__icon" src="/img/icon-white-deposit.svg" width="24" height="24" alt="" role="presentation">
-                        {{ $td('Deposit', 'index.deposit') }}
+                        {{ $td('Receive', 'index.topup') }}
                     </nuxt-link>
                     <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('swap')">
                         <img class="button__icon" src="/img/icon-white-swap.svg" width="24" height="24" alt="" role="presentation">
@@ -130,7 +130,7 @@ export default {
                 <span>{{ $td(capitalize(categorySlug), `action.category-${categorySlug.toLowerCase()}`) }}</span>
             </h2>
             <div class="u-grid u-grid--vertical-margin">
-                <div class="u-cell u-cell--medium--1-2" v-for="card in categoryCards" :key="card.action || card">
+                <div class="u-cell u-cell--medium--1-2 card-wrap-cell" v-for="card in categoryCards" :key="card.action || card">
                     <Card :card="card" v-if="card.action"/>
 
                     <div class="card card__content--small" v-if="card === $options.BASE_CARD.DELEGATION">

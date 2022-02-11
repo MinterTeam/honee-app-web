@@ -26,7 +26,7 @@ const addLiquidityAction = {
 const actionList = {
     buy: {
         title: 'Buy BIP, HUB, & BEE for ETH',
-        params: [],
+        params: ['coinToGet'],
         component: HubBuyForm,
         tags: [],
     },
@@ -128,7 +128,8 @@ export default {
         };
 
         // action title
-        let title = action.title;
+        const langKey = `action.title-${actionType}`;
+        let title = this.$td(action.title, langKey);
         if (actionType === 'delegate' && params.coin) {
             title += ' ' + params.coin;
         }
@@ -138,7 +139,7 @@ export default {
             ...action,
             title,
             params,
-            langKey: `action.title-${actionType}`,
+            langKey,
         });
 
         const flatCardList = [].concat(...Object.values(cardList));
@@ -184,7 +185,7 @@ export default {
             return {};
         }
 
-        const title = getTitle(this.$td(this.action.title, this.action.langKey));
+        const title = getTitle(this.action.title);
         return {
             title,
             meta: [

@@ -122,6 +122,7 @@
 /* CARDS */
 @card-padding-large: 32px;
 @card-chevron-width: 8px;
+.card-wrap-cell {display: flex; }
 .card {
     background: #fff; color: @c-black; box-shadow: 0 4px 4px rgba(0,0,0,0.05); position: relative; border-radius: 16px; /*overflow: hidden;*/ display: block;
     &::before {content: ''; display: table;} // fix firefox incorrect collapsing negative margin
@@ -130,6 +131,7 @@
 .card--light-grey {
     background: @c-white-light;
 }
+.card--action {display: flex; flex-direction: column; flex-grow: 2;}
 .card__content {
     padding: 16px;
     &:first-child {padding-top: 24px;}
@@ -152,6 +154,7 @@
 .card__action-stats-caption {/*text-transform: uppercase;*/ font-size: 12px; font-weight: 700; opacity: 0.5; line-height: 15px;}
 .card__action-stats-value {font-size: 24px; font-weight: 700; line-height: 29px;}
 .card__action-title {font-size: 20px; margin-bottom: 8px;}
+.card__action-description {margin-bottom: auto;}
 .card__action-tag-list {display: flex; margin-top: (24px - 8px); margin-left: -8px; flex-wrap: wrap;}
 .card__action-tag {margin-left: 8px; margin-top: 8px; padding: 2px 8px; line-height: 20px; background: rgba(255,255,255, 0.3); border-radius: 6px; font-weight: 700;}
 
@@ -190,18 +193,18 @@
     &.is-active::after {background: @c-main}
     &+& {margin-left: 24px;}
 }
-.header__controls-user {display: flex; align-items: center; font-weight: 700; /*max-width: calc(100vw - 220px);*/ margin-right: 16px;}
+.header__controls-user {display: flex; align-items: center; font-weight: 700; /*max-width: calc(100vw - 220px);*/ /*margin-right: 16px;*/}
 //.header__controls-user-name {overflow: hidden; text-overflow: ellipsis;white-space: nowrap;}
 .header__controls-user-avatar {width: 24px; height: 24px; border-radius: 50%; background: no-repeat 50% 50% @c-black-light; background-size: cover; margin-right: 8px; flex-shrink: 0;}
-.header__controls-language {display: flex; align-items: center; margin-left: 16px;}
+.header__controls-language {display: flex; align-items: center; /*margin-left: 16px;*/}
 .header__language-container {padding-top: 16px; padding-bottom: 16px; display: flex; justify-content: flex-end;}
 .header__language-button {font-size: 0; display: block;}
 .header__language-text {margin-right: 16px;}
 @media (min-width: @breakpoint-small-up) {
     //.header__logo {margin-right: 70px;}
-    .header__controls-user {/*max-width: calc(100vw - 260px);*/ margin-right: 24px;}
+    .header__controls-user {/*max-width: calc(100vw - 260px);*/ /*margin-right: 24px;*/}
     .header__controls-user-avatar {margin-right: 12px;}
-    .header__controls-language {margin-left: 24px;}
+    .header__controls-language {/*margin-left: 24px;*/}
 }
 @media (min-width: @breakpoint-large-up) {
     .header {height: @header-height-large;}
@@ -258,7 +261,7 @@
 .wallet__balance-value {font-size: 30px; line-height: 36px; font-weight: 700; font-feature-settings: "zero" on;}
 .wallet__balance-links {margin-top: 16px;}
 @media (min-width: @breakpoint-medium-up) {
-    .wallet__balance-wrap {display: flex; justify-content: space-between; align-items: center;}
+    .wallet__balance-wrap {display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;}
     .wallet__balance-value {font-size: 40px; line-height: 48px;}
     .wallet__balance-links {margin-top: 0;}
 }
@@ -349,7 +352,7 @@
 .h-field__aside {margin-left: 20px; flex-shrink: 9999; display: flex; flex-direction: column; justify-content: center; align-items: flex-end;}
 //.h-field__aside--with-input {flex-grow: 3;}
 .h-field__aside-caption {margin-bottom: @h-field-title-margin; font-size: 12px; line-height: @h-field-title-height; letter-spacing: 0.2px; }
-.h-field__aside-loader {width: @h-field-title-height; height: @h-field-title-height; margin: 0;}
+.h-field__aside-loader {width: @h-field-title-height; height: @h-field-title-height; margin: 0; vertical-align: top;}
 .h-field__aside-max {
     color: @c-black-light; transition: 0.1s;
     &:hover, &:focus {color: @c-main;}
@@ -371,7 +374,7 @@
 }
 .h-field__suggestion-list {margin-top: 8px; margin-inline: -1 * @h-field-horizontal-padding; overflow: auto; max-height: 60vh;}
 .h-field__suggestion-item {
-    display: flex; align-items: center; max-width: 100%; padding: 8px @h-field-horizontal-padding; transition: 0.1s;
+    display: flex; align-items: center; width: 100%; padding: 8px @h-field-horizontal-padding; transition: 0.1s;
     //&+& {margin-top: 16px;}
     &:hover {background-color: rgba(0,0,0,0.1);}
 }
@@ -393,6 +396,7 @@
 .hub__buy-transaction-row {/*font-size: 14px;*/font-weight: 500;line-height: 20px;}
 .hub__buy-time {margin-left: 8px;}
 .hub__buy-loader {width: 22px; height: 22px; display: inline-block; vertical-align: middle; margin-top: -4px; margin-right: 6px;}
+.hub__buy-title-loader {margin: -12px 8px -6px 0; vertical-align: middle;}
 @media (min-width: @breakpoint-medium-up) {
     .hub__buy-transaction-row {display: flex;}
 }

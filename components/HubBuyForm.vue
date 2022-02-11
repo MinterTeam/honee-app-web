@@ -18,20 +18,26 @@ import {getOracleCoinList, getOraclePriceList, subscribeTransfer} from '@/api/hu
 import {getTransaction} from '@/api/explorer.js';
 import {estimateCoinSell, postTx} from '@/api/gate.js';
 import Big from '~/assets/big.js';
-import {pretty, prettyPrecise, prettyRound, prettyExact, decreasePrecisionSignificant, getExplorerTxUrl, getEtherscanTxUrl, shortHashFilter} from '~/assets/utils.js';
+import {pretty, prettyPrecise, prettyRound, prettyExact, decreasePrecisionSignificant, getExplorerTxUrl, getEvmTxUrl, shortHashFilter} from '~/assets/utils.js';
 import erc20ABI from '~/assets/abi-erc20.js';
-import peggyABI from '~/assets/abi-hub.js';
+import hubABI from '~/assets/abi-hub.js';
 import wethAbi from '~/assets/abi-weth.js';
 import debounce from '~/assets/lodash5-debounce.js';
-import {HUB_ETHEREUM_CONTRACT_ADDRESS, NETWORK, MAINNET, ETHEREUM_CHAIN_ID, ETHEREUM_API_URL, HUB_TRANSFER_STATUS, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, WETH_ETHEREUM_CONTRACT_ADDRESS} from '~/assets/variables.js';
+import {NETWORK, MAINNET, ETHEREUM_CHAIN_ID, ETHEREUM_API_URL, BSC_CHAIN_ID, BSC_API_URL, HUB_TRANSFER_STATUS, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, WETH_CONTRACT_ADDRESS, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import checkEmpty from '~/assets/v-check-empty.js';
-import BaseAmount from '@/components/base/BaseAmount.vue';
+import useHubDiscount from '~/composables/use-hub-discount.js';
+import useWeb3Balance from '~/composables/use-web3-balance.js';
+import useWeb3Deposit from '~/composables/use-web3-deposit.js';
+import useTxService from '~/composables/use-tx-service.js';
+import BaseAmountEstimation from '@/components/base/BaseAmountEstimation.vue';
 import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '@/components/base/Modal.vue';
 import ButtonCopyIcon from '~/components/base/ButtonCopyIcon.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
+import FieldSelect from '~/components/base/FieldSelect.vue';
 import HubBuyTxListItem from '@/components/HubBuyTxListItem.vue';
+import HubBuySpeedup from '@/components/HubBuySpeedup.vue';
 
 
 const uniswapV2Abi = IUniswapV2Router.abi;
@@ -40,12 +46,13 @@ const PROMISE_FINISHED = 'finished';
 const PROMISE_REJECTED = 'rejected';
 const PROMISE_PENDING = 'pending';
 
-const TX_WRAP = 'wrap';
+const TX_UNWRAP = 'unwrap';
 const TX_APPROVE = 'approve';
 const TX_TRANSFER = 'transfer';
 
 const GAS_LIMIT_SWAP = 200000;
 const GAS_LIMIT_WRAP = 50000;
+const GAS_LIMIT_UNWRAP = 50000;
 const GAS_LIMIT_UNLOCK = 75000;
 const GAS_LIMIT_BRIDGE = 75000;
 
@@ -61,44 +68,50 @@ function coinContract(coinContractAddress) {
     return new web3.eth.Contract(erc20ABI, coinContractAddress);
 }
 
-const hubBridgeAddress = HUB_ETHEREUM_CONTRACT_ADDRESS;
-const hubBridgeContract = new web3.eth.Contract(peggyABI, hubBridgeAddress);
-
-const wethContract = new web3.eth.Contract(wethAbi, WETH_ETHEREUM_CONTRACT_ADDRESS);
+const wethContract = new web3.eth.Contract(wethAbi, WETH_CONTRACT_ADDRESS);
 const wethDepositAbiData = wethContract.methods.deposit().encodeABI();
 
 const wethToken = WETH_TOKEN_DATA[ETHEREUM_CHAIN_ID];
 const DEPOSIT_COIN_DATA = {
     ETH: {
-        testnetSymbol: 'TESTWETH',
+        testnetSymbol: 'TESTETH',
         smallAmount: 0.0001,
+    },
+    BNB: {
+        testnetSymbol: 'TESTBNB',
+        smallAmount: 0.001,
     },
     USDTE: {
         testnetSymbol: 'USDC',
         smallAmount: 0.1,
     },
+    HUB: {
+        testnetSymbol: 'TESTHUB',
+        smallAmount: 0.01,
+    },
 };
-const DEPOSIT_SYMBOL_MAINNET = 'ETH';
-const DEPOSIT_SYMBOL = NETWORK === MAINNET ? DEPOSIT_SYMBOL_MAINNET : DEPOSIT_COIN_DATA[DEPOSIT_SYMBOL_MAINNET].testnetSymbol;
 
 const isValidAmount = withParams({type: 'validAmount'}, (value) => {
     return parseFloat(value) >= 0;
 });
 
 export default {
-    TX_WRAP,
+    TX_UNWRAP,
     TX_APPROVE,
     TX_TRANSFER,
-    DEPOSIT_SYMBOL,
     LOADING_STAGE,
+    HUB_CHAIN_DATA,
+    HUB_CHAIN_ID,
     components: {
         QrcodeVue,
-        BaseAmount,
+        BaseAmountEstimation,
         Loader,
         Modal,
         ButtonCopyIcon,
         FieldCombined,
+        FieldSelect,
         HubBuyTxListItem,
+        HubBuySpeedup,
     },
     directives: {
         autosize,
@@ -106,16 +119,22 @@ export default {
     },
     mixins: [validationMixin],
     fetch() {
+        // replace deprecated query with params
+        if (this.$route.query.coin) {
+            const newPath = this.$route.path.replace(/\/*$/, `/${this.$route.query.coin}`);
+            this.$router.replace(newPath);
+        }
+
         return Promise.all([getOracleCoinList(), getOraclePriceList()])
             .then(([coinList, priceList]) => {
-                this.hubCoinList = coinList;
-                this.priceList = priceList;
+                this.hubCoinList = Object.freeze(coinList);
+                this.priceList = Object.freeze(priceList);
             })
             // wait for computed coinContractAddress to recalculate
             .then(() => wait(1))
             .then(() => Promise.all([
                 this.updateBalance(),
-                this.getAllowance(),
+                this.updateAllowance(),
                 // this.fetchUniswapPair(),
             ]));
     },
@@ -128,24 +147,51 @@ export default {
             default: () => ({}),
         },
     },
+    setup() {
+        const { discount, discountProps, discountUpsidePercent } = useHubDiscount();
+        const { web3Balance, web3Allowance, getBalance, getAllowance} = useWeb3Balance();
+        const {
+            setDepositProps,
+            depositFromEthereum,
+            nativeBalance: selectedNative,
+            wrappedBalance: selectedWrapped,
+            balance: selectedBalance,
+            amountToUnwrap,
+            isUnwrapRequired,
+            gasPriceGwei: ethGasPriceGwei,
+            gasTotalFee: ethTotalFee,
+            depositAmountAfterGas: formAmountAfterGas,
+        } = useWeb3Deposit();
+        const {txServiceState, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData} = useTxService();
+
+        return {
+            discount,
+            discountProps,
+            discountUpsidePercent,
+
+            web3Balance,
+            web3Allowance,
+            getBalance,
+            getAllowance,
+
+            setDepositProps, depositFromEthereum, selectedNative, selectedWrapped, selectedBalance, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, formAmountAfterGas,
+
+            txServiceState, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData,
+        };
+    },
     data() {
         return {
-            coinToDepositBalance: 0,
-            ethBalance: 0,
-            uniswapPair: null,
-            balanceRequest: null,
-            coinToDepositUnlocked: 0,
+            // uniswapPair: null,
             allowanceRequest: null,
             form: {
+                selectedHubNetwork: HUB_CHAIN_ID.ETHEREUM,
                 amountEth: '',
-                coinToGet: this.$route.query.coin || '',
+                coinToGet: this.params.coinToGet?.toUpperCase() || '',
                 amountToGet: '',
             },
             /** @type Array<HubCoinItem> */
             hubCoinList: [],
             priceList: [],
-            steps: {},
-            loadingStage: '',
             isFormSending: false,
             serverError: '',
             isConfirmModalVisible: false,
@@ -173,35 +219,43 @@ export default {
                 coinToGet: {
                     required,
                     minLength: minLength(3),
-                    supported: (symbol) => this.suggestionList.includes(symbol),
+                    // supported: (symbol) => this.suggestionList.includes(symbol),
                 },
                 amountToGet: {},
             },
         };
     },
     computed: {
+        isConnected() {
+            return !!this.ethAddress;
+        },
         ethAddress() {
             return this.$store.getters.address.replace('Mx', '0x');
         },
-        // @TODO gasPrice not updated during isFormSending and may be too low/high after waiting pin gasPrice on submit
-        ethGasPriceGwei() {
-            const priceItem = this.priceList.find((item) => item.name === 'eth/gas');
-            let gasPriceGwei;
-            if (!priceItem) {
-                gasPriceGwei = 100;
-            } else {
-                gasPriceGwei = priceItem.value / 10;
-            }
-
-            return NETWORK === MAINNET ? gasPriceGwei : gasPriceGwei * 10;
+        chainId() {
+            return HUB_CHAIN_DATA[this.form.selectedHubNetwork]?.chainId;
         },
-        ethTotalFee() {
-            const unlockGasLimit = this.isCoinApproved ? 0 : GAS_LIMIT_UNLOCK;
-            const totalGasLimit = /*GAS_LIMIT_SWAP + */GAS_LIMIT_WRAP + unlockGasLimit + GAS_LIMIT_BRIDGE;
-            // gwei to ether
-            const gasPrice = web3.utils.fromWei(web3.utils.toWei(this.ethGasPriceGwei.toString(), 'gwei'), 'ether');
-
-            return new Big(gasPrice).times(totalGasLimit).toString();
+        hubChainData() {
+            return HUB_CHAIN_BY_ID[this.chainId];
+        },
+        hubAddress() {
+            return this.hubChainData?.hubContractAddress;
+        },
+        wrappedNativeContractAddress() {
+            return this.hubChainData?.wrappedNativeContractAddress;
+        },
+        externalTokenMainnetSymbol() {
+            return this.hubChainData?.coinSymbol;
+        },
+        externalTokenSymbol() {
+            return NETWORK === MAINNET ? this.externalTokenMainnetSymbol : DEPOSIT_COIN_DATA[this.externalTokenMainnetSymbol].testnetSymbol;
+        },
+        externalToken() {
+            const coinItem = this.hubCoinList.find((item) => item.symbol === this.externalTokenSymbol);
+            return coinItem?.[this.hubChainData?.hubChainId];
+        },
+        isEthSelected() {
+            return (this.coinContractAddress || '').toLowerCase() === this.wrappedNativeContractAddress;
         },
         ethFeeImpact() {
             if (!(this.form.amountEth > 0)) {
@@ -210,12 +264,7 @@ export default {
             return new Big(this.ethTotalFee).div(this.form.amountEth).times(100);
         },
         ethToTopUp() {
-            let amount = new Big(this.form.amountEth || 0).minus(this.ethBalance);
-            amount = amount.gt(0) ? amount.toString() : 0;
-            return amount;
-        },
-        ethToWrap() {
-            let amount = new Big(this.form.amountEth || 0).minus(this.ethTotalFee);
+            let amount = new Big(this.form.amountEth || 0).minus(this.selectedBalance);
             amount = amount.gt(0) ? amount.toString() : 0;
             return amount;
         },
@@ -252,38 +301,38 @@ export default {
         },
         */
         hubFeeRate() {
-            const coinItem = this.hubCoinList.find((item) => item.symbol === DEPOSIT_SYMBOL);
-            return coinItem?.customCommission || 0.01;
+            const discountModifier = 1 - this.discount;
+            // commission to deposit is taken from external token data (e.g. chainId: 'ethereum')
+            return new Big(this.externalToken?.commission || 0.01).times(discountModifier).toString();
+        },
+        hubFeeRatePercent() {
+            return new Big(this.hubFeeRate).times(100).toString();
         },
         // fee to HUB bridge calculated in COIN
         hubFee() {
             // const input = this.uniswapEstimation?.output;
-            const input = this.ethToWrap;
+            const input = this.formAmountAfterGas;
             return new Big(input || 0).times(this.hubFeeRate).toString();
         },
         coinAmountAfterBridge() {
             // const input = this.uniswapEstimation?.output;
-            const input = this.ethToWrap;
+            const input = this.formAmountAfterGas;
             return new Big(input || 0).minus(this.hubFee).toString();
         },
         maxAmount() {
-            return this.ethBalance;
+            return this.selectedBalance;
         },
         coinEthereumName() {
-            const coinItem = this.hubCoinList.find((item) => item.symbol === DEPOSIT_SYMBOL);
-            return coinItem ? coinItem.denom.toUpperCase() : DEPOSIT_SYMBOL;
+            return this.externalTokenSymbol;
         },
         coinContractAddress() {
-            const coinItem = this.hubCoinList.find((item) => item.symbol === DEPOSIT_SYMBOL);
-            return coinItem ? coinItem.ethAddr : undefined;
+            return this.externalToken?.externalTokenId;
         },
         coinDecimals() {
-            if (!this.coinContractAddress) {
-                return undefined;
-            }
-
-            const coinItem = this.hubCoinList.find((item) => item.ethAddr === this.coinContractAddress);
-            return coinItem ? Number(coinItem.ethDecimals) : undefined;
+            return this.externalToken ? Number(this.externalToken.externalDecimals) : undefined;
+        },
+        coinToDepositUnlocked() {
+            return this.web3Allowance[this.chainId]?.[this.externalTokenSymbol] || 0;
         },
         isCoinApproved() {
             const selectedUnlocked = new Big(this.coinToDepositUnlocked);
@@ -295,7 +344,13 @@ export default {
             // сравниваем эстимейт с запасом
             // return selectedUnlocked.gt(0) && selectedUnlocked.gt(this.uniswapEstimation?.output * 2);
         },
+        isApproveRequired() {
+            return !this.isEthSelected && !this.isCoinApproved;
+        },
         suggestionList() {
+            if (this.params.coinToGet) {
+                return [];
+            }
             return [this.$store.getters.BASE_COIN, 'HUB', 'BEE'];
         },
         // stage() {
@@ -317,12 +372,23 @@ export default {
         isEstimationErrorVisible() {
             return this.estimationError && !this.isEstimationWaiting;
         },
+        currentPrice() {
+            if (!this.currentEstimation) {
+                return 0;
+            }
+            const priceItem = this.priceList.find((item) => item.name === this.externalTokenSymbol.toLowerCase());
+            if (!priceItem) {
+                return 0;
+            }
+            const ethPrice = priceItem.value;
+            return this.form.amountEth * ethPrice / this.currentEstimation;
+        },
         stepsOrdered() {
             const stages = Object.values(LOADING_STAGE).reverse();
             let result = [];
             stages.forEach((stageName) => {
-                if (this.steps[stageName]) {
-                    result.push({step: this.steps[stageName], loadingStage: stageName});
+                if (this.txServiceState.steps[stageName]) {
+                    result.push({step: this.txServiceState.steps[stageName], loadingStage: stageName});
                 }
             });
 
@@ -331,6 +397,29 @@ export default {
         deepLink() {
             // eip-681
             return `ethereum:${this.ethAddress}?value=${this.ethToTopUp*1e18}&amount=${this.ethToTopUp}`;
+        },
+        whatAffectsBalance() {
+            return this.chainId.toString() + this.coinContractAddress;
+        },
+        depositProps() {
+            return {
+                destinationMinterAddress: this.$store.getters.address,
+                accountAddress: this.ethAddress,
+                chainId: this.chainId,
+                amount: this.form.amountEth,
+                tokenSymbol: this.externalTokenSymbol,
+                /** @type Array<HubCoinItem> */
+                hubCoinList: this.hubCoinList,
+                priceList: this.priceList,
+            };
+        },
+        txServiceProps() {
+            return {
+                privateKey: this.$store.getters.privateKey,
+                accountAddress: this.ethAddress,
+                chainId: this.chainId,
+                form: this.form,
+            };
         },
     },
     watch: {
@@ -344,8 +433,40 @@ export default {
                 this.watchEstimation();
             },
         },
+        whatAffectsBalance: {
+            handler() {
+                if (this.chainId === ETHEREUM_CHAIN_ID) {
+                    web3.eth.setProvider(ETHEREUM_API_URL);
+                }
+                if (this.chainId === BSC_CHAIN_ID) {
+                    web3.eth.setProvider(BSC_API_URL);
+                }
+                this.serverError = '';
+
+                if (this.chainId === ETHEREUM_CHAIN_ID || this.chainId === BSC_CHAIN_ID) {
+                    this.updateBalance();
+                    this.updateAllowance();
+                }
+            },
+        },
+        depositProps: {
+            handler(newVal) {
+                this.setDepositProps(newVal);
+            },
+            deep: true,
+            immediate: true,
+        },
+        txServiceProps: {
+            handler(newVal) {
+                this.setTxServiceProps(newVal);
+            },
+            deep: true,
+            immediate: true,
+        },
     },
     mounted() {
+        this.discountProps.minterAddress = this.$store.getters.address;
+
         this.debouncedGetEstimation = debounce(this.getEstimation, 1000);
 
         const recoveryJson = window.localStorage.getItem('hub-buy-recovery');
@@ -365,7 +486,7 @@ export default {
                 return;
             }
             this.updateBalance();
-            this.getAllowance();
+            this.updateAllowance();
             // this.fetchUniswapPair();
         }, 60 * 1000);
         timer2 = setInterval(() => {
@@ -374,7 +495,7 @@ export default {
             }
             getOraclePriceList()
                 .then((priceList) => {
-                    this.priceList = priceList;
+                    this.priceList = Object.freeze(priceList);
                 });
         }, 15 * 1000);
     },
@@ -389,75 +510,44 @@ export default {
         prettyRound,
         decreasePrecisionSignificant,
         getExplorerTxUrl,
-        getEtherscanTxUrl,
+        getEvmTxUrl,
         shortHashFilter,
         updateBalance() {
-            if (!this.coinContractAddress) {
-                return Promise.reject();
-            }
+            const chainId = this.chainId;
+            const contractAddress = this.coinContractAddress;
 
-            if (this.balanceRequest?.promiseStatus === PROMISE_PENDING) {
-                return this.balanceRequest.promise;
-            }
-
-            const balancePromise = Promise.all([
-                // @TODO coin balance not used yet
-                // coinContract(this.coinContractAddress).methods.balanceOf(this.ethAddress).call(),
-                Promise.resolve(0),
-                web3.eth.getBalance(this.ethAddress),
-            ])
-                .then(([balance, ethBalance]) => {
-                    // this.coinToDepositBalance = fromErcDecimals(balance, this.coinDecimals);
-                    this.ethBalance = web3.utils.fromWei(ethBalance);
-                    this.balanceRequest = {
-                        promiseStatus: PROMISE_FINISHED,
-                        promise: balancePromise,
-                    };
-                })
-                .catch((error) => {
-                    console.log(error);
-                    this.balanceRequest = {
-                        promiseStatus: PROMISE_REJECTED,
-                        promise: balancePromise,
-                    };
-                    this.serverError = 'Can\'t get balance';
-                });
-
-            return balancePromise;
-        },
-        getAllowance() {
             if (!this.coinContractAddress) {
                 return;
             }
-            if (this.allowanceRequest?.promiseStatus === PROMISE_PENDING) {
+
+            return this.getBalance(this.ethAddress, this.chainId, this.coinContractAddress, this.externalTokenSymbol, this.coinDecimals)
+                .catch((error) => {
+                    if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
+                        this.serverError = 'Can\'t get balance';
+                    }
+                });
+        },
+        updateAllowance() {
+            const chainId = this.chainId;
+            const contractAddress = this.coinContractAddress;
+
+            if (!this.coinContractAddress) {
+                return;
+            }
+            //@TODO allowance not used yet (will be used only for erc20 tokens)
+            // allowance not needed for native coins
+            if (this.isEthSelected) {
                 return;
             }
 
-            const allowancePromise = coinContract(this.coinContractAddress).methods.allowance(this.ethAddress, hubBridgeAddress).call()
-                .then((allowanceValue) => {
-                    this.coinToDepositUnlocked = fromErcDecimals(allowanceValue, this.coinDecimals);
-                    this.allowanceRequest = {
-                        promiseStatus: PROMISE_FINISHED,
-                        promise: allowancePromise,
-                    };
-                })
+            return this.getAllowance(this.ethAddress, this.chainId, this.coinContractAddress, this.externalTokenSymbol, this.coinDecimals)
                 .catch((error) => {
-                    console.log(error);
-                    this.coinToDepositUnlocked = 0;
-                    this.allowanceRequest = {
-                        promiseStatus: PROMISE_REJECTED,
-                        promise: allowancePromise,
-                    };
-                    this.serverError = 'Can\'t get allowance';
+                    if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
+                        this.serverError = 'Can\'t get allowance';
+                    }
                 });
-
-            this.allowanceRequest = {
-                promiseStatus: PROMISE_PENDING,
-                promise: allowancePromise,
-            };
-
-            return allowancePromise;
         },
+/*
         fetchUniswapPair() {
             if (!this.coinContractAddress || ! this.coinDecimals) {
                 return;
@@ -467,35 +557,40 @@ export default {
                     this.uniswapPair = pair;
                 });
         },
+*/
         ensureNetworkData() {
             if (!this.hubCoinList.length || !this.priceList.length) {
                 return this.$fetch();
             }
 
             // const uniswapPairPromise = this.uniswapPair ? Promise.resolve() : this.fetchUniswapPair();
-            const allowancePromise = this.allowanceRequest && this.allowanceRequest.promiseStatus !== PROMISE_REJECTED ? this.allowanceRequest.promise : this.getAllowance();
+            //@TODO handle change to composable (maybe promises should be exposed in web3Allowance?)
+            const allowancePromise = this.allowanceRequest && this.allowanceRequest.promiseStatus !== PROMISE_REJECTED ? this.allowanceRequest.promise : this.updateAllowance();
 
             return Promise.all([/*uniswapPairPromise, */allowancePromise]);
         },
-        recoverPurchase() {
+        async recoverPurchase() {
             if (!this.$store.state.onLine) {
                 return;
             }
             this.form = this.recovery.form;
-            this.steps = this.recovery.steps;
+            this.txServiceState.steps = this.recovery.steps;
             this.recovery = null;
+
+            // ensure watchers on computed to run (chainId change web3 provider)
+            await this.$nextTick();
 
             //@TODO consider saving old gasPrice to recovery and use it later
             //@TODO check if current gasPrice differ from recovery gasPrice
             //@TODO txs may be forked
-            this.submit({fromRecovery: true});
+            return this.submit({fromRecovery: true});
         },
         waitEnoughEth() {
             // save request if balance already enough
-            if (this.ethBalance >= this.form.amountEth) {
+            if (this.selectedBalance >= this.form.amountEth) {
                 return Promise.resolve();
             } else {
-                this.loadingStage = LOADING_STAGE.WAIT_ETH;
+                this.txServiceState.loadingStage = LOADING_STAGE.WAIT_ETH;
                 return new Promise((resolve, reject) => {
                     let isCanceled = {value: false};
                     waitingCancel = () => {
@@ -514,7 +609,7 @@ export default {
                     if (isCanceled.value) {
                         return Promise.reject(new Error(CANCEL_MESSAGE));
                     }
-                    if (this.ethBalance >= this.form.amountEth) {
+                    if (this.selectedBalance >= this.form.amountEth) {
                         return true;
                     } else {
                         return wait(10000).then(() => this._waitEnoughEth(isCanceled));
@@ -550,7 +645,7 @@ export default {
             this.isFormSending = true;
             this.serverError = '';
             if (!fromRecovery) {
-                this.steps = {};
+                this.txServiceState.steps = {};
             }
 
             // don't wait eth if next steps already exists
@@ -572,21 +667,21 @@ export default {
                     if (!minterTx.data.list) {
                         throw new Error('Minter tx transfer has invalid data');
                     }
-                    const multisendItem = minterTx.data.list.find((item) => item.to === this.$store.getters.address && item.coin.symbol === DEPOSIT_SYMBOL);
+                    const multisendItem = minterTx.data.list.find((item) => item.to === this.$store.getters.address && item.coin.symbol === this.externalTokenSymbol);
                     if (!multisendItem) {
-                        throw new Error(`Minter tx transfer does not include ${DEPOSIT_SYMBOL} deposit to the current user`);
+                        throw new Error(`Minter tx transfer does not include ${this.externalTokenSymbol} deposit to the current user`);
                     }
 
                     const outputAmount = multisendItem.value;
                     this.addStepData(LOADING_STAGE.WAIT_BRIDGE, {amount: outputAmount, tx: minterTx, finished: true});
 
-                    this.loadingStage = LOADING_STAGE.SWAP_MINTER;
-                    this.addStepData(LOADING_STAGE.SWAP_MINTER, {coin0: DEPOSIT_SYMBOL, amount0: outputAmount, coin1: this.form.coinToGet});
+                    this.txServiceState.loadingStage = LOADING_STAGE.SWAP_MINTER;
+                    this.addStepData(LOADING_STAGE.SWAP_MINTER, {coin0: this.externalTokenSymbol, amount0: outputAmount, coin1: this.form.coinToGet});
                     return this.sendMinterSwapTx(outputAmount)
                         .then((tx) => {
                             this.addStepData(LOADING_STAGE.SWAP_MINTER, {tx, amount1: convertFromPip(tx.tags['tx.return']), finished: true});
 
-                            this.loadingStage = LOADING_STAGE.FINISH;
+                            this.txServiceState.loadingStage = LOADING_STAGE.FINISH;
                             this.addStepData(LOADING_STAGE.FINISH, {coin: this.form.coinToGet, amount: convertFromPip(tx.tags['tx.return']), finished: true});
                         });
                 })
@@ -608,7 +703,7 @@ export default {
                     }
 
                     // don't close modal, user will decide if he wants retry or finish
-                    if (this.loadingStage === LOADING_STAGE.WAIT_ETH) {
+                    if (this.txServiceState.loadingStage === LOADING_STAGE.WAIT_ETH) {
                         // only close for WAIT_ETH because there is no recovery for such loadingStage
                         this.finishSending();
                     }
@@ -622,48 +717,12 @@ export default {
             if (typeof waitingCancel === 'function') {
                 waitingCancel();
             }
-            this.steps = {};
+            this.txServiceState.steps = {};
             window.localStorage.removeItem('hub-buy-recovery');
             // reload everything, because polling was stopped during isFormSending
             this.$fetch();
         },
-        async depositFromEthereum() {
-            // this.loadingStage = LOADING_STAGE.SWAP_ETH;
-            // this.addStepData(LOADING_STAGE.SWAP_ETH, {coin0: 'ETH', amount0: this.ethToSwap, coin1: this.coinEthereumName});
-            this.loadingStage = LOADING_STAGE.WRAP_ETH;
-            this.addStepData(LOADING_STAGE.WRAP_ETH, {amount: this.ethToWrap});
-            let nonce = await web3.eth.getTransactionCount(this.ethAddress, "pending");
-
-
-            const wrapPromise = this.sendWrapTx({nonce, gasPrice: this.ethGasPriceGwei});
-            // const swapPromise = this.sendUniswapTx({nonce, gasPrice: this.ethGasPriceGwei});
-
-            // if `approve` step exists, then process sendApproveTx to ensure it finished
-            if (!this.isCoinApproved || this.steps[LOADING_STAGE.APPROVE_BRIDGE]) {
-                this.addStepData(LOADING_STAGE.APPROVE_BRIDGE, {coin: this.coinEthereumName});
-                nonce = nonce + 1;
-                this.sendApproveTx({nonce, gasPrice: this.ethGasPriceGwei + 1});
-            }
-
-            const wrapReceipt = await wrapPromise;
-            const outputAmount = toErcDecimals(this.ethToWrap, this.coinDecimals);
-            // const swapReceipt = await swapPromise;
-            // const outputAmount = getSwapOutput(swapReceipt);
-            // if (!(outputAmount > 0)) {
-            //     throw new Error(`Received 0 ${this.coinEthereumName} from uniswap`);
-            // }
-            const outputAmountHumanReadable = fromErcDecimals(outputAmount, this.coinDecimals);
-            // this.addStepData(LOADING_STAGE.SWAP_ETH, {amount1: outputAmountHumanReadable});
-
-            this.loadingStage = LOADING_STAGE.SEND_BRIDGE;
-            this.addStepData(LOADING_STAGE.SEND_BRIDGE, {coin: this.coinEthereumName, amount: outputAmountHumanReadable});
-            const depositNonce = this.steps[LOADING_STAGE.APPROVE_BRIDGE] ? wrapReceipt.nonce + 2 : wrapReceipt.nonce + 1;
-            const depositReceipt = await this.sendCoinTx({amount: outputAmount, nonce: depositNonce});
-
-            this.loadingStage = LOADING_STAGE.WAIT_BRIDGE;
-            this.addStepData(LOADING_STAGE.WAIT_BRIDGE, {coin: DEPOSIT_SYMBOL /* calculate receive amount? */});
-            return subscribeTransfer(depositReceipt.transactionHash);
-        },
+/*
         sendUniswapTx({nonce, gasPrice} = {}) {
             const routerAddress = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D';
             const poolAddress = this.uniswapPair.liquidityToken.address;
@@ -677,107 +736,92 @@ export default {
         },
         sendWrapTx({nonce, gasPrice} = {}) {
             return this.sendEthTx({
-                to: WETH_ETHEREUM_CONTRACT_ADDRESS,
-                value: this.ethToWrap,
+                to: WETH_CONTRACT_ADDRESS,
+                value: this.formAmountAfterGas,
                 data: wethDepositAbiData,
                 nonce,
                 gasPrice,
                 gasLimit: GAS_LIMIT_WRAP,
             }, LOADING_STAGE.WRAP_ETH);
         },
+*/
+        unwrapToNativeCoin({nonce, gasPrice} = {}) {
+            const amountToUnwrap = toErcDecimals(this.amountToUnwrap, this.coinDecimals);
+            const wrappedNativeContract = new web3.eth.Contract(wethAbi, this.wrappedNativeContractAddress);
+            const data = wrappedNativeContract.methods.withdraw(amountToUnwrap).encodeABI();
+            return this.sendEthTx({
+                    to: this.wrappedNativeContractAddress,
+                    data,
+                    nonce,
+                    gasPrice,
+                    gasLimit: GAS_LIMIT_UNWRAP,
+                }, LOADING_STAGE.UNWRAP_ETH);
+                // .then((hash) => {
+                //     this.waitUnwrapConfirmation = true;
+                //
+                //     return hash;
+                // });
+        },
         sendApproveTx({nonce, gasPrice} = {}) {
             let amountToUnlock = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-            let data = coinContract(this.coinContractAddress).methods.approve(hubBridgeAddress, amountToUnlock).encodeABI();
+            let data = coinContract(this.coinContractAddress).methods.approve(this.hubAddress, amountToUnlock).encodeABI();
 
             return this.sendEthTx({to: this.coinContractAddress, data, nonce, gasPrice, gasLimit: GAS_LIMIT_UNLOCK}, LOADING_STAGE.APPROVE_BRIDGE);
         },
-        sendCoinTx({amount, nonce}) {
-            let address;
-            address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3.utils.hexToBytes(this.$store.getters.address.replace("Mx", "0x")))]);
-            let data = hubBridgeContract.methods.sendToMinter(this.coinContractAddress, address, amount).encodeABI();
-
-            return this.sendEthTx({to: hubBridgeAddress, data, nonce, gasLimit: GAS_LIMIT_BRIDGE}, LOADING_STAGE.SEND_BRIDGE);
-        },
-        async sendEthTx({to, value, data, nonce, gasPrice, gasLimit}, loadingStage) {
-            // @TODO check recovery earlier
-            const currentStep = this.steps[loadingStage];
-            if (currentStep?.finished) {
-                return currentStep.tx;
-            } else if (currentStep?.tx) {
-                return subscribeTransaction(currentStep.tx.hash, 0)
-                    .then((receipt) => {
-                        const tx = Object.freeze({...this.steps[loadingStage]?.tx, ...receipt});
-                        this.addStepData(loadingStage, {tx, finished: true});
-                        return tx;
-                    });
+        sendCoinTx({nonce}) {
+            const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3.utils.hexToBytes(this.$store.getters.address.replace("Mx", "0x")))]);
+            const destinationChain = Buffer.from('minter', 'utf-8');
+            const hubContract = new web3.eth.Contract(hubABI, this.hubAddress);
+            let txParams;
+            if (this.isEthSelected) {
+                txParams = {
+                    value: this.formAmountAfterGas,
+                    data: hubContract.methods.transferETHToChain(
+                        destinationChain,
+                        address,
+                        0,
+                    ).encodeABI(),
+                };
+            } else {
+                txParams = {
+                    data: hubContract.methods.transferToChain(
+                        this.coinContractAddress,
+                        destinationChain,
+                        address,
+                        toErcDecimals(this.formAmountAfterGas, this.coinDecimals),
+                        0,
+                    ).encodeABI(),
+                };
             }
 
-            nonce = (nonce || nonce === 0) ? nonce : await web3.eth.getTransactionCount(this.ethAddress, "pending");
-            gasLimit = gasLimit || await this.estimateTxGas({to, value, data});
-            const gasPriceGwei = (gasPrice || this.ethGasPriceGwei || 1).toString();
-            const txParams = {
-                to,
-                value: value ? toErcDecimals(value, 18) : "0x00",
-                data,
+            return this.sendEthTx({
+                to: this.hubAddress,
+                ...txParams,
                 nonce,
-                gasPrice: web3.utils.toWei(gasPriceGwei, 'gwei'),
-                gas: gasLimit,
-                chainId: ETHEREUM_CHAIN_ID,
-            };
-            console.log('send', txParams);
-            const { rawTransaction } = await web3.eth.accounts.signTransaction(txParams, this.$store.getters.privateKey);
-
-            return web3.eth.sendSignedTransaction(rawTransaction)
-                .on('transactionHash', (txHash) => {
-                    console.log(txHash);
-                    const tx = Object.freeze({
-                        hash: txHash,
-                        timestamp: (new Date()).toISOString(),
-                    });
-                    this.addStepData(loadingStage, {tx});
-                })
-                .on('receipt', (receipt) => {
-                    console.log("receipt:", receipt);
-                    const tx = Object.freeze({...this.steps[loadingStage]?.tx, ...receipt});
-                    this.addStepData(loadingStage, {tx, finished: true});
-                })
-                // .on('confirmation', function (confirmationNumber, receipt) {
-                //     if (confirmationNumber < 2) {
-                //         console.log("confirmationNumber:" + confirmationNumber + " receipt:", receipt);
-                //     }
-                // })
-                .on('error', function(error) {
-                    console.log(error);
-                });
+                gasLimit: GAS_LIMIT_BRIDGE,
+            }, LOADING_STAGE.SEND_BRIDGE);
         },
-        estimateTxGas({to, value, data}) {
-            const txParams = {
-                from: this.ethAddress,
-                to,
-                value: value ? toErcDecimals(value) : "0x00",
-                data,
-            };
-
-            return web3.eth.estimateGas(txParams);
+        speedup({txParams, loadingStage}) {
+            return this.sendEthTx(txParams, loadingStage, true);
         },
         sendMinterSwapTx(amount) {
             return this.forceEstimation()
                 .then(() => {
-                    const coinBalanceItem = this.$store.state.balance.find((item) => item.coin.symbol === DEPOSIT_SYMBOL);
+                    const coinBalanceItem = this.$store.state.balance.find((item) => item.coin.symbol === this.externalTokenSymbol);
                     const balanceAmount = coinBalanceItem?.amount || 0;
-                    const smallAmount = DEPOSIT_COIN_DATA[DEPOSIT_SYMBOL_MAINNET].smallAmount;
+                    const smallAmount = DEPOSIT_COIN_DATA[this.externalTokenMainnetSymbol].smallAmount;
 
                     let txParams = {
-                        // sell all DEPOSIT_SYMBOL if user has no or very small amount of it
+                        // sell all externalTokenSymbol if user has no or very small amount of it
                         type: balanceAmount - amount < smallAmount ? TX_TYPE.SELL_ALL_SWAP_POOL : TX_TYPE.SELL_SWAP_POOL,
                         data: {
                             coins: this.estimationRoute
                                 ? this.estimationRoute.map((coin) => coin.id)
-                                : [DEPOSIT_SYMBOL, this.form.coinToGet],
+                                : [this.externalTokenSymbol, this.form.coinToGet],
                             valueToSell: amount,
                             minimumValueToBuy: 0,
                         },
-                        gasCoin: DEPOSIT_SYMBOL,
+                        gasCoin: this.externalTokenSymbol,
                     };
 
                     return postTx(txParams, {privateKey: this.$store.getters.privateKey});
@@ -817,7 +861,7 @@ export default {
             this.isEstimationLoading = true;
             this.estimationError = false;
             return estimateCoinSell({
-                coinToSell: DEPOSIT_SYMBOL,
+                coinToSell: this.externalTokenSymbol,
                 valueToSell: this.coinAmountAfterBridge,
                 coinToBuy: this.form.coinToGet,
                 swapFrom: SWAP_TYPE.POOL,
@@ -843,20 +887,6 @@ export default {
             // force new estimation without delay
             this.debouncedGetEstimation();
             return this.debouncedGetEstimation.flush();
-        },
-        addStepData(loadingStage, data) {
-            this.$set(this.steps, loadingStage, {...this.steps[loadingStage], ...data});
-            const needSaveRecovery = loadingStage !== LOADING_STAGE.FINISH;
-            console.log({loadingStage, needSaveRecovery, data});
-            if (needSaveRecovery) {
-                window.localStorage.setItem('hub-buy-recovery', JSON.stringify({
-                    steps: this.steps,
-                    form: this.form,
-                    address: this.$store.getters.address,
-                }));
-            } else {
-                window.localStorage.removeItem('hub-buy-recovery');
-            }
         },
         cancelRecovery() {
             this.recovery = null;
@@ -887,6 +917,7 @@ function getSwapOutput(receipt) {
     const dataIndex = 3 - 1;
     const amount0StartIndex = 2 + 64 * dataIndex;
     const amount1StartIndex = 2 + 64 * (dataIndex + 1);
+    // @TODO logs pruned from tx for now to save storage space
     const amount0OutHex = receipt.logs[logIndex].data.slice(amount0StartIndex, amount0StartIndex + 64);
     const amount1OutHex = receipt.logs[logIndex].data.slice(amount1StartIndex, amount1StartIndex + 64);
     const amount0Out = web3.eth.abi.decodeParameter('uint256', '0x' + amount0OutHex);
@@ -899,8 +930,9 @@ function getSwapOutput(receipt) {
 
 <template>
     <div>
-        <h1 class="panel__header-title u-mb-10">
-            {{ $td(action.title, action.langKey) }}
+        <h1 class="u-h3 u-mb-10">
+            <!-- @TODO get title from card -->
+            {{ params.coinToGet ? `Buy ${params.coinToGet} with ETH` : action.title }}
         </h1>
 
         <div class="u-grid u-grid--small u-grid--vertical-margin--small" v-if="recovery">
@@ -914,63 +946,93 @@ function getSwapOutput(receipt) {
         </div>
 
         <template v-else>
-            <form class="panel__section u-mb-10" @submit.prevent="submitConfirm()">
-                <div class="u-grid u-grid--vertical-margin">
+            <form @submit.prevent="submitConfirm()">
+                <div class="form-row">
+                    <FieldSelect
+                        v-model="form.selectedHubNetwork"
+                        :label="$td('Select network', 'form.select-network')"
+                        :suggestion-list="[
+                            {
+                                value: $options.HUB_CHAIN_ID.ETHEREUM,
+                                name: $options.HUB_CHAIN_DATA[$options.HUB_CHAIN_ID.ETHEREUM].name,
+                                shortName: $options.HUB_CHAIN_DATA[$options.HUB_CHAIN_ID.ETHEREUM].shortName,
+                                icon: `/img/icon-network-${$options.HUB_CHAIN_ID.ETHEREUM}.svg`,
+                            },
+                            {
+                                value: $options.HUB_CHAIN_ID.BSC,
+                                name: $options.HUB_CHAIN_DATA[$options.HUB_CHAIN_ID.BSC].name,
+                                shortName: $options.HUB_CHAIN_DATA[$options.HUB_CHAIN_ID.BSC].shortName,
+                                icon: `/img/icon-network-${$options.HUB_CHAIN_ID.BSC}.svg`,
+                            },
+                        ]"
+                    />
+                </div>
+                <div class="form-row">
+                    <FieldCombined
+                        :coin="externalTokenSymbol"
+                        :fallback-to-full-list="false"
+                        :amount.sync="form.amountEth"
+                        :$amount="$v.form.amountEth"
+                        :label="$td('You spend', 'form.you-spend')"
+                        :max-value="maxAmount"
+                        @blur="inputBlur(); $v.form.buyAmount.$touch()"
+                    />
+                    <span class="form-field__error" v-if="$v.form.amountEth.$dirty && !$v.form.amountEth.required">{{ $td('Enter amount', 'form.enter-amount') }}</span>
+                    <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && (!$v.form.amountEth.validAmount || !$v.form.amountEth.minValue)">{{ $td('Invalid amount', 'form.invalid-amount') }}</span>
+                    <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && !$v.form.amountEth.enoughToPayFee">{{ $td('Not enough to pay fee', 'form.not-enough-to-pay-fee') }}</span>
+                    <!--                        <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && !$v.form.amountEth.maxValue">{{ $td('Not enough', 'form.not-enough') }} {{ form.coinToGet }} ({{ $td('max.', 'form.max') }} {{ pretty(maxAmount) }})</span>-->
+                </div>
+                <div class="form-row">
+                    <FieldCombined
+                        :coin.sync="form.coinToGet"
+                        :$coin="$v.form.coinToGet"
+                        :amount="decreasePrecisionSignificant(estimation || 0)"
+                        :label="$td('You receive', 'form.you-receive')"
+                        :coin-list="suggestionList"
+                        :fallback-to-full-list="false"
+                        :is-estimation="true"
+                        :isLoading="isEstimationWaiting"
+                        @blur="inputBlur(); $v.form.buyAmount.$touch()"
+                    />
 
-                    <div class="u-cell">
-                        <FieldCombined
-                            :coin="$options.DEPOSIT_SYMBOL"
-                            :coin-list="[$options.DEPOSIT_SYMBOL]"
-                            :amount.sync="form.amountEth"
-                            :$amount="$v.form.amountEth"
-                            :label="$td('You spend', 'form.you-spend')"
-                            :max-value="maxAmount"
-                            @blur="inputBlur(); $v.form.buyAmount.$touch()"
-                        />
-                        <span class="form-field__error" v-if="$v.form.amountEth.$dirty && !$v.form.amountEth.required">{{ $td('Enter amount', 'form.enter-amount') }}</span>
-                        <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && (!$v.form.amountEth.validAmount || !$v.form.amountEth.minValue)">{{ $td('Invalid amount', 'form.invalid-amount') }}</span>
-                        <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && !$v.form.amountEth.enoughToPayFee">{{ $td('Not enough to pay fee', 'form.not-enough-to-pay-fee') }}</span>
-                        <!--                        <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && !$v.form.amountEth.maxValue">{{ $td('Not enough', 'form.not-enough') }} {{ form.coinToGet }} ({{ $td('max.', 'form.max') }} {{ pretty(maxAmount) }})</span>-->
+                    <span class="form-field__error" v-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.required">{{ $td('Enter coin symbol', 'form.enter-coin-symbol') }}</span>
+                    <span class="form-field__error" v-else-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.minLength">{{ $td('Min. 3 characters', 'form.min-3-chars') }}</span>
+                    <!--                        <span class="form-field__error" v-else-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.supported">{{ $td('Not supported to buy', 'form.not-supported-to-buy') }}</span>-->
+
+                    <div class="u-text-center u-text-small u-fw-400 u-text-muted u-mt-10" v-if="!isEstimationErrorVisible">
+                        {{ $td('The final amount depends on the exchange rate at the moment of transaction.', 'form.swap-confirm-note') }}
                     </div>
-                    <div class="u-cell">
-                        <FieldCombined
-                            :coin.sync="form.coinToGet"
-                            :$coin="$v.form.coinToGet"
-                            :amount="decreasePrecisionSignificant(estimation || 0)"
-                            :label="$td('You receive', 'form.you-receive')"
-                            :coin-list="suggestionList"
-                            :fallback-to-full-list="false"
-                            :is-estimation="true"
-                            :isLoading="isEstimationWaiting"
-                            @blur="inputBlur(); $v.form.buyAmount.$touch()"
-                        />
+                    <span class="form-field__error u-text-center u-mt-10" v-else>{{ estimationError }}</span>
+                </div>
 
-                        <span class="form-field__error" v-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.required">{{ $td('Enter coin symbol', 'form.enter-coin-symbol') }}</span>
-                        <span class="form-field__error" v-else-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.minLength">{{ $td('Min. 3 characters', 'form.min-3-chars') }}</span>
-                        <span class="form-field__error" v-else-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.supported">{{ $td('Not supported to buy', 'form.not-supported-to-buy') }}</span>
-
-                        <div class="u-text-center u-text-small u-fw-400 u-text-muted u-mt-10" v-if="!isEstimationErrorVisible">
-                            {{ $td('The final amount depends on the exchange rate at the moment of transaction.', 'form.swap-confirm-note') }}
+                <div class="estimation form-row form__error" v-if="serverError">
+                    {{ serverError }}
+                </div>
+                <div class="estimation form-row" v-else>
+                    <h3 class="estimation__title">{{ $td('Estimated price', 'form.swap-confirm-price-estimation') }}</h3>
+                    <div class="estimation__item">
+                        <div class="estimation__coin">
+                            <div class="estimation__coin-symbol">
+                                <template v-if="form.coinToGet">{{ form.coinToGet }}</template>
+                                <template v-else>Coin</template>
+                                rate
+                            </div>
                         </div>
-                        <span class="form-field__error u-text-center u-mt-10" v-else>{{ estimationError }}</span>
-                    </div>
-
-                    <div class="u-cell u-cell--xlarge--1-2">
-                        <button
-                            class="button button--main button--full"
-                            :class="{'is-loading': isFormSending, 'is-disabled': ($v.$invalid || !$store.state.onLine)}"
-                        >
-                            <span class="button__content">{{ $td('Buy', 'form.buy-button') }}</span>
-                            <Loader class="button__loader" :isLoading="true"/>
-                        </button>
-                    </div>
-                    <div class="u-cell form__error send__text" v-if="serverError || !$store.state.onLine">
-                        <template v-if="!$store.state.onLine">{{ $td('No Internet connection', 'error.no-internet-connection') }}</template>
-                        <template v-else>{{ serverError }}</template>
+                        <div class="u-fw-600 u-text-number">≈ ${{ pretty(currentPrice) }}</div>
                     </div>
                 </div>
+
+
+                <button
+                    class="form-row button button--main button--full"
+                    :class="{'is-loading': isFormSending, 'is-disabled': ($v.$invalid || !$store.state.onLine)}"
+                >
+                    <span class="button__content">{{ $td('Buy', 'form.buy-button') }}</span>
+                    <Loader class="button__loader" :isLoading="true"/>
+                </button>
             </form>
 
+            <!--
             <div class="u-grid u-grid--small u-grid--vertical-margin--small">
                 <div class="u-cell u-cell--large--1-4 u-cell--small--1-2">
                     <div class="form-field form-field--dashed">
@@ -978,7 +1040,6 @@ function getSwapOutput(receipt) {
                         <div class="form-field__label">{{ $td('Ethereum fee', 'form.ethereum-fee') }}</div>
                     </div>
                 </div>
-                <!--
                 <div class="u-cell u-cell--large--1-4 u-cell--small--1-2">
                     <div class="form-field form-field--dashed">
                         <div class="form-field__input is-not-empty">{{ pretty(ethToSwap) }} ETH</div>
@@ -996,17 +1057,16 @@ function getSwapOutput(receipt) {
                         <div class="form-field__input is-not-empty">≈{{ pretty(uniswapEstimation.output) }} {{ coinEthereumName }}</div>
                         <div class="form-field__label">Uniswap output</div>
                     </div>
-                </div>
-                -->
+                </div
                 <div class="u-cell u-cell--large--1-4 u-cell--small--1-2">
                     <div class="form-field form-field--dashed">
-                        <div class="form-field__input is-not-empty">≈{{ pretty(coinAmountAfterBridge) }} {{ $options.DEPOSIT_SYMBOL }}</div>
+                        <div class="form-field__input is-not-empty">≈{{ pretty(coinAmountAfterBridge) }} {{ externalTokenSymbol }}</div>
                         <span class="form-field__label">{{ $td('Bridge output', 'form.bridge-output') }}</span>
                     </div>
                 </div>
                 <div class="u-cell u-cell--large--1-4 u-cell--small--1-2">
                     <div class="form-field form-field--dashed">
-                        <div class="form-field__input is-not-empty">≈{{ pretty(hubFee) }} {{ $options.DEPOSIT_SYMBOL }}</div>
+                        <div class="form-field__input is-not-empty">≈{{ pretty(hubFee) }} {{ externalTokenSymbol }}</div>
                         <span class="form-field__label">
                                 {{ $td('Bridge fee', 'form.bridge-fee') }}
                                 ({{ prettyRound(hubFeeRate * 100) }}%)
@@ -1014,7 +1074,7 @@ function getSwapOutput(receipt) {
                     </div>
                 </div>
 
-                <!--                    <div class="u-cell u-cell&#45;&#45;large&#45;&#45;1-4 u-cell&#45;&#45;small&#45;&#45;1-2">
+                <div class="u-cell u-cell&#45;&#45;large&#45;&#45;1-4 u-cell&#45;&#45;small&#45;&#45;1-2">
                     <div class="form-field form-field&#45;&#45;dashed">
                         <div class="form-field__input is-not-empty">{{ prettyPrecise(ethBalance) }}</div>
                         <div class="form-field__label">{{ $td('ETH balance', 'form.buy-eth-balance') }}</div>
@@ -1023,38 +1083,45 @@ function getSwapOutput(receipt) {
                 <div class="u-cell u-cell&#45;&#45;large&#45;&#45;1-4 u-cell&#45;&#45;small&#45;&#45;1-2">
                     <div class="form-field form-field&#45;&#45;dashed">
                         <div class="form-field__input is-not-empty">{{ prettyPrecise(coinToDepositBalance) }}</div>
-                        <div class="form-field__label">{{ $options.DEPOSIT_SYMBOL }} {{ $td('balance', 'form.buy-deposit-balance') }}</div>
+                        <div class="form-field__label">{{ externalTokenSymbol }} {{ $td('balance', 'form.buy-deposit-balance') }}</div>
                     </div>
-                </div>-->
+                </div>
             </div>
+            -->
         </template>
 
         <!-- Confirm modal -->
         <Modal v-bind:isOpen.sync="isConfirmModalVisible">
-            <h1 class="form-row">
+            <h2 class="u-h3 form-row">
                 {{ $td('Buy', 'form.buy-button') }} {{ form.coinToGet }}
-            </h1>
+            </h2>
 
-            <div class="form-row">
-                <div class="form-field form-field--dashed">
-                    <BaseAmount class="form-field__input is-not-empty" coin="ETH" :amount="form.amountEth"/>
-                    <div class="form-field__label">{{ $td('You will spend', 'form.you-will-spend') }}</div>
+            <div class="estimation form-row">
+                <h3 class="estimation__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
+                <BaseAmountEstimation :coin="externalTokenSymbol" :amount="form.amountEth" format="exact"/>
+
+                <h3 class="estimation__title">{{ $td('You will get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
+                <BaseAmountEstimation :coin="form.coinToGet" :amount="currentEstimation" format="approx"/>
+
+                <h3 class="estimation__title">{{ $td('Estimated price', 'form.swap-confirm-price-estimation') }}</h3>
+                <div class="estimation__item">
+                    <div class="estimation__coin">
+                        <div class="estimation__coin-symbol">{{ form.coinToGet }} rate</div>
+                    </div>
+                    <div class="u-fw-600 u-text-number">≈ ${{ pretty(currentPrice) }}</div>
                 </div>
             </div>
-            <div class="form-row">
-                <div class="form-field form-field--dashed">
-                    <BaseAmount class="form-field__input is-not-empty" :coin="form.coinToGet" :amount="currentEstimation" prefix="≈"/>
-                    <div class="form-field__label">{{ $td('You will get', 'form.you-will-get') }}</div>
-                    <Loader class="form-field__icon form-field__icon--loader" :isLoading="isEstimationWaiting"/>
-                </div>
-            </div>
+
+            <!--
             <div class="form-row">
                 <div class="form-field form-field--dashed">
                     <BaseAmount class="form-field__input is-not-empty" coin="ETH" :amount="ethTotalFee"/>
                     <div class="form-field__label">{{ $td('Ethereum fee', 'form.ethereum-fee') }}</div>
                 </div>
-                <div class="u-mt-10 u-fw-700" v-if="ethFeeImpact > 10"><span class="u-emoji">⚠️</span> {{ $td('High Ethereum fee, it will consume', 'form.high-eth-fee') }} {{ prettyRound(ethFeeImpact) }}% {{ $td('of your ETH', 'form.high-eth-fee-percentage') }}</div>
             </div>
+            -->
+            <!-- @TODO ETH/BNB -->
+            <div class="form-row u-fw-700" v-if="ethFeeImpact > 10"><span class="u-emoji">⚠️</span> {{ $td('High Ethereum fee, it will consume', 'form.high-eth-fee') }} {{ prettyRound(ethFeeImpact) }}% {{ $td('of your ETH', 'form.high-eth-fee-percentage') }}</div>
 
             <div class="form-row">
                 <button class="button button--main button--full" type="button" data-focus-on-open
@@ -1069,18 +1136,19 @@ function getSwapOutput(receipt) {
         </Modal>
 
         <!-- Loading modal -->
-        <Modal v-bind:isOpen.sync="isFormSending" :hide-close-button="true">
-            <h1 class="panel__header-title u-mb-10">
-                <template v-if="loadingStage === $options.LOADING_STAGE.WAIT_ETH">
-                    <Loader class="panel__header-loader" :is-loading="true"/>
+        <Modal v-bind:isOpen.sync="isFormSending" :disable-outside-click="true">
+            <h2 class="u-h3 u-mb-10">
+                <template v-if="txServiceState.loadingStage === $options.LOADING_STAGE.WAIT_ETH">
+                    <Loader class="hub__buy-title-loader" :is-loading="true"/>
                     {{ $td('Waiting ETH deposit', 'form.eth-waiting') }}
                 </template>
-                <template v-else-if="loadingStage === $options.LOADING_STAGE.FINISH">
+                <template v-else-if="txServiceState.loadingStage === $options.LOADING_STAGE.FINISH">
                     {{ $td('Success', 'form.success-title') }}!
                 </template>
                 <template v-else>{{ $td('Buy', 'form.buy-button') }} {{ form.coinToGet }}</template>
-            </h1>
-            <template v-if="loadingStage === $options.LOADING_STAGE.WAIT_ETH">
+            </h2>
+
+            <template v-if="txServiceState.loadingStage === $options.LOADING_STAGE.WAIT_ETH">
                 <div class="form-row">
                     <div class="form-field form-field--dashed form-field--with-icon">
                         <div class="form-field__input is-not-empty">{{ prettyExact(ethToTopUp) }} ETH</div>
@@ -1100,7 +1168,7 @@ function getSwapOutput(receipt) {
                 </div>
                 <div class="form-row">
                     <QrcodeVue class="u-mb-10 u-text-center" :value="deepLink" :size="160" level="L"/>
-                    <a class="link--default u-text-break-all" :href="deepLink" target="_blank">{{ deepLink }}</a>
+                    <a class="link--default u-text-wrap" :href="deepLink" target="_blank">{{ deepLink }}</a>
                 </div>
                 <!--                    <div class="" v-if="ethBalance > 0">
                     <div class="form-field__input is-not-empty">{{ prettyExact(ethBalance) }} ETH</div>
@@ -1140,11 +1208,12 @@ function getSwapOutput(receipt) {
                         </button>
                     </div>
                 </div>
+                <HubBuySpeedup :steps-ordered="stepsOrdered" @speedup="speedup"/>
             </div>
-            <div class="form-row panel__section panel__section--tint u-fw-500" v-if="loadingStage !== $options.LOADING_STAGE.WAIT_ETH && loadingStage !== $options.LOADING_STAGE.FINISH">
+            <div class="form-row panel__section panel__section--tint u-fw-500" v-if="txServiceState.loadingStage !== $options.LOADING_STAGE.WAIT_ETH && txServiceState.loadingStage !== $options.LOADING_STAGE.FINISH">
                 <span class="u-emoji">⚠️</span> {{ $td('Please keep this page active, otherwise progress may&nbsp;be&nbsp;lost.', 'index.keep-page-active') }}
             </div>
-            <div class="form-row panel__section" v-if="loadingStage === $options.LOADING_STAGE.FINISH">
+            <div class="form-row panel__section" v-if="txServiceState.loadingStage === $options.LOADING_STAGE.FINISH">
                 <button class="button button--ghost-main button--full" type="button" @click="finishSending()">
                     {{ $td('Close', 'common.close') }}
                 </button>

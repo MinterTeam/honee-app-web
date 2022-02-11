@@ -70,7 +70,9 @@ export default {
         isOpen(newVal) {
             if (newVal) {
                 setTimeout(() => {
-                    this.$refs.input.$el.focus();
+                    // depends on if $refs.input is VueComponent or HtmlElement
+                    const inputEl = this.$refs.input.$el || this.$refs.input;
+                    inputEl.focus();
                 }, 50);
                 // prevent immediate close after opening
                 this.disableOutsideClick = true;

@@ -46,7 +46,7 @@ function hashColorLCH(str) {
         L = BASE_L + hash % 10;
         C = C + 10;
     }
-    console.log({L, C, H}, LCH_to_sRGB_string(L, C, H), str);
+    // console.log({L, C, H}, LCH_to_sRGB_string(L, C, H), str);
     return LCH_to_sRGB_string(L, C, H);
 }
 
@@ -58,6 +58,6 @@ function hashColorPalette(str) {
     const COLORS = ["#3f9c37", "#cb1736", "#6f33bc", "#3b9bb9", "#ffa800", "#c71b6e", "#0061f5", "#2ea496", "#fa5a00"];
     const hash = Math.abs(murmurhash.murmur2(str));
     const index = hash % COLORS.length;
-    console.log(index, COLORS[index], str);
+    // console.log(index, COLORS[index], str);
     return COLORS[index];
 }

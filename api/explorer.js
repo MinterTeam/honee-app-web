@@ -3,11 +3,17 @@ import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
 import stripZeros from 'pretty-num/src/strip-zeros.js';
 import {convertToPip} from 'minterjs-util';
 import coinBlockList from 'minter-coin-block-list';
-import {_getOracleCoinList} from '~/api/hub.js';
+import {getVerifiedMinterCoinList} from '~/api/hub.js';
 import {getCoinIconList as getChainikIconList} from '~/api/chainik.js';
 import {BASE_COIN, EXPLORER_API_URL, TX_STATUS} from '~/assets/variables.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {addTimeInterceptor} from '~/assets/axios-time-offset.js';
+
+
+const coinBlockMap = Object.fromEntries(coinBlockList.map((symbol) => [symbol, true]));
+function isBlocked(symbol) {
+    return !!coinBlockMap[symbol.replace(/-\d+$/, '')];
+}
 
 
 function save404Adapter(adapter) {
@@ -152,17 +158,17 @@ export async function prepareBalance(balanceList) {
  * @return {Promise<Array<Coin>|Array<BalanceItem>>}
  */
 function markVerified(coinListPromise, itemType = 'coin') {
-    const hubCoinListPromise = _getOracleCoinList()
+    const verifiedMinterCoinListPromise = getVerifiedMinterCoinList()
         .catch((error) => {
             console.log(error);
             return [];
         });
 
-    return Promise.all([coinListPromise, hubCoinListPromise])
-        .then(([coinList, hubCoinList]) => {
+    return Promise.all([coinListPromise, verifiedMinterCoinListPromise])
+        .then(([coinList, verifiedMinterCoinList]) => {
             let verifiedMap = {};
-            hubCoinList.forEach((item) => {
-                verifiedMap[Number(item.minterId)] = true;
+            verifiedMinterCoinList.forEach((item) => {
+                verifiedMap[Number(item.externalTokenId)] = true;
             });
 
             return coinList.map((coinItem) => {
@@ -238,7 +244,7 @@ export function getCoinList({skipMeta} = {}) {
         })
         .then((response) => {
             const coinList = response.data.data;
-            return coinList.filter((coin) => !coinBlockList.includes(coin.symbol));
+            return coinList.filter((coin) => !isBlocked(coin.symbol));
         });
 
     if (!skipMeta) {
@@ -398,7 +404,7 @@ export function getProviderPoolList(address, params) {
  * @param {number|string} [amountOptions.buyAmount]
  * @param {number|string} [amountOptions.sellAmount]
  * @param {AxiosRequestConfig} [axiosOptions]
- * @return {Promise<{coins: Array<Coin>, amountIn: number|string, amountOut:number|string}>}
+ * @return {Promise<{coins: Array<Coin>, amountIn: number|string, amountOut:number|string, swapType:ESTIMATE_SWAP_TYPE}>}
  */
 export function getSwapRoute(coin0, coin1, {buyAmount, sellAmount}, axiosOptions) {
     const amount = convertToPip(buyAmount || sellAmount);
@@ -410,6 +416,28 @@ export function getSwapRoute(coin0, coin1, {buyAmount, sellAmount}, axiosOptions
         type = 'output';
     }
     return explorer.get(`pools/coins/${coin0}/${coin1}/route?type=${type}&amount=${amount}`, axiosOptions)
+        .then((response) => response.data);
+}
+
+/**
+ * @param {string} coin0
+ * @param {string} coin1
+ * @param {Object} amountOptions
+ * @param {number|string} [amountOptions.buyAmount]
+ * @param {number|string} [amountOptions.sellAmount]
+ * @param {AxiosRequestConfig} [axiosOptions]
+ * @return {Promise<{coins: Array<Coin>, amountIn: number|string, amountOut:number|string, swapType:ESTIMATE_SWAP_TYPE}>}
+ */
+export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOptions) {
+    const amount = convertToPip(buyAmount || sellAmount);
+    let type;
+    if (sellAmount) {
+        type = 'input';
+    }
+    if (buyAmount) {
+        type = 'output';
+    }
+    return explorer.get(`pools/coins/${coin0}/${coin1}/estimate?type=${type}&amount=${amount}`, axiosOptions)
         .then((response) => response.data);
 }
 

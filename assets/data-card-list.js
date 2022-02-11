@@ -100,6 +100,118 @@ export default {
                 description: 'Приобретите нативный токен метавселенной ARCONA, позволяющий покупать цифровые земли и размещать любые модели.',
             },
         },
+        {
+            title: 'Buy TON',
+            description: 'Get a base coin of the TON Blockchain, a project that aims to unite all existing blockchains and the Internet itself into a single Web 3.0 network.',
+            icon: 'TON',
+            stats: {
+                price: 'TON',
+            },
+            tags: ['Exchange', 'TON'],
+            action: '/swap/TON',
+            ru: {
+                title: 'Купить TON',
+                description: 'Приобретите базовую монету TON — проекта, который стремится объединить все существующие блокчейны и сам Интернет в единую Web 3.0-сеть.',
+            },
+        },
+        {
+            title: 'Buy SHIB',
+            description: 'SHIBA INU is a 2020–2021 crypto phenomenon. A memecoin first, it soon became legendary making it in the top 10 cryptos and getting listed on the largest exchanges such as Coinbase.',
+            icon: 'SHIB',
+            stats: {
+                price: 'SHIB',
+            },
+            tags: ['Exchange', 'SHIB'],
+            action: '/swap/SHIB',
+            ru: {
+                title: 'Купить SHIB',
+                description: 'SHIBA INU — крипто-феномен 2020–2021. Мемкойн, который вскоре стал легендарным и занял строчку в топ-10 криптовалют, а также был добавлен на крупнейшие биржи, такие как Coinbase.',
+            },
+        },  
+        {
+            title: 'Buy METAINDEX',
+            description: 'METAINDEX (MVI on Ethereum) represents a basket of tokens of virtual worlds also known as metaverses.',
+            icon: 'METAINDEX',
+            stats: {
+                price: 'METAINDEX',
+            },
+            tags: ['Exchange', 'METAINDEX'],
+            action: '/swap/METAINDEX',
+            ru: {
+                title: 'Купить METAINDEX',
+                description: 'METAINDEX (MVI на Ethereum) представляет собой корзину токенов виртуальных миров (метавселенных).',
+            },
+        },
+        {
+            title: 'Buy BNB',
+            description: 'BNB is the cryptocurrency coin that powers the Binance ecosystem. BNB is one of the world\'s most popular utility tokens.',
+            icon: 'BNB',
+            stats: {
+                price: 'BNB',
+            },
+            tags: ['Exchange', 'BNB'],
+            action: '/swap/BNB',
+            ru: {
+                title: 'Купить BNB',
+                description: 'BNB — это криптовалюта, которая поддерживает экосистему Binance. BNB является одним из самых популярных utility-токенов в мире.',
+            },
+        },
+        {
+            title: 'Buy UNIBSC',
+            description: 'The UNI token serves the purpose of enabling shared community ownership in the growth and development of the Uniswap decentralized protocol.',
+            icon: 'UNIBSC',
+            stats: {
+                price: 'UNIBSC',
+            },
+            tags: ['Exchange', 'UNIBSC'],
+            action: '/swap/UNIBSC',
+            ru: {
+                title: 'Купить UNIBSC',
+                description: 'Токен UNI служит для обеспечения совместного участия сообщества в росте и развитии децентрализованного протокола Uniswap.',
+            },
+        },
+        {
+            title: 'Buy DOGEBSC',
+            description: 'Dogecoin (DOGE) is based on the popular "doge" Internet meme "doge", one of the most popular meme-tokens.',
+            icon: 'DOGEBSC',
+            stats: {
+                price: 'DOGEBSC',
+            },
+            tags: ['Exchange', 'DOGEBSC'],
+            action: '/swap/DOGEBSC',
+            ru: {
+                title: 'Купить DOGEBSC',
+                description: 'Dogecoin (DOGE) родился из популярного интернет-мема «doge», один из самых популярных мем-токенов.',
+            },
+        },
+        {
+            title: 'Buy MATICBSC',
+            description: 'The MATIC tokens are used for payment services on Polygon and as a settlement currency between users who operate within the Polygon ecosystem.',
+            icon: 'MATICBSC',
+            stats: {
+                price: 'MATICBSC',
+            },
+            tags: ['Exchange', 'MATICBSC'],
+            action: '/swap/MATICBSC',
+            ru: {
+                title: 'Купить MATICBSC',
+                description: 'Токены MATIC используются для платежей на Polygon и в качестве валюты расчетов между пользователями, которые работают в экосистеме Polygon.',
+            },
+        },
+        {
+            title: 'Buy CAKEBSC',
+            description: 'The PancakeSwap token CAKE is a BEP20 token that originally launched on Binance Smart Chain. The main function of CAKE is to incentivize the liquidity provision to the PancakeSwap platform.',
+            icon: 'CAKEBSC',
+            stats: {
+                price: 'CAKEBSC',
+            },
+            tags: ['Exchange', 'CAKEBSC'],
+            action: '/swap/CAKEBSC',
+            ru: {
+                title: 'Купить CAKEBSC',
+                description: 'Токен PancakeSwap CAKE — это токен BEP20, который изначально был запущен на Binance Smart Chain. Основная функция CAKE — стимулировать предоставление ликвидности платформе PancakeSwap.',
+            },
+        },
     ],
     earn: [
         {
@@ -118,65 +230,108 @@ export default {
             },
         },
         {
-            title: 'Yield farming BEE / MUSD',
-            description: 'Put your BEE and MUSD into a liquidity pool to start getting extra daily rewards.',
-            icon: ['BEE', 'MUSD'],
-            stats: {
-                caption: 'APR in BEE',
-                value: '100%',
-            },
-            tags: ['Farming', 'BEE', 'MUSD'],
-            action: '/farm/BEE/MUSD',
-            ru: {
-                title: 'Фарминг BEE / MUSD',
-                description: 'Положите свои BEE и MUSD в пул ликвидности и начните получать дополнительные вознаграждения ежедневно.',
-            },
-        },
-        {
-            title: 'Yield farming USDTE / USDCE',
-            description: 'Put your USDTE and USDCE into a liquidity pool to start getting extra daily rewards.',
-            icon: ['USDTE', 'USDCE'],
+            title: 'Yield farming HUB / BIP',
+            description: 'Put your HUB and BIP into a liquidity pool to start getting extra daily rewards.',
+            icon: ['HUB', 'BIP'],
             stats: {
                 caption: 'APR in BIP',
                 value: '36.5%',
             },
-            tags: ['Farming', 'USDTE', 'USDCE'],
-            action: '/farm/USDTE/USDCE',
+            tags: ['Farming', 'HUB', 'BIP'],
+            action: '/farm/HUB/BIP',
             ru: {
-                title: 'Фарминг USDTE / USDCE',
-                description: 'Положите свои USDT и USDC в пул ликвидности и начните получать дополнительные вознаграждения ежедневно.',
-            },
-        },
-    ],
-    win: [
-        {
-            title: 'DONUT',
-            description: 'Provide liquidity to the DONUT-BIP pool to take part in daily giveaways. The more liquidity you provide, the better the chances you have!',
-            icon: 'DONUT',
-            stats: {
-                caption: 'GIVEAWAY',
-                value: '1%',
-            },
-            tags: ['Lottery', 'DONUT'],
-            action: '/win/DONUT/BIP',
-            ru: {
-                title: 'DONUT',
-                description: 'Предоставляйте ликвидность в пул DONUT-BIP, чтобы участвовать в ежедневной лотерее. Чем выше ликвидность, тем больше шансов!',
+                title: 'Фарминг HUB / BIP',
+                description: 'Положите свои HUB и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
             },
         },
         {
-            title: 'HUBABUBA',
-            description: 'Provide liquidity to the HUBABUBA-HUB pool to take part in daily giveaways. The more liquidity you provide, the better the chances you have!',
-            icon: 'HUBABUBA',
+            title: 'Yield farming BIP / USDTE',
+            description: 'Put your BIP and USDTE into a liquidity pool to start getting extra daily rewards.',
+            icon: ['BIP', 'USDTE'],
             stats: {
-                caption: 'GIVEAWAY',
-                value: 'Up to 1%',
+                caption: 'APR in USDTE',
+                value: '36.5%',
             },
-            tags: ['Lottery', 'HUBABUBA'],
-            action: '/win/HUBABUBA/HUB',
+            tags: ['Farming', 'BIP', 'USDTE'],
+            action: '/farm/BIP/USDTE',
             ru: {
-                title: 'HUBABUBA',
-                description: 'Предоставляйте ликвидность в пул HUBABUBA-HUB, чтобы участвовать в ежедневной лотерее. Чем выше ликвидность, тем больше шансов!',
+                title: 'Фарминг BIP / USDTE',
+                description: 'Положите свои BIP и USDTE в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
+            title: 'Yield farming UNIBSC / BIP',
+            description: 'Put your UNIBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+            icon: ['UNIBSC', 'BIP'],
+            stats: {
+                caption: 'APR in BIP',
+                value: '124%',
+            },
+            tags: ['Farming', 'UNIBSC', 'BIP'],
+            action: '/farm/UNIBSC/BIP',
+            ru: {
+                title: 'Фарминг UNIBSC / BIP',
+                description: 'Положите свои UNIBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
+            title: 'Yield farming DOGEBSC / BIP',
+            description: 'Put your DOGEBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+            icon: ['DOGEBSC', 'BIP'],
+            stats: {
+                caption: 'APR in BIP',
+                value: '124%',
+            },
+            tags: ['Farming', 'DOGEBSC', 'BIP'],
+            action: '/farm/DOGEBSC/BIP',
+            ru: {
+                title: 'Фарминг DOGEBSC / BIP',
+                description: 'Положите свои DOGEBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
+            title: 'Yield farming MATICBSC / BIP',
+            description: 'Put your MATICBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+            icon: ['MATICBSC', 'BIP'],
+            stats: {
+                caption: 'APR in BIP',
+                value: '124%',
+            },
+            tags: ['Farming', 'MATICBSC', 'BIP'],
+            action: '/farm/MATICBSC/BIP',
+            ru: {
+                title: 'Фарминг MATICBSC / BIP',
+                description: 'Положите свои MATICBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
+            title: 'Yield farming CAKEBSC / BIP',
+            description: 'Put your CAKEBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+            icon: ['CAKEBSC', 'BIP'],
+            stats: {
+                caption: 'APR in BIP',
+                value: '124%',
+            },
+            tags: ['Farming', 'CAKEBSC', 'BIP'],
+            action: '/farm/CAKEBSC/BIP',
+            ru: {
+                title: 'Фарминг CAKEBSC / BIP',
+                description: 'Положите свои CAKEBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
+            title: 'Yield farming HUB / BNB',
+            description: 'Put your HUB and BNB into a liquidity pool to start getting extra daily rewards.',
+            icon: ['HUB', 'BNB'],
+            stats: {
+                caption: 'APR in HUB',
+                value: '36.5%',
+            },
+            tags: ['Farming', 'HUB', 'BNB'],
+            action: '/farm/HUB/BNB',
+            ru: {
+                title: 'Фарминг HUB / BNB',
+                description: 'Положите свои HUB и BNB в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
             },
         },
     ],

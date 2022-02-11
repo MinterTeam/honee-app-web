@@ -103,7 +103,7 @@ export default {
     >
         <template v-slot:panel-header>
             <h1 class="u-h3 u-mb-10">
-                {{ action ? $td(action.title, action.langKey) : $td('Delegate', 'delegation.delegate-title') }}
+                {{ action.title || $td('Delegate', 'delegation.delegate-title') }}
             </h1>
             <!--
             <p class="panel__header-description">

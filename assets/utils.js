@@ -5,17 +5,13 @@ import fromExponential from 'from-exponential';
 import parseISO from "date-fns/esm/parseISO";
 import format from "date-fns/esm/format";
 import formatDistanceStrict from "date-fns/esm/formatDistanceStrict";
-import {txTypeList} from 'minterjs-tx/src/tx-types';
-import {EXPLORER_HOST, ETHERSCAN_HOST, ACCOUNTS_API_URL, HUB_TRANSFER_STATUS as WITHDRAW_STATUS} from "~/assets/variables.js";
+import {txTypeList} from 'minterjs-util/src/tx-types.js';
+import {EXPLORER_HOST, HUB_TRANSFER_STATUS, HUB_CHAIN_BY_ID, ACCOUNTS_API_URL} from "~/assets/variables.js";
 
 
 
 export function getAvatarUrl(address) {
     return `${ACCOUNTS_API_URL}avatar/by/address/${address}`;
-}
-
-export function getCoinIconUrl(coinSymbol) {
-    return `${ACCOUNTS_API_URL}avatar/by/coin/${coinSymbol}`;
 }
 
 
@@ -40,12 +36,31 @@ export function getExplorerAddressUrl(address) {
     return EXPLORER_HOST + '/address/' + address;
 }
 
-export function getEtherscanTxUrl(hash) {
-    return ETHERSCAN_HOST + '/tx/' + hash;
+/**
+ * @param {number} chainId
+ * @param {string} hash
+ * @return {string}
+ */
+export function getEvmTxUrl(chainId, hash) {
+    const host = HUB_CHAIN_BY_ID[Number(chainId)]?.explorerHost;
+    return host + '/tx/' + hash;
 }
 
-export function getEtherscanAddressUrl(hash) {
-    return ETHERSCAN_HOST + '/address/' + hash;
+/**
+ * @deprecated
+ */
+export function getEthereumTxUrl(hash) {
+    return '';
+}
+
+/**
+ * @param {number} chainId
+ * @param {string} hash
+ * @return {string}
+ */
+export function getEvmAddressUrl(chainId, hash) {
+    const host = HUB_CHAIN_BY_ID[Number(chainId)]?.explorerHost;
+    return host + '/address/' + hash;
 }
 
 /**
@@ -276,9 +291,9 @@ function boldenSuggestion(text, query) {
 
 export function isHubTransferFinished(status) {
     const finishedStatus = {
-        [WITHDRAW_STATUS.not_found_long]: true,
-        [WITHDRAW_STATUS.batch_executed]: true,
-        [WITHDRAW_STATUS.refund]: true,
+        [HUB_TRANSFER_STATUS.not_found_long]: true,
+        [HUB_TRANSFER_STATUS.batch_executed]: true,
+        [HUB_TRANSFER_STATUS.refund]: true,
     };
 
     return !!finishedStatus[status];

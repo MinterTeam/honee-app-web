@@ -83,10 +83,11 @@ export default {
         'total-balance': 'Общий баланс',
         'balance': 'Баланс',
         'wallet-balance-links': 'Купить BIP, HUB & BEE',
-        'deposit': 'Пополнить',
+        'topup': 'Пополнить',
         'swap': 'Обменять',
         'send': 'Отправить',
 
+        'card-button-deposit': 'Купить за ETH',
         'add-liquidity': 'Добавить ликвидность',
         'delegate': 'Делегировать',
         'participate': 'Участвовать',
@@ -298,6 +299,8 @@ export default {
 
         'select-validator': 'Выберите валидатора',
         'select-coin': 'Выберите монету',
+        'select-value': 'Выберите значение',
+        'select-network': 'Выберите сеть',
 
 
         'enter-amount': 'Введите сумму',
