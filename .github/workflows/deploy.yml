@@ -7,7 +7,7 @@ env:
   PRODUCTION_BRANCH: "master"
   INGRESS_DOMAIN_master: "my.honee.app"
   INGRESS_DOMAIN_dev: "honee.dev"
-  INGRESS_DOMAIN_testnet: "honee-app.kubernetes.icu"
+  INGRESS_DOMAIN_testnet: "testnet.honee.dev"
   KUBE_NAMESPACE_master: "honee"
   KUBE_NAMESPACE_dev: "default"
   KUBE_NAMESPACE_testnet: "default"
