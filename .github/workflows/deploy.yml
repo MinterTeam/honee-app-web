@@ -10,7 +10,7 @@ env:
   INGRESS_DOMAIN_testnet: "honee-app.kubernetes.icu"
   KUBE_NAMESPACE_master: "honee"
   KUBE_NAMESPACE_dev: "default"
-  KUBE_NAMESPACE_testnet: "testnet"
+  KUBE_NAMESPACE_testnet: "default"
 jobs:
   ci:
     name: build
