@@ -5,6 +5,7 @@ import stripZeros from 'pretty-num/src/strip-zeros.js';
 import {isValidAddress as isValidMinterAddress} from 'minterjs-util';
 import {isValidAddress as isValidEthAddress} from 'ethereumjs-util';
 import {getCoinList} from '@/api/explorer.js';
+import Big from '~/assets/big.js';
 import {HUB_API_URL, HUB_TRANSFER_STATUS, HUB_CHAIN_ID, NETWORK, MAINNET, BASE_COIN} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {isHubTransferFinished} from '~/assets/utils.js';
@@ -280,6 +281,7 @@ export function subscribeTransfer(hash, timestamp) {
  * @return {number}
  */
 export function getGasPriceGwei(priceList) {
+    //@TODO ETH/BNB
     const priceItem = priceList.find((item) => item.name === 'eth/gas');
     let gasPriceGwei;
     if (!priceItem) {
@@ -288,7 +290,7 @@ export function getGasPriceGwei(priceList) {
         gasPriceGwei = priceItem.value / 10 ** 18;
     }
 
-    return NETWORK === MAINNET ? gasPriceGwei : gasPriceGwei * 10;
+    return NETWORK === MAINNET ? gasPriceGwei : new Big(gasPriceGwei).times(10).toNumber();
 }
 
 function wait(time) {
