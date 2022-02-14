@@ -68,7 +68,7 @@ async function sendEthTx({to, value, data, nonce, gasPrice, gasLimit}, loadingSt
             const tx = {
                 hash: txHash,
                 timestamp: (new Date()).toISOString(),
-                params: {to, value, data, nonce, gasPrice, gasLimit},
+                params: {to, value, data, nonce, gasPrice, gasLimit, chainId: props.chainId},
             };
             addStepData(loadingStage, {tx});
         })
