@@ -268,9 +268,9 @@ export default {
         'tx-fee': 'Комиссия',
         'tx-fee-high': 'Транзакция потребует высокой комиссии.',
         'read-understood': 'Нажатием этой кнопки вы подтверждаете, что прочитали текст ниже и поняли его.',
-        'high-eth-fee': 'Высокая комиссия в сети Ethereum. Она поглотит',
-        'high-eth-fee-percentage': 'ваших ETH',
-        'eth-waiting': 'Ожидание ETH-депозита',
+        'high-eth-fee': 'Высокая комиссия в сети {network}. Она поглотит',
+        'high-eth-fee-percentage': 'ваших {symbol}',
+        'eth-waiting': 'Ожидание депозита {symbol}',
 
         'stage-wrap': 'Оборачивание',
         'stage-swap': 'Обмен',

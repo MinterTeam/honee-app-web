@@ -153,6 +153,8 @@ export default {
         const {
             setDepositProps,
             depositFromEthereum,
+            tokenData: externalToken,
+            isNativeToken: isEthSelected,
             nativeBalance: selectedNative,
             wrappedBalance: selectedWrapped,
             balance: selectedBalance,
@@ -174,7 +176,7 @@ export default {
             getBalance,
             getAllowance,
 
-            setDepositProps, depositFromEthereum, selectedNative, selectedWrapped, selectedBalance, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, formAmountAfterGas,
+            setDepositProps, depositFromEthereum, externalToken, isEthSelected, selectedNative, selectedWrapped, selectedBalance, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, formAmountAfterGas,
 
             txServiceState, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData,
         };
@@ -249,13 +251,6 @@ export default {
         },
         externalTokenSymbol() {
             return NETWORK === MAINNET ? this.externalTokenMainnetSymbol : DEPOSIT_COIN_DATA[this.externalTokenMainnetSymbol].testnetSymbol;
-        },
-        externalToken() {
-            const coinItem = this.hubCoinList.find((item) => item.symbol === this.externalTokenSymbol);
-            return coinItem?.[this.hubChainData?.hubChainId];
-        },
-        isEthSelected() {
-            return (this.coinContractAddress || '').toLowerCase() === this.wrappedNativeContractAddress;
         },
         ethFeeImpact() {
             if (!(this.form.amountEth > 0)) {
@@ -396,10 +391,7 @@ export default {
         },
         deepLink() {
             // eip-681
-            return `ethereum:${this.ethAddress}?value=${this.ethToTopUp*1e18}&amount=${this.ethToTopUp}`;
-        },
-        whatAffectsBalance() {
-            return this.chainId.toString() + this.coinContractAddress;
+            return `ethereum:${this.ethAddress}@${this.chainId}?value=${this.ethToTopUp*1e18}&amount=${this.ethToTopUp}`;
         },
         depositProps() {
             return {
@@ -433,7 +425,7 @@ export default {
                 this.watchEstimation();
             },
         },
-        whatAffectsBalance: {
+        externalToken: {
             handler() {
                 if (this.chainId === ETHEREUM_CHAIN_ID) {
                     web3.eth.setProvider(ETHEREUM_API_URL);
@@ -691,6 +683,7 @@ export default {
                     this.form.amountEth = '';
                     this.form.coinToGet = '';
                     this.form.amountToGet = '';
+                    this.estimation = null;
 
                     // don't close modal, it will be closed by user click on 'Close' button
                     // this.finishSending();
@@ -1036,20 +1029,20 @@ function getSwapOutput(receipt) {
             <div class="u-grid u-grid--small u-grid--vertical-margin--small">
                 <div class="u-cell u-cell--large--1-4 u-cell--small--1-2">
                     <div class="form-field form-field--dashed">
-                        <div class="form-field__input is-not-empty">≈{{ pretty(ethTotalFee) }} ETH</div>
+                        <div class="form-field__input is-not-empty">≈{{ pretty(ethTotalFee) }} {{externalTokenSymbol}}</div>
                         <div class="form-field__label">{{ $td('Ethereum fee', 'form.ethereum-fee') }}</div>
                     </div>
                 </div>
                 <div class="u-cell u-cell--large--1-4 u-cell--small--1-2">
                     <div class="form-field form-field--dashed">
-                        <div class="form-field__input is-not-empty">{{ pretty(ethToSwap) }} ETH</div>
-                        <div class="form-field__label">ETH to swap</div>
+                        <div class="form-field__input is-not-empty">{{ pretty(ethToSwap) }} {{externalTokenSymbol}}</div>
+                        <div class="form-field__label">{{externalTokenSymbol}} to swap</div>
                     </div>
                 </div>
                 <div class="u-cell u-cell--large--1-4 u-cell--small--1-2">
                     <div class="form-field form-field--dashed">
                         <div class="form-field__input is-not-empty">≈{{ pretty(uniswapEstimation.price) }} {{ coinEthereumName }}</div>
-                        <div class="form-field__label">ETH rate</div>
+                        <div class="form-field__label">{{externalTokenSymbol}} rate</div>
                     </div>
                 </div>
                 <div class="u-cell u-cell--large--1-4 u-cell--small--1-2">
@@ -1115,13 +1108,18 @@ function getSwapOutput(receipt) {
             <!--
             <div class="form-row">
                 <div class="form-field form-field--dashed">
-                    <BaseAmount class="form-field__input is-not-empty" coin="ETH" :amount="ethTotalFee"/>
+                    <BaseAmount class="form-field__input is-not-empty" :coin="externalTokenSymbol" :amount="ethTotalFee"/>
                     <div class="form-field__label">{{ $td('Ethereum fee', 'form.ethereum-fee') }}</div>
                 </div>
             </div>
             -->
-            <!-- @TODO ETH/BNB -->
-            <div class="form-row u-fw-700" v-if="ethFeeImpact > 10"><span class="u-emoji">⚠️</span> {{ $td('High Ethereum fee, it will consume', 'form.high-eth-fee') }} {{ prettyRound(ethFeeImpact) }}% {{ $td('of your ETH', 'form.high-eth-fee-percentage') }}</div>
+
+            <div class="form-row u-fw-700" v-if="ethFeeImpact > 10">
+                <span class="u-emoji">⚠️</span>
+                {{ $td(`High ${hubChainData.shortName} fee, it will consume`, 'form.high-eth-fee', {network: hubChainData.shortName}) }}
+                {{ prettyRound(ethFeeImpact) }}%
+                {{ $td(`of your ${externalTokenSymbol}`, 'form.high-eth-fee-percentage', {symbol: externalTokenSymbol}) }}
+            </div>
 
             <div class="form-row">
                 <button class="button button--main button--full" type="button" data-focus-on-open
@@ -1140,7 +1138,7 @@ function getSwapOutput(receipt) {
             <h2 class="u-h3 u-mb-10">
                 <template v-if="txServiceState.loadingStage === $options.LOADING_STAGE.WAIT_ETH">
                     <Loader class="hub__buy-title-loader" :is-loading="true"/>
-                    {{ $td('Waiting ETH deposit', 'form.eth-waiting') }}
+                    {{ $td(`Waiting ${externalTokenSymbol} deposit`, 'form.eth-waiting', {symbol: externalTokenSymbol}) }}
                 </template>
                 <template v-else-if="txServiceState.loadingStage === $options.LOADING_STAGE.FINISH">
                     {{ $td('Success', 'form.success-title') }}!
@@ -1151,7 +1149,7 @@ function getSwapOutput(receipt) {
             <template v-if="txServiceState.loadingStage === $options.LOADING_STAGE.WAIT_ETH">
                 <div class="form-row">
                     <div class="form-field form-field--dashed form-field--with-icon">
-                        <div class="form-field__input is-not-empty">{{ prettyExact(ethToTopUp) }} ETH</div>
+                        <div class="form-field__input is-not-empty">{{ prettyExact(ethToTopUp) }} {{externalTokenSymbol}}</div>
                         <span class="form-field__label">{{ $td('Send', 'form.wallet-send-button') }}</span>
                         <ButtonCopyIcon class="form-field__icon form-field__icon--copy" :copy-text="ethToTopUp.toString()"/>
                     </div>
@@ -1164,17 +1162,20 @@ function getSwapOutput(receipt) {
                     </div>
                 </div>
                 <div class="form-row u-fw-700" v-if="ethFeeImpact > 10">
-                    <span class="u-emoji">⚠️</span> {{ $td('High Ethereum fee, it will consume', 'form.high-eth-fee') }} {{ prettyRound(ethFeeImpact) }}% {{ $td('of your ETH', 'form.high-eth-fee-percentage') }}
+                    <span class="u-emoji">⚠️</span>
+                    {{ $td(`High ${hubChainData.shortName} fee, it will consume`, 'form.high-eth-fee', {network: hubChainData.shortName}) }}
+                    {{ prettyRound(ethFeeImpact) }}%
+                    {{ $td(`of your ${externalTokenSymbol}`, 'form.high-eth-fee-percentage', {symbol: externalTokenSymbol}) }}
                 </div>
                 <div class="form-row">
                     <QrcodeVue class="u-mb-10 u-text-center" :value="deepLink" :size="160" level="L"/>
                     <a class="link--default u-text-wrap" :href="deepLink" target="_blank">{{ deepLink }}</a>
                 </div>
                 <!--                    <div class="" v-if="ethBalance > 0">
-                    <div class="form-field__input is-not-empty">{{ prettyExact(ethBalance) }} ETH</div>
+                    <div class="form-field__input is-not-empty">{{ prettyExact(ethBalance) }} {{externalTokenSymbol}}</div>
                         <span class="form-field__label">{{ $td('Current balance', 'form.current-balance') }}</span>
 
-                       <div class="form-field__input is-not-empty">{{ prettyExact(form.amountEth) }} ETH</div>
+                       <div class="form-field__input is-not-empty">{{ prettyExact(form.amountEth) }} {{externalTokenSymbol}}</div>
                        <span class="form-field__label">{{ $td('Required balance', 'form.required-balance') }}</span>
                 </div>-->
                 <div class="form-row">

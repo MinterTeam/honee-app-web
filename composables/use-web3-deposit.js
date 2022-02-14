@@ -1,4 +1,4 @@
-import {reactive, computed} from '@vue/composition-api';
+import {reactive, computed, watch} from '@vue/composition-api';
 
 import * as web3 from '~/api/web3.js';
 import {subscribeTransfer} from '~/api/hub.js';
@@ -123,7 +123,7 @@ const gasPriceGwei = computed(() => {
         gasPriceGwei = priceItem.value;
     }
 
-    return NETWORK === MAINNET ? gasPriceGwei : gasPriceGwei * 10;
+    return NETWORK === MAINNET ? gasPriceGwei : new Big(gasPriceGwei).times(10).toNumber();
 });
 const gasTotalFee = computed(() => {
     const unwrapGasLimit = isUnwrapRequired.value ? GAS_LIMIT_UNWRAP : 0;

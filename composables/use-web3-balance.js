@@ -2,7 +2,7 @@ import {reactive, set} from '@vue/composition-api';
 import * as web3 from '~/api/web3.js';
 import {fromErcDecimals} from '~/api/web3.js';
 import erc20ABI from '~/assets/abi-erc20.js';
-import {HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+import {HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from '~/assets/variables.js';
 
 export const PROMISE_STATUS = {
     FINISHED: 'finished',
@@ -10,22 +10,27 @@ export const PROMISE_STATUS = {
     PENDING: 'pending',
 };
 
+//workaround for `set` not trigger computed properly
+function getInitialChainData() {
+    return Object.fromEntries(Object.values(HUB_CHAIN_DATA).map((item) => [item.chainId, {}]));
+}
+
 /**
  * @type {Object.<number, {promise: Promise, promiseStatus: PROMISE_STATUS}>}
  */
-let balanceRequestData = {};
+let balanceRequestData = getInitialChainData();
 /**
  * @type {Object.<number, {promise: Promise, promiseStatus: PROMISE_STATUS}>}
  */
-let allowanceRequestData = {};
+let allowanceRequestData = getInitialChainData();
 /**
  * @type {UnwrapRef<Object.<number, Object.<string, number|string>>>}
  */
-const web3Balance = reactive({});
+const web3Balance = reactive(getInitialChainData());
 /**
  * @type {UnwrapRef<Object.<number, Object.<string, number|string>>>}
  */
-const web3Allowance = reactive({});
+const web3Allowance = reactive(getInitialChainData());
 
 /**
  * @param {string} accountAddress
