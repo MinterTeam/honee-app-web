@@ -238,7 +238,10 @@
                 return this.isEstimationPending || this.isEstimationLoading;
             },
             isEstimationErrorVisible() {
-                return this.estimationError && !this.isEstimationWaiting;
+                const isEstimationServerErrorVisible = this.estimationError && !this.isEstimationWaiting;
+
+                // show only if form fields are valid
+                return !this.$v.form.$invalid && (isEstimationServerErrorVisible || this.$v.minimumValueToBuy.$error || this.$v.maximumValueToSell.$error);
             },
         },
         created() {
@@ -493,16 +496,15 @@
                 <span class="form-field__error" v-else-if="$v.form.buyAmount.$dirty && !$v.form.buyAmount.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
             </div>
 
-            <!-- show only if form fields are valid-->
-            <div class="estimation form-row form__error u-hidden-empty" v-if="!$v.form.$invalid">
-                <template v-if="isEstimationErrorVisible">
-                    {{ estimationError }}
-                </template>
-                <template v-else-if="($v.minimumValueToBuy.$dirty && !$v.minimumValueToBuy.required) || ($v.maximumValueToSell.$dirty && !$v.maximumValueToSell.required)">
+            <div class="estimation form-row form__error u-hidden-empty" v-if="isEstimationErrorVisible">
+                <template v-if="($v.minimumValueToBuy.$dirty && !$v.minimumValueToBuy.required) || ($v.maximumValueToSell.$dirty && !$v.maximumValueToSell.required)">
                     {{ $td('Estimation error', 'form.estimation-error') }}: {{ $td('Can’t calculate swap limits', 'form.estimation-error-limit-required') }}
                 </template>
                 <template v-else-if="($v.minimumValueToBuy.$dirty && !$v.minimumValueToBuy.maxValue) || ($v.maximumValueToSell.$dirty && !$v.maximumValueToSell.minValue)">
                     {{ $td('Estimation error', 'form.estimation-error') }}: {{ $td('Invalid swap limit', 'form.estimation-error-limit-invalid') }}
+                </template>
+                <template v-else>
+                    {{ estimationError }}
                 </template>
             </div>
 
