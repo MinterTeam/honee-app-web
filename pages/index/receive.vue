@@ -71,7 +71,7 @@
         </div>
 
         <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath($options.DASHBOARD_URL + 'buy')">
-            {{ $td('Top up with ETH', 'index.top-up-with-eth') }}
+            {{ $td('Top up with BNB & ETH', 'index.top-up-with-eth') }}
         </nuxt-link>
     </Modal>
 </template>

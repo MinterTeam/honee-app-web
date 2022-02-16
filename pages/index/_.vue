@@ -25,7 +25,7 @@ const addLiquidityAction = {
 
 const actionList = {
     buy: {
-        title: 'Buy BIP, HUB, & BEE for ETH',
+        title: 'Buy BIP, HUB, & BEE for BNB & ETH',
         params: ['coinToGet'],
         component: HubBuyForm,
         tags: [],
