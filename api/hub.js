@@ -178,12 +178,11 @@ export function getDiscountForHolder(address) {
 }
 
 /**
- *
- * @param {string} hash
- * @return {Promise<HubTransfer>}
+ * @param {string} inputTxHash
+ * @return {Promise<HubTransferStatus>}
  */
-export function getMinterTxStatus(hash) {
-    return instance.get(`mhub2/v1/transaction_status/${hash}`, {
+export function getTransferStatus(inputTxHash) {
+    return instance.get(`mhub2/v1/transaction_status/${inputTxHash}`, {
             cache: fastCache,
         })
         .then((response) => {
@@ -191,11 +190,31 @@ export function getMinterTxStatus(hash) {
         });
 }
 
+
+// 1 day
+const persistentCache = new Cache({maxAge: 24 * 60 * 60 * 1000});
+
+/**
+ * @param {string} inputTxHash
+ * @return {Promise<HubTransferFee>}
+ */
+export function getTransferFee(inputTxHash) {
+    return instance.get(`mhub2/v1/transaction_fee_record/${inputTxHash}`, {
+            cache: persistentCache,
+        })
+        .then((response) => {
+            return {
+                valCommission: new Big(response.data.record.valCommission).div(1e18).toString(),
+                externalFee: new Big(response.data.record.externalFee).div(1e18).toString(),
+            };
+        });
+}
+
 /**
  *
  * @param {string} hash
  * @param [timestamp]
- * @return {Promise<HubTransfer>}
+ * @return {Promise<HubTransferStatus>}
  */
 export function subscribeTransfer(hash, timestamp) {
     if (!hash) {
@@ -240,7 +259,7 @@ export function subscribeTransfer(hash, timestamp) {
     }
 
     function pollMinterTxStatus(hash) {
-        return getMinterTxStatus(hash)
+        return getTransferStatus(hash)
             .catch((error) => {
                 console.log(error);
             })
@@ -315,8 +334,14 @@ function wait(time) {
  */
 
 /**
- * @typedef {object} HubTransfer
+ * @typedef {object} HubTransferStatus
  * @property {HUB_TRANSFER_STATUS} status
  * @property {string} inTxHash
  * @property {string} outTxHash
+ */
+
+/**
+ * @typedef {object} HubTransferFee
+ * @property {number|string} externalFee
+ * @property {number|string} valCommission
  */

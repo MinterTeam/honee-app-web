@@ -87,7 +87,7 @@ export default {
         'swap': 'Обменять',
         'send': 'Отправить',
 
-        'card-button-deposit': 'Купить за ETH',
+        'card-button-deposit': 'Купить за BNB или ETH',
         'add-liquidity': 'Добавить ликвидность',
         'delegate': 'Делегировать',
         'participate': 'Участвовать',
@@ -117,7 +117,7 @@ export default {
         'my-address': 'Мой адрес',
         'your-address': 'Ваш адрес',
         'share-address': 'Поделиться',
-        'top-up-with-eth': 'Пополнить через ETH',
+        'top-up-with-eth': 'Пополнить через BNB или ETH',
 
         'alpha-banner-text': 'Honee в альфа-стадии.',
         'alpha-banner-link': 'Помогайте с тестированием и получайте крипту за фидбэк.',
@@ -140,7 +140,7 @@ export default {
     },
     action: {
         'title-add-liquidity': 'Предоставьте ликвидность в пул',
-        'title-buy': 'Купите BIP, HUB и BEE за ETH',
+        'title-buy': 'Купите BIP, HUB и BEE за BNB или ETH',
         'title-swap': 'Обменяйте монеты',
         'title-swap-combined': '@:action.title-swap {coin0} {conjunction} {coin1}',
         'title-swap-coin0-empty': '',
@@ -316,7 +316,7 @@ export default {
 
         'bridge-output': 'К зачислению через мост',
         'bridge-fee': 'Комиссия, удерживаемая мостом',
-        'ethereum-fee': 'Комиссия в сети Ethereum',
+        'ethereum-fee': 'Комиссия в сети {network}',
 
         'delegate-description': 'Делегируйте свои токены, чтобы получать выплаты в соответствии с условиями участия.',
 

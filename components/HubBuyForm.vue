@@ -186,7 +186,7 @@ export default {
             // uniswapPair: null,
             allowanceRequest: null,
             form: {
-                selectedHubNetwork: HUB_CHAIN_ID.ETHEREUM,
+                selectedHubNetwork: HUB_CHAIN_ID.BSC,
                 amountEth: '',
                 coinToGet: this.params.coinToGet?.toUpperCase() || '',
                 amountToGet: '',
@@ -237,6 +237,7 @@ export default {
         chainId() {
             return HUB_CHAIN_DATA[this.form.selectedHubNetwork]?.chainId;
         },
+        /** @type {HubChainDataItem} */
         hubChainData() {
             return HUB_CHAIN_BY_ID[this.chainId];
         },
@@ -925,7 +926,7 @@ function getSwapOutput(receipt) {
     <div>
         <h1 class="u-h3 u-mb-10">
             <!-- @TODO get title from card -->
-            {{ params.coinToGet ? `Buy ${params.coinToGet} with ETH` : action.title }}
+            {{ params.coinToGet ? `Buy ${params.coinToGet} with BNB & ETH` : action.title }}
         </h1>
 
         <div class="u-grid u-grid--small u-grid--vertical-margin--small" v-if="recovery">
