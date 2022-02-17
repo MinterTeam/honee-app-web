@@ -1,4 +1,4 @@
-import {BASE_COIN} from '~/assets/variables.js';
+    import {BASE_COIN} from '~/assets/variables.js';
 
 export default {
     swap: [
@@ -212,6 +212,20 @@ export default {
                 description: 'Токен PancakeSwap CAKE — это токен BEP20, который изначально был запущен на Binance Smart Chain. Основная функция CAKE — стимулировать предоставление ликвидности платформе PancakeSwap.',
             },
         },
+        {
+            title: 'Buy DOTBSC',
+            description: 'Polkadot’s native DOT token serves three clear purposes: staking for operations and security, facilitating network governance, and bonding tokens to connect parachains.',
+            icon: 'DOTBSC',
+            stats: {
+                price: 'DOTBSC',
+            },
+            tags: ['Exchange', 'DOTBSC'],
+            action: '/swap/DOTBSC',
+            ru: {
+                title: 'Купить DOTBSC',
+                description: 'Токен DOT (Polkadot), выполняет три основные задачи: обеспечивает управление сетью, ее операционную деятельность, а также задействован в создании парачейнов.',
+            },
+        },
     ],
     earn: [
         {
@@ -332,6 +346,21 @@ export default {
             ru: {
                 title: 'Фарминг HUB / BNB',
                 description: 'Положите свои HUB и BNB в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
+            title: 'Yield farming DOTBSC / BIP',
+            description: 'Put your DOTBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+            icon: ['DOTBSC', 'BIP'],
+            stats: {
+                caption: 'APR in BIP',
+                value: '124%',
+            },
+            tags: ['Farming', 'DOTBSC', 'BIP'],
+            action: '/farm/DOTBSC/BIP',
+            ru: {
+                title: 'Фарминг DOTBSC / BIP',
+                description: 'Положите свои DOTBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
             },
         },
     ],
