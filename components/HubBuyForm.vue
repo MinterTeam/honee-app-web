@@ -237,6 +237,7 @@ export default {
         chainId() {
             return HUB_CHAIN_DATA[this.form.selectedHubNetwork]?.chainId;
         },
+        /** @type {HubChainDataItem} */
         hubChainData() {
             return HUB_CHAIN_BY_ID[this.chainId];
         },
