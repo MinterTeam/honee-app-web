@@ -137,7 +137,7 @@ function waitPendingStep(loadingStage) {
 function addStepData(loadingStage, data) {
     let {tx: newTx, ...otherData} = data;
     let txData;
-    if (newTx) {
+    if (newTx && (newTx.hash || newTx.transactionHash)) {
         const step = state.steps[loadingStage];
         let txList = step?.txList || step?.tx ? [step.tx] : [];
         const oldMatchingTxIndex = txList.findIndex((item) => {
