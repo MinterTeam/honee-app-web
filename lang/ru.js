@@ -271,6 +271,7 @@ export default {
         'high-eth-fee': 'Высокая комиссия в сети {network}. Она поглотит',
         'high-eth-fee-percentage': 'ваших {symbol}',
         'eth-waiting': 'Ожидание депозита {symbol}',
+        'eth-purchase-waiting': 'Ожидание покупки {symbol}',
 
         'stage-wrap': 'Оборачивание',
         'stage-swap': 'Обмен',

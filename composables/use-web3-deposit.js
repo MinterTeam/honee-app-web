@@ -123,6 +123,8 @@ const gasPriceGwei = computed(() => {
         gasPriceGwei = priceItem.value;
     }
 
+    return NETWORK === MAINNET ? gasPriceGwei : 5;
+    // eslint-disable-next-line no-unreachable
     return NETWORK === MAINNET ? gasPriceGwei : new Big(gasPriceGwei).times(10).toNumber();
 });
 const gasTotalFee = computed(() => {

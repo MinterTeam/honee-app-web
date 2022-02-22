@@ -59,6 +59,8 @@ export const HUB_CHAIN_ID = {
     MINTER: 'minter',
 };
 
+export const HUB_NETWORK = HUB_CHAIN_ID;
+
 /**
  * @typedef {{coinSymbol: string, name: string, shortName: string, chainId: number, hubChainId: HUB_CHAIN_ID, apiUrl: string, explorerHost: string, hubContractAddress: string, wrappedNativeContractAddress: string}} HubChainDataItem
  */
