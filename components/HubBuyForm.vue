@@ -18,6 +18,7 @@ import {getOracleCoinList, getOraclePriceList, subscribeTransfer} from '@/api/hu
 import {getTransaction} from '@/api/explorer.js';
 import {estimateCoinSell, postTx} from '@/api/gate.js';
 import Big from '~/assets/big.js';
+import initPurchase, {fiatPurchaseNetwork} from '~/assets/fiat-ramp.js';
 import {pretty, prettyPrecise, prettyRound, prettyExact, decreasePrecisionSignificant, getExplorerTxUrl, getEvmTxUrl, shortHashFilter} from '~/assets/utils.js';
 import erc20ABI from '~/assets/abi-erc20.js';
 import hubABI from '~/assets/abi-hub.js';
@@ -41,6 +42,8 @@ import HubBuySpeedup from '@/components/HubBuySpeedup.vue';
 
 
 const uniswapV2Abi = IUniswapV2Router.abi;
+
+const FIAT_NETWORK = 'fiat';
 
 const PROMISE_FINISHED = 'finished';
 const PROMISE_REJECTED = 'rejected';
@@ -96,6 +99,7 @@ const isValidAmount = withParams({type: 'validAmount'}, (value) => {
 });
 
 export default {
+    FIAT_NETWORK,
     TX_UNWRAP,
     TX_APPROVE,
     TX_TRANSFER,
@@ -154,6 +158,7 @@ export default {
             setDepositProps,
             depositFromEthereum,
             tokenData: externalToken,
+            tokenDecimals: externalTokenDecimals,
             isNativeToken: isEthSelected,
             nativeBalance: selectedNative,
             wrappedBalance: selectedWrapped,
@@ -176,7 +181,7 @@ export default {
             getBalance,
             getAllowance,
 
-            setDepositProps, depositFromEthereum, externalToken, isEthSelected, selectedNative, selectedWrapped, selectedBalance, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, formAmountAfterGas,
+            setDepositProps, depositFromEthereum, externalToken, externalTokenDecimals, isEthSelected, selectedNative, selectedWrapped, selectedBalance, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, formAmountAfterGas,
 
             txServiceState, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData,
         };
@@ -234,8 +239,17 @@ export default {
         ethAddress() {
             return this.$store.getters.address.replace('Mx', '0x');
         },
+        isFiatSelected() {
+            return this.form.selectedHubNetwork === FIAT_NETWORK;
+        },
         chainId() {
-            return HUB_CHAIN_DATA[this.form.selectedHubNetwork]?.chainId;
+            let network;
+            if (this.isFiatSelected) {
+                network = fiatPurchaseNetwork;
+            } else {
+                network = this.form.selectedHubNetwork;
+            }
+            return HUB_CHAIN_DATA[network]?.chainId;
         },
         /** @type {HubChainDataItem} */
         hubChainData() {
@@ -259,6 +273,7 @@ export default {
             }
             return new Big(this.ethTotalFee).div(this.form.amountEth).times(100);
         },
+        // only manual deposits considered (fiat top-up not affects it)
         ethToTopUp() {
             let amount = new Big(this.form.amountEth || 0).minus(this.selectedBalance);
             amount = amount.gt(0) ? amount.toString() : 0;
@@ -416,6 +431,15 @@ export default {
         },
     },
     watch: {
+        'form.selectedHubNetwork': {
+            handler() {
+                // set valid test data
+                if (this.form.selectedHubNetwork === FIAT_NETWORK && NETWORK !== MAINNET) {
+                    this.form.amountEth = '0.002';
+                    this.form.coinToGet = this.$store.getters.BASE_COIN;
+                }
+            },
+        },
         'form.coinToGet': {
             handler() {
                 this.watchEstimation();
@@ -427,7 +451,11 @@ export default {
             },
         },
         externalToken: {
-            handler() {
+            handler(newVal, oldVal) {
+                // check if not changed
+                if (newVal?.externalTokenId === oldVal?.externalTokenId && newVal?.chainId === oldVal?.chainId) {
+                    return;
+                }
                 if (this.chainId === ETHEREUM_CHAIN_ID) {
                     web3.eth.setProvider(ETHEREUM_API_URL);
                 }
@@ -578,9 +606,16 @@ export default {
             //@TODO txs may be forked
             return this.submit({fromRecovery: true});
         },
-        waitEnoughEth() {
+        fiatPurchase() {
+            return initPurchase({
+                userAddress: this.ethAddress,
+                swapAmount: toErcDecimals(this.form.amountEth, this.externalTokenDecimals),
+            });
+        },
+        waitEnoughExternalBalance({isTopUpRequired} = {}) {
+            const targetAmount = isTopUpRequired ? new Big(this.selectedBalance).plus(this.form.amountEth).toString() : this.form.amountEth;
             // save request if balance already enough
-            if (this.selectedBalance >= this.form.amountEth) {
+            if (this.selectedBalance >= targetAmount) {
                 return Promise.resolve();
             } else {
                 this.txServiceState.loadingStage = LOADING_STAGE.WAIT_ETH;
@@ -591,21 +626,27 @@ export default {
                         isCanceled.value = true;
                         waitingCancel = null;
                     };
-                    this._waitEnoughEth(isCanceled).then(resolve).catch(reject);
+                    this._waitEnoughExternalBalance(targetAmount, isCanceled).then(resolve).catch(reject);
                 });
             }
         },
-        _waitEnoughEth(isCanceled) {
+        /**
+         * @param {number|string} targetAmount
+         * @param {{value: boolean}} isCanceled
+         * @return {Promise}
+         * @private
+         */
+        _waitEnoughExternalBalance(targetAmount, isCanceled) {
             return this.updateBalance()
                 .then(() => {
                     // Sending was canceled
                     if (isCanceled.value) {
                         return Promise.reject(new Error(CANCEL_MESSAGE));
                     }
-                    if (this.selectedBalance >= this.form.amountEth) {
+                    if (this.selectedBalance >= targetAmount) {
                         return true;
                     } else {
-                        return wait(10000).then(() => this._waitEnoughEth(isCanceled));
+                        return wait(10000).then(() => this._waitEnoughExternalBalance(targetAmount, isCanceled));
                     }
                 });
         },
@@ -641,10 +682,13 @@ export default {
                 this.txServiceState.steps = {};
             }
 
-            // don't wait eth if next steps already exists
-            const waitEnoughEthPromise = fromRecovery ? Promise.resolve() : this.waitEnoughEth();
+            // fiat recovery only triggered when fiat part is already done and crypto deposited, so no need to make another fiat purchase
+            const fiatPurchasePromise = this.isFiatSelected && !fromRecovery ? this.fiatPurchase() : Promise.resolve();
 
-            return Promise.all([waitEnoughEthPromise, this.ensureNetworkData()])
+            // don't wait eth if next steps already exists
+            const waitEnoughEthPromise = fromRecovery ? Promise.resolve() : this.waitEnoughExternalBalance({isTopUpRequired: this.isFiatSelected});
+
+            return Promise.all([fiatPurchasePromise, waitEnoughEthPromise, this.ensureNetworkData()])
                 .then(() => this.depositFromEthereum())
                 .then((transfer) => {
                     if (transfer.status !== HUB_TRANSFER_STATUS.batch_executed) {
@@ -947,6 +991,12 @@ function getSwapOutput(receipt) {
                         :label="$td('Select network', 'form.select-network')"
                         :suggestion-list="[
                             {
+                                value: $options.FIAT_NETWORK,
+                                name: 'Bank card',
+                                shortName: 'Bank card',
+                                icon: `/img/icon-network-fiat.svg`,
+                            },
+                            {
                                 value: $options.HUB_CHAIN_ID.ETHEREUM,
                                 name: $options.HUB_CHAIN_DATA[$options.HUB_CHAIN_ID.ETHEREUM].name,
                                 shortName: $options.HUB_CHAIN_DATA[$options.HUB_CHAIN_ID.ETHEREUM].shortName,
@@ -1139,7 +1189,12 @@ function getSwapOutput(receipt) {
             <h2 class="u-h3 u-mb-10">
                 <template v-if="txServiceState.loadingStage === $options.LOADING_STAGE.WAIT_ETH">
                     <Loader class="hub__buy-title-loader" :is-loading="true"/>
-                    {{ $td(`Waiting ${externalTokenSymbol} deposit`, 'form.eth-waiting', {symbol: externalTokenSymbol}) }}
+                    <template v-if="!isFiatSelected">
+                        {{ $td(`Waiting ${externalTokenSymbol} deposit`, 'form.eth-waiting', {symbol: externalTokenSymbol}) }}
+                    </template>
+                    <template v-else>
+                        {{ $td(`Waiting ${externalTokenSymbol} purchase`, 'form.eth-purchase-waiting', {symbol: externalTokenSymbol}) }}
+                    </template>
                 </template>
                 <template v-else-if="txServiceState.loadingStage === $options.LOADING_STAGE.FINISH">
                     {{ $td('Success', 'form.success-title') }}!
@@ -1148,37 +1203,39 @@ function getSwapOutput(receipt) {
             </h2>
 
             <template v-if="txServiceState.loadingStage === $options.LOADING_STAGE.WAIT_ETH">
-                <div class="form-row">
-                    <div class="form-field form-field--dashed form-field--with-icon">
-                        <div class="form-field__input is-not-empty">{{ prettyExact(ethToTopUp) }} {{externalTokenSymbol}}</div>
-                        <span class="form-field__label">{{ $td('Send', 'form.wallet-send-button') }}</span>
-                        <ButtonCopyIcon class="form-field__icon form-field__icon--copy" :copy-text="ethToTopUp.toString()"/>
+                <template v-if="!isFiatSelected">
+                    <div class="form-row">
+                        <div class="form-field form-field--dashed form-field--with-icon">
+                            <div class="form-field__input is-not-empty">{{ prettyExact(ethToTopUp) }} {{externalTokenSymbol}}</div>
+                            <span class="form-field__label">{{ $td('Send', 'form.wallet-send-button') }}</span>
+                            <ButtonCopyIcon class="form-field__icon form-field__icon--copy" :copy-text="ethToTopUp.toString()"/>
+                        </div>
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-field form-field--dashed form-field--with-icon">
-                        <div class="form-field__input is-not-empty">{{ ethAddress }}</div>
-                        <span class="form-field__label">{{ $td('To the address', 'form.to-address') }}</span>
-                        <ButtonCopyIcon class="form-field__icon form-field__icon--copy" :copy-text="ethAddress"/>
+                    <div class="form-row">
+                        <div class="form-field form-field--dashed form-field--with-icon">
+                            <div class="form-field__input is-not-empty">{{ ethAddress }}</div>
+                            <span class="form-field__label">{{ $td('To the address', 'form.to-address') }}</span>
+                            <ButtonCopyIcon class="form-field__icon form-field__icon--copy" :copy-text="ethAddress"/>
+                        </div>
                     </div>
-                </div>
-                <div class="form-row u-fw-700" v-if="ethFeeImpact > 10">
-                    <span class="u-emoji">⚠️</span>
-                    {{ $td(`High ${hubChainData.shortName} fee, it will consume`, 'form.high-eth-fee', {network: hubChainData.shortName}) }}
-                    {{ prettyRound(ethFeeImpact) }}%
-                    {{ $td(`of your ${externalTokenSymbol}`, 'form.high-eth-fee-percentage', {symbol: externalTokenSymbol}) }}
-                </div>
-                <div class="form-row">
-                    <QrcodeVue class="u-mb-10 u-text-center" :value="deepLink" :size="160" level="L"/>
-                    <a class="link--default u-text-wrap" :href="deepLink" target="_blank">{{ deepLink }}</a>
-                </div>
-                <!--                    <div class="" v-if="ethBalance > 0">
-                    <div class="form-field__input is-not-empty">{{ prettyExact(ethBalance) }} {{externalTokenSymbol}}</div>
-                        <span class="form-field__label">{{ $td('Current balance', 'form.current-balance') }}</span>
+                    <div class="form-row u-fw-700" v-if="ethFeeImpact > 10">
+                        <span class="u-emoji">⚠️</span>
+                        {{ $td(`High ${hubChainData.shortName} fee, it will consume`, 'form.high-eth-fee', {network: hubChainData.shortName}) }}
+                        {{ prettyRound(ethFeeImpact) }}%
+                        {{ $td(`of your ${externalTokenSymbol}`, 'form.high-eth-fee-percentage', {symbol: externalTokenSymbol}) }}
+                    </div>
+                    <div class="form-row">
+                        <QrcodeVue class="u-mb-10 u-text-center" :value="deepLink" :size="160" level="L"/>
+                        <a class="link--default u-text-wrap" :href="deepLink" target="_blank">{{ deepLink }}</a>
+                    </div>
+                    <!--                    <div class="" v-if="ethBalance > 0">
+                        <div class="form-field__input is-not-empty">{{ prettyExact(ethBalance) }} {{externalTokenSymbol}}</div>
+                            <span class="form-field__label">{{ $td('Current balance', 'form.current-balance') }}</span>
 
-                       <div class="form-field__input is-not-empty">{{ prettyExact(form.amountEth) }} {{externalTokenSymbol}}</div>
-                       <span class="form-field__label">{{ $td('Required balance', 'form.required-balance') }}</span>
-                </div>-->
+                           <div class="form-field__input is-not-empty">{{ prettyExact(form.amountEth) }} {{externalTokenSymbol}}</div>
+                           <span class="form-field__label">{{ $td('Required balance', 'form.required-balance') }}</span>
+                    </div>-->
+                </template>
                 <div class="form-row">
                     <button class="button button--ghost-main button--full" type="button" @click="finishSending()">
                         {{ $td('Cancel', 'form.submit-cancel-button') }}

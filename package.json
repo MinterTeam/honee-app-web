@@ -29,6 +29,7 @@
     "@material/snackbar": "^13.0.0",
     "@nuxt/content": "^1.15.1",
     "@nuxtjs/i18n": "^7.2.0",
+    "@ramp-network/ramp-instant-sdk": "^3.0.0",
     "@uniswap/sdk": "^3.0.3",
     "@uniswap/v2-periphery": "^1.1.0-beta.0",
     "@vue/composition-api": "^1.4.6",
