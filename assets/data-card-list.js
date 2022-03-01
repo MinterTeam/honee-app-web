@@ -226,6 +226,20 @@ export default {
                 description: 'Токен DOT (Polkadot), выполняет три основные задачи: обеспечивает управление сетью, ее операционную деятельность, а также задействован в создании парачейнов.',
             },
         },
+        {
+            title: 'Buy ALPACA',
+            description: 'Alpaca Finance is the largest lending protocol allowing leveraged yield farming on BNB Chain.',
+            icon: 'ALPACA',
+            stats: {
+                price: 'ALPACA',
+            },
+            tags: ['Exchange', 'ALPACA'],
+            action: '/swap/ALPACA',
+            ru: {
+                title: 'Купить ALPACA',
+                description: 'Alpaca Finance – это крупнейший протокол кредитования, позволяющий получать высокую доходность в доходном фермерстве на BNB Chain.',
+            },
+        },
     ],
     earn: [
         {
@@ -274,66 +288,6 @@ export default {
             },
         },
         {
-            title: 'Yield farming UNIBSC / BIP',
-            description: 'Put your UNIBSC and BIP into a liquidity pool to start getting extra daily rewards.',
-            icon: ['UNIBSC', 'BIP'],
-            stats: {
-                caption: 'APR in BIP',
-                value: '124%',
-            },
-            tags: ['Farming', 'UNIBSC', 'BIP'],
-            action: '/farm/UNIBSC/BIP',
-            ru: {
-                title: 'Фарминг UNIBSC / BIP',
-                description: 'Положите свои UNIBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-            },
-        },
-        {
-            title: 'Yield farming DOGEBSC / BIP',
-            description: 'Put your DOGEBSC and BIP into a liquidity pool to start getting extra daily rewards.',
-            icon: ['DOGEBSC', 'BIP'],
-            stats: {
-                caption: 'APR in BIP',
-                value: '124%',
-            },
-            tags: ['Farming', 'DOGEBSC', 'BIP'],
-            action: '/farm/DOGEBSC/BIP',
-            ru: {
-                title: 'Фарминг DOGEBSC / BIP',
-                description: 'Положите свои DOGEBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-            },
-        },
-        {
-            title: 'Yield farming MATICBSC / BIP',
-            description: 'Put your MATICBSC and BIP into a liquidity pool to start getting extra daily rewards.',
-            icon: ['MATICBSC', 'BIP'],
-            stats: {
-                caption: 'APR in BIP',
-                value: '124%',
-            },
-            tags: ['Farming', 'MATICBSC', 'BIP'],
-            action: '/farm/MATICBSC/BIP',
-            ru: {
-                title: 'Фарминг MATICBSC / BIP',
-                description: 'Положите свои MATICBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-            },
-        },
-        {
-            title: 'Yield farming CAKEBSC / BIP',
-            description: 'Put your CAKEBSC and BIP into a liquidity pool to start getting extra daily rewards.',
-            icon: ['CAKEBSC', 'BIP'],
-            stats: {
-                caption: 'APR in BIP',
-                value: '124%',
-            },
-            tags: ['Farming', 'CAKEBSC', 'BIP'],
-            action: '/farm/CAKEBSC/BIP',
-            ru: {
-                title: 'Фарминг CAKEBSC / BIP',
-                description: 'Положите свои CAKEBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-            },
-        },
-        {
             title: 'Yield farming HUB / BNB',
             description: 'Put your HUB and BNB into a liquidity pool to start getting extra daily rewards.',
             icon: ['HUB', 'BNB'],
@@ -361,6 +315,21 @@ export default {
             ru: {
                 title: 'Фарминг DOTBSC / BIP',
                 description: 'Положите свои DOTBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
+            title: 'Yield farming ALPACA / BIP',
+            description: 'Put your ALPACA and BIP into a liquidity pool to start getting extra daily rewards.',
+            icon: ['ALPACA', 'BIP'],
+            stats: {
+                caption: 'APR in BIP',
+                value: '124%',
+            },
+            tags: ['Farming', 'ALPACA', 'BIP'],
+            action: '/farm/ALPACA/BIP',
+            ru: {
+                title: 'Фарминг ALPACA / BIP',
+                description: 'Положите свои ALPACA и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
             },
         },
     ],
