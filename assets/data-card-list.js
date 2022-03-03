@@ -1,49 +1,7 @@
-    import {BASE_COIN} from '~/assets/variables.js';
+import {BASE_COIN} from '~/assets/variables.js';
 
 export default {
     swap: [
-        {
-            title: `Buy ${BASE_COIN}`,
-            description: 'Get native digital coin of Minter, a single decentralized network supporting many digital assets.',
-            icon: BASE_COIN,
-            stats: {
-                price: BASE_COIN,
-            },
-            tags: ['Exchange', BASE_COIN],
-            action: `/swap/${BASE_COIN}`,
-            ru: {
-                title: 'Купить BIP',
-                description: 'Приобретите основную монету Minter — единой децентрализованной сети с поддержкой многих цифровых активов.',
-            },
-        },
-        {
-            title: 'Buy HUB',
-            description: 'Get native digital token of Minter Hub, a cross-chain bridge to global crypto liquidity.',
-            icon: 'HUB',
-            stats: {
-                price: 'HUB',
-            },
-            tags: ['Exchange', 'HUB'],
-            action: '/swap/HUB',
-            ru: {
-                title: 'Купить HUB',
-                description: 'Приобретите основной токен Minter Hub — кросс-чейн моста в глобальную криптоликвидность.',
-            },
-        },
-        {
-            title: 'Buy BEE',
-            description: 'Get native digital coin of Honee, a simple crypto wallet that helps you earn.',
-            icon: 'BEE',
-            stats: {
-                price: 'BEE',
-            },
-            tags: ['Exchange', 'BEE'],
-            action: '/swap/BEE',
-            ru: {
-                title: 'Купить BEE',
-                description: 'Приобретите основную монету Honee — простейшего криптокошелька, который помогает вам зарабатывать.',
-            },
-        },
         {
             title: 'Buy BTC',
             description: 'Buy Bitcoin, the first cryptocurrency.',
@@ -73,34 +31,6 @@ export default {
             },
         },
         {
-            title: 'Buy SQD',
-            description: 'Buy a Minter-powered meme token brought to you by fans of a popular series Squid Game.',
-            icon: 'SQD',
-            stats: {
-                price: 'SQD',
-            },
-            tags: ['Exchange', 'SQD'],
-            action: '/swap/SQD',
-            ru: {
-                title: 'Купить SQD',
-                description: 'Приобретите мем-коин фан-клуба популярного сериала «Игра в кальмара», выпущенный на блокчейне Minter.',
-            },
-        },
-        {
-            title: 'Buy ARCONA',
-            description: 'Get a native token of ARCONA metaverse  that allows you to purchase digital lands and place any models.',
-            icon: 'ARCONA',
-            stats: {
-                price: 'ARCONA',
-            },
-            tags: ['Exchange', 'ARCONA'],
-            action: '/swap/ARCONA',
-            ru: {
-                title: 'Купить ARCONA',
-                description: 'Приобретите нативный токен метавселенной ARCONA, позволяющий покупать цифровые земли и размещать любые модели.',
-            },
-        },
-        {
             title: 'Buy TON',
             description: 'Get a base coin of the TON Blockchain, a project that aims to unite all existing blockchains and the Internet itself into a single Web 3.0 network.',
             icon: 'TON',
@@ -126,20 +56,6 @@ export default {
             ru: {
                 title: 'Купить SHIB',
                 description: 'SHIBA INU — крипто-феномен 2020–2021. Мемкойн, который вскоре стал легендарным и занял строчку в топ-10 криптовалют, а также был добавлен на крупнейшие биржи, такие как Coinbase.',
-            },
-        },  
-        {
-            title: 'Buy METAINDEX',
-            description: 'METAINDEX (MVI on Ethereum) represents a basket of tokens of virtual worlds also known as metaverses.',
-            icon: 'METAINDEX',
-            stats: {
-                price: 'METAINDEX',
-            },
-            tags: ['Exchange', 'METAINDEX'],
-            action: '/swap/METAINDEX',
-            ru: {
-                title: 'Купить METAINDEX',
-                description: 'METAINDEX (MVI на Ethereum) представляет собой корзину токенов виртуальных миров (метавселенных).',
             },
         },
         {
@@ -224,6 +140,90 @@ export default {
             ru: {
                 title: 'Купить DOTBSC',
                 description: 'Токен DOT (Polkadot), выполняет три основные задачи: обеспечивает управление сетью, ее операционную деятельность, а также задействован в создании парачейнов.',
+            },
+        },
+        {
+            title: `Buy ${BASE_COIN}`,
+            description: 'Get native digital coin of Minter, a single decentralized network supporting many digital assets.',
+            icon: BASE_COIN,
+            stats: {
+                price: BASE_COIN,
+            },
+            tags: ['Exchange', BASE_COIN],
+            action: `/swap/${BASE_COIN}`,
+            ru: {
+                title: 'Купить BIP',
+                description: 'Приобретите основную монету Minter — единой децентрализованной сети с поддержкой многих цифровых активов.',
+            },
+        },
+        {
+            title: 'Buy HUB',
+            description: 'Get native digital token of Minter Hub, a cross-chain bridge to global crypto liquidity.',
+            icon: 'HUB',
+            stats: {
+                price: 'HUB',
+            },
+            tags: ['Exchange', 'HUB'],
+            action: '/swap/HUB',
+            ru: {
+                title: 'Купить HUB',
+                description: 'Приобретите основной токен Minter Hub — кросс-чейн моста в глобальную криптоликвидность.',
+            },
+        },
+        {
+            title: 'Buy BEE',
+            description: 'Get native digital coin of Honee, a simple crypto wallet that helps you earn.',
+            icon: 'BEE',
+            stats: {
+                price: 'BEE',
+            },
+            tags: ['Exchange', 'BEE'],
+            action: '/swap/BEE',
+            ru: {
+                title: 'Купить BEE',
+                description: 'Приобретите основную монету Honee — простейшего криптокошелька, который помогает вам зарабатывать.',
+            },
+        },
+        {
+            title: 'Buy SQD',
+            description: 'Buy a Minter-powered meme token brought to you by fans of a popular series Squid Game.',
+            icon: 'SQD',
+            stats: {
+                price: 'SQD',
+            },
+            tags: ['Exchange', 'SQD'],
+            action: '/swap/SQD',
+            ru: {
+                title: 'Купить SQD',
+                description: 'Приобретите мем-коин фан-клуба популярного сериала «Игра в кальмара», выпущенный на блокчейне Minter.',
+            },
+        },
+        {
+            title: 'Buy ARCONA',
+            description: 'Get a native token of ARCONA metaverse  that allows you to purchase digital lands and place any models.',
+            icon: 'ARCONA',
+            stats: {
+                price: 'ARCONA',
+            },
+            tags: ['Exchange', 'ARCONA'],
+            action: '/swap/ARCONA',
+            ru: {
+                title: 'Купить ARCONA',
+                description: 'Приобретите нативный токен метавселенной ARCONA, позволяющий покупать цифровые земли и размещать любые модели.',
+            },
+        },  
+        {
+            title: 'Buy METAINDEX',
+            description: 'METAINDEX (MVI on Ethereum) represents a basket of tokens of virtual worlds also known as metaverses.',
+            icon: 'METAINDEX',
+            stats: {
+                price: 'METAINDEX',
+            },
+            tags: ['Exchange', 'METAINDEX'],
+            action: '/swap/METAINDEX',
+            ru: {
+                title: 'Купить METAINDEX',
+                description: 'METAINDEX (MVI на Ethereum) представляет собой корзину токенов виртуальных миров (метавселенных).',
             },
         },
         {
@@ -330,6 +330,38 @@ export default {
             ru: {
                 title: 'Фарминг ALPACA / BIP',
                 description: 'Положите свои ALPACA и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
+            title: 'Yield farming BIP / MUSD',
+            description: 'Put your BIP and MUSD into a liquidity pool to start getting extra daily rewards.',
+            icon: ['BIP', 'MUSD'],
+            stats: {
+                caption: 'APR in BIP',
+                value: '121.5%',
+            },
+            tags: ['Farming', 'BIP', 'MUSD'],
+            action: '/farm/BIP/MUSD',
+            ru: {
+                title: 'Фарминг BIP / MUSD',
+                description: 'Положите свои BIP и MUSD в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+    ],
+    win: [
+        {
+            title: 'BIP',
+            description: 'Provide liquidity to the BIP-MUSD pool to take part in daily giveaways.',
+            icon: 'BIP',
+            stats: {
+                caption: 'GIVEAWAY',
+                value: '33.3%',
+            },
+            tags: ['Lottery', 'BIP'],
+            action: '/win/BIP/MUSD',
+            ru: {
+                title: 'BIP',
+                description: 'Предоставляйте ликвидность в пул BIP-MUSD, чтобы участвовать в ежедневной лотерее.',
             },
         },
     ],
