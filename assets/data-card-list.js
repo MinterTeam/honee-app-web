@@ -332,6 +332,38 @@ export default {
                 description: 'Положите свои ALPACA и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
             },
         },
+        {
+            title: 'Yield farming BIP / MUSD',
+            description: 'Put your BIP and MUSD into a liquidity pool to start getting extra daily rewards.',
+            icon: ['BIP', 'MUSD'],
+            stats: {
+                caption: 'APR in BIP',
+                value: '121.5%',
+            },
+            tags: ['Farming', 'BIP', 'MUSD'],
+            action: '/farm/BIP/MUSD',
+            ru: {
+                title: 'Фарминг BIP / MUSD',
+                description: 'Положите свои BIP и MUSD в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+    ],
+    win: [
+        {
+            title: 'BIP',
+            description: 'Provide liquidity to the BIP-MUSD pool to take part in daily giveaways.',
+            icon: 'BIP',
+            stats: {
+                caption: 'GIVEAWAY',
+                value: '33.3%',
+            },
+            tags: ['Lottery', 'BIP'],
+            action: '/win/BIP/MUSD',
+            ru: {
+                title: 'BIP',
+                description: 'Предоставляйте ликвидность в пул BIP-MUSD, чтобы участвовать в ежедневной лотерее.',
+            },
+        },
     ],
     win: [
         {
