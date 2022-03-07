@@ -258,48 +258,48 @@ export default {
             },
         },
         {
-            title: 'Yield farming HUB / BIP',
-            description: 'Put your HUB and BIP into a liquidity pool to start getting extra daily rewards.',
-            icon: ['HUB', 'BIP'],
-            stats: {
-                caption: 'APR in BIP',
-                value: '36.5%',
-            },
-            tags: ['Farming', 'HUB', 'BIP'],
-            action: '/farm/HUB/BIP',
-            ru: {
-                title: 'Фарминг HUB / BIP',
-                description: 'Положите свои HUB и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-            },
-        },
-        {
-            title: 'Yield farming BIP / USDTE',
-            description: 'Put your BIP and USDTE into a liquidity pool to start getting extra daily rewards.',
-            icon: ['BIP', 'USDTE'],
-            stats: {
-                caption: 'APR in USDTE',
-                value: '36.5%',
-            },
-            tags: ['Farming', 'BIP', 'USDTE'],
-            action: '/farm/BIP/USDTE',
-            ru: {
-                title: 'Фарминг BIP / USDTE',
-                description: 'Положите свои BIP и USDTE в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-            },
-        },
-        {
             title: 'Yield farming HUB / BNB',
             description: 'Put your HUB and BNB into a liquidity pool to start getting extra daily rewards.',
             icon: ['HUB', 'BNB'],
             stats: {
                 caption: 'APR in HUB',
-                value: '36.5%',
+                value: '121.5%',
             },
             tags: ['Farming', 'HUB', 'BNB'],
             action: '/farm/HUB/BNB',
             ru: {
                 title: 'Фарминг HUB / BNB',
                 description: 'Положите свои HUB и BNB в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
+            title: 'Yield farming BIP / MUSD',
+            description: 'Put your BIP and MUSD into a liquidity pool to start getting extra daily rewards.',
+            icon: ['BIP', 'MUSD'],
+            stats: {
+                caption: 'APR in BIP',
+                value: '121.5%',
+            },
+            tags: ['Farming', 'BIP', 'MUSD'],
+            action: '/farm/BIP/MUSD',
+            ru: {
+                title: 'Фарминг BIP / MUSD',
+                description: 'Положите свои BIP и MUSD в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+            },
+        },
+        {
+            title: 'Yield farming BEE / MUSD',
+            description: 'Put your BEE and MUSD into a liquidity pool to start getting extra daily rewards.',
+            icon: ['BEE', 'MUSD'],
+            stats: {
+                caption: 'APR in MUSD',
+                value: '121.5%',
+            },
+            tags: ['Farming', 'BEE', 'MUSD'],
+            action: '/farm/BEE/MUSD',
+            ru: {
+                title: 'Фарминг BEE / MUSD',
+                description: 'Положите свои BEE и MUSD в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
             },
         },
         {
@@ -330,21 +330,6 @@ export default {
             ru: {
                 title: 'Фарминг ALPACA / BIP',
                 description: 'Положите свои ALPACA и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-            },
-        },
-        {
-            title: 'Yield farming BIP / MUSD',
-            description: 'Put your BIP and MUSD into a liquidity pool to start getting extra daily rewards.',
-            icon: ['BIP', 'MUSD'],
-            stats: {
-                caption: 'APR in BIP',
-                value: '121.5%',
-            },
-            tags: ['Farming', 'BIP', 'MUSD'],
-            action: '/farm/BIP/MUSD',
-            ru: {
-                title: 'Фарминг BIP / MUSD',
-                description: 'Положите свои BIP и MUSD в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
             },
         },
     ],
