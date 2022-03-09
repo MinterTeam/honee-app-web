@@ -142,7 +142,7 @@ export default {
             langKey,
         });
 
-        const flatCardList = [].concat(...Object.values(cardList));
+        const flatCardList = [].concat(...Object.values(cardList).map((category) => category.cards));
         const currentActionCard = flatCardList.find((card) => card.action.replace(/^\//, '').toLowerCase() === this.$route.params.pathMatch.toLowerCase());
         let actionTags = (currentActionCard?.tags || []).map((tag) => tag.toLowerCase());
         //@TODO check each action.tags
