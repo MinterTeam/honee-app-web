@@ -48,7 +48,7 @@ export default {
             let result = {};
             // transform cards
             for (const categorySlug in this.$options.cardList) {
-                result[categorySlug] = this.$options.cardList[categorySlug].map((card) => {
+                result[categorySlug] = this.$options.cardList[categorySlug].cards.map((card) => {
                     return {
                         ...card,
                         category: categorySlug,
@@ -109,11 +109,11 @@ export default {
                 <div class="button-group button-group--center">
                     <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('receive')">
                         <img class="button__icon" src="/img/icon-white-deposit.svg" width="24" height="24" alt="" role="presentation">
-                        {{ $td('Receive', 'index.topup') }}
+                        {{ $td('Top up', 'index.topup') }}
                     </nuxt-link>
                     <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('swap')">
                         <img class="button__icon" src="/img/icon-white-swap.svg" width="24" height="24" alt="" role="presentation">
-                        {{ $td('Swap', 'index.swap') }}
+                        {{ $td('Buy', 'index.swap') }}
                     </nuxt-link>
                     <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('send')">
                         <img class="button__icon" src="/img/icon-white-send.svg" width="24" height="24" alt="" role="presentation">
@@ -127,7 +127,7 @@ export default {
         <div class="u-mt-25" v-for="(categoryCards, categorySlug) in cardList" :key="categorySlug">
             <h2 class="dashboard__category-title u-mb-15">
                 <img class="dashboard__category-icon" :src="`/img/icon-category-${categorySlug}.svg`" alt="" role="presentation">
-                <span>{{ $td(capitalize(categorySlug), `action.category-${categorySlug.toLowerCase()}`) }}</span>
+                <span>{{ $td(capitalize($options.cardList[categorySlug].title || categorySlug), `action.category-${categorySlug.toLowerCase()}`) }}</span>
             </h2>
             <div class="u-grid u-grid--vertical-margin">
                 <div class="u-cell u-cell--medium--1-2 card-wrap-cell" v-for="card in categoryCards" :key="card.action || card">
