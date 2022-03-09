@@ -1170,7 +1170,7 @@ function getSwapOutput(receipt) {
                 </div>
                 <div class="form-row">
                     <QrcodeVue class="u-mb-10 u-text-center" :value="deepLink" :size="160" level="L"/>
-                    <a class="link--default u-text-wrap" :href="deepLink" target="_blank">{{ deepLink }}</a>
+                    <a class="link--default u-text-wrap" :href="deepLink" target="_blank">Open in external wallet</a>
                 </div>
                 <!--                    <div class="" v-if="ethBalance > 0">
                     <div class="form-field__input is-not-empty">{{ prettyExact(ethBalance) }} {{externalTokenSymbol}}</div>
