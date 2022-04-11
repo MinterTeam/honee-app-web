@@ -307,111 +307,6 @@ export default {
                 },
             },
             {
-                title: 'Yield farming SUSHIBSC / BIP',
-                description: 'Put your SUSHIBSC and BIP into a liquidity pool to start getting extra daily rewards.',
-                icon: ['SUSHIBSC', 'BIP'],
-                stats: {
-                    caption: 'APR in BIP',
-                    value: '124%',
-                },
-                tags: ['Farming', 'SUSHIBSC', 'BIP'],
-                action: '/farm/SUSHIBSC/BIP',
-                ru: {
-                    title: 'Фарминг SUSHIBSC / BIP',
-                    description: 'Положите свои SUSHIBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                },
-            },
-            {
-                title: 'Yield farming BAKEBSC / BIP',
-                description: 'Put your BAKEBSC and BIP into a liquidity pool to start getting extra daily rewards.',
-                icon: ['BAKEBSC', 'BIP'],
-                stats: {
-                    caption: 'APR in BIP',
-                    value: '124%',
-                },
-                tags: ['Farming', 'BAKEBSC', 'BIP'],
-                action: '/farm/BAKEBSC/BIP',
-                ru: {
-                    title: 'Фарминг BAKEBSC / BIP',
-                    description: 'Положите свои BAKEBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                },
-            },
-            {
-                title: 'Yield farming ANYBSC / BIP',
-                description: 'Put your ANYBSC and BIP into a liquidity pool to start getting extra daily rewards.',
-                icon: ['ANYBSC', 'BIP'],
-                stats: {
-                    caption: 'APR in BIP',
-                    value: '124%',
-                },
-                tags: ['Farming', 'ANYBSC', 'BIP'],
-                action: '/farm/ANYBSC/BIP',
-                ru: {
-                    title: 'Фарминг ANYBSC / BIP',
-                    description: 'Положите свои ANYBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                },
-            },
-            {
-                title: 'Yield farming DODOBSC / BIP',
-                description: 'Put your DODOBSC and BIP into a liquidity pool to start getting extra daily rewards.',
-                icon: ['DODOBSC', 'BIP'],
-                stats: {
-                    caption: 'APR in BIP',
-                    value: '124%',
-                },
-                tags: ['Farming', 'DODOBSC', 'BIP'],
-                action: '/farm/DODOBSC/BIP',
-                ru: {
-                    title: 'Фарминг DODOBSC / BIP',
-                    description: 'Положите свои DODOBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                },
-            },
-            {
-                title: 'Yield farming BANANABSC / BIP',
-                description: 'Put your BANANABSC and BIP into a liquidity pool to start getting extra daily rewards.',
-                icon: ['BANANABSC', 'BIP'],
-                stats: {
-                    caption: 'APR in BIP',
-                    value: '124%',
-                },
-                tags: ['Farming', 'BANANABSC', 'BIP'],
-                action: '/farm/BANANABSC/BIP',
-                ru: {
-                    title: 'Фарминг BANANABSC / BIP',
-                    description: 'Положите свои BANANABSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                },
-            },
-            {
-                title: 'Yield farming BURGERBSC / BIP',
-                description: 'Put your BURGERBSC and BIP into a liquidity pool to start getting extra daily rewards.',
-                icon: ['BURGERBSC', 'BIP'],
-                stats: {
-                    caption: 'APR in BIP',
-                    value: '124%',
-                },
-                tags: ['Farming', 'BURGERBSC', 'BIP'],
-                action: '/farm/BURGERBSC/BIP',
-                ru: {
-                    title: 'Фарминг BURGERBSC / BIP',
-                    description: 'Положите свои BURGERBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                },
-            },
-            {
-                title: 'Yield farming BSWBSC / BIP',
-                description: 'Put your BSWBSC and BIP into a liquidity pool to start getting extra daily rewards.',
-                icon: ['BSWBSC', 'BIP'],
-                stats: {
-                    caption: 'APR in BIP',
-                    value: '124%',
-                },
-                tags: ['Farming', 'BSWBSC', 'BIP'],
-                action: '/farm/BSWBSC/BIP',
-                ru: {
-                    title: 'Фарминг BSWBSC / BIP',
-                    description: 'Положите свои BSWBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                },
-            },
-            {
                 title: 'Yield farming POWERBANK / BIP',
                 description: 'Put your POWERBANK and BIP into a liquidity pool to start getting extra daily rewards.',
                 icon: ['POWERBANK', 'BIP'],
@@ -591,23 +486,184 @@ export default {
                     description: 'Положите свои SFPBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
                 },
             },
-        ],
-    },
-    win: {
-        cards: [
             {
-                title: 'BIP',
-                description: 'Provide liquidity to the BIP-MUSD pool to take part in daily giveaways.',
-                icon: 'BIP',
+                title: 'Yield farming TORNBSC / BIP',
+                description: 'Put your TORNBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+                icon: ['TORNBSC', 'BIP'],
                 stats: {
-                    caption: 'GIVEAWAY',
-                    value: '33.3%',
+                    caption: 'APR in BIP',
+                    value: '124%',
                 },
-                tags: ['Lottery', 'BIP'],
-                action: '/win/BIP/MUSD',
+                tags: ['Farming', 'TORNBSC', 'BIP'],
+                action: '/farm/TORNBSC/BIP',
                 ru: {
-                    title: 'BIP',
-                    description: 'Предоставляйте ликвидность в пул BIP-MUSD, чтобы участвовать в ежедневной лотерее.',
+                    title: 'Фарминг TORNBSC / BIP',
+                    description: 'Положите свои TORNBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                },
+            },
+            {
+                title: 'Yield farming INJBSC / BIP',
+                description: 'Put your INJBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+                icon: ['INJBSC', 'BIP'],
+                stats: {
+                    caption: 'APR in BIP',
+                    value: '124%',
+                },
+                tags: ['Farming', 'INJBSC', 'BIP'],
+                action: '/farm/INJBSC/BIP',
+                ru: {
+                    title: 'Фарминг INJBSC / BIP',
+                    description: 'Положите свои INJBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                },
+            },
+            {
+                title: 'Yield farming NEARBSC / BIP',
+                description: 'Put your NEARBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+                icon: ['NEARBSC', 'BIP'],
+                stats: {
+                    caption: 'APR in BIP',
+                    value: '124%',
+                },
+                tags: ['Farming', 'NEARBSC', 'BIP'],
+                action: '/farm/NEARBSC/BIP',
+                ru: {
+                    title: 'Фарминг NEARBSC / BIP',
+                    description: 'Положите свои NEARBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                },
+            },
+            {
+                title: 'Yield farming BANDBSC / BIP',
+                description: 'Put your BANDBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+                icon: ['BANDBSC', 'BIP'],
+                stats: {
+                    caption: 'APR in BIP',
+                    value: '124%',
+                },
+                tags: ['Farming', 'BANDBSC', 'BIP'],
+                action: '/farm/BANDBSC/BIP',
+                ru: {
+                    title: 'Фарминг BANDBSC / BIP',
+                    description: 'Положите свои BANDBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                },
+            },
+            {
+                title: 'Yield farming INSURBSC / BIP',
+                description: 'Put your INSURBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+                icon: ['INSURBSC', 'BIP'],
+                stats: {
+                    caption: 'APR in BIP',
+                    value: '124%',
+                },
+                tags: ['Farming', 'INSURBSC', 'BIP'],
+                action: '/farm/INSURBSC/BIP',
+                ru: {
+                    title: 'Фарминг INSURBSC / BIP',
+                    description: 'Положите свои INSURBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                },
+            },
+            {
+                title: 'Yield farming USDCBSC / BIP',
+                description: 'Put your USDCBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+                icon: ['USDCBSC', 'BIP'],
+                stats: {
+                    caption: 'APR in BIP',
+                    value: '124%',
+                },
+                tags: ['Farming', 'USDCBSC', 'BIP'],
+                action: '/farm/USDCBSC/BIP',
+                ru: {
+                    title: 'Фарминг USDCBSC / BIP',
+                    description: 'Положите свои USDCBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                },
+            },
+            {
+                title: 'Yield farming NFTBSC / BIP',
+                description: 'Put your NFTBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+                icon: ['NFTBSC', 'BIP'],
+                stats: {
+                    caption: 'APR in BIP',
+                    value: '124%',
+                },
+                tags: ['Farming', 'NFTBSC', 'BIP'],
+                action: '/farm/NFTBSC/BIP',
+                ru: {
+                    title: 'Фарминг NFTBSC / BIP',
+                    description: 'Положите свои NFTBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                },
+            },
+            {
+                title: 'Yield farming MBOXBSC / BIP',
+                description: 'Put your MBOXBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+                icon: ['MBOXBSC', 'BIP'],
+                stats: {
+                    caption: 'APR in BIP',
+                    value: '124%',
+                },
+                tags: ['Farming', 'MBOXBSC', 'BIP'],
+                action: '/farm/MBOXBSC/BIP',
+                ru: {
+                    title: 'Фарминг MBOXBSC / BIP',
+                    description: 'Положите свои MBOXBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                },
+            },
+            {
+                title: 'Yield farming ALICEBSC / BIP',
+                description: 'Put your ALICEBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+                icon: ['ALICEBSC', 'BIP'],
+                stats: {
+                    caption: 'APR in BIP',
+                    value: '124%',
+                },
+                tags: ['Farming', 'ALICEBSC', 'BIP'],
+                action: '/farm/ALICEBSC/BIP',
+                ru: {
+                    title: 'Фарминг ALICEBSC / BIP',
+                    description: 'Положите свои ALICEBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                },
+            },
+            {
+                title: 'Yield farming AXSBSC / BIP',
+                description: 'Put your AXSBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+                icon: ['AXSBSC', 'BIP'],
+                stats: {
+                    caption: 'APR in BIP',
+                    value: '124%',
+                },
+                tags: ['Farming', 'AXSBSC', 'BIP'],
+                action: '/farm/AXSBSC/BIP',
+                ru: {
+                    title: 'Фарминг AXSBSC / BIP',
+                    description: 'Положите свои AXSBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                },
+            },
+            {
+                title: 'Yield farming DEGOBSC / BIP',
+                description: 'Put your DEGOBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+                icon: ['DEGOBSC', 'BIP'],
+                stats: {
+                    caption: 'APR in BIP',
+                    value: '124%',
+                },
+                tags: ['Farming', 'DEGOBSC', 'BIP'],
+                action: '/farm/DEGOBSC/BIP',
+                ru: {
+                    title: 'Фарминг DEGOBSC / BIP',
+                    description: 'Положите свои DEGOBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                },
+            },
+            {
+                title: 'Yield farming DAIBSC / BIP',
+                description: 'Put your DAIBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+                icon: ['DAIBSC', 'BIP'],
+                stats: {
+                    caption: 'APR in BIP',
+                    value: '124%',
+                },
+                tags: ['Farming', 'DAIBSC', 'BIP'],
+                action: '/farm/DAIBSC/BIP',
+                ru: {
+                    title: 'Фарминг DAIBSC / BIP',
+                    description: 'Положите свои DAIBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
                 },
             },
         ],
