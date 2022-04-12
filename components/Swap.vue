@@ -1,5 +1,4 @@
 <script>
-    import axios from 'axios';
     import {validationMixin} from 'vuelidate';
     import required from 'vuelidate/lib/validators/required';
     import minLength from 'vuelidate/lib/validators/minLength';
@@ -24,9 +23,6 @@
     const isValidAmount = withParams({type: 'validAmount'}, (value) => {
         return parseFloat(value) >= 0;
     });
-
-    let estimationCancel;
-    const CANCEL_MESSAGE = 'Cancel previous request';
 
     export default {
         ESTIMATE_SWAP_TYPE,
@@ -272,9 +268,6 @@
             },
             getEstimation() {
                 this.isEstimationPending = false;
-                if (this.isEstimationLoading && typeof estimationCancel === 'function') {
-                    estimationCancel(CANCEL_MESSAGE);
-                }
                 if (this.$v.form.$invalid) {
                     return;
                 }
@@ -290,7 +283,7 @@
                         findRoute: true,
                         // gasCoin: this.fee.coin || 0,
                     }, {
-                        cancelToken: new axios.CancelToken((cancelFn) => estimationCancel = cancelFn),
+                        idPreventConcurrency: 'swapForm',
                     })
                         .then((result) => {
                             this.form.buyAmount = decreasePrecisionSignificant(result.will_get);
@@ -309,7 +302,7 @@
                         findRoute: true,
                         // gasCoin: this.fee.coin || 0,
                     }, {
-                        cancelToken: new axios.CancelToken((cancelFn) => estimationCancel = cancelFn),
+                        idPreventConcurrency: 'swapForm',
                     })
                         .then((result) => {
                             this.form.sellAmount = result.will_pay;
@@ -328,7 +321,7 @@
                         this.isEstimationLoading = false;
                     })
                     .catch((error) => {
-                        if (error.message === CANCEL_MESSAGE) {
+                        if (error.isCanceled) {
                             return;
                         }
                         this.isEstimationLoading = false;

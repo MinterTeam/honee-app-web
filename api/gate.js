@@ -10,13 +10,20 @@ import EstimateTxCommission from 'minter-js-sdk/src/api/estimate-tx-commission.j
 import {ESTIMATE_SWAP_TYPE} from 'minter-js-sdk/src/variables.js';
 import {ReplaceCoinSymbol, ReplaceCoinSymbolByPath} from 'minter-js-sdk/src/api/replace-coin.js';
 import {GATE_API_URL, CHAIN_ID} from '~/assets/variables.js';
+import debounceAdapter from '~/assets/axios-debounce.js';
 import {getSwapEstimate as explorerGetSwapEstimate} from '~/api/explorer.js';
+
+const adapter = (($ = axios.defaults.adapter) => {
+    $ = cacheAdapterEnhancer($, { enabledByDefault: false});
+    $ = debounceAdapter($, {time: 500, leading: false});
+    return $;
+})();
 
 const minterApi = new MinterApi({
     apiType: 'gate',
     baseURL: GATE_API_URL,
     chainId: CHAIN_ID,
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
+    adapter,
 });
 
 export const postTx = PostTx(minterApi);
@@ -83,7 +90,7 @@ export function estimateCoinBuy(params, axiosOptions) {
     }
 }
 
-export const estimateTxCommission = (params, axiosOptions) => EstimateTxCommission(minterApi)(params, {direct: false}, {...axiosOptions, cache: estimateCache});
+export const estimateTxCommission = (params, options, axiosOptions) => EstimateTxCommission(minterApi)(params, {loose: true, ...options}, {...axiosOptions, cache: estimateCache});
 
 export const replaceCoinSymbol = ReplaceCoinSymbol(minterApi);
 export const replaceCoinSymbolByPath = ReplaceCoinSymbolByPath(minterApi);
