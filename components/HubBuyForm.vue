@@ -1,5 +1,4 @@
 <script>
-import axios from 'axios';
 import QrcodeVue from 'qrcode.vue';
 import {validationMixin} from 'vuelidate';
 import required from 'vuelidate/lib/validators/required.js';
@@ -56,7 +55,6 @@ const GAS_LIMIT_UNWRAP = 50000;
 const GAS_LIMIT_UNLOCK = 75000;
 const GAS_LIMIT_BRIDGE = 75000;
 
-let estimationCancel;
 let waitingCancel;
 const CANCEL_MESSAGE = 'Canceled';
 
@@ -843,9 +841,6 @@ export default {
         },
         getEstimation() {
             this.isEstimationPending = false;
-            if (this.isEstimationLoading && typeof estimationCancel === 'function') {
-                estimationCancel(CANCEL_MESSAGE);
-            }
             if (!this.$store.state.onLine) {
                 return;
             }
@@ -862,7 +857,7 @@ export default {
                 findRoute: true,
                 // gasCoin: 0,
             }, {
-                cancelToken: new axios.CancelToken((cancelFn) => estimationCancel = cancelFn),
+                idPreventConcurrency: 'hubBuy',
             })
                 .then((result) => {
                     this.estimation = result.will_get;
@@ -870,7 +865,7 @@ export default {
                     this.isEstimationLoading = false;
                 })
                 .catch((error) => {
-                    if (error.message === CANCEL_MESSAGE) {
+                    if (error.isCanceled) {
                         return;
                     }
                     this.isEstimationLoading = false;
