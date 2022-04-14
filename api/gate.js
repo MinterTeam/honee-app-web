@@ -2,7 +2,6 @@ import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
 import MinterApi from "minter-js-sdk/src/api";
 import PostTx from 'minter-js-sdk/src/api/post-tx';
-// import GetCoinInfoById from 'minter-js-sdk/src/api/get-coin-info-by-id.js';
 import EstimateCoinSell from 'minter-js-sdk/src/api/estimate-coin-sell';
 import EstimateCoinSellAll from 'minter-js-sdk/src/api/estimate-coin-sell-all.js';
 import EstimateCoinBuy from 'minter-js-sdk/src/api/estimate-coin-buy';
@@ -28,7 +27,7 @@ const minterApi = new MinterApi({
 
 export const postTx = PostTx(minterApi);
 
-const estimateCache = new Cache({maxAge: 10 * 1000});
+const estimateCache = new Cache({maxAge: 5 * 1000});
 const _estimateCoinSell = (params, axiosOptions) => params.sellAll
     ? EstimateCoinSellAll(minterApi)(params, {...axiosOptions, cache: estimateCache})
     : EstimateCoinSell(minterApi)(params, {...axiosOptions, cache: estimateCache});
@@ -39,7 +38,7 @@ export function estimateCoinSell(params, axiosOptions) {
         return Promise.reject(new Error('Value to sell not specified'));
     }
     if (params.findRoute && params.swapFrom !== ESTIMATE_SWAP_TYPE.BANCOR) {
-        return explorerGetSwapEstimate(params.coinToSell, params.coinToBuy, {sellAmount: params.valueToSell}, {...axiosOptions, cache: estimateCache})
+        return explorerGetSwapEstimate(params.coinToSell, params.coinToBuy, {sellAmount: params.valueToSell, swapFrom: params.swapFrom}, {...axiosOptions, cache: estimateCache})
             .then((explorerEstimation) => {
                 return Promise.all([
                     _estimateCoinSell({
@@ -67,7 +66,7 @@ export function estimateCoinBuy(params, axiosOptions) {
         return Promise.reject(new Error('Value to buy not specified'));
     }
     if (params.findRoute && params.swapFrom !== ESTIMATE_SWAP_TYPE.BANCOR) {
-        return explorerGetSwapEstimate(params.coinToSell, params.coinToBuy, {buyAmount: params.valueToBuy}, {...axiosOptions, cache: estimateCache})
+        return explorerGetSwapEstimate(params.coinToSell, params.coinToBuy, {buyAmount: params.valueToBuy, swapFrom: params.swapFrom}, {...axiosOptions, cache: estimateCache})
             .then((explorerEstimation) => {
                 return Promise.all([
                     _estimateCoinBuy({
@@ -94,3 +93,4 @@ export const estimateTxCommission = (params, options, axiosOptions) => EstimateT
 
 export const replaceCoinSymbol = ReplaceCoinSymbol(minterApi);
 export const replaceCoinSymbolByPath = ReplaceCoinSymbolByPath(minterApi);
+

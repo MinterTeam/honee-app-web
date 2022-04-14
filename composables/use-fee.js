@@ -204,6 +204,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
                     state.feeError += ' to pay fee';
                 }
                 state.isLoading = false;
+                console.debug(error);
             });
     }
     /**
@@ -230,10 +231,12 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
 function cleanObject(txParams) {
     let clean = {};
     for (const key in txParams) {
-        if (typeof txParams[key] === 'object') {
+        if (isEmpty(txParams[key])) {
+            clean[key] = undefined;
+        } else if (isObject(txParams[key])) {
             clean[key] = cleanObject(txParams[key]);
         } else {
-            clean[key] = isEmpty(txParams[key]) ? undefined : txParams[key];
+            clean[key] = txParams[key];
         }
     }
 
@@ -241,5 +244,9 @@ function cleanObject(txParams) {
 
     function isEmpty(value) {
         return value === '' || value === null;
+    }
+
+    function isObject(value) {
+        return Object.prototype.toString.call(value) === '[object Object]';
     }
 }
