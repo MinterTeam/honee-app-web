@@ -89,7 +89,7 @@ export function estimateCoinBuy(params, axiosOptions) {
     }
 }
 
-export const estimateTxCommission = (params, options, axiosOptions) => EstimateTxCommission(minterApi)(params, {loose: true, ...options}, {...axiosOptions, cache: estimateCache});
+export const estimateTxCommission = (params, options, axiosOptions) => EstimateTxCommission(minterApi)(params, {loose: true, ...options}, {...axiosOptions, cache: estimateCache}, {cache: estimateCache});
 
 export const replaceCoinSymbol = ReplaceCoinSymbol(minterApi);
 export const replaceCoinSymbolByPath = ReplaceCoinSymbolByPath(minterApi);

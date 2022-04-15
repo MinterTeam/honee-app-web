@@ -47,7 +47,7 @@
     "js-cookie": "^3.0.1",
     "lodash-es": "^4.17.21",
     "minter-coin-block-list": "0.0.10",
-    "minter-js-sdk": "^0.42.0",
+    "minter-js-sdk": "^0.43.0",
     "minterjs-tx": "^12.0.0",
     "minterjs-util": "^0.23.0",
     "minterjs-wallet": "^6.1.1",
