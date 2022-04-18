@@ -30,6 +30,8 @@ import {getErrorText} from '~/assets/server-error.js';
  */
 
 export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinToSpend, isOffline}*/) {
+    const idPrimary = Math.random().toString();
+    const idSecondary = Math.random().toString();
     const feeProps = reactive({
         /** @type {TxParams} */
         txParams: {},
@@ -37,6 +39,8 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         /** @type {Boolean} - by default fallback to baseCoin, additionally it can try to fallback to coinToSpend, if baseCoin is not enough */
         fallbackToCoinToSpend: false,
         isOffline: false,
+        //@TODO throttle is used but maybe we should use exact estimation only before confirmation
+        looseEstimation: false,
     });
     /** @type {Object.<number, string>}*/
     const coinMap = ref({});
@@ -113,7 +117,8 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     function getSecondaryCoinToCheck() {
         // 1. only check if fallback flag activated
         // 2. if gasCoin is defined - no need to check something else
-        if (!feeProps.fallbackToCoinToSpend || isCoinDefined(feeProps.txParams.gasCoin)) {
+        // 3. exact estimation used (no need to guess)
+        if (!feeProps.fallbackToCoinToSpend || isCoinDefined(feeProps.txParams.gasCoin) || !feeProps.looseEstimation) {
             return '';
         }
 
@@ -135,20 +140,21 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
             return;
         }
 
+        const cleanTxParams = cleanObject(feeProps.txParams);
         // save current coins to check if it will be actual after resolution
         const primaryCoinToCheck = getPrimaryCoinToCheck();
         const secondaryCoinToCheck = getSecondaryCoinToCheck();
         const primaryEstimate = estimateTxCommission({
-            ...feeProps.txParams,
+            ...cleanTxParams,
             chainId: CHAIN_ID,
             gasCoin: primaryCoinToCheck,
-        });
+        }, {loose: feeProps.looseEstimation}, {idDebounce: idPrimary});
         //@TODO secondary check may be redundant
         const secondaryEstimate = secondaryCoinToCheck && secondaryCoinToCheck !== primaryCoinToCheck ? estimateTxCommission({
-            ...feeProps.txParams,
+            ...cleanTxParams,
             chainId: CHAIN_ID,
             gasCoin: secondaryCoinToCheck,
-        }) : Promise.reject();
+        }, {loose: feeProps.looseEstimation}, {idDebounce: idSecondary}) : Promise.reject();
 
         state.isLoading = true;
         state.feeError = '';
@@ -174,7 +180,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
 
                 state.priceCoinFeeValue = feeData.priceCoinCommission;
                 state.baseCoinFeeValue = feeData.baseCoinCommission;
-                state.isBaseCoinEnough = new Big(feeProps.baseCoinAmount || 0).gte(state.baseCoinFeeValue);
+                state.isBaseCoinEnough = new Big(feeProps.baseCoinAmount || 0).gte(state.baseCoinFeeValue || 0);
                 // select between primary fallback and secondary fallback
                 // secondaryFeeData may be defined only if primary is fallback base coin
                 const isSecondarySelected = secondaryFeeData && !state.isBaseCoinEnough;
@@ -186,7 +192,11 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
                 state.isLoading = false;
             })
             .catch((error) => {
-                if (primaryCoinToCheck !== getPrimaryCoinToCheck() || secondaryCoinToCheck !== getSecondaryCoinToCheck()) {
+                if (
+                    primaryCoinToCheck !== getPrimaryCoinToCheck()
+                    || secondaryCoinToCheck !== getSecondaryCoinToCheck()
+                    || error.isCanceled
+                ) {
                     return;
                 }
                 state.feeError = getErrorText(error);
@@ -194,6 +204,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
                     state.feeError += ' to pay fee';
                 }
                 state.isLoading = false;
+                console.debug(error);
             });
     }
     /**
@@ -215,4 +226,27 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         feeProps,
         fee,
     };
+}
+
+function cleanObject(txParams) {
+    let clean = {};
+    for (const key in txParams) {
+        if (isEmpty(txParams[key])) {
+            clean[key] = undefined;
+        } else if (isObject(txParams[key])) {
+            clean[key] = cleanObject(txParams[key]);
+        } else {
+            clean[key] = txParams[key];
+        }
+    }
+
+    return clean;
+
+    function isEmpty(value) {
+        return value === '' || value === null;
+    }
+
+    function isObject(value) {
+        return Object.prototype.toString.call(value) === '[object Object]';
+    }
 }
