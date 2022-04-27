@@ -17,7 +17,7 @@ import {getOracleCoinList, getOraclePriceList, subscribeTransfer} from '@/api/hu
 import {getTransaction} from '@/api/explorer.js';
 import {estimateCoinSell, postTx} from '@/api/gate.js';
 import Big from '~/assets/big.js';
-import initPurchase, {fiatPurchaseNetwork} from '~/assets/fiat-ramp.js';
+import initRampPurchase, {fiatRampPurchaseNetwork} from '~/assets/fiat-ramp.js';
 import {pretty, prettyPrecise, prettyRound, prettyExact, decreasePrecisionSignificant, getExplorerTxUrl, getEvmTxUrl, shortHashFilter} from '~/assets/utils.js';
 import erc20ABI from '~/assets/abi-erc20.js';
 import hubABI from '~/assets/abi-hub.js';
@@ -42,7 +42,7 @@ import HubBuySpeedup from '@/components/HubBuySpeedup.vue';
 
 const uniswapV2Abi = IUniswapV2Router.abi;
 
-const FIAT_NETWORK = 'fiat';
+const FIAT_RAMP_NETWORK = 'fiat-ramp';
 
 const PROMISE_FINISHED = 'finished';
 const PROMISE_REJECTED = 'rejected';
@@ -97,7 +97,7 @@ const isValidAmount = withParams({type: 'validAmount'}, (value) => {
 });
 
 export default {
-    FIAT_NETWORK,
+    FIAT_RAMP_NETWORK,
     TX_UNWRAP,
     TX_APPROVE,
     TX_TRANSFER,
@@ -237,13 +237,13 @@ export default {
         ethAddress() {
             return this.$store.getters.address.replace('Mx', '0x');
         },
-        isFiatSelected() {
-            return this.form.selectedHubNetwork === FIAT_NETWORK;
+        isFiatRampSelected() {
+            return this.form.selectedHubNetwork === FIAT_RAMP_NETWORK;
         },
         chainId() {
             let network;
-            if (this.isFiatSelected) {
-                network = fiatPurchaseNetwork;
+            if (this.isFiatRampSelected) {
+                network = fiatRampPurchaseNetwork;
             } else {
                 network = this.form.selectedHubNetwork;
             }
@@ -432,7 +432,7 @@ export default {
         'form.selectedHubNetwork': {
             handler() {
                 // set valid test data
-                if (this.form.selectedHubNetwork === FIAT_NETWORK && NETWORK !== MAINNET) {
+                if (this.form.selectedHubNetwork === FIAT_RAMP_NETWORK && NETWORK !== MAINNET) {
                     this.form.amountEth = '0.002';
                     this.form.coinToGet = this.$store.getters.BASE_COIN;
                 }
@@ -604,8 +604,8 @@ export default {
             //@TODO txs may be forked
             return this.submit({fromRecovery: true});
         },
-        fiatPurchase() {
-            return initPurchase({
+        fiatRampPurchase() {
+            return initRampPurchase({
                 userAddress: this.ethAddress,
                 swapAmount: toErcDecimals(this.form.amountEth, this.externalTokenDecimals),
             });
@@ -681,12 +681,12 @@ export default {
             }
 
             // fiat recovery only triggered when fiat part is already done and crypto deposited, so no need to make another fiat purchase
-            const fiatPurchasePromise = this.isFiatSelected && !fromRecovery ? this.fiatPurchase() : Promise.resolve();
+            const fiatRampPurchasePromise = this.isFiatRampSelected && !fromRecovery ? this.fiatRampPurchase() : Promise.resolve();
 
             // don't wait eth if next steps already exists
-            const waitEnoughEthPromise = fromRecovery ? Promise.resolve() : this.waitEnoughExternalBalance({isTopUpRequired: this.isFiatSelected});
+            const waitEnoughEthPromise = fromRecovery ? Promise.resolve() : this.waitEnoughExternalBalance({isTopUpRequired: this.isFiatRampSelected});
 
-            return Promise.all([fiatPurchasePromise, waitEnoughEthPromise, this.ensureNetworkData()])
+            return Promise.all([fiatRampPurchasePromise, waitEnoughEthPromise, this.ensureNetworkData()])
                 .then(() => this.depositFromEthereum())
                 .then((transfer) => {
                     if (transfer.status !== HUB_TRANSFER_STATUS.batch_executed) {
@@ -986,7 +986,7 @@ function getSwapOutput(receipt) {
                         :label="$td('Select network', 'form.select-network')"
                         :suggestion-list="[
                             {
-                                value: $options.FIAT_NETWORK,
+                                value: $options.FIAT_RAMP_NETWORK,
                                 name: 'Bank card',
                                 shortName: 'Bank card',
                                 icon: `/img/icon-network-fiat.svg`,
@@ -1184,7 +1184,7 @@ function getSwapOutput(receipt) {
             <h2 class="u-h3 u-mb-10">
                 <template v-if="txServiceState.loadingStage === $options.LOADING_STAGE.WAIT_ETH">
                     <Loader class="hub__buy-title-loader" :is-loading="true"/>
-                    <template v-if="!isFiatSelected">
+                    <template v-if="!isFiatRampSelected">
                         {{ $td(`Waiting ${externalTokenSymbol} deposit`, 'form.eth-waiting', {symbol: externalTokenSymbol}) }}
                     </template>
                     <template v-else>
@@ -1198,7 +1198,7 @@ function getSwapOutput(receipt) {
             </h2>
 
             <template v-if="txServiceState.loadingStage === $options.LOADING_STAGE.WAIT_ETH">
-                <template v-if="!isFiatSelected">
+                <template v-if="!isFiatRampSelected">
                     <div class="form-row">
                         <div class="form-field form-field--dashed form-field--with-icon">
                             <div class="form-field__input is-not-empty">{{ prettyExact(ethToTopUp) }} {{externalTokenSymbol}}</div>

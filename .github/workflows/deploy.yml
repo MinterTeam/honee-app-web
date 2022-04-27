@@ -56,7 +56,7 @@ jobs:
       #          personalAccessToken: ${{ secrets.DIGITALOCEAN_TOKEN }}
       #          clusterName: k8s-prod-do
       #
-      #      - name: Install helm
+      #      - name: Install helm to DO
       #        if: env.BUILD_BRANCH == env.PRODUCTION_BRANCH
       #        run: wget https://get.helm.sh/helm-v3.3.4-linux-amd64.tar.gz &> /dev/null && tar xvzf helm-v3.3.4-linux-amd64.tar.gz && chmod 777 linux-amd64/helm && ./linux-amd64/helm ls -n ${{ env.KUBE_NAMESPACE }}
       #
@@ -92,4 +92,3 @@ jobs:
           chatId: ${{ secrets.TELEGRAM_CI_TO }}
           jobStatus: ${{ job.status }}
           skipSuccess: false
-
