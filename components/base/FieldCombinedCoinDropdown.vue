@@ -92,7 +92,7 @@ function ofType(coinType, selectedType) {
         <template v-slot:suggestion-item="{suggestion}">
             <img class="h-field__suggestion-icon" :src="getCoinIconUrl(getSuggestionCoin(suggestion))" width="24" height="24" alt="" role="presentation">
             <span class="h-field__suggestion-symbol">{{ getSuggestionCoin(suggestion) }}</span>
-            <span v-if="getSuggestionAmount(suggestion)">{{ getSuggestionAmount(suggestion) }}</span>
+            <span class="h-field__suggestion-amount" v-if="getSuggestionAmount(suggestion)">{{ getSuggestionAmount(suggestion) }}</span>
         </template>
     </FieldCombinedBaseDropdown>
 </template>

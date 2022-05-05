@@ -1,3 +1,7 @@
+/**
+ * https://docs.ramp.network/useful-links/
+ * https://ramp.notion.site/ramp/Integration-FAQ-3208ceccaa5648ac9b9dc9cbf8d61289#cbdd99ead74f4c88a5be56469121ee66
+ */
 import { RampInstantSDK } from '@ramp-network/ramp-instant-sdk';
 import axios from 'axios';
 import {NETWORK, MAINNET, HUB_NETWORK} from '~/assets/variables.js';
@@ -6,6 +10,7 @@ const isMainnet = NETWORK === MAINNET;
 
 export const fiatRampPurchaseNetwork = isMainnet ? HUB_NETWORK.BSC : HUB_NETWORK.ETHEREUM;
 const baseUrl = isMainnet ? 'https://api-instant.ramp.network/api/' : 'https://api-instant-staging-ropsten.supozu.com/api/';
+const hostApiKey = isMainnet ? '74s63rodmpfn97jat9ndhsn2d5q5qwv6c2g5xgco' : '484a2d4z8r2tgh5wsvn736e3zp2jzct5kqnh7fkd';
 const assetName = isMainnet ? 'BSC_BNB' : 'ETH';
 
 export default function initPurchase({userAddress, swapAmount} = {}) {
@@ -26,7 +31,7 @@ export default function initPurchase({userAddress, swapAmount} = {}) {
     });
 
     new RampInstantSDK({
-        hostApiKey: isMainnet ? '74s63rodmpfn97jat9ndhsn2d5q5qwv6c2g5xgco' : undefined,
+        hostApiKey,
         hostAppName: 'Honee',
         hostLogoUrl: 'https://my.honee.app/img/logo-honee.svg',
         swapAsset: assetName,

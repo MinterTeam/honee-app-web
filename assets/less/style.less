@@ -292,7 +292,8 @@
 .convert__reverse-button {
     padding: 5px; margin-inline: auto; display: flex;
     // alt text fallback styles
-    font-size: 20px; line-height: 24px; text-align: center; color: @c-black-light
+    font-size: 20px; line-height: 24px; text-align: center; color: @c-black-light;
+    &:hover, &:focus {color: @c-black;}
 }
 .convert__panel {
     background: #fff; border-radius: 8px; padding: 16px; text-align: left; position: relative;
@@ -321,20 +322,35 @@
 @h-field-input-height: 24px;
 @h-field-vertical-padding: 12px;
 @h-field-horizontal-padding: 16px;
+.h-field-input-text() {
+    font-size: 16px; font-weight: 500; line-height: @h-field-input-height;
+    @media (min-width: @breakpoint-medium-up) {
+        font-size: 18px; font-weight: 600;
+    }
+}
+.h-field-title-text-small() {
+    font-size: 10px; font-weight: 700; line-height: @h-field-title-height; text-transform: uppercase; letter-spacing: 1px;
+}
+.h-field-title-text() {
+    .h-field-title-text-small();
+    @media (min-width: @breakpoint-medium-up) {
+        font-size: 12px; letter-spacing: 0.6px;
+    }
+}
 .h-field {position: relative; display: flex; width: 100%; padding: (@h-field-vertical-padding - 2px) (@h-field-horizontal-padding - 2px); border: 2px solid transparent;}
 .h-field, .h-field__dropdown {background: #fff; border-radius: 12px; box-shadow: 0 4px 4px rgba(0,0,0,0.05);}
 .h-field--is-readonly {box-shadow: none; border: 2px dashed @c-border;}
-.h-field__content {font-weight: 600; flex-grow: 2; max-width: 100%;}
-.h-field__title {font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: @c-black-light; line-height: @h-field-title-height; margin-bottom: @h-field-title-margin;}
+.h-field__content {flex-grow: 2; max-width: 100%;}
+.h-field__title {.h-field-title-text(); color: @c-black-light; margin-bottom: @h-field-title-margin;}
 .h-field__select-button {
     display: flex; align-items: center; max-width: 100%;
     &[disabled] {cursor: default;}
 }
 .h-field__select-icon {margin-right: 8px; border-radius: 50%;}
-.h-field__select-value {font-size: 18px; line-height: @h-field-input-height; overflow: hidden; overflow-wrap: break-word;}
+.h-field__select-value {.h-field-input-text(); overflow: hidden; overflow-wrap: break-word;}
 .h-field__select-icon-arrow {margin-left: 8px;}
 .h-field__input {
-    font-weight: 600; font-size: 24px; line-height: @h-field-input-height; width: 100%; color: currentColor; padding: 0; background: transparent; border: none;
+    .h-field-input-text(); /* fix line-height for fake-inputs (e.g. address) */ /*line-height: 20px; min-height: @h-field-input-height;*/ width: 100%; color: currentColor; padding: 0; background: transparent; border: none; overflow-wrap: break-word;
     font-feature-settings: "calt" off;
     /* safari disabled fix */
     opacity: 1; -webkit-text-fill-color: currentcolor;
@@ -349,20 +365,18 @@
 }
 .h-field__range {margin-top: 12px;}
 
-.h-field__aside {margin-left: 20px; flex-shrink: 9999; display: flex; flex-direction: column; justify-content: center; align-items: flex-end;}
+.h-field__aside {margin-left: 20px; flex-shrink: 9999; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; min-width: 0;}
 //.h-field__aside--with-input {flex-grow: 3;}
-.h-field__aside-caption {margin-bottom: @h-field-title-margin; font-size: 12px; line-height: @h-field-title-height; letter-spacing: 0.2px; }
+.h-field__aside-caption {.h-field-title-text-small(); margin-bottom: @h-field-title-margin;}
 .h-field__aside-loader {width: @h-field-title-height; height: @h-field-title-height; margin: 0; vertical-align: top;}
 .h-field__aside-max {
-    color: @c-black-light; transition: 0.1s;
-    &:hover, &:focus {color: @c-main;}
-    &:active {color: fade(@c-main, 40%);}
+    /*color: @c-black-light; transition: 0.1s;*/ margin-left: -20px; white-space: nowrap;
+    //&:hover, &:focus {color: @c-main;}
+    //&:active {color: fade(@c-main, 40%);}
 }
-.h-field__aside-input {
-    text-align: right; margin-top: auto;
-}
+.h-field__aside-input {text-align: right; margin-top: auto;}
 // possibly can be replaced with max value in pseudo content
-.h-field__aside-range {min-width: 102px;}
+.h-field__aside-range {min-width: 4.25em;}
 .h-field__aside-control {font-size: 0;}
 
 .h-field__dropdown {position: absolute; top: 100%; left: -2px; right: -2px; /* border size */ padding: 16px @h-field-horizontal-padding 8px; margin-top: -1 * (@h-field-vertical-padding - 2px); z-index: 1;}
@@ -379,7 +393,8 @@
     &:hover {background-color: rgba(0,0,0,0.1);}
 }
 .h-field__suggestion-icon {flex-shrink: 0; margin-right: 8px; border-radius: 50%;}
-.h-field__suggestion-symbol {font-size: 18px; font-weight: 600; line-height: @h-field-input-height;}
+.h-field__suggestion-symbol {.h-field-input-text();}
+.h-field__suggestion-amount {margin-left: 4px;}
 
 
 

@@ -149,11 +149,11 @@
                 :isLoading="true"
             />
             <button
-                class="h-field__aside-max u-semantic-button" type="button"
+                class="h-field__aside-max link--main link--opacity u-semantic-button" type="button"
                 v-else-if="isMaxValueDefined && !isUseMax"
                 @click="useMax"
             >
-                {{ $td('Balance', 'index.balance') }}: {{ isMaxValueRounded ? '≈' : '' }}{{ pretty(maxValueComputed) }}
+                {{ $td('Use max', 'index.use-max') }}. {{ isMaxValueRounded ? '≈' : '' }}{{ pretty(maxValueComputed) }}
             </button>
 <!--            <template v-else>&nbsp;</template>-->
         </div>
