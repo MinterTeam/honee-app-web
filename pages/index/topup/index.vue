@@ -1,7 +1,7 @@
 <script>
 import * as clipboard from 'clipbrd';
 import getTitle from '@/assets/get-title.js';
-import {DASHBOARD_URL, CARD_TO_MINTER_HOST} from '~/assets/variables.js';
+import {DASHBOARD_URL, CARD_TO_MINTER_HOST, NETWORK, MAINNET} from '~/assets/variables.js';
 import Modal from '@/components/base/Modal.vue';
 
 export default {
@@ -33,6 +33,9 @@ export default {
         },
         card2MinterUrl() {
             return `${CARD_TO_MINTER_HOST}/?address=${this.$store.getters.address}&return_url=${window.location.origin}`;
+        },
+        isMainnet() {
+            return NETWORK === MAINNET;
         },
     },
     methods: {
@@ -73,7 +76,7 @@ export default {
             <img class="button__icon" src="/img/icon-topup-eth.svg" alt="" role="presentation">
             {{ $td('Top up with ETH', 'topup.top-up-with-eth') }}
         </nuxt-link>
-        <a class="button button--full u-mt-10" :href="card2MinterUrl">
+        <a class="button button--full u-mt-10" :href="card2MinterUrl" v-if="isMainnet">
             <img class="button__icon" src="/img/icon-topup-card.svg" alt="" role="presentation">
             {{ $td('Card to card', 'topup.top-up-with-card2card') }}
         </a>
