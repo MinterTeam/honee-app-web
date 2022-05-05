@@ -63,6 +63,7 @@ const scriptCSP = NUXT_LOADING_INLINE_SCRIPT_SHA.map((item) => {
 
 module.exports = {
     ssr: false,
+    target: 'static',
     telemetry: false,
     /*
     ** Headers of the page

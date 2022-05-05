@@ -107,7 +107,7 @@ export default {
             </div>
             <div class="card__content">
                 <div class="button-group button-group--center">
-                    <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('receive')">
+                    <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('topup')">
                         <img class="button__icon" src="/img/icon-white-deposit.svg" width="24" height="24" alt="" role="presentation">
                         {{ $td('Top up', 'index.topup') }}
                     </nuxt-link>

@@ -10,6 +10,13 @@
 }
 @font-face {
     font-family: Inter;
+    src: url('../fonts/Inter-Medium.woff2') format('woff2'),
+    url('../fonts/Inter-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+}
+@font-face {
+    font-family: Inter;
     src: url('../fonts/Inter-SemiBold.woff2') format('woff2'),
     url('../fonts/Inter-SemiBold.woff') format('woff');
     font-weight: 600;
@@ -157,8 +164,8 @@ blockquote {
 // button
 .button {
     display: inline-flex; align-items: center; justify-content: center; padding: 8px 22px; font-size: 16px; line-height: 20px; font-weight: 700; font-family: @heading-font-family; background: #fff; color: @c-black; border-radius: 12px; text-align: center; border: 2px solid transparent; text-decoration: none; transition: 0.1s; position: relative; overflow: hidden; vertical-align: top;
-    &:hover, &:focus {background: fade(#fff, 85%);}
-    &:active {background: fade(#fff, 70%);}
+    &:hover, &:focus {background: #e8e8e8;}
+    &:active {background: #ddd;}
     &[disabled], &.is-disabled {
         cursor: default;
         &:not(.is-loading) {background: shade(#fff, 25%);}
@@ -166,6 +173,7 @@ blockquote {
     &.is-loading .button__content {color: transparent;}
 }
 .button--large {padding-top: 16px; padding-bottom: 16px;}
+.button--narrow {padding-inline: 12px;}
 //.button--medium {min-width: auto; width: 100%;}
 //.button--small {padding: 2px 8px; border-radius: 4px;}
 //.button--icon {padding-left: 48px;}

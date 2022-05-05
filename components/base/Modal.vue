@@ -19,7 +19,7 @@
             },
             modalContainerClass: {
                 type: String,
-                default: 'card card__content',
+                default: 'card card__content card--light-grey',
             },
             keepMarkup: {
                 type: Boolean,
