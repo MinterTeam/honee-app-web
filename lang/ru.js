@@ -138,6 +138,22 @@ export default {
 
         'cam-allow': 'Разрешите доступ к камере',
     },
+    topup: {
+        'title': 'Пополнить баланс',
+        'description': 'Выберите способ ниже',
+        'top-up-with-network': 'Через {network}',
+        'top-up-with-card2card': 'С карты на карту',
+        'cancel': 'Отмена',
+        'back': 'Назад',
+    },
+    'topup-network': {
+        'title': 'Пополнить через',
+        'description': 'Отправьте любое кол-во {coin} на адрес ниже',
+        'copy': 'Копировать',
+        'share': 'Поделиться',
+        'show-qr': 'Показать QR',
+        'hide-qr': 'Скрыть QR',
+    },
     action: {
         'title-add-liquidity': 'Предоставьте ликвидность в пул',
         'title-buy': 'Купите BIP, HUB и BEE за BNB или ETH',

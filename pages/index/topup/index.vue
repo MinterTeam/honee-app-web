@@ -70,11 +70,11 @@ export default {
 
         <nuxt-link class="button button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/bnb')"  v-if="!isMainnet">
             <img class="button__icon" src="/img/icon-topup-bnb.svg" alt="" role="presentation">
-            {{ $td('Top up with BNB', 'topup.top-up-with-bnb') }}
+            {{ $td('Top up with BNB', 'topup.top-up-with-network', {network: 'BNB'}) }}
         </nuxt-link>
         <nuxt-link class="button button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/eth')" v-if="!isMainnet">
             <img class="button__icon" src="/img/icon-topup-eth.svg" alt="" role="presentation">
-            {{ $td('Top up with ETH', 'topup.top-up-with-eth') }}
+            {{ $td('Top up with ETH', 'topup.top-up-with-network', {network: 'ETH'}) }}
         </nuxt-link>
         <a class="button button--full u-mt-10" :href="card2MinterUrl" v-if="isMainnet">
             <img class="button__icon" src="/img/icon-topup-card.svg" alt="" role="presentation">
@@ -82,7 +82,7 @@ export default {
         </a>
         <nuxt-link class="button button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/minter')">
             <img class="button__icon" src="/img/icon-topup-minter.svg" alt="" role="presentation">
-            {{ $td('Top up with Minter', 'topup.top-up-with-minter') }}
+            {{ $td('Top up with Minter', 'topup.top-up-with-network', {network: 'Minter'}) }}
         </nuxt-link>
 
         <nuxt-link class="button button--ghost button--full u-mt-10" :to="$i18nGetPreferredPath({path: $options.DASHBOARD_URL})">
