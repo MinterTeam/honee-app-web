@@ -47,20 +47,6 @@ export default {
                 },
             },
             {
-                title: 'Buy SHIB',
-                description: 'SHIBA INU is a 2020–2021 crypto phenomenon. A memecoin first, it soon became legendary making it in the top 10 cryptos and getting listed on the largest exchanges such as Coinbase.',
-                icon: 'SHIB',
-                stats: {
-                    price: 'SHIB',
-                },
-                tags: ['Exchange', 'SHIB'],
-                action: '/swap/SHIB',
-                ru: {
-                    title: 'Купить SHIB',
-                    description: 'SHIBA INU — крипто-феномен 2020–2021. Мемкойн, который вскоре стал легендарным и занял строчку в топ-10 криптовалют, а также был добавлен на крупнейшие биржи, такие как Coinbase.',
-                },
-            },
-            {
                 title: 'Buy BNB',
                 description: 'BNB is the cryptocurrency coin that powers the Binance ecosystem. BNB is one of the world\'s most popular utility tokens.',
                 icon: 'BNB',
@@ -86,76 +72,6 @@ export default {
                 ru: {
                     title: 'Купить LUNABSC',
                     description: 'Нативный токен Terra, LUNA, используется для стабилизации цены стейблкоинов протокола. Владельцы LUNA также могут подавать предложения по управлению и голосовать за них, придавая ему функциональность токена управления.',
-                },
-            },
-            {
-                title: 'Buy UNIBSC',
-                description: 'The UNI token serves the purpose of enabling shared community ownership in the growth and development of the Uniswap decentralized protocol.',
-                icon: 'UNIBSC',
-                stats: {
-                    price: 'UNIBSC',
-                },
-                tags: ['Exchange', 'UNIBSC'],
-                action: '/swap/UNIBSC',
-                ru: {
-                    title: 'Купить UNIBSC',
-                    description: 'Токен UNI служит для обеспечения совместного участия сообщества в росте и развитии децентрализованного протокола Uniswap.',
-                },
-            },
-            {
-                title: 'Buy DOGEBSC',
-                description: 'Dogecoin (DOGE) is based on the popular "doge" Internet meme "doge", one of the most popular meme-tokens.',
-                icon: 'DOGEBSC',
-                stats: {
-                    price: 'DOGEBSC',
-                },
-                tags: ['Exchange', 'DOGEBSC'],
-                action: '/swap/DOGEBSC',
-                ru: {
-                    title: 'Купить DOGEBSC',
-                    description: 'Dogecoin (DOGE) родился из популярного интернет-мема «doge», один из самых популярных мем-токенов.',
-                },
-            },
-            {
-                title: 'Buy MATICBSC',
-                description: 'The MATIC tokens are used for payment services on Polygon and as a settlement currency between users who operate within the Polygon ecosystem.',
-                icon: 'MATICBSC',
-                stats: {
-                    price: 'MATICBSC',
-                },
-                tags: ['Exchange', 'MATICBSC'],
-                action: '/swap/MATICBSC',
-                ru: {
-                    title: 'Купить MATICBSC',
-                    description: 'Токены MATIC используются для платежей на Polygon и в качестве валюты расчетов между пользователями, которые работают в экосистеме Polygon.',
-                },
-            },
-            {
-                title: 'Buy CAKEBSC',
-                description: 'The PancakeSwap token CAKE is a BEP20 token that originally launched on Binance Smart Chain. The main function of CAKE is to incentivize the liquidity provision to the PancakeSwap platform.',
-                icon: 'CAKEBSC',
-                stats: {
-                    price: 'CAKEBSC',
-                },
-                tags: ['Exchange', 'CAKEBSC'],
-                action: '/swap/CAKEBSC',
-                ru: {
-                    title: 'Купить CAKEBSC',
-                    description: 'Токен PancakeSwap CAKE — это токен BEP20, который изначально был запущен на Binance Smart Chain. Основная функция CAKE — стимулировать предоставление ликвидности платформе PancakeSwap.',
-                },
-            },
-            {
-                title: 'Buy DOTBSC',
-                description: 'Polkadot’s native DOT token serves three clear purposes: staking for operations and security, facilitating network governance, and bonding tokens to connect parachains.',
-                icon: 'DOTBSC',
-                stats: {
-                    price: 'DOTBSC',
-                },
-                tags: ['Exchange', 'DOTBSC'],
-                action: '/swap/DOTBSC',
-                ru: {
-                    title: 'Купить DOTBSC',
-                    description: 'Токен DOT (Polkadot), выполняет три основные задачи: обеспечивает управление сетью, ее операционную деятельность, а также задействован в создании парачейнов.',
                 },
             },
             {
@@ -229,31 +145,17 @@ export default {
                 },
             },
             {
-                title: 'Buy METAINDEX',
-                description: 'METAINDEX (MVI on Ethereum) represents a basket of tokens of virtual worlds also known as metaverses.',
-                icon: 'METAINDEX',
+                title: 'Buy GMTBSC',
+                description: 'STEPN is a self-styled “Web3 lifestyle app” with GameFi elements. It combines aspects of a play-to-earn game with a fitness app to create a new category coined “move-to-earn.”',
+                icon: 'GMTBSC',
                 stats: {
-                    price: 'METAINDEX',
+                    price: 'GMTBSC',
                 },
-                tags: ['Exchange', 'METAINDEX'],
-                action: '/swap/METAINDEX',
+                tags: ['Exchange', 'GMTBSC'],
+                action: '/swap/GMTBSC',
                 ru: {
-                    title: 'Купить METAINDEX',
-                    description: 'METAINDEX (MVI на Ethereum) представляет собой корзину токенов виртуальных миров (метавселенных).',
-                },
-            },
-            {
-                title: 'Buy ALPACA',
-                description: 'Alpaca Finance is the largest lending protocol allowing leveraged yield farming on BNB Chain.',
-                icon: 'ALPACA',
-                stats: {
-                    price: 'ALPACA',
-                },
-                tags: ['Exchange', 'ALPACA'],
-                action: '/swap/ALPACA',
-                ru: {
-                    title: 'Купить ALPACA',
-                    description: 'Alpaca Finance – это крупнейший протокол кредитования, позволяющий получать высокую доходность в доходном фермерстве на BNB Chain.',
+                    title: 'Купить GMTBSC',
+                    description: 'STEPN — это лайфстайл-приложение с элементами GameFi. Он сочетает в себе аспекты игры «играй, чтобы заработать» и фитнес-приложение с новой категорией «двигайся, чтобы зарабатывать».',
                 },
             },
         ],
@@ -266,7 +168,7 @@ export default {
                 icon: BASE_COIN,
                 stats: {
                     caption: 'APY',
-                    value: '40%',
+                    value: '10%',
                 },
                 tags: ['Staking', BASE_COIN],
                 action: `/delegate/${BASE_COIN}`,
@@ -321,36 +223,6 @@ export default {
                 },
             },
             {
-                title: 'Yield farming POWERBANK / BIP',
-                description: 'Put your POWERBANK and BIP into a liquidity pool to start getting extra daily rewards.',
-                icon: ['POWERBANK', 'BIP'],
-                stats: {
-                    caption: 'APR in POWERBANK',
-                    value: '36.5%',
-                },
-                tags: ['Farming', 'POWERBANK', 'BIP'],
-                action: '/farm/POWERBANK/BIP',
-                ru: {
-                    title: 'Фарминг POWERBANK / BIP',
-                    description: 'Положите свои POWERBANK и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                },
-            },
-            {
-                title: 'Yield farming SQD / BIP',
-                description: 'Put your SQD and BIP into a liquidity pool to start getting extra daily rewards.',
-                icon: ['SQD', 'BIP'],
-                stats: {
-                    caption: 'APR in MUSD',
-                    value: '124%',
-                },
-                tags: ['Farming', 'SQD', 'BIP'],
-                action: '/farm/SQD/BIP',
-                ru: {
-                    title: 'Фарминг SQD / BIP',
-                    description: 'Положите свои SQD и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                },
-            },
-            {
                 title: 'Yield farming LUNABSC / HUB',
                 description: 'Put your LUNABSC and HUB into a liquidity pool to start getting extra daily rewards.',
                 icon: ['LUNABSC', 'HUB'],
@@ -363,6 +235,21 @@ export default {
                 ru: {
                     title: 'Фарминг LUNABSC / HUB',
                     description: 'Положите свои LUNABSC и HUB в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                },
+            },
+            {
+                title: 'Yield farming GMTBSC / BIP',
+                description: 'Put your GMTBSC and BIP into a liquidity pool to start getting extra daily rewards.',
+                icon: ['GMTBSC', 'BIP'],
+                stats: {
+                    caption: 'APR in BIP',
+                    value: '124%',
+                },
+                tags: ['Farming', 'GMTBSC', 'BIP'],
+                action: '/farm/GMTBSC/BIP',
+                ru: {
+                    title: 'Фарминг GMTBSC / BIP',
+                    description: 'Положите свои GMTBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
                 },
             },
         ],
