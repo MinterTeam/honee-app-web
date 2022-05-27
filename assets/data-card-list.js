@@ -207,51 +207,6 @@ export default {
                     description: 'Положите свои BIP и MUSD в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
                 },
             },
-            {
-                title: 'Yield farming BEE / MUSD',
-                description: 'Put your BEE and MUSD into a liquidity pool to start getting extra daily rewards.',
-                icon: ['BEE', 'MUSD'],
-                stats: {
-                    caption: 'APR in MUSD',
-                    value: '121.5%',
-                },
-                tags: ['Farming', 'BEE', 'MUSD'],
-                action: '/farm/BEE/MUSD',
-                ru: {
-                    title: 'Фарминг BEE / MUSD',
-                    description: 'Положите свои BEE и MUSD в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                },
-            },
-            {
-                title: 'Yield farming LUNABSC / HUB',
-                description: 'Put your LUNABSC and HUB into a liquidity pool to start getting extra daily rewards.',
-                icon: ['LUNABSC', 'HUB'],
-                stats: {
-                    caption: 'APR in BIP',
-                    value: '124%',
-                },
-                tags: ['Farming', 'LUNABSC', 'HUB'],
-                action: '/farm/LUNABSC/HUB',
-                ru: {
-                    title: 'Фарминг LUNABSC / HUB',
-                    description: 'Положите свои LUNABSC и HUB в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                },
-            },
-            {
-                title: 'Yield farming GMTBSC / BIP',
-                description: 'Put your GMTBSC and BIP into a liquidity pool to start getting extra daily rewards.',
-                icon: ['GMTBSC', 'BIP'],
-                stats: {
-                    caption: 'APR in BIP',
-                    value: '124%',
-                },
-                tags: ['Farming', 'GMTBSC', 'BIP'],
-                action: '/farm/GMTBSC/BIP',
-                ru: {
-                    title: 'Фарминг GMTBSC / BIP',
-                    description: 'Положите свои GMTBSC и BIP в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                },
-            },
         ],
     },
 };
