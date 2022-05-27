@@ -5,6 +5,48 @@ export default {
         title: 'Buy',
         cards: [
             {
+                title: 'Buy BEE',
+                description: 'Get native digital coin of Honee, a simple crypto wallet that helps you earn.',
+                icon: 'BEE',
+                stats: {
+                    price: 'BEE',
+                },
+                tags: ['Exchange', 'BEE'],
+                action: '/swap/BEE',
+                ru: {
+                    title: 'Купить BEE',
+                    description: 'Приобретите основную монету Honee — простейшего криптокошелька, который помогает вам зарабатывать.',
+                },
+            },
+            {
+                title: 'Buy HUB',
+                description: 'Get native digital token of Minter Hub, a cross-chain bridge to global crypto liquidity.',
+                icon: 'HUB',
+                stats: {
+                    price: 'HUB',
+                },
+                tags: ['Exchange', 'HUB'],
+                action: '/swap/HUB',
+                ru: {
+                    title: 'Купить HUB',
+                    description: 'Приобретите основной токен Minter Hub — кросс-чейн моста в глобальную криптоликвидность.',
+                },
+            },
+            {
+                title: `Buy ${BASE_COIN}`,
+                description: 'Get native digital coin of Minter, a single decentralized network supporting many digital assets.',
+                icon: BASE_COIN,
+                stats: {
+                    price: BASE_COIN,
+                },
+                tags: ['Exchange', BASE_COIN],
+                action: `/swap/${BASE_COIN}`,
+                ru: {
+                    title: 'Купить BIP',
+                    description: 'Приобретите основную монету Minter — единой децентрализованной сети с поддержкой многих цифровых активов.',
+                },
+            },
+            {
                 title: 'Buy BTC',
                 description: 'Buy Bitcoin, the first cryptocurrency.',
                 icon: 'BTC',
@@ -33,20 +75,6 @@ export default {
                 },
             },
             {
-                title: 'Buy TON',
-                description: 'Get a base coin of the TON Blockchain, a project that aims to unite all existing blockchains and the Internet itself into a single Web 3.0 network.',
-                icon: 'TON',
-                stats: {
-                    price: 'TON',
-                },
-                tags: ['Exchange', 'TON'],
-                action: '/swap/TON',
-                ru: {
-                    title: 'Купить TON',
-                    description: 'Приобретите базовую монету TON — проекта, который стремится объединить все существующие блокчейны и сам Интернет в единую Web 3.0-сеть.',
-                },
-            },
-            {
                 title: 'Buy BNB',
                 description: 'BNB is the cryptocurrency coin that powers the Binance ecosystem. BNB is one of the world\'s most popular utility tokens.',
                 icon: 'BNB',
@@ -61,6 +89,20 @@ export default {
                 },
             },
             {
+                title: 'Buy TON',
+                description: 'Get a base coin of the TON Blockchain, a project that aims to unite all existing blockchains and the Internet itself into a single Web 3.0 network.',
+                icon: 'TON',
+                stats: {
+                    price: 'TON',
+                },
+                tags: ['Exchange', 'TON'],
+                action: '/swap/TON',
+                ru: {
+                    title: 'Купить TON',
+                    description: 'Приобретите базовую монету TON — проекта, который стремится объединить все существующие блокчейны и сам Интернет в единую Web 3.0-сеть.',
+                },
+            },
+            {
                 title: 'Buy LUNABSC',
                 description: 'Terra\'s native token, LUNA, is used to stabilize the price of the protocol\'s stablecoins. LUNA holders are also able to submit and vote on governance proposals, giving it the functionality of a governance token.',
                 icon: 'LUNABSC',
@@ -72,48 +114,6 @@ export default {
                 ru: {
                     title: 'Купить LUNABSC',
                     description: 'Нативный токен Terra, LUNA, используется для стабилизации цены стейблкоинов протокола. Владельцы LUNA также могут подавать предложения по управлению и голосовать за них, придавая ему функциональность токена управления.',
-                },
-            },
-            {
-                title: `Buy ${BASE_COIN}`,
-                description: 'Get native digital coin of Minter, a single decentralized network supporting many digital assets.',
-                icon: BASE_COIN,
-                stats: {
-                    price: BASE_COIN,
-                },
-                tags: ['Exchange', BASE_COIN],
-                action: `/swap/${BASE_COIN}`,
-                ru: {
-                    title: 'Купить BIP',
-                    description: 'Приобретите основную монету Minter — единой децентрализованной сети с поддержкой многих цифровых активов.',
-                },
-            },
-            {
-                title: 'Buy HUB',
-                description: 'Get native digital token of Minter Hub, a cross-chain bridge to global crypto liquidity.',
-                icon: 'HUB',
-                stats: {
-                    price: 'HUB',
-                },
-                tags: ['Exchange', 'HUB'],
-                action: '/swap/HUB',
-                ru: {
-                    title: 'Купить HUB',
-                    description: 'Приобретите основной токен Minter Hub — кросс-чейн моста в глобальную криптоликвидность.',
-                },
-            },
-            {
-                title: 'Buy BEE',
-                description: 'Get native digital coin of Honee, a simple crypto wallet that helps you earn.',
-                icon: 'BEE',
-                stats: {
-                    price: 'BEE',
-                },
-                tags: ['Exchange', 'BEE'],
-                action: '/swap/BEE',
-                ru: {
-                    title: 'Купить BEE',
-                    description: 'Приобретите основную монету Honee — простейшего криптокошелька, который помогает вам зарабатывать.',
                 },
             },
             {
