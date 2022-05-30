@@ -113,7 +113,7 @@ export default {
                     </nuxt-link>
                     <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('swap')">
                         <img class="button__icon" src="/img/icon-white-swap.svg" width="24" height="24" alt="" role="presentation">
-                        {{ $td('Buy', 'index.swap') }}
+                        {{ $td('Swap', 'index.swap') }}
                     </nuxt-link>
                     <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('send')">
                         <img class="button__icon" src="/img/icon-white-send.svg" width="24" height="24" alt="" role="presentation">
@@ -134,7 +134,7 @@ export default {
                     <Card :card="card" v-if="card.action"/>
 
                     <div class="card card__content--small" v-if="card === $options.BASE_CARD.DELEGATION">
-                        <h3 class="card__action-title">{{ $td('Delegation', 'index.delegation') }}</h3>
+                        <h3 class="card__action-title-value u-mb-05">{{ $td('Delegation', 'index.delegation') }}</h3>
                         <p class="">{{ $td('Bonding your BIP or custom coins to a network validator and getting rewards (portion of block rewards + transaction fees). The returns are shared among all delegators proportionally to their stake, minus validator’s fee.', 'index.delegation-desc') }}</p>
 
                         <nuxt-link class="button button--main button--full u-mt-10" :to="pageUrl('delegate')">
@@ -149,7 +149,7 @@ export default {
                     </div>
 
                     <div class="card card__content--small" v-if="card === $options.BASE_CARD.LIQUIDITY">
-                        <h3 class="card__action-title">{{ $td('Providing liquidity', 'index.providing-liquidity') }}</h3>
+                        <h3 class="card__action-title-value u-mb-05">{{ $td('Providing liquidity', 'index.providing-liquidity') }}</h3>
                         <p class="">
                             <template v-if="$i18n.locale === 'en'">
                                 Liquidity providers deposit both coins in a pair and in return, collect <a class="link--default" href="https://www.minter.network/earn/lp-fees" target="_blank">fee rewards</a> paid by traders who use that pool to make swaps. On top of this fee, some pools may have additional incentive programs such as <a class="link--default" href="https://www.minter.network/earn/farm" target="_blank">farming</a> and <a class="link--default" href="https://www.minter.network/earn/giveaway" target="_blank">giveaways</a>.

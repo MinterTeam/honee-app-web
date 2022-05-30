@@ -11,6 +11,7 @@ export const PROMISE_STATUS = {
 };
 
 //workaround for `set` not trigger computed properly
+// @see https://github.com/vuejs/composition-api/issues/580
 function getInitialChainData() {
     return Object.fromEntries(Object.values(HUB_CHAIN_DATA).map((item) => [item.chainId, {}]));
 }
