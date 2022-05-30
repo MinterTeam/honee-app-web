@@ -1,15 +1,15 @@
 <script>
 import AlphaBanner from '~/layouts/_alpha-banner.vue';
-import Header from '~/layouts/_header.vue';
-import Footer from '~/layouts/_footer.vue';
+import TheHeader from '~/layouts/_header.vue';
+import TheFooter from '~/layouts/_footer.vue';
 import ConnectionNotice from '~/components/ConnectionNotice.vue';
 import Snackbar from '~/components/base/Snackbar.vue';
 
 export default {
     components: {
         AlphaBanner,
-        Header,
-        Footer,
+        TheHeader,
+        TheFooter,
         ConnectionNotice,
         Snackbar,
     },
@@ -30,11 +30,11 @@ export default {
 <template>
     <div>
         <AlphaBanner/>
-        <Header/>
+        <TheHeader/>
 
         <nuxt class="u-section u-container"/>
 
-        <Footer/>
+        <TheFooter/>
 
         <ConnectionNotice/>
         <Snackbar/>

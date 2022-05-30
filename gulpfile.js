@@ -51,12 +51,17 @@ gulp.task('less', function() {
             postcssPresetEnv({
                 stage: 2,
                 features: {
+                    // not performant
                     'all-property': false,
                     'case-insensitive-attributes': false,
-                    'focus-visible-pseudo-class': false,
-                    'focus-within-pseudo-class': false,
-                    'matches-pseudo-class': false,
+                    // requires js polyfill
+                    // 'blank-pseudo-class': false,
+                    // 'focus-visible-pseudo-class': false,
+                    // 'focus-within-pseudo-class': false,
+                    // 'has-pseudo-class': false,
+                    // 'prefers-color-scheme-query': false,
                 },
+                enableClientSidePolyfills: false,
             }),
         ]))
         .pipe(cleanCss({
