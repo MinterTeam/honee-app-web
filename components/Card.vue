@@ -101,19 +101,22 @@ function poolHasCoin(pool, symbol) {
                  v-for="icon in iconList" :key="icon"
                  :src="getIconUrl(icon)"
             >
+            <div class="card__action-title">
+                <div class="card__action-title-type">{{ translate('type') }}</div>
+                <div class="card__action-title-value">{{ translate('title') }}</div>
+            </div>
             <div class="card__action-stats">
                 <div class="card__action-stats-caption">{{ card.stats.caption }}</div>
                 <div class="card__action-stats-value">{{ card.stats.value }}</div>
             </div>
         </div>
-        <h3 class="card__action-title">{{ translate('title') }}</h3>
         <p class="card__action-description">{{ translate('description') }}</p>
 
         <!--<div class="card__action-tag-list">
             <div class="card__action-tag" v-for="tag in card.tags" :key="tag">{{ $td(tag, `action.tag-${tag.toLowerCase()}`) }}</div>
         </div>-->
 
-        <div class="u-mt-15">
+        <div class="u-mt-10">
             <div class="u-grid">
                 <div class="u-cell" :class="isUndoAvailable ? 'u-cell--6-10': ''">
                     <nuxt-link class="button button--full " :to="pageUrl(card.action)">

@@ -5,8 +5,9 @@ export default {
         title: 'Buy',
         cards: [
             {
-                title: 'Buy BEE',
-                description: 'Get native digital coin of Honee, a simple crypto wallet that helps you earn.',
+                type: 'Buy',
+                title: 'BEE',
+                description: 'Get native digital coin of Honee crypto wallet. Soon you\'ll be able to stake BEE to get everyday rewards.',
                 icon: 'BEE',
                 stats: {
                     price: 'BEE',
@@ -15,11 +16,12 @@ export default {
                 action: '/swap/BEE',
                 ru: {
                     title: 'Купить BEE',
-                    description: 'Приобретите основную монету Honee — простейшего криптокошелька, который помогает вам зарабатывать.',
+                    description: 'Приобретите монету крипто-кошелька Honee. Вскоре вы сможете отправить BEE в стейкинг, чтобы получать ежедневные награды.',
                 },
             },
             {
-                title: 'Buy HUB',
+                type: 'Buy',
+                title: 'HUB',
                 description: 'Get native digital token of Minter Hub, a cross-chain bridge to global crypto liquidity.',
                 icon: 'HUB',
                 stats: {
@@ -33,7 +35,8 @@ export default {
                 },
             },
             {
-                title: `Buy ${BASE_COIN}`,
+                type: 'Buy',
+                title: `${BASE_COIN}`,
                 description: 'Get native digital coin of Minter, a single decentralized network supporting many digital assets.',
                 icon: BASE_COIN,
                 stats: {
@@ -47,7 +50,8 @@ export default {
                 },
             },
             {
-                title: 'Buy BTC',
+                type: 'Buy',
+                title: 'BTC',
                 description: 'Buy Bitcoin, the first cryptocurrency.',
                 icon: 'BTC',
                 stats: {
@@ -61,8 +65,9 @@ export default {
                 },
             },
             {
-                title: 'Buy ETH',
-                description: 'Buy Ether.',
+                type: 'Buy',
+                title: 'ETH',
+                description: 'Ethereum is a decentralized open-source blockchain system that features its own cryptocurrency, Ether.',
                 icon: 'ETH',
                 stats: {
                     price: 'ETH',
@@ -71,11 +76,12 @@ export default {
                 action: '/swap/ETH',
                 ru: {
                     title: 'Купить ETH',
-                    description: 'Приобретите основную монету сети Ethereum.',
+                    description: 'Ethereum — это платформа смарт-контрактов, которая позволяет разработчикам создавать децентрализованные приложения (DApps). Ether (ETH) - это нативная цифровая валюта платформы Ethereum.',
                 },
             },
             {
-                title: 'Buy BNB',
+                type: 'Buy',
+                title: 'BNB',
                 description: 'BNB is the cryptocurrency coin that powers the Binance ecosystem. BNB is one of the world\'s most popular utility tokens.',
                 icon: 'BNB',
                 stats: {
@@ -89,7 +95,8 @@ export default {
                 },
             },
             {
-                title: 'Buy TON',
+                type: 'Buy',
+                title: 'TON',
                 description: 'Get a base coin of the TON Blockchain, a project that aims to unite all existing blockchains and the Internet itself into a single Web 3.0 network.',
                 icon: 'TON',
                 stats: {
@@ -103,21 +110,8 @@ export default {
                 },
             },
             {
-                title: 'Buy LUNABSC',
-                description: 'Terra\'s native token, LUNA, is used to stabilize the price of the protocol\'s stablecoins. LUNA holders are also able to submit and vote on governance proposals, giving it the functionality of a governance token.',
-                icon: 'LUNABSC',
-                stats: {
-                    price: 'LUNABSC',
-                },
-                tags: ['Exchange', 'LUNABSC'],
-                action: '/swap/LUNABSC',
-                ru: {
-                    title: 'Купить LUNABSC',
-                    description: 'Нативный токен Terra, LUNA, используется для стабилизации цены стейблкоинов протокола. Владельцы LUNA также могут подавать предложения по управлению и голосовать за них, придавая ему функциональность токена управления.',
-                },
-            },
-            {
-                title: 'Buy SQD',
+                type: 'Buy',
+                title: 'SQD',
                 description: 'Buy a Minter-powered meme token brought to you by fans of a popular series Squid Game.',
                 icon: 'SQD',
                 stats: {
@@ -131,7 +125,8 @@ export default {
                 },
             },
             {
-                title: 'Buy ARCONA',
+                type: 'Buy',
+                title: 'ARCONA',
                 description: 'Get a native token of ARCONA metaverse  that allows you to purchase digital lands and place any models.',
                 icon: 'ARCONA',
                 stats: {
@@ -145,7 +140,8 @@ export default {
                 },
             },
             {
-                title: 'Buy GMTBSC',
+                type: 'Buy',
+                title: 'GMTBSC',
                 description: 'STEPN is a self-styled “Web3 lifestyle app” with GameFi elements. It combines aspects of a play-to-earn game with a fitness app to create a new category coined “move-to-earn.”',
                 icon: 'GMTBSC',
                 stats: {
@@ -163,7 +159,8 @@ export default {
     earn: {
         cards: [
             {
-                title: `Delegation of ${BASE_COIN}`,
+                type: 'Delegate',
+                title: `${BASE_COIN}`,
                 description: '‘Tie’ your BIP to any validator of the Minter Network and start getting rewards every hour.',
                 icon: BASE_COIN,
                 stats: {
@@ -178,7 +175,8 @@ export default {
                 },
             },
             {
-                title: 'Yield farming HUB / BNB',
+                type: 'Yield farming',
+                title: 'HUB / BNB',
                 description: 'Put your HUB and BNB into a liquidity pool to start getting extra daily rewards.',
                 icon: ['HUB', 'BNB'],
                 stats: {
@@ -193,7 +191,8 @@ export default {
                 },
             },
             {
-                title: 'Yield farming BIP / MUSD',
+                type: 'Yield farming',
+                title: 'BIP / MUSD',
                 description: 'Put your BIP and MUSD into a liquidity pool to start getting extra daily rewards.',
                 icon: ['BIP', 'MUSD'],
                 stats: {
