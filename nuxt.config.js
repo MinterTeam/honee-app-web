@@ -162,6 +162,9 @@ module.exports = {
         },
         '@nuxt/content',
     ],
+    buildModules: [
+        setVueAliasesModule,
+    ],
     plugins: [
         { src: '~/plugins/i18n-mock-preferred.js'},
         { src: '~/plugins/base-url-prefix.js'},
@@ -256,3 +259,42 @@ module.exports = {
         ],
     },
 };
+
+
+// @see https://github.com/nuxt-community/composition-api/blob/main/src/module/index.ts#L24
+function setVueAliasesModule() {
+    const nuxt = this.nuxt;
+    const vueEntry =
+        nuxt.options.alias.vue ||
+        (nuxt.options.dev
+            ? this.nuxt.resolver.resolveModule('vue/dist/vue.common.dev.js')
+            : this.nuxt.resolver.resolveModule('vue/dist/vue.runtime.esm.js'));
+
+    const vueAliases = Object.fromEntries(
+        [
+            // vue 2 dist files
+            '.common.dev',
+            '.common',
+            '.common.prod',
+            '.esm.browser',
+            '.esm.browser.min',
+            '.esm',
+            '',
+            '.min',
+            '.runtime.common.dev',
+            '.runtime.common',
+            '.runtime.common.prod',
+            '.runtime.esm',
+            '.runtime',
+            '.runtime.min',
+        ]
+            .flatMap((m) => [`vue/dist/vue${m}`, `vue/dist/vue${m}.js`])
+            .map((m) => [m, vueEntry]),
+    );
+
+    nuxt.options.alias = {
+        ...vueAliases,
+        ...nuxt.options.alias,
+        vue: vueEntry,
+    };
+}

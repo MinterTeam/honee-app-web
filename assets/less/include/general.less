@@ -262,7 +262,8 @@ blockquote {
 
 
 // button-loader
-@loader-length: 16 * 3.14 * 2; // длина окружности
+@loader-radius: 16; // same as `r` on svg `circle`
+@loader-length: @loader-radius * 3.14 * 2; // длина окружности
 .loader {width: 40px; height: 40px; margin: auto; pointer-events: none; animation: loader-rotate 2s linear infinite;}
 .loader--button {
     position: absolute; left: 0; right: 0; top: 0; bottom: 0; opacity: 0; transition: 0.05s;
