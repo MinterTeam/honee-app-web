@@ -241,7 +241,7 @@ export default {
             -->
         </template>
 
-        <template v-slot:default>
+        <template v-slot:default="{fee}">
             <div class="form-row">
                 <FieldCombined
                     :coin.sync="form.coin0"
@@ -250,6 +250,7 @@ export default {
                     :amount.sync="form.volume0"
                     :$amount="$v.form.volume0"
                     :useBalanceForMaxValue="true"
+                    :fee="fee"
                     :label="$td('First coin', 'form.pool-coin0')"
                     @input-native="selectedInput = $options.INPUT_TYPE.AMOUNT0"
                     @use-max="selectedInput = $options.INPUT_TYPE.AMOUNT0"

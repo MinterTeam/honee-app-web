@@ -1059,7 +1059,7 @@ function getSwapOutput(receipt) {
                                 rate
                             </div>
                         </div>
-                        <div class="u-fw-600 u-text-number">≈ ${{ pretty(currentPrice) }}</div>
+                        <div class="estimation__value">≈ ${{ pretty(currentPrice) }}</div>
                     </div>
                 </div>
 
@@ -1149,7 +1149,7 @@ function getSwapOutput(receipt) {
                     <div class="estimation__coin">
                         <div class="estimation__coin-symbol">{{ form.coinToGet }} rate</div>
                     </div>
-                    <div class="u-fw-600 u-text-number">≈ ${{ pretty(currentPrice) }}</div>
+                    <div class="estimation__value">≈ ${{ pretty(currentPrice) }}</div>
                 </div>
             </div>
 

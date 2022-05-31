@@ -114,7 +114,7 @@ export default {
         <div class="u-grid">
             <div class="u-cell u-cell--auto-grow" v-if="isClipboardSupported">
                 <button
-                    class="button button--main button--full button--narrow"
+                    class="button button--main button--full button--narrow u-mt-05"
                     @click="copy(address)"
                 >
                     {{ $td('Copy', 'topup-network.copy') }}
@@ -122,7 +122,7 @@ export default {
             </div>
             <div class="u-cell u-cell--auto-grow" v-if="isShareSupported">
                 <button
-                    class="button button--main button--full button--narrow"
+                    class="button button--main button--full button--narrow u-mt-05"
                     @click="shareAddress"
                 >
                     {{ $td('Share', 'topup-network.share') }}
@@ -130,7 +130,7 @@ export default {
             </div>
             <div class="u-cell u-cell--auto-grow">
                 <button
-                    class="button button--main button--full button--narrow"
+                    class="button button--main button--full button--narrow u-mt-05"
                     @click="isQrVisible = !isQrVisible"
                 >
                     <template v-if="!isQrVisible">

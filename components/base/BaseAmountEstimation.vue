@@ -60,7 +60,7 @@ export default {
             <img class="estimation__coin-icon" :src="$store.getters['explorer/getCoinIcon'](coin)" width="20" height="20" alt="" role="presentation">
             <div class="estimation__coin-symbol">{{ coin }}</div>
         </div>
-        <div class="u-fw-600 u-text-number">
+        <div class="estimation__value">
             <span class="u-text-muted" v-if="amountUsd">(${{ pretty(amountUsd) }})</span>
             <span v-if="format === $options.FORMAT_TYPE.EXACT">{{ prettyExact(amount) }}</span>
             <span v-else :title="prettyExact(amount)">

@@ -455,6 +455,7 @@
                     :amount.sync="form.sellAmount"
                     :$amount="$v.form.sellAmount"
                     :useBalanceForMaxValue="true"
+                    :fee="fee"
                     :isUseMax.sync="isUseMax"
                     :label="$td('You pay', 'form.swap-sell-coin')"
                     @input-native="isSelling = true"
@@ -509,7 +510,7 @@
                             <img class="estimation__coin-icon" :src="$store.getters['explorer/getCoinIcon'](form.coinFrom)" width="20" height="20" alt="" role="presentation">
                             <div class="estimation__coin-symbol">{{ form.coinFrom }}</div>
                         </div>
-                        <div class="u-fw-600 u-text-number">≈{{ pretty(form.sellAmount || 0) }}</div>
+                        <div class="estimation__value">≈{{ pretty(form.sellAmount || 0) }}</div>
                     </div>
                 </template>
                 <template v-if="params.coinToBuy">
@@ -519,7 +520,7 @@
                             <img class="estimation__coin-icon" :src="$store.getters['explorer/getCoinIcon'](form.coinTo)" width="20" height="20" alt="" role="presentation">
                             <div class="estimation__coin-symbol">{{ form.coinTo }}</div>
                         </div>
-                        <div class="u-fw-600 u-text-number">≈{{ pretty(form.buyAmount || 0) }}</div>
+                        <div class="estimation__value">≈{{ pretty(form.buyAmount || 0) }}</div>
                     </div>
                 </template>
             </div>
@@ -534,7 +535,7 @@
                 <span class="bip-form__error" v-if="serverError">{{ serverError }}</span>
             </div>
 
-            <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the text below.', 'form.read-understood') }}</p>
+            <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the disclaimer below.', 'form.read-understood') }}</p>
         </form>
 
         <!-- Confirm Modal -->

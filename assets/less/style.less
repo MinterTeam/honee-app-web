@@ -103,10 +103,11 @@
 .auth__body {}
 //.auth__bg {position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin-top: 40px; margin-left: -3px; z-index: -1;}
 .auth__bee {position: absolute; bottom: 100%; right: 10px; margin-bottom: 8px;}
-.auth__logo {display: block; margin-inline: auto; margin-bottom: 64px; margin-top: 60px;}
-@media (min-width: @breakpoint-medium-up) {
+.auth__logo {display: block; margin-inline: auto; margin-bottom: 24px; margin-top: 60px;}
+.auth__subtitle {text-align: center; margin-bottom: 40px;}
+/*@media (min-width: @breakpoint-medium-up) {
     .auth__body {background-image: url(../img/auth-bg.svg); background-position: 50% 10%; background-repeat: no-repeat;}
-}
+}*/
 
 
 .v-transition-toast-enter-active, .v-transition-toast-leave-active {
@@ -313,11 +314,12 @@
     font-weight: 700;font-size: 10px;line-height: 12px;letter-spacing: 1px;text-transform: uppercase; color: @c-black-light;
     &:not(:first-child) {margin-top: 16px;}
 }
-.estimation__item {display: flex; justify-content: space-between; margin-top: 8px; font-size: 16px; line-height: 20px; font-weight: 600;}
+.estimation__item {display: flex; justify-content: space-between; align-items: flex-start; margin-top: 8px; font-size: 16px; line-height: 20px; font-weight: 600;}
 .estimation__item--content {display: block;}
 .estimation__coin {display: flex; align-items: center; margin-right: 16px;}
 .estimation__coin-icon {margin-right: 8px; border-radius: 50%;}
 .estimation__coin-symbol {}
+.estimation__value { .u-text-number(); min-width: 0; text-align: right; font-weight: 600; overflow-wrap: break-word;}
 
 @h-field-title-height: 16px;
 @h-field-title-margin: 6px;

@@ -58,6 +58,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        fee: {
+            type: Object,
+            default: undefined,
+        },
         isEstimation: {
             type: Boolean,
             default: false,
@@ -131,6 +135,7 @@ export default {
             :$value="$amount"
             :address-balance="useBalanceForMaxValue ? $store.state.balance : undefined"
             :selected-coin-symbol="coin"
+            :fee="fee"
             :max-value="maxValue"
             :is-estimation="isEstimation"
             :is-loading="isLoading"

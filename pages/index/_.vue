@@ -154,7 +154,7 @@ export default {
         }
 
         // faq
-        const localePrefix = this.$i18n.locale === this.$i18n.defaultLocale ? '' : this.$i18n.locale + '/';
+        /*const localePrefix = this.$i18n.locale === this.$i18n.defaultLocale ? '' : this.$i18n.locale + '/';
         let faqItems = await this.$content(localePrefix + 'faq').where({ 'slug': { $in: actionTags } }).fetch();
         if (!faqItems) {
             return;
@@ -178,7 +178,7 @@ export default {
             }));
         });
         faq.body.children = children;
-        this.faq = Object.freeze(faq);
+        this.faq = Object.freeze(faq);*/
     },
     head() {
         if (!this.action) {

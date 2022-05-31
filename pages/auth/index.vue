@@ -28,8 +28,9 @@ export default {
 <template>
     <div class="u-section u-relative">
         <div class="u-relative">
-            <img class="auth__bee" src="/img/logo-bee.svg" alt="" role="presentation">
-            <img class="auth__logo" src="/img/logo-honee.svg" alt="Honee" width="244" height="48">
+            <!--<img class="auth__bee" src="/img/logo-bee.svg" alt="" role="presentation">-->
+            <img class="auth__logo" src="/img/logo-honee.svg" alt="Honee" width="280" height="56">
+            <h3 class="auth__subtitle">{{ $td('Crypto Wallet That Helps You Earn', 'index.sign-up-subtitle') }}</h3>
         </div>
 
         <nuxt-link class="button button--main button--full button--large" :to="$i18nGetPreferredPath('/auth/new-wallet')">{{ $td('Sign up', 'index.sign-up') }}</nuxt-link>

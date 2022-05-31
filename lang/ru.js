@@ -84,7 +84,8 @@ export default {
         'balance': 'Баланс',
         'wallet-balance-links': 'Купить BIP, HUB & BEE',
         'topup': 'Пополнить',
-        'swap': 'Обменять',
+        'swap': 'Купить',
+        'swap-wallet-button': 'Обменять',
         'send': 'Отправить',
 
         'card-button-deposit': 'Купить за BNB или ETH',
@@ -93,7 +94,7 @@ export default {
         'participate': 'Участвовать',
         'withdraw-unbond': 'Отозвать',
 
-
+        'sign-up-subtitle': 'Крипто-кошелек для заработка',
         'sign-up': 'Зарегистрируйтесь',
         'or': 'или',
 
@@ -283,7 +284,7 @@ export default {
         'reserves': 'Резерв',
         'tx-fee': 'Комиссия',
         'tx-fee-high': 'Транзакция потребует высокой комиссии.',
-        'read-understood': 'Нажатием этой кнопки вы подтверждаете, что прочитали текст ниже и поняли его.',
+        'read-understood': 'Нажатием этой кнопки вы подтверждаете, что прочитали положения отказа от ответственности, расположенного ниже и поняли их.',
         'high-eth-fee': 'Высокая комиссия в сети {network}. Она поглотит',
         'high-eth-fee-percentage': 'ваших {symbol}',
         'eth-waiting': 'Ожидание депозита {symbol}',
