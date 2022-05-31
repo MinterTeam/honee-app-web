@@ -534,7 +534,7 @@
                 <span class="bip-form__error" v-if="serverError">{{ serverError }}</span>
             </div>
 
-            <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the text below.', 'form.read-understood') }}</p>
+            <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the disclaimer below.', 'form.read-understood') }}</p>
         </form>
 
         <!-- Confirm Modal -->
