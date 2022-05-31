@@ -84,7 +84,7 @@ export default {
         'balance': 'Баланс',
         'wallet-balance-links': 'Купить BIP, HUB & BEE',
         'topup': 'Пополнить',
-        'swap': 'Обменять',
+        'swap': 'Купить',
         'send': 'Отправить',
 
         'card-button-deposit': 'Купить за BNB или ETH',
