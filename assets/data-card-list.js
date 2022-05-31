@@ -15,8 +15,9 @@ export default {
                 tags: ['Exchange', 'BEE'],
                 action: '/swap/BEE',
                 ru: {
-                    title: 'Купить BEE',
+                    title: 'BEE',
                     description: 'Приобретите монету крипто-кошелька Honee. Вскоре вы сможете отправить BEE в стейкинг, чтобы получать ежедневные награды.',
+                    type: 'Купить',
                 },
             },
             {
@@ -30,8 +31,9 @@ export default {
                 tags: ['Exchange', 'HUB'],
                 action: '/swap/HUB',
                 ru: {
-                    title: 'Купить HUB',
+                    title: 'HUB',
                     description: 'Приобретите основной токен Minter Hub — кросс-чейн моста в глобальную криптоликвидность.',
+                    type: 'Купить',
                 },
             },
             {
@@ -45,8 +47,9 @@ export default {
                 tags: ['Exchange', BASE_COIN],
                 action: `/swap/${BASE_COIN}`,
                 ru: {
-                    title: 'Купить BIP',
+                    title: 'BIP',
                     description: 'Приобретите основную монету Minter — единой децентрализованной сети с поддержкой многих цифровых активов.',
+                    type: 'Купить',
                 },
             },
             {
@@ -60,8 +63,9 @@ export default {
                 tags: ['Exchange', 'BTC'],
                 action: '/swap/BTC',
                 ru: {
-                    title: 'Купить BTC',
+                    title: 'BTC',
                     description: 'Приобретите Bitcoin, первую криптовалюту.',
+                    type: 'Купить',
                 },
             },
             {
@@ -75,8 +79,9 @@ export default {
                 tags: ['Exchange', 'ETH'],
                 action: '/swap/ETH',
                 ru: {
-                    title: 'Купить ETH',
+                    title: 'ETH',
                     description: 'Ethereum — это платформа смарт-контрактов, которая позволяет разработчикам создавать децентрализованные приложения (DApps). Ether (ETH) - это нативная цифровая валюта платформы Ethereum.',
+                    type: 'Купить',
                 },
             },
             {
@@ -90,8 +95,9 @@ export default {
                 tags: ['Exchange', 'BNB'],
                 action: '/swap/BNB',
                 ru: {
-                    title: 'Купить BNB',
+                    title: 'BNB',
                     description: 'BNB — это криптовалюта, которая поддерживает экосистему Binance. BNB является одним из самых популярных utility-токенов в мире.',
+                    type: 'Купить',
                 },
             },
             {
@@ -105,8 +111,9 @@ export default {
                 tags: ['Exchange', 'TON'],
                 action: '/swap/TON',
                 ru: {
-                    title: 'Купить TON',
+                    title: 'TON',
                     description: 'Приобретите базовую монету TON — проекта, который стремится объединить все существующие блокчейны и сам Интернет в единую Web 3.0-сеть.',
+                    type: 'Купить',
                 },
             },
             {
@@ -120,8 +127,9 @@ export default {
                 tags: ['Exchange', 'SQD'],
                 action: '/swap/SQD',
                 ru: {
-                    title: 'Купить SQD',
+                    title: 'SQD',
                     description: 'Приобретите мем-коин фан-клуба популярного сериала «Игра в кальмара», выпущенный на блокчейне Minter.',
+                    type: 'Купить',
                 },
             },
             {
@@ -135,8 +143,9 @@ export default {
                 tags: ['Exchange', 'ARCONA'],
                 action: '/swap/ARCONA',
                 ru: {
-                    title: 'Купить ARCONA',
+                    title: 'ARCONA',
                     description: 'Приобретите нативный токен метавселенной ARCONA, позволяющий покупать цифровые земли и размещать любые модели.',
+                    type: 'Купить',
                 },
             },
             {
@@ -150,8 +159,9 @@ export default {
                 tags: ['Exchange', 'GMTBSC'],
                 action: '/swap/GMTBSC',
                 ru: {
-                    title: 'Купить GMTBSC',
+                    title: 'GMTBSC',
                     description: 'STEPN — это лайфстайл-приложение с элементами GameFi. Он сочетает в себе аспекты игры «играй, чтобы заработать» и фитнес-приложение с новой категорией «двигайся, чтобы зарабатывать».',
+                    type: 'Купить',
                 },
             },
         ],
@@ -170,8 +180,9 @@ export default {
                 tags: ['Staking', BASE_COIN],
                 action: `/delegate/${BASE_COIN}`,
                 ru: {
-                    title: 'Делегирование BIP',
+                    title: 'BIP',
                     description: '«Привяжите» свои BIP к любому валидатору сети Minter и начните получать награды каждый час.',
+                    type: 'Делегирование',
                 },
             },
             {
@@ -186,8 +197,9 @@ export default {
                 tags: ['Farming', 'HUB', 'BNB'],
                 action: '/farm/HUB/BNB',
                 ru: {
-                    title: 'Фарминг HUB / BNB',
+                    title: 'HUB / BNB',
                     description: 'Положите свои HUB и BNB в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                    type: 'Фарминг',
                 },
             },
             {
@@ -202,8 +214,9 @@ export default {
                 tags: ['Farming', 'BIP', 'MUSD'],
                 action: '/farm/BIP/MUSD',
                 ru: {
-                    title: 'Фарминг BIP / MUSD',
+                    title: 'BIP / MUSD',
                     description: 'Положите свои BIP и MUSD в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                    type: 'Фарминг',
                 },
             },
         ],
