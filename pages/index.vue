@@ -113,7 +113,7 @@ export default {
                     </nuxt-link>
                     <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('swap')">
                         <img class="button__icon" src="/img/icon-white-swap.svg" width="24" height="24" alt="" role="presentation">
-                        {{ $td('Swap', 'index.swap') }}
+                        {{ $td('Swap', 'index.swap-wallet-button') }}
                     </nuxt-link>
                     <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('send')">
                         <img class="button__icon" src="/img/icon-white-send.svg" width="24" height="24" alt="" role="presentation">

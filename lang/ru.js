@@ -85,6 +85,7 @@ export default {
         'wallet-balance-links': 'Купить BIP, HUB & BEE',
         'topup': 'Пополнить',
         'swap': 'Купить',
+        'swap-wallet-button': 'Обменять',
         'send': 'Отправить',
 
         'card-button-deposit': 'Купить за BNB или ETH',
@@ -93,7 +94,7 @@ export default {
         'participate': 'Участвовать',
         'withdraw-unbond': 'Отозвать',
 
-
+        'sign-up-subtitle': 'Крипто-кошелек для заработка',
         'sign-up': 'Зарегистрируйтесь',
         'or': 'или',
 
