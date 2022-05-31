@@ -91,7 +91,7 @@ export default {
             -->
         </template>
 
-        <template v-slot:default>
+        <template v-slot:default="{fee}">
             <div class="form-row">
                 <FieldCombined
                     :coin.sync="form.coinSymbol"
@@ -100,6 +100,7 @@ export default {
                     :amount.sync="form.amount"
                     :$amount="$v.form.amount"
                     :useBalanceForMaxValue="true"
+                    :fee="fee"
                     :label="$td('Amount', 'form.wallet-send-amount')"
                 />
                 <span class="form-field__error" v-if="$v.form.coinSymbol.$dirty && !$v.form.coinSymbol.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>

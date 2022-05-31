@@ -112,7 +112,7 @@ export default {
             -->
         </template>
 
-        <template v-slot:default>
+        <template v-slot:default="{fee}">
             <div class="form-row">
                 <FieldCombined
                     :coin.sync="form.coin"
@@ -122,6 +122,7 @@ export default {
                     :amount.sync="form.stake"
                     :$amount="$v.form.stake"
                     :useBalanceForMaxValue="true"
+                    :fee="fee"
                     :label="$td('Stake', 'form.masternode-stake')"
                 />
                 <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>

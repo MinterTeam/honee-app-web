@@ -46,7 +46,7 @@
     "js-cookie": "^3.0.1",
     "lodash-es": "^4.17.21",
     "minter-coin-block-list": "0.0.10",
-    "minter-js-sdk": "^0.44.0",
+    "minter-js-sdk": "^0.45.0",
     "minterjs-tx": "^12.0.0",
     "minterjs-util": "^0.23.0",
     "minterjs-wallet": "^6.1.2",
@@ -95,7 +95,7 @@
     "imagemin-mozjpeg": "^9.0.0",
     "less-loader": "^7",
     "postcss-normalize": "^10.0.1",
-    "postcss-preset-env": "^7.6.0",
+    "postcss-preset-env": "^7.7.0",
     "pre-commit": "^1.2.2"
   },
   "browserslist": [

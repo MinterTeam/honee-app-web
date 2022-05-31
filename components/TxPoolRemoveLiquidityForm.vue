@@ -344,7 +344,7 @@ export default {
                             <img class="estimation__coin-icon" src="/img/icon-coin-lp.svg" width="20" height="20" alt="" role="presentation">
                             <div class="estimation__coin-symbol">{{ $td('LP tokens', 'form.lp-tokens') }}</div>
                         </div>
-                        <div class="u-fw-600 u-text-number">{{ pretty(form.liquidity || 0) }}</div>
+                        <div class="estimation__value">{{ pretty(form.liquidity || 0) }}</div>
                     </div>
 
                     <h3 class="estimation__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
@@ -373,7 +373,7 @@ export default {
                         <img class="estimation__coin-icon" src="/img/icon-coin-lp.svg" width="20" height="20" alt="" role="presentation">
                         <div class="estimation__coin-symbol">{{ $td('LP tokens', 'form.lp-tokens') }}</div>
                     </div>
-                    <div class="u-fw-600 u-text-number">{{ prettyExact(form.liquidity || 0) }}</div>
+                    <div class="estimation__value">{{ prettyExact(form.liquidity || 0) }}</div>
                 </div>
 
                 <h3 class="estimation__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
