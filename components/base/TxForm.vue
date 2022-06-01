@@ -95,9 +95,6 @@ export default {
         };
     },
     computed: {
-        balance() {
-            return this.$store.getters.balance;
-        },
         isShowPayload() {
             return this.txType !== TX_TYPE.REDEEM_CHECK;
         },
@@ -267,7 +264,7 @@ function clearEmptyFields(obj) {
         <!-- Form -->
         <form novalidate @submit.prevent="submitConfirm">
             <!-- Tx Data Fields -->
-            <slot :fee="fee" :address-balance="balance"></slot>
+            <slot :fee="fee"></slot>
 
             <div class="form-row" v-show="showAdvanced && isShowPayload">
                 <label class="form-field" :class="{'is-error': $v.form.payload.$error}">

@@ -1,143 +1,159 @@
 <script>
-    import Big from '~/assets/big.js';
-    import {isCoinId} from 'minter-js-sdk/src/utils.js';
-    import stripZeros from 'pretty-num/src/strip-zeros.js';
-    import checkEmpty from '~/assets/v-check-empty';
-    import {pretty} from '~/assets/utils.js';
-    import InputMaskedAmount from '~/components/base/InputMaskedAmount.vue';
-    import Loader from '@/components/base/BaseLoader.vue';
+import Big from '~/assets/big.js';
+import {isCoinId} from 'minter-js-sdk/src/utils.js';
+import stripZeros from 'pretty-num/src/strip-zeros.js';
+import checkEmpty from '~/assets/v-check-empty';
+import {pretty} from '~/assets/utils.js';
+import InputMaskedAmount from '~/components/base/InputMaskedAmount.vue';
+import Loader from '~/components/base/BaseLoader.vue';
 
-    export default {
-        components: {
-            InputMaskedAmount,
-            Loader,
+export default {
+    components: {
+        InputMaskedAmount,
+        Loader,
+    },
+    directives: {
+        checkEmpty,
+    },
+    inheritAttrs: false,
+    props: {
+        value: {
+            type: [String, Number],
+            required: true,
         },
-        directives: {
-            checkEmpty,
+        $value: {
+            type: Object,
+            required: true,
         },
-        inheritAttrs: false,
-        props: {
-            value: {
-                type: [String, Number],
-                required: true,
-            },
-            $value: {
-                type: Object,
-                required: true,
-            },
-            maxValue: {
-                type: [String, Number],
-                default: undefined,
-            },
-            // if no maxValue specified
-            addressBalance: {
-                type: Array,
-                default: () => [],
-            },
-            // if no maxValue specified
-            selectedCoinSymbol: {
-                type: String,
-                default: '',
-            },
-            // if no maxValue specified
-            fee: {
-                type: [Object, null],
-                default: null,
-            },
-            isEstimation: {
-                type: Boolean,
-                default: false,
-            },
-            isLoading: {
-                type: Boolean,
-                default: false,
-            },
+        maxValue: {
+            type: [String, Number],
+            default: undefined,
         },
-        data() {
-            return {
-                isUseMax: false,
-            };
+        // if no maxValue specified
+        addressBalance: {
+            type: Array,
+            default: () => [],
         },
-        computed: {
-            maxValueComputed() {
-                 if (typeof this.maxValue !== 'undefined') {
-                     return this.maxValue;
-                 }
+        // if no maxValue specified
+        selectedCoinSymbol: {
+            type: String,
+            default: '',
+        },
+        // if no maxValue specified
+        fee: {
+            type: [Object, null],
+            default: null,
+        },
+        isEstimation: {
+            type: Boolean,
+            default: false,
+        },
+        isLoading: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    data() {
+        return {
+            isUseMax: false,
+        };
+    },
+    computed: {
+        maxValueComputed() {
+            if (typeof this.maxValue !== 'undefined') {
+                return this.maxValue;
+            }
 
-                const selectedCoin = this.addressBalance.find((coin) => {
-                    return coin.coin.symbol === this.selectedCoinSymbol;
-                });
-                // coin not selected
-                if (!selectedCoin) {
-                    return undefined;
-                }
-                // fee not in selected coins
-                if (!isSelectedCoinSameAsFeeCoin(selectedCoin.coin, this.fee?.coin)) {
-                    return selectedCoin.amount;
-                }
-                // fee in selected coin (handle non-number values)
-                const feeValue = this.fee?.value || 0;
-                // subtract fee
-                const amount = new Big(selectedCoin.amount).minus(feeValue).toString();
-                return amount > 0 ? amount : '0';
-            },
-            isMaxValueDefined() {
-                return typeof this.maxValueComputed !== 'undefined' && this.maxValueComputed > 0;
-            },
-            isMaxValueRounded() {
-                return this.isMaxValueDefined && !(new Big(this.maxValueComputed).eq(pretty(this.maxValueComputed).replace(/\s/g, '')));
-            },
-            isValueEqualToMaxValue() {
-                if (!(this.value > 0)) {
-                    return false;
-                }
-                if (!this.isMaxValueDefined) {
-                    return false;
-                }
-                return new Big(this.value).eq(this.maxValueComputed);
-            },
-        },
-        watch: {
-            isValueEqualToMaxValue(newVal) {
-                this.isUseMax = newVal;
-            },
-            isUseMax(newVal) {
-                this.$emit('update:is-use-max', newVal);
-                if (newVal) {
-                    this.$emit('use-max');
-                }
-            },
-        },
-        methods: {
-            pretty,
-            useMax() {
-                if (!this.isMaxValueDefined) {
-                    return false;
-                }
-                this.isUseMax = true;
-                this.$emit('input', stripZeros(this.maxValueComputed));
-                this.$value.$touch();
-            },
-        },
-    };
+            const selectedCoin = this.addressBalance.find((coin) => {
+                return coin.coin.symbol === this.selectedCoinSymbol;
+            });
+            // coin not selected
+            if (!selectedCoin) {
+                return undefined;
+            }
 
-    /**
-     *
-     * @param {Coin} selectedCoinItem
-     * @param {string|number} feeCoinIdOrSymbol
-     * @return {boolean}
-     */
-    function isSelectedCoinSameAsFeeCoin(selectedCoinItem, feeCoinIdOrSymbol) {
-        const isFeeId = isCoinId(feeCoinIdOrSymbol);
-        const isFeeSymbol = !isFeeId;
-        if (isFeeSymbol && selectedCoinItem.symbol === feeCoinIdOrSymbol) {
-            return true;
-        }
-        if (isFeeId && selectedCoinItem.id === feeCoinIdOrSymbol) {
-            return true;
-        }
-        return false;
+            return getAvailableSelectedBalance(selectedCoin, this.fee);
+        },
+        isMaxValueDefined() {
+            return typeof this.maxValueComputed !== 'undefined' && this.maxValueComputed > 0;
+        },
+        isMaxValueRounded() {
+            return this.isMaxValueDefined && !(new Big(this.maxValueComputed).eq(pretty(this.maxValueComputed).replace(/\s/g, '')));
+        },
+    },
+    watch: {
+        selectedCoinSymbol() {
+            this.isUseMax = false;
+        },
+        value(newVal) {
+            if (!(this.value > 0)) {
+                this.isUseMax = false;
+                return;
+            }
+            if (!this.isMaxValueDefined) {
+                this.isUseMax = false;
+                return;
+            }
+            this.isUseMax = new Big(this.value).eq(this.maxValueComputed);
+        },
+        maxValueComputed(newVal) {
+            if (this.isMaxValueDefined && this.isUseMax) {
+                this.useMax();
+            }
+        },
+        isUseMax(newVal) {
+            this.$emit('update:is-use-max', newVal);
+            if (newVal) {
+                this.$emit('use-max');
+            }
+        },
+    },
+    methods: {
+        pretty,
+        useMax() {
+            if (!this.isMaxValueDefined) {
+                return false;
+            }
+            this.isUseMax = true;
+            this.$emit('input', stripZeros(this.maxValueComputed));
+            this.$value.$touch();
+        },
+    },
+};
+
+/**
+ * @param {BalanceItem} selectedCoin
+ * @param {FeeData} fee
+ * @return {string}
+ */
+export function getAvailableSelectedBalance(selectedCoin, fee) {
+    // fee not in selected coins
+    if (!isSelectedCoinSameAsFeeCoin(selectedCoin.coin, fee?.coin)) {
+        return selectedCoin.amount;
     }
+    // fee in selected coin (handle non-number values)
+    const feeValue = fee?.value || 0;
+    // subtract fee
+    const amount = new Big(selectedCoin.amount).minus(feeValue).toString();
+    return amount > 0 ? amount : '0';
+}
+
+/**
+ * @param {Coin} selectedCoinItem
+ * @param {string|number} feeCoinIdOrSymbol
+ * @return {boolean}
+ */
+function isSelectedCoinSameAsFeeCoin(selectedCoinItem, feeCoinIdOrSymbol) {
+    const isFeeId = isCoinId(feeCoinIdOrSymbol);
+    const isFeeSymbol = !isFeeId;
+    if (isFeeSymbol && selectedCoinItem.symbol === feeCoinIdOrSymbol) {
+        return true;
+    }
+    if (isFeeId && selectedCoinItem.id === feeCoinIdOrSymbol) {
+        return true;
+    }
+    return false;
+}
 </script>
 
 <template>
@@ -155,7 +171,7 @@
             >
                 {{ $td('Use max', 'index.use-max') }}. {{ isMaxValueRounded ? '≈' : '' }}{{ pretty(maxValueComputed) }}
             </button>
-<!--            <template v-else>&nbsp;</template>-->
+            <!--            <template v-else>&nbsp;</template>-->
         </div>
         <InputMaskedAmount
             v-if="!isEstimation"
