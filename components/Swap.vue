@@ -97,7 +97,7 @@
                     sellAmount: {
                         required: this.isSelling ? required : () => true,
                         validAmount: this.isSelling ? (value) => value > 0 : () => true,
-                        minValue: this.isSelling ? (value) => this.txDataValueToSell > 0 : () => true,
+                        // minValue: this.isSelling ? (value) => this.txDataValueToSell > 0 : () => true,
                         // maxValue: maxValue(this.maxAmount || 0),
                     },
                     buyAmount: {
@@ -166,15 +166,6 @@
                     return true;
                 } else {
                     return false;
-                }
-            },
-            //@TODO move to SwapField?
-            txDataValueToSell() {
-                if (this.isSellAll && this.fee.coinSymbol === this.form.coinFrom) {
-                    const value = new Big(this.form.sellAmount || 0).minus(this.fee.value || 0);
-                    return value.gte(0) ? value.toString() : '0';
-                } else {
-                    return this.form.sellAmount;
                 }
             },
             txDataCoins() {
@@ -278,7 +269,7 @@
                 if (this.isSelling) {
                     estimatePromise = estimateCoinSell({
                         coinToSell: this.form.coinFrom,
-                        valueToSell: this.txDataValueToSell,
+                        valueToSell: this.form.sellAmount,
                         coinToBuy: this.form.coinTo,
                         findRoute: true,
                         // gasCoin: this.fee.coin || 0,
@@ -465,7 +456,7 @@
                 <span class="form-field__error" v-if="$v.form.coinFrom.$dirty && !$v.form.coinFrom.required">{{ $td('Enter coin', 'form.coin-error-required') }}</span>
                 <span class="form-field__error" v-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
                 <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
-                <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.minValue">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol}}</span>
+                <!-- <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.minValue">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol}}</span>-->
                 <!--        <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.maxAmount">{{ $td('Not enough coins', 'form.not-enough-coins') }}</span>-->
             </div>
 
