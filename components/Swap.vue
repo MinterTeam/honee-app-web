@@ -14,6 +14,7 @@
     import {postTx, estimateCoinSell, estimateCoinBuy} from '~/api/gate.js';
     import {getErrorText} from "~/assets/server-error";
     import {pretty, prettyExact, prettyPrecise, decreasePrecisionSignificant, getExplorerTxUrl} from '~/assets/utils.js';
+    import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
     import useFee from '~/composables/use-fee.js';
     import BaseAmountEstimation from '@/components/base/BaseAmountEstimation.vue';
     import BaseLoader from '@/components/base/BaseLoader.vue';
@@ -97,8 +98,8 @@
                     sellAmount: {
                         required: this.isSelling ? required : () => true,
                         validAmount: this.isSelling ? (value) => value > 0 : () => true,
-                        // minValue: this.isSelling ? (value) => this.txDataValueToSell > 0 : () => true,
-                        // maxValue: maxValue(this.maxAmount || 0),
+                        maxValueAfterFee: this.isSelling ? maxValue(this.maxAmountAfterFee || 0) : () => true,
+                        maxValue: this.isSelling ? maxValue(this.maxAmount || 0) : () => true,
                     },
                     buyAmount: {
                         required: !this.isSelling ? required : () => true,
@@ -197,6 +198,26 @@
             maximumValueToSell() {
                 let slippage = 1 + 5 / 100; // 5%
                 return decreasePrecisionSignificant(this.form.sellAmount * slippage);
+            },
+            maxAmount() {
+                const selectedCoin = this.$store.state.balance.find((coin) => {
+                    return coin.coin.symbol === this.form.coinFrom;
+                });
+                // coin not selected
+                if (!selectedCoin) {
+                    return 0;
+                }
+                return selectedCoin.amount;
+            },
+            maxAmountAfterFee() {
+                const selectedCoin = this.$store.state.balance.find((coin) => {
+                    return coin.coin.symbol === this.form.coinFrom;
+                });
+                // coin not selected
+                if (!selectedCoin) {
+                    return 0;
+                }
+                return getAvailableSelectedBalance(selectedCoin, this.fee);
             },
             feeBusParams() {
                 return {
@@ -456,8 +477,8 @@
                 <span class="form-field__error" v-if="$v.form.coinFrom.$dirty && !$v.form.coinFrom.required">{{ $td('Enter coin', 'form.coin-error-required') }}</span>
                 <span class="form-field__error" v-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
                 <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
-                <!-- <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.minValue">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol}}</span>-->
-                <!--        <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.maxAmount">{{ $td('Not enough coins', 'form.not-enough-coins') }}</span>-->
+                <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.maxValue">{{ $td('Not enough coins', 'form.not-enough-coins') }}</span>
+                <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.maxValueAfterFee">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol}}</span>
             </div>
 
             <button class="form-row button button--white convert__reverse-button" type="button" @click="reverseCoins()" v-if="!params.coinToSell && !params.coinToBuy">

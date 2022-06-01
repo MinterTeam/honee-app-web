@@ -82,6 +82,9 @@ export default {
         },
     },
     watch: {
+        selectedCoinSymbol() {
+            this.isUseMax = false;
+        },
         value(newVal) {
             if (!(this.value > 0)) {
                 this.isUseMax = false;
