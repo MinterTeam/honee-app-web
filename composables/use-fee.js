@@ -93,7 +93,8 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         };
     });
 
-    watch(feeProps, fetchCoinData, {deep: true/*, immediate: true*/});
+    // watching feeProps directly leads to strange behavior (newVal and oldVal are always same)
+    watch(() => JSON.stringify(feeProps), fetchCoinData, {deep: true/*, immediate: true*/});
     watch(() => feeProps.isOffline, () => {
         if (feeProps.isOffline || coinMap.value[0]) {
             return;
@@ -137,7 +138,8 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     }
 
     async function estimateFee(gasCoin, idDebounce, savedPropsString) {
-        const cleanTxParams = await replaceCoinSymbol(cleanObject(feeProps.txParams));
+        // clone is needed because clean doesn't handle arrays
+        const cleanTxParams = await replaceCoinSymbol(cloneObject(cleanObject(feeProps.txParams)));
         const useApproxEstimation = feeProps.precision === FEE_PRECISION_SETTING.AUTO
             ? !isValidTxData(cleanTxParams.type, cleanTxParams.data)
             : feeProps.precision;
@@ -160,7 +162,11 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
             });
     }
 
-    async function fetchCoinData() {
+    async function fetchCoinData(newVal, oldVal) {
+        // sometimes watcher fires on same value
+        if (newVal === oldVal) {
+            return;
+        }
         if (feeProps.isOffline) {
             state.feeCoin = getPrimaryCoinToCheck();
             return;
@@ -193,7 +199,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
                         if (error.isCanceled) {
                             throw error;
                         } else {
-                            // fallback to primaryCoinToCheck
+                            // restore primaryCoinToCheck
                             return feeData;
                         }
                     });
