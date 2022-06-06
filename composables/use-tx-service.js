@@ -22,6 +22,7 @@ function setProps(newProps) {
 }
 
 const state = reactive({
+    // @TODO convert loading stage to computed on steps
     /** @type {HUB_BUY_STAGE|string}*/
     loadingStage: '',
     steps: {},
