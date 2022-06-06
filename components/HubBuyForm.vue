@@ -208,6 +208,7 @@ export default {
             isEstimationLoading: false,
             estimationError: false,
             isEstimationPending: false,
+            /** @type {getEstimation} */
             debouncedGetEstimation: null,
         };
     },
@@ -368,6 +369,9 @@ export default {
         //     }
         //     return TX_TRANSFER;
         // },
+        minterGasCoin() {
+            return this.externalTokenSymbol;
+        },
         currentEstimation() {
             if (this.$v.form.$invalid || !this.estimation || this.isEstimationWaiting || this.estimationError) {
                 return 0;
@@ -841,15 +845,16 @@ export default {
             return this.sendEthTx(txParams, loadingStage, true);
         },
         sendMinterSwapTx(amount) {
-            return this.forceEstimation()
-                .then(() => {
-                    const coinBalanceItem = this.$store.state.balance.find((item) => item.coin.symbol === this.externalTokenSymbol);
-                    const balanceAmount = coinBalanceItem?.amount || 0;
-                    const smallAmount = DEPOSIT_COIN_DATA[this.externalTokenMainnetSymbol].smallAmount;
+            const coinBalanceItem = this.$store.state.balance.find((item) => item.coin.symbol === this.externalTokenSymbol);
+            const balanceAmount = coinBalanceItem?.amount || 0;
+            const smallAmount = DEPOSIT_COIN_DATA[this.externalTokenMainnetSymbol].smallAmount;
+            // sell all externalTokenSymbol if user has no or very small amount of it
+            const isSellAll = balanceAmount - amount < smallAmount;
 
+            return this.forceEstimation({sellAll: isSellAll})
+                .then(() => {
                     let txParams = {
-                        // sell all externalTokenSymbol if user has no or very small amount of it
-                        type: balanceAmount - amount < smallAmount ? TX_TYPE.SELL_ALL_SWAP_POOL : TX_TYPE.SELL_SWAP_POOL,
+                        type: isSellAll ? TX_TYPE.SELL_ALL_SWAP_POOL : TX_TYPE.SELL_SWAP_POOL,
                         data: {
                             coins: this.estimationRoute
                                 ? this.estimationRoute.map((coin) => coin.id)
@@ -857,7 +862,7 @@ export default {
                             valueToSell: amount,
                             minimumValueToBuy: 0,
                         },
-                        gasCoin: this.externalTokenSymbol,
+                        gasCoin: this.minterGasCoin,
                     };
 
                     return postTx(txParams, {privateKey: this.$store.getters.privateKey});
@@ -883,7 +888,7 @@ export default {
             this.debouncedGetEstimation();
             this.isEstimationPending = true;
         },
-        getEstimation() {
+        getEstimation(params) {
             this.isEstimationPending = false;
             if (!this.$store.state.onLine) {
                 return;
@@ -899,7 +904,8 @@ export default {
                 coinToBuy: this.form.coinToGet,
                 swapFrom: SWAP_TYPE.POOL,
                 findRoute: true,
-                // gasCoin: 0,
+                gasCoin: this.minterGasCoin,
+                ...params,
             }, {
                 idPreventConcurrency: 'hubBuy',
             })
@@ -916,9 +922,9 @@ export default {
                     this.estimationError = getErrorText(error, 'Estimation error: ');
                 });
         },
-        forceEstimation() {
+        forceEstimation(params) {
             // force new estimation without delay
-            this.debouncedGetEstimation();
+            this.debouncedGetEstimation(params);
             return this.debouncedGetEstimation.flush();
         },
         cancelRecovery() {
