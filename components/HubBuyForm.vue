@@ -10,7 +10,6 @@ import IUniswapV2Router from '@uniswap/v2-periphery/build/IUniswapV2Router02.jso
 import {CloudflareProvider, JsonRpcProvider} from '@ethersproject/providers';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import {convertFromPip} from 'minterjs-util/src/converter.js';
 import * as web3 from '@/api/web3.js';
 import {fromErcDecimals, subscribeTransaction, toErcDecimals} from '@/api/web3.js';
 import {getOracleCoinList, getOraclePriceList, subscribeTransfer} from '@/api/hub.js';
@@ -30,6 +29,7 @@ import useHubDiscount from '~/composables/use-hub-discount.js';
 import useWeb3Balance from '~/composables/use-web3-balance.js';
 import useWeb3Deposit from '~/composables/use-web3-deposit.js';
 import useTxService from '~/composables/use-tx-service.js';
+import useTxMinterPresets from '~/composables/use-tx-minter-presets.js';
 import BaseAmountEstimation from '@/components/base/BaseAmountEstimation.vue';
 import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '@/components/base/Modal.vue';
@@ -168,6 +168,7 @@ export default {
             depositAmountAfterGas: formAmountAfterGas,
         } = useWeb3Deposit();
         const {txServiceState, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData} = useTxService();
+        const {sendMinterSwapTx} = useTxMinterPresets();
 
         return {
             discount,
@@ -182,6 +183,8 @@ export default {
             setDepositProps, depositFromEthereum, externalToken, externalTokenDecimals, isEthSelected, selectedNative, selectedWrapped, selectedBalance, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, formAmountAfterGas,
 
             txServiceState, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData,
+
+            sendMinterSwapTx,
         };
     },
     data() {
@@ -396,6 +399,7 @@ export default {
             const ethPrice = priceItem.value;
             return this.form.amountEth * ethPrice / this.currentEstimation;
         },
+        /** @type {Array<SequenceOrderedStepItem>} */
         stepsOrdered() {
             const stages = Object.values(LOADING_STAGE).reverse();
             let result = [];
@@ -497,7 +501,7 @@ export default {
             try {
                 const recovery = JSON.parse(recoveryJson);
                 if (recovery?.address === this.$store.getters.address) {
-                    this.recovery = recovery;
+                    this.recovery = Object.freeze(recovery);
                 }
             } catch (error) {
                 console.log(error);
@@ -692,36 +696,20 @@ export default {
 
             return Promise.all([fiatRampPurchasePromise, waitEnoughEthPromise, this.ensureNetworkData()])
                 .then(() => this.depositFromEthereum())
-                .then((transfer) => {
-                    if (transfer.status !== HUB_TRANSFER_STATUS.batch_executed) {
-                        throw new Error(`Unsuccessful bridge transfer: ${transfer.status}`);
-                    }
-                    console.log({transfer});
-                    return getTransaction(transfer.outTxHash);
-                })
-                .then((minterTx) => {
-                    console.log('minterTx');
-                    console.log(minterTx);
-
-                    if (!minterTx.data.list) {
-                        throw new Error('Minter tx transfer has invalid data');
-                    }
-                    const multisendItem = minterTx.data.list.find((item) => item.to === this.$store.getters.address && item.coin.symbol === this.externalTokenSymbol);
-                    if (!multisendItem) {
-                        throw new Error(`Minter tx transfer does not include ${this.externalTokenSymbol} deposit to the current user`);
-                    }
-
-                    const outputAmount = multisendItem.value;
-                    this.addStepData(LOADING_STAGE.WAIT_BRIDGE, {amount: outputAmount, tx: minterTx, finished: true});
-
-                    this.txServiceState.loadingStage = LOADING_STAGE.SWAP_MINTER;
-                    this.addStepData(LOADING_STAGE.SWAP_MINTER, {coin0: this.externalTokenSymbol, amount0: outputAmount, coin1: this.form.coinToGet});
-                    return this.sendMinterSwapTx(outputAmount)
+                .then((outputAmount) => {
+                    return this.sendMinterSwapTx({
+                        initialTxParams: {
+                            data: {
+                                coinToSell: this.externalTokenSymbol,
+                                coinToBuy: this.form.coinToGet,
+                                valueToSell: outputAmount,
+                            },
+                        },
+                        prepare: () => this.prepareMinterSwapParams(outputAmount),
+                    })
                         .then((tx) => {
-                            this.addStepData(LOADING_STAGE.SWAP_MINTER, {tx, amount1: convertFromPip(tx.tags['tx.return']), finished: true});
-
                             this.txServiceState.loadingStage = LOADING_STAGE.FINISH;
-                            this.addStepData(LOADING_STAGE.FINISH, {coin: this.form.coinToGet, amount: convertFromPip(tx.tags['tx.return']), finished: true});
+                            this.addStepData(LOADING_STAGE.FINISH, {coin: this.form.coinToGet, amount: tx.result.returnAmount, finished: true});
                         });
                 })
                 .then(() => {
@@ -740,6 +728,8 @@ export default {
                         this.serverError = getErrorText(error);
                         // Error returned when rejected
                         console.error(error);
+                    } else {
+                        console.debug(error);
                     }
 
                     // don't close modal, user will decide if he wants retry or finish
@@ -750,6 +740,7 @@ export default {
                 });
         },
         retrySending() {
+            // @TODO not working: remove errored tx from steps (e.g. underpriced)
             this.submit({fromRecovery: true});
         },
         finishSending() {
@@ -844,7 +835,7 @@ export default {
         speedup({txParams, loadingStage}) {
             return this.sendEthTx(txParams, loadingStage, true);
         },
-        sendMinterSwapTx(amount) {
+        prepareMinterSwapParams(amount) {
             const coinBalanceItem = this.$store.state.balance.find((item) => item.coin.symbol === this.externalTokenSymbol);
             const balanceAmount = coinBalanceItem?.amount || 0;
             const smallAmount = DEPOSIT_COIN_DATA[this.externalTokenMainnetSymbol].smallAmount;
@@ -853,7 +844,7 @@ export default {
 
             return this.forceEstimation({sellAll: isSellAll})
                 .then(() => {
-                    let txParams = {
+                    return {
                         type: isSellAll ? TX_TYPE.SELL_ALL_SWAP_POOL : TX_TYPE.SELL_SWAP_POOL,
                         data: {
                             coins: this.estimationRoute
@@ -864,12 +855,6 @@ export default {
                         },
                         gasCoin: this.minterGasCoin,
                     };
-
-                    return postTx(txParams, {privateKey: this.$store.getters.privateKey});
-                })
-                .then((tx) => {
-                    tx = Object.freeze({...tx, timestamp: (new Date()).toISOString()});
-                    return tx;
                 });
         },
         inputBlur() {
@@ -1255,7 +1240,7 @@ function getSwapOutput(receipt) {
             />
             <div class="form-row" v-if="serverError || !$store.state.onLine">
                 <div class="u-grid u-grid--small u-grid--vertical-margin--small">
-                    <div class="u-cell u-text-error u-fw-500">
+                    <div class="u-cell form__error">
                         <template v-if="!$store.state.onLine">{{ $td('No Internet connection', 'error.no-internet-connection') }}</template>
                         <template v-else>{{ serverError }}</template>
                     </div>

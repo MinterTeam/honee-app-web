@@ -3,7 +3,8 @@ import {reactive, computed, watch} from '@vue/composition-api';
 import * as web3 from '~/api/web3.js';
 import {subscribeTransfer} from '~/api/hub.js';
 import {subscribeTransaction, toErcDecimals} from '~/api/web3.js';
-import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, MAINNET, NETWORK} from '~/assets/variables.js';
+import {getTransaction} from '~/api/explorer.js';
+import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_TRANSFER_STATUS, MAINNET, NETWORK} from '~/assets/variables.js';
 import Big from '~/assets/big.js';
 import wethAbi from '~/assets/abi-weth.js';
 import hubABI from '~/assets/abi-hub.js';
@@ -113,6 +114,7 @@ const isApproveRequired = computed(() => {
 
 // @TODO gasPrice not updated during isFormSending and may be too low/high after waiting pin gasPrice on submit
 // @TODO use *network*_fee instead of 'prices'
+// @TODO use web3.eth.getGasPrice for testnet @see https://web3js.readthedocs.io/en/v1.7.3/web3-eth.html#getgasprice
 const gasPriceGwei = computed(() => {
     const selectedHubNetwork = HUB_CHAIN_BY_ID[props.chainId]?.hubChainId;
     const priceItem = props.priceList.find((item) => item.name === `${selectedHubNetwork}/gas`);
@@ -123,7 +125,7 @@ const gasPriceGwei = computed(() => {
         gasPriceGwei = priceItem.value;
     }
 
-    return NETWORK === MAINNET ? gasPriceGwei : 5;
+    // return NETWORK === MAINNET ? gasPriceGwei : 5;
     // eslint-disable-next-line no-unreachable
     return NETWORK === MAINNET ? gasPriceGwei : new Big(gasPriceGwei).times(10).toNumber();
 });
@@ -187,7 +189,30 @@ async function depositFromEthereum() {
 
     txServiceState.loadingStage = LOADING_STAGE.WAIT_BRIDGE;
     addStepData(LOADING_STAGE.WAIT_BRIDGE, {coin: props.tokenSymbol /* calculate receive amount? */});
-    return subscribeTransfer(depositReceipt.transactionHash);
+    return subscribeTransfer(depositReceipt.transactionHash)
+        .then((transfer) => {
+            if (transfer.status !== HUB_TRANSFER_STATUS.batch_executed) {
+                throw new Error(`Unsuccessful bridge transfer: ${transfer.status}`);
+            }
+            console.log('transfer', transfer);
+            return getTransaction(transfer.outTxHash);
+        })
+        .then((minterTx) => {
+            console.log('minterTx', minterTx);
+
+            if (!minterTx.data.list) {
+                throw new Error('Minter tx transfer has invalid data');
+            }
+            const multisendItem = minterTx.data.list.find((item) => item.to === props.destinationMinterAddress && item.coin.symbol === props.tokenSymbol);
+            if (!multisendItem) {
+                throw new Error(`Minter tx transfer does not include ${props.tokenSymbol} deposit to the current user`);
+            }
+
+            const outputAmount = multisendItem.value;
+            addStepData(LOADING_STAGE.WAIT_BRIDGE, {amount: outputAmount, tx: minterTx, finished: true});
+
+            return outputAmount;
+        });
 }
 
 function unwrapToNativeCoin({nonce, gasPrice} = {}) {
