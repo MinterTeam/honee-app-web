@@ -1,6 +1,7 @@
 import {reactive, set} from '@vue/composition-api';
 import {subscribeTransaction, toErcDecimals} from '~/api/web3.js';
 import * as web3 from '~/api/web3.js';
+import {postTx} from '~/api/gate.js';
 import {HUB_BUY_STAGE as LOADING_STAGE} from '~/assets/variables.js';
 
 
@@ -22,11 +23,53 @@ function setProps(newProps) {
 }
 
 const state = reactive({
+    // @TODO convert loading stage to computed on steps
     /** @type {HUB_BUY_STAGE|string}*/
     loadingStage: '',
+    /** @type {Object.<LOADING_STAGE, SequenceStepItem>}*/
     steps: {},
 });
 
+/**
+ * @typedef {object} SequenceStepItem
+ * @property {SequenceStepTx} [tx]
+ * @property {Array<SequenceStepTx>} [txList]
+ * @property {boolean} [finished]
+ */
+
+/**
+ * @typedef {TransactionReceipt&{hash: string, timestamp: string, params: object, error?: Error}} SequenceStepTx
+ */
+
+/**
+ * @typedef {PostTxResponse} PostTxResponse
+ * @property {string} timestamp
+ */
+
+/**
+ * @param {TxParams} txParams
+ * @return {Promise<PostTxResponse>}
+ */
+function sendMinterTx(txParams) {
+    return postTx(txParams, {privateKey: props.privateKey})
+        .then((tx) => {
+            tx = Object.freeze({...tx, timestamp: (new Date()).toISOString()});
+            return tx;
+        });
+}
+
+/**
+ * @param {object} txConfig
+ * @param {string} txConfig.to
+ * @param {number|string} txConfig.value
+ * @param {string} txConfig.data
+ * @param {number|string} txConfig.nonce
+ * @param {number|string} txConfig.gasPrice
+ * @param {number|string} [txConfig.gasLimit]
+ * @param {LOADING_STAGE} loadingStage
+ * @param {boolean} [isSpeedup=false]
+ * @return {PromiEvent<TransactionReceipt>}
+ */
 async function sendEthTx({to, value, data, nonce, gasPrice, gasLimit}, loadingStage, isSpeedup = false) {
     // @TODO check recovery earlier
     const currentStep = state.steps[loadingStage];
@@ -57,21 +100,21 @@ async function sendEthTx({to, value, data, nonce, gasPrice, gasLimit}, loadingSt
         chainId: props.chainId,
     };
     console.log('send', txParams);
-    const { rawTransaction } = await web3.eth.accounts.signTransaction(txParams, props.privateKey);
+    const { rawTransaction, transactionHash } = await web3.eth.accounts.signTransaction(txParams, props.privateKey);
 
-    let txHash;
+    // @TODO maybe wait sendSignedTransaction().on('transactionHash') to ensure additional checks (e.g. tx underpriced) but then error will not be written to step.tx (no hash to find tx to write) and waitPendingStep will hang
+    console.log(transactionHash);
+    const txHash = transactionHash;
+    addStepData(loadingStage, {
+        tx: {
+            hash: txHash,
+            timestamp: (new Date()).toISOString(),
+            params: {to, value, data, nonce, gasPrice, gasLimit, chainId: props.chainId},
+        },
+    });
+
     // @TODO return tx from `steps` so it will have full data, instead of just receipt
     return web3.eth.sendSignedTransaction(rawTransaction)
-        .on('transactionHash', (hash) => {
-            txHash = hash;
-            console.log(txHash);
-            const tx = {
-                hash: txHash,
-                timestamp: (new Date()).toISOString(),
-                params: {to, value, data, nonce, gasPrice, gasLimit, chainId: props.chainId},
-            };
-            addStepData(loadingStage, {tx});
-        })
         .on('receipt', (receipt) => {
             console.log("receipt:", receipt);
             addStepData(loadingStage, {tx: receipt, finished: true});
@@ -112,15 +155,14 @@ function waitPendingStep(loadingStage) {
     return new Promise((resolve, reject) => {
         const interval = setInterval(() => {
             const step = state.steps[loadingStage];
-            const txList = step?.txList || step?.tx ? [step.tx] : [];
+            const txList = step?.txList || (step?.tx ? [step.tx] : []);
             // reject
             const erroredTxList = txList.filter((item) => item.error);
             if (txList.length && erroredTxList.length === txList.length) {
-                if (txList.length > 1) {
-                    reject(txList.slice().sort((a, b) => b.gasPrice - a.gasPrice)[0].error);
-                } else {
-                    reject(txList[0].error);
-                }
+                const sortedTxList = txList.length > 1
+                    ? txList.slice().sort((a, b) => b.gasPrice - a.gasPrice)
+                    : txList;
+                reject(sortedTxList[0].error);
                 clearInterval(interval);
                 return;
             }
@@ -137,7 +179,7 @@ function waitPendingStep(loadingStage) {
 function addStepData(loadingStage, data) {
     let {tx: newTx, ...otherData} = data;
     let txData;
-    if (newTx && (newTx.hash || newTx.transactionHash)) {
+    if (newTx?.hash || newTx?.transactionHash) {
         const step = state.steps[loadingStage];
         let txList = step?.txList || step?.tx ? [step.tx] : [];
         const oldMatchingTxIndex = txList.findIndex((item) => {
@@ -170,10 +212,20 @@ function addStepData(loadingStage, data) {
     }
     set(state.steps, loadingStage, Object.freeze({...state.steps[loadingStage], ...txData, ...otherData}));
     const needSaveRecovery = loadingStage !== LOADING_STAGE.FINISH;
-    console.log({loadingStage, needSaveRecovery}, {...state.steps[loadingStage], ...txData, ...otherData});
+    console.log('addStepData result', {loadingStage, needSaveRecovery}, {...state.steps[loadingStage], ...txData, ...otherData});
     if (needSaveRecovery) {
+        let stepsToSave = JSON.parse(JSON.stringify(state.steps));
+        // remove errored tx from recovery, so they will not cause subscribe for them on repeat
+        Object.values(stepsToSave).forEach((step) => {
+            if (step.tx?.error) {
+                delete step.tx;
+            }
+            if (step.txList?.length > 0) {
+                step.txList = step.txList.filter((tx) => !tx.error);
+            }
+        });
         window.localStorage.setItem('hub-buy-recovery', JSON.stringify({
-            steps: state.steps,
+            steps: stepsToSave,
             form: props.form,
             address: props.accountAddress.replace('0x', 'Mx'),
         }));
@@ -186,6 +238,7 @@ export default function useTxService() {
     return {
         txServiceState: state,
         setTxServiceProps: setProps,
+        sendMinterTx,
         sendEthTx,
         estimateTxGas,
         waitPendingStep,
