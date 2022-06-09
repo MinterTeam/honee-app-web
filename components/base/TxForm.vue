@@ -45,6 +45,9 @@ export default {
             type: String,
             required: true,
         },
+        payload: {
+            type: String,
+        },
         beforeConfirmModalShow: {
             type: [Function, null],
             default: null,
@@ -114,7 +117,7 @@ export default {
         feeBusParams() {
             return {
                 txParams: {
-                    payload: this.form.payload,
+                    payload: this.payload || this.form.payload,
                     type: this.txType,
                     data: this.txData,
                 },
@@ -203,7 +206,8 @@ export default {
         getTxParams() {
             return {
                 chainId: this.$store.getters.CHAIN_ID,
-                ...clearEmptyFields(this.form),
+                // ...clearEmptyFields(this.form),
+                payload: this.payload || this.form.payload || undefined,
                 data: clearEmptyFields(this.txData),
                 type: this.txType,
                 gasCoin: this.fee.coin,
@@ -297,16 +301,17 @@ function clearEmptyFields(obj) {
                                 'is-disabled': $v.$invalid
                             }"
                 >
-                            <span class="button__content">
-                                <slot name="submit-title">
-                                    {{ $td('Send', 'form.wallet-send-button') }}
-                                </slot>
-                            </span>
+                    <span class="button__content">
+                        <slot name="submit-title">
+                            {{ $td('Send', 'form.wallet-send-button') }}
+                        </slot>
+                    </span>
                     <Loader class="button__loader" :isLoading="true"/>
                 </button>
                 <div class="form-field__error" v-if="serverError">{{ serverError }}</div>
                 <div class="form-field__error" v-if="fee.error">{{ fee.error }}</div>
             </div>
+            <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the disclaimer in the footer.', 'form.read-understood') }}</p>
         </form>
 
         <slot name="panel-footer"></slot>
@@ -355,7 +360,7 @@ function clearEmptyFields(obj) {
             </slot>
             <slot name="success-modal-body-extra" :success-tx="serverSuccess"></slot>
             <slot name="success-modal-button">
-                <a class="button button--main button--full" :href="getExplorerTxUrl(serverSuccess.hash)" target="_blank" v-if="serverSuccess">
+                <a class="button button--main button--full u-mt-10" :href="getExplorerTxUrl(serverSuccess.hash)" target="_blank" v-if="serverSuccess">
                     {{ $td('View transaction', 'form.success-view-button') }}
                 </a>
             </slot>

@@ -324,6 +324,9 @@ export default {
             <div class="form-row">
                 <FieldRange
                     v-model="formLiquidityPercent"
+                    min="0"
+                    max="100"
+                    step="0.01"
                     unit="%"
                     :label="$td('Amount to return', 'form.pool-remove-liquidity-percent')"
                 />
@@ -332,8 +335,8 @@ export default {
                 @blur="$v.formLiquidityPercent.$touch()"
                 -->
                 <span class="form-field__error" v-if="$v.form.liquidity.$dirty && !$v.form.liquidity.required">{{ $td('Enter liquidity amount', 'form.pool-remove-liquidity-error-required') }}</span>
-                <span class="form-field__error" v-else-if="$v.formLiquidityPercent.$dirty && !$v.formLiquidityPercent.minValue">{{ $td('Min. value 0%', 'form.percent-error-min') }}</span>
-                <span class="form-field__error" v-else-if="$v.formLiquidityPercent.$dirty && !$v.formLiquidityPercent.maxValue">{{ $td('Maximum 100%', 'form.percent-error-max') }}</span>
+                <span class="form-field__error" v-else-if="$v.formLiquidityPercent.$dirty && !$v.formLiquidityPercent.minValue">{{ $td('Minimum', 'form.range-error-min') }} 0%</span>
+                <span class="form-field__error" v-else-if="$v.formLiquidityPercent.$dirty && !$v.formLiquidityPercent.maxValue">{{ $td('Maximum', 'form.range-error-max') }} 100%</span>
             </div>
             <div class="form-row" v-if="form.coin0 && form.coin1">
                 <span class="form__error" v-if="$v.isPoolLoaded.$dirty && !$v.isPoolLoaded.success">{{ $td('Provider’s liquidity not found for selected pair', 'form.pool-remove-liquidity-error-pool') }}</span>

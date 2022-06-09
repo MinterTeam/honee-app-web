@@ -83,6 +83,37 @@ export function getStatus() {
 }
 
 /**
+ * @typedef {Object} BlockListInfo
+ * @property {Array<Block>} data
+ * @property {PaginationMeta} meta
+ */
+
+/**
+ * @param {Object} [params]
+ * @param {number|string} [params.page]
+ * @param {number|string} [params.limit]
+ * @return {Promise<BlockListInfo>}
+ */
+export function getBlockList(params) {
+    return explorer.get('blocks', {
+            params,
+        })
+        .then((response) => response.data);
+}
+
+/**
+ * @param {number|'latest'} height
+ * @return {Promise<Block>}
+ */
+export function getBlock(height) {
+    if (height === 'latest') {
+        return getBlockList({limit: 1}).then((blockList) => blockList.data[0]);
+    }
+    return explorer.get(`blocks/${height}`)
+        .then((response) => response.data.data);
+}
+
+/**
  * @param {string} hash
  * @return {Promise<Transaction>}
  */
@@ -451,6 +482,21 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
     return explorer.get(`pools/coins/${coin0}/${coin1}/estimate?type=${type}&amount=${amount}`, axiosOptions)
         .then((response) => response.data);
 }
+
+
+/**
+ * @typedef {Object} Block
+ * @property {number} height
+ * @property {string} timestamp
+ * @property {number} transactionCount - tx count in the block
+ * @property {number} size
+ * @property {string} hash
+ * @property {number} reward
+ * @property {number} blockTime
+ * @property {string} timestamp
+ * @property {number} validatorsCount
+ * @property {Array<ValidatorListItem>} [validators]
+ */
 
 /**
  * @typedef {Object} StakeListInfo

@@ -10,6 +10,7 @@ import TxPoolAddLiquidityForm from '~/components/TxPoolAddLiquidityForm.vue';
 import TxPoolRemoveLiquidityForm from '~/components/TxPoolRemoveLiquidityForm.vue';
 import TxStakeDelegateForm from '~/components/TxStakeDelegateForm.vue';
 import TxStakeUnbondForm from '~/components/TxStakeUnbondForm.vue';
+import StakeByLock from '~/components/StakeByLock.vue';
 import Modal from '~/components/base/Modal.vue';
 
 // treat such param value as not defined
@@ -67,6 +68,11 @@ const actionList = {
         title: 'Unbond',
         params: ['coin', 'publicKey'],
         component: TxStakeUnbondForm,
+    },
+    stake: {
+        title: 'Stake & Earn',
+        params: ['coin', 'duration'],
+        component: StakeByLock,
     },
 };
 

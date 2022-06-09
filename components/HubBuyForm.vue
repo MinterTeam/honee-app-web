@@ -1062,6 +1062,8 @@ function getSwapOutput(receipt) {
                     <span class="button__content">{{ $td('Buy', 'form.buy-button') }}</span>
                     <Loader class="button__loader" :isLoading="true"/>
                 </button>
+
+                <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the disclaimer in the footer.', 'form.read-understood') }}</p>
             </form>
 
             <!--
