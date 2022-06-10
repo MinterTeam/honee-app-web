@@ -125,6 +125,7 @@ function poolHasCoin(pool, symbol) {
                         <template v-if="card.actionType === $options.ACTION_TYPE.FARM">{{ $td('Add liquidity', 'index.add-liquidity') }}</template>
                         <template v-if="card.actionType === $options.ACTION_TYPE.DELEGATE">{{ $td('Delegate', 'index.delegate') }}</template>
                         <template v-if="card.actionType === $options.ACTION_TYPE.WIN">{{ $td('Participate', 'index.participate') }}</template>
+                        <template v-if="card.actionType === $options.ACTION_TYPE.STAKE">{{ $td('Stake', 'index.stake') }}</template>
                     </nuxt-link>
                 </div>
                 <div class="u-cell u-cell--4-10" v-if="isUndoAvailable">

@@ -4,6 +4,27 @@ export default {
     earn: {
         cards: [
             {
+                type: 'STAKE & EARN',
+                title: `BEE`,
+                description: 'Stake BEE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
+                icon: 'BEE',
+                stats: {
+                    caption: 'APR',
+                    value: 'from 6 to 24%',
+                },
+                tags: ['Staking', 'BEE'],
+                action: `/stake/BEE`,
+                ru: {
+                    title: 'BEE',
+                    description: 'Стейкуйте BEE на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
+                    type: 'Стейкинг',
+                    stats: {
+                        caption: 'Годовых',
+                        value: 'от 6 до 24%',
+                    },
+                },
+            },
+            {
                 type: 'Delegate',
                 title: `${BASE_COIN}`,
                 description: '‘Tie’ your BIP to any validator of the Minter Network and start getting rewards every hour.',
