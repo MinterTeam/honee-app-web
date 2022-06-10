@@ -133,7 +133,7 @@ export default {
                 <div class="u-cell u-cell--medium--1-2 card-wrap-cell" v-for="card in categoryCards" :key="card.action || card">
                     <Card :card="card" v-if="card.action"/>
 
-                    <div class="card card__content--small" v-if="card === $options.BASE_CARD.DELEGATION">
+                    <!--<div class="card card__content--small" v-if="card === $options.BASE_CARD.DELEGATION">
                         <h3 class="card__action-title-value u-mb-05">{{ $td('Delegation', 'index.delegation') }}</h3>
                         <p class="">{{ $td('Bonding your BIP or custom coins to a network validator and getting rewards (portion of block rewards + transaction fees). The returns are shared among all delegators proportionally to their stake, minus validator’s fee.', 'index.delegation-desc') }}</p>
 
@@ -146,9 +146,9 @@ export default {
                         <a class="button button--ghost-main button--full u-mt-05" href="https://chainik.io/validators" target="_blank">
                             {{ $td('Validators', 'index.validators') }}
                         </a>
-                    </div>
+                    </div>-->
 
-                    <div class="card card__content--small" v-if="card === $options.BASE_CARD.LIQUIDITY">
+                    <!--<div class="card card__content--small" v-if="card === $options.BASE_CARD.LIQUIDITY">
                         <h3 class="card__action-title-value u-mb-05">{{ $td('Providing liquidity', 'index.providing-liquidity') }}</h3>
                         <p class="">
                             <template v-if="$i18n.locale === 'en'">
@@ -174,7 +174,7 @@ export default {
                         <a class="button button--ghost-main button--full u-mt-05" href="https://chainik.io/lottery/" target="_blank">
                             {{ $td('Giveaway programs', 'index.giveaway-programs') }}
                         </a>
-                    </div>
+                    </div>-->
                 </div>
             </div>
         </div>

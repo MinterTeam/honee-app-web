@@ -1,6 +1,61 @@
 import {BASE_COIN} from '~/assets/variables.js';
 
 export default {
+    earn: {
+        cards: [
+            {
+                type: 'Delegate',
+                title: `${BASE_COIN}`,
+                description: '‘Tie’ your BIP to any validator of the Minter Network and start getting rewards every hour.',
+                icon: BASE_COIN,
+                stats: {
+                    caption: 'APY',
+                    value: '10%',
+                },
+                tags: ['Staking', BASE_COIN],
+                action: `/delegate/${BASE_COIN}`,
+                ru: {
+                    title: 'BIP',
+                    description: '«Привяжите» свои BIP к любому валидатору сети Minter и начните получать награды каждый час.',
+                    type: 'Делегирование',
+                },
+            },
+            {
+                type: 'Yield farming',
+                title: 'HUB / BNB',
+                description: 'Put your HUB and BNB into a liquidity pool to start getting extra daily rewards.',
+                icon: ['HUB', 'BNB'],
+                stats: {
+                    caption: 'APR in HUB',
+                    value: '121.5%',
+                },
+                tags: ['Farming', 'HUB', 'BNB'],
+                action: '/farm/HUB/BNB',
+                ru: {
+                    title: 'HUB / BNB',
+                    description: 'Положите свои HUB и BNB в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                    type: 'Фарминг',
+                },
+            },
+            {
+                type: 'Yield farming',
+                title: 'BIP / MUSD',
+                description: 'Put your BIP and MUSD into a liquidity pool to start getting extra daily rewards.',
+                icon: ['BIP', 'MUSD'],
+                stats: {
+                    caption: 'APR in BIP',
+                    value: '121.5%',
+                },
+                tags: ['Farming', 'BIP', 'MUSD'],
+                action: '/farm/BIP/MUSD',
+                ru: {
+                    title: 'BIP / MUSD',
+                    description: 'Положите свои BIP и MUSD в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
+                    type: 'Фарминг',
+                },
+            },
+        ],
+    },
     swap: {
         title: 'Buy',
         cards: [
@@ -162,61 +217,6 @@ export default {
                     title: 'GMTBSC',
                     description: 'STEPN — это лайфстайл-приложение с элементами GameFi. Он сочетает в себе аспекты игры «играй, чтобы заработать» и фитнес-приложение с новой категорией «двигайся, чтобы зарабатывать».',
                     type: 'Купить',
-                },
-            },
-        ],
-    },
-    earn: {
-        cards: [
-            {
-                type: 'Delegate',
-                title: `${BASE_COIN}`,
-                description: '‘Tie’ your BIP to any validator of the Minter Network and start getting rewards every hour.',
-                icon: BASE_COIN,
-                stats: {
-                    caption: 'APY',
-                    value: '10%',
-                },
-                tags: ['Staking', BASE_COIN],
-                action: `/delegate/${BASE_COIN}`,
-                ru: {
-                    title: 'BIP',
-                    description: '«Привяжите» свои BIP к любому валидатору сети Minter и начните получать награды каждый час.',
-                    type: 'Делегирование',
-                },
-            },
-            {
-                type: 'Yield farming',
-                title: 'HUB / BNB',
-                description: 'Put your HUB and BNB into a liquidity pool to start getting extra daily rewards.',
-                icon: ['HUB', 'BNB'],
-                stats: {
-                    caption: 'APR in HUB',
-                    value: '121.5%',
-                },
-                tags: ['Farming', 'HUB', 'BNB'],
-                action: '/farm/HUB/BNB',
-                ru: {
-                    title: 'HUB / BNB',
-                    description: 'Положите свои HUB и BNB в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                    type: 'Фарминг',
-                },
-            },
-            {
-                type: 'Yield farming',
-                title: 'BIP / MUSD',
-                description: 'Put your BIP and MUSD into a liquidity pool to start getting extra daily rewards.',
-                icon: ['BIP', 'MUSD'],
-                stats: {
-                    caption: 'APR in BIP',
-                    value: '121.5%',
-                },
-                tags: ['Farming', 'BIP', 'MUSD'],
-                action: '/farm/BIP/MUSD',
-                ru: {
-                    title: 'BIP / MUSD',
-                    description: 'Положите свои BIP и MUSD в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                    type: 'Фарминг',
                 },
             },
         ],
