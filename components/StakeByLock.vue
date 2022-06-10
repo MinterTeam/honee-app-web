@@ -276,10 +276,6 @@ function yearToBlock(year) {
                     </div>
                 </div>
             </template>
-
-            <template v-slot:confirm-modal-footer>
-                <div class="form-row u-text-small u-text-muted u-text-center" v-html="$td('', 'form.delegation-delegate-confirm-note')"></div>
-            </template>
         </TxForm>
         <div v-else-if="$fetchState.pending">{{ $td('Loading…', 'index.loading') }}</div>
         <div v-else>{{ $td('Can\'t load staking program', 'stake-by-lock.error-not-found') }}</div>
