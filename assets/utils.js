@@ -5,6 +5,8 @@ import fromExponential from 'from-exponential';
 import parseISO from "date-fns/esm/parseISO";
 import format from "date-fns/esm/format";
 import formatDistanceStrict from "date-fns/esm/formatDistanceStrict";
+// import formatDuration from "date-fns/esm/formatDuration";
+// import intervalToDuration from "date-fns/esm/intervalToDuration";
 import {txTypeList} from 'minterjs-util/src/tx-types.js';
 import {EXPLORER_HOST, HUB_TRANSFER_STATUS, HUB_CHAIN_BY_ID, ACCOUNTS_API_URL} from "~/assets/variables.js";
 
@@ -64,6 +66,22 @@ export function getEvmAddressUrl(chainId, hash) {
 }
 
 /**
+ *
+ * @param {string|number} value
+ * @param {number} precision
+ * @param {PRECISION_SETTING} [precisionSetting]
+ * @return {string}
+ */
+export function prettyNumber(value, precision, precisionSetting) {
+    return decode(prettyNum(value, {
+        precision,
+        precisionSetting,
+        separateOneDigit: false,
+        thousandsSeparator: '&#x202F;',
+    }));
+}
+
+/**
  * @param {string|number} value
  * @return {string}
  */
@@ -73,9 +91,9 @@ export function pretty(value) {
     }
     const PRECISION = 2;
     if (value >= 1 || value <= -1 || Number(value) === 0) {
-        return decode(prettyNum(value, {precision: PRECISION, precisionSetting: PRECISION_SETTING.FIXED, thousandsSeparator: '&#x202F;'}));
+        return prettyNumber(value, PRECISION, PRECISION_SETTING.FIXED);
     } else {
-        value = decode(prettyNum(value, {precision: PRECISION, precisionSetting: PRECISION_SETTING.REDUCE_SIGNIFICANT, thousandsSeparator: '&#x202F;'}));
+        value = prettyNumber(value, PRECISION, PRECISION_SETTING.REDUCE_SIGNIFICANT);
         value = value.substr(0, 10);
         if (value === '0.00000000') {
             return '0.00';
@@ -89,7 +107,7 @@ export function pretty(value) {
  * @return {string}
  */
 export function prettyRound(value) {
-    return decode(prettyNum(value, {precision: 0, thousandsSeparator: '&nbsp;'}));
+    return prettyNumber(value, 0);
 }
 
 /**
@@ -101,10 +119,10 @@ export function prettyPrecise(value) {
     const parts = stripZeros(fromExponential(value)).split('.');
     const isReduced = parts[1] && parts[1].length > 2;
     if (isReduced) {
-        return decode(prettyNum(value, {precision: 8, precisionSetting: PRECISION_SETTING.REDUCE, thousandsSeparator: '&#x202F;'}));
+        return prettyNumber(value, 8, PRECISION_SETTING.REDUCE);
     } else {
         // ensure at least 2 decimal digits
-        return decode(prettyNum(value, {precision: 2, precisionSetting: PRECISION_SETTING.FIXED, thousandsSeparator: '&#x202F;'}));
+        return prettyNumber(value, 2, PRECISION_SETTING.FIXED);
     }
 }
 
@@ -114,7 +132,7 @@ export function prettyPrecise(value) {
  * @return {string}
  */
 export function prettyExact(value) {
-    return decode(prettyNum(value, {precision: 2, precisionSetting: PRECISION_SETTING.INCREASE, thousandsSeparator: '&#x202F;'}));
+    return prettyNumber(value, 2, PRECISION_SETTING.INCREASE);
 }
 
 export function decreasePrecisionSignificant(value) {
@@ -202,6 +220,15 @@ export function getTimeStamp(timestamp) {
     return format(parseTime(timestamp), 'dd MMM yyyy HH:mm:ss');
 }
 
+export function getDateAmerican(timestamp) {
+    timestamp = parseTime(timestamp);
+    if (!timestamp) {
+        return false;
+    }
+
+    return format(parseTime(timestamp), 'MMMM d, yyyy');
+}
+
 export function getTime(timestamp) {
     timestamp = parseTime(timestamp);
     if (!timestamp) {
@@ -220,7 +247,13 @@ export function getTime(timestamp) {
 //     return format(timestamp, 'O');
 // }
 
-export function getTimeDistance(timestamp, allowFuture) {
+/**
+ * @param {string|number|Date} timestamp
+ * @param {boolean} [allowFuture]
+ * @param {{addSuffix?: boolean, unit?: 'second'|'minute'|'hour'|'day'|'month'|'year', roundingMethod?: 'floor'|'ceil'|'round', locale?: Locale}} [options]
+ * @return {boolean|string|*}
+ */
+export function getTimeDistance(timestamp, allowFuture, options) {
     timestamp = parseTime(timestamp);
     if (!timestamp) {
         return false;
@@ -232,9 +265,30 @@ export function getTimeDistance(timestamp, allowFuture) {
         timestamp = now;
     }
 
-    return formatDistanceStrict(timestamp, now, {roundingMethod: 'floor'});
+    return formatDistanceStrict(timestamp, now, {roundingMethod: 'floor', ...options});
 }
+/**
+ * @param {string|number|Date} timestamp
+ * @param {{format?: string[], zero?: boolean, delimiter?: string, locale?: Locale}} [options]
+ * @return {string}
+ */
+/*
+export function getDuration(timestamp, options) {
+    timestamp = parseTime(timestamp);
+    const duration = intervalToDuration({
+        start: new Date(0),
+        end: timestamp,
+    });
+    window.intervalToDuration = intervalToDuration;
+    console.log('duration', duration);
 
+    return formatDuration(duration, options);
+}*/
+
+/**
+ * @param {string} str
+ * @return {string}
+ */
 export function fromBase64(str) {
     //@TODO utf8 https://github.com/dankogai/js-base64
     const asci = window.atob(str);

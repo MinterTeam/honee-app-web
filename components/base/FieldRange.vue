@@ -1,6 +1,7 @@
 <script>
 import autosize from 'v-autosize';
-import {pretty} from '~/assets/utils.js';
+import gcd from 'compute-gcd';
+import {prettyNumber} from '~/assets/utils.js';
 
 export default {
     components: {
@@ -10,7 +11,7 @@ export default {
     },
     props: {
         value: {
-            type: String,
+            type: [Number, String],
             default: '',
         },
         $value: {
@@ -21,18 +22,21 @@ export default {
         },
         min: {
             type: [Number, String],
-            default: 0,
         },
         max: {
             type: [Number, String],
-            default: 100,
         },
         step: {
             type: [Number, String],
-            default: 0.01,
+        },
+        list: {
+            type: Array,
         },
         unit: {
             type: String,
+        },
+        pluralizeUnit: {
+            type: Boolean,
         },
         label: {
             type: String,
@@ -43,8 +47,50 @@ export default {
         return {
         };
     },
+    computed: {
+        listMin() {
+            if (!this.list?.length) {
+                return;
+            }
+            return this.min || Math.min(...this.list);
+        },
+        listMax() {
+            if (!this.list?.length) {
+                return;
+            }
+            return this.max ||  Math.max(...this.list);
+        },
+        listStep() {
+            if (!this.list?.length) {
+                return;
+            }
+            return this.step || gcd(this.list);
+        },
+        listId() {
+            if (!this.list?.length) {
+                return;
+            }
+            return `field-range-list-${Math.random()}`;
+        },
+        precision() {
+            // number of digits after dot
+            return (this.listStep || this.step).split('.')[1]?.length;
+        },
+        resultUnit() {
+            if (!this.pluralizeUnit) {
+                return this.unit;
+            }
+            if (this.value.toString() === '1') {
+                return this.unit;
+            } else {
+                return this.unit + 's';
+            }
+        },
+    },
     methods: {
-        pretty,
+        pretty(value) {
+            return prettyNumber(value, this.precision);
+        },
     },
 };
 </script>
@@ -56,16 +102,20 @@ export default {
             <input
                 class="h-field__range form-range" type="range"
                 :style="`--val: ${value}; --min: ${min}; --max: ${max};`"
-                :min="min"
-                :max="max"
-                :step="step"
+                :min="listMin || min"
+                :max="listMax || max"
+                :step="listStep || step"
+                :list="listId"
                 :value="value"
                 @input="$emit('input', $event.target.value)"
             >
+            <datalist :id="listId" v-if="listId">
+                <option v-for="listValue in list" :key="listValue" :value="listValue"/>
+            </datalist>
         </div>
         <div class="h-field__aside" :class="{'is-error': $value.$error}">
             <div class="h-field__input h-field__aside-input h-field__aside-range" >
-                {{ pretty(value || 0) }}{{ unit }}
+                {{ pretty(value || 0) }}{{ resultUnit }}
             </div>
         </div>
     </div>

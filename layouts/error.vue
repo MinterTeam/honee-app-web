@@ -13,12 +13,15 @@ export default {
     },
     computed: {
         statusCode() {
+            // error's statusCode 500 is invalid, because it shows on network errors
+            if (this.error.statusCode === 500) {
+                return '';
+            }
             // axios status
             return this.error.response?.status || this.error.request?.status
             // custom status
             || this.error.status
-            // error's statusCode 500 is invalid, because it shows on network errors
-            || (this.error.statusCode !== 500 && this.error.statusCode);
+            || this.error.statusCode;
         },
         message() {
             let errorText = getErrorText(this.error, '');
