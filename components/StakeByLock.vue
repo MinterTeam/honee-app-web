@@ -227,7 +227,7 @@ function yearToBlock(year) {
                             <div class="estimation__coin-symbol">{{ stakingProgram.rewardCoin.symbol }}</div>
                         </div>
                         <div class="estimation__value">
-                            ≈<template v-if="totalYieldAmount">{{ pretty(totalYieldAmount) }}</template>
+                            ≈{{ totalYieldAmount ? pretty(totalYieldAmount) : '' }}
                             (+{{ pretty(totalYieldPercent) }}%)
                         </div>
                     </div>
@@ -262,7 +262,7 @@ function yearToBlock(year) {
                             <div class="estimation__coin-symbol">{{ stakingProgram.rewardCoin.symbol }}</div>
                         </div>
                         <div class="estimation__value">
-                            ≈<template v-if="totalYieldAmount">{{ pretty(totalYieldAmount) }}</template>
+                            ≈{{ totalYieldAmount ? pretty(totalYieldAmount) : '' }}
                             (+{{ pretty(totalYieldPercent) }}%)
                         </div>
                     </div>

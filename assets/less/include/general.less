@@ -376,10 +376,10 @@ blockquote {
 .form-range {
     --range:calc(var(--max) - var(--min));
     --ratio:calc((var(--val) - var(--min)) / var(--range) * 100%);
-    -webkit-appearance:none; display: block; width:100%;background: none;outline:0;padding:0; height: 24px;
+    -webkit-appearance:none; display: block; width:100%;background: none;outline:0;padding:0; height: 24px; cursor: pointer;
 }
 .form-range::-moz-focus-outer {border:0}
-.range-track() {width:100%;height:@range-track-height;border-radius:@range-track-radius;background:@range-color-bg;cursor:pointer;}
+.range-track() {width:100%; height: @range-track-height; border-radius: @range-track-radius; background-color: @range-color-bg;}
 .form-range::-webkit-slider-runnable-track {
     .range-track();
     background:linear-gradient(@range-color,@range-color) 0/var(--ratio) 100% no-repeat @range-color-bg
@@ -428,4 +428,16 @@ blockquote {
     .range-thumb();
     margin-top:-1px
 }
+//@TODO safari
+// ticks
+// wrap needed to position ticks under the thumb but upper than track
+.form-range-wrap {
+    position: relative; z-index: 1; height: 24px;
+    &::before {.range-track(); content: ''; position: absolute; left: 0; top: ((24px - @range-track-height) / 2); z-index: -1;}
+    ::-webkit-slider-runnable-track {background-color: transparent;}
+    ::-moz-range-track {background-color: transparent;}
+    ::-ms-fill-lower {background-color: transparent;}
+}
+.form-range + datalist {display: flex; justify-content: space-between; margin-top: (-(24px / 2) - (8px / 2)); position: relative; z-index: -1;}
+.form-range + datalist > option {width: 3px; height: 8px; padding: 0; margin: 0; border-radius: 2px; background: @range-color; font-size: 0;}
 

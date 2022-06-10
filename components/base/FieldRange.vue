@@ -108,19 +108,21 @@ export default {
     <div class="h-field">
         <div class="h-field__content">
             <div class="h-field__title">{{ label }}</div>
-            <input
-                class="h-field__range form-range" type="range"
-                :style="`--val: ${value}; --min: ${resultMin}; --max: ${resultMax};`"
-                :min="resultMin"
-                :max="resultMax"
-                :step="listStep || step"
-                :list="listId"
-                :value="value"
-                @input="$emit('input', $event.target.value)"
-            >
-            <datalist :id="listId" v-if="listId">
-                <option v-for="listValue in list" :key="listValue" :value="listValue"/>
-            </datalist>
+            <div class="h-field__range form-range-wrap">
+                <input
+                    class="form-range" type="range"
+                    :style="`--val: ${value}; --min: ${resultMin}; --max: ${resultMax};`"
+                    :min="resultMin"
+                    :max="resultMax"
+                    :step="listStep || step"
+                    :list="listId"
+                    :value="value"
+                    @input="$emit('input', $event.target.value)"
+                >
+                <datalist :id="listId" v-if="listId">
+                    <option v-for="listValue in list" :key="listValue" :value="listValue"/>
+                </datalist>
+            </div>
         </div>
         <div class="h-field__aside" :class="{'is-error': $value.$error}">
             <div class="h-field__input h-field__aside-input h-field__aside-range" >
