@@ -1,4 +1,5 @@
 <script>
+import get from 'lodash-es/get.js';
 import {DASHBOARD_URL} from '~/assets/variables.js';
 import hashColor from '~/assets/hash-color.js';
 
@@ -10,6 +11,7 @@ const ACTION_TYPE = {
     WIN: 'win',
     REMOVE_LIQUIDITY: 'remove_liquidity',
     UNBOND: 'unbond',
+    STAKE: 'stake',
 };
 
 export default {
@@ -73,11 +75,12 @@ export default {
         },
         translate(key) {
             const localeData = this.$i18n.locale === 'en' ? this.card : this.card[this.$i18n.locale];
-            if (localeData?.[key]) {
-                return localeData[key];
+            const localeValue = get(localeData, key);
+            if (localeValue) {
+                return localeValue;
             }
             // fallback to en locale
-            return this.card[key];
+            return get(this.card, key);
         },
         $ts(locales) {
             if (locales[this.$i18n.locale]) {
@@ -106,8 +109,8 @@ function poolHasCoin(pool, symbol) {
                 <div class="card__action-title-value">{{ translate('title') }}</div>
             </div>
             <div class="card__action-stats">
-                <div class="card__action-stats-caption">{{ card.stats.caption }}</div>
-                <div class="card__action-stats-value">{{ card.stats.value }}</div>
+                <div class="card__action-stats-caption">{{ translate('stats.caption') }}</div>
+                <div class="card__action-stats-value">{{ translate('stats.value') }}</div>
             </div>
         </div>
         <p class="card__action-description">{{ translate('description') }}</p>
