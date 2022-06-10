@@ -48,17 +48,23 @@ export default {
         };
     },
     computed: {
+        resultMin() {
+            return this.listMin || this.min || 0;
+        },
+        resultMax() {
+            return this.listMax || this.max || 100;
+        },
         listMin() {
             if (!this.list?.length) {
                 return;
             }
-            return this.min || Math.min(...this.list);
+            return Math.min(...this.list);
         },
         listMax() {
             if (!this.list?.length) {
                 return;
             }
-            return this.max ||  Math.max(...this.list);
+            return Math.max(...this.list);
         },
         listStep() {
             if (!this.list?.length) {
@@ -66,11 +72,14 @@ export default {
             }
             return this.step || gcd(this.list);
         },
+        random() {
+            return Math.random().toString().replace('0.', '');
+        },
         listId() {
             if (!this.list?.length) {
                 return;
             }
-            return `field-range-list-${Math.random()}`;
+            return `field-range-list-${this.random}`;
         },
         precision() {
             // number of digits after dot
@@ -101,9 +110,9 @@ export default {
             <div class="h-field__title">{{ label }}</div>
             <input
                 class="h-field__range form-range" type="range"
-                :style="`--val: ${value}; --min: ${min}; --max: ${max};`"
-                :min="listMin || min"
-                :max="listMax || max"
+                :style="`--val: ${value}; --min: ${resultMin}; --max: ${resultMax};`"
+                :min="resultMin"
+                :max="resultMax"
                 :step="listStep || step"
                 :list="listId"
                 :value="value"

@@ -7,12 +7,10 @@ import minValue from 'vuelidate/lib/validators/minValue.js';
 import maxValue from 'vuelidate/lib/validators/maxValue.js';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import {isValidPublic} from "minterjs-util/src/public.js";
 import checkEmpty from '~/assets/v-check-empty.js';
-import {pretty, getDateAmerican, getTimeDistance} from '~/assets/utils.js';
+import {pretty, prettyRound, getDateAmerican, getTimeDistance} from '~/assets/utils.js';
 import {getStakingProgram} from '~/api/staking.js';
 import {getBlock} from '~/api/explorer.js';
-import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import TxForm from '~/components/base/TxForm.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import FieldRange from '~/components/base/FieldRange.vue';
@@ -21,7 +19,6 @@ import FieldRange from '~/components/base/FieldRange.vue';
 export default {
     TX_TYPE,
     components: {
-        // BaseAmountEstimation,
         TxForm,
         FieldCombined,
         FieldRange,
@@ -32,10 +29,7 @@ export default {
     },
     mixins: [validationMixin],
     fetch() {
-        getBlock('latest')
-            .then((block) => {
-                this.latestBlockHeight = block.height;
-            });
+        this.fetchLatestBlock();
 
         return getStakingProgram()
             .then((stakingProgram) => {
@@ -101,6 +95,10 @@ export default {
         dailyYieldPercent() {
             return this.stakingProgram?.options[this.selectedBlock];
         },
+        // earlyYieldPercent
+        apr() {
+            return this.dailyYieldPercent * 365;
+        },
         totalYieldPercent() {
             const lockDays = Math.floor(this.selectedBlock / BLOCKS_IN_DAY);
             return lockDays * this.dailyYieldPercent;
@@ -121,8 +119,15 @@ export default {
     },
     methods: {
         pretty,
+        prettyRound,
         getDate: getDateAmerican,
         getTimeDistance: (value) => getTimeDistance(value, true, {roundingMethod: 'round'}),
+        fetchLatestBlock() {
+            return getBlock('latest')
+                .then((block) => {
+                    this.latestBlockHeight = block.height;
+                });
+        },
         clearForm() {
             this.form.publicKey = '';
             this.form.stake = '';
@@ -152,12 +157,26 @@ function yearToBlock(year) {
             :$txData="$v.form"
             :txType="$options.TX_TYPE.LOCK"
             :payload="payload"
+            :before-post-tx="fetchLatestBlock"
             @clear-form="clearForm()"
         >
             <template v-slot:panel-header>
-                <h1 class="u-h3 u-mb-10">
-                    {{ action.title || $td('Stake & Earn', 'action.title-stake-by-lock') }}
-                </h1>
+                <div class="card__action-head">
+                    <img class="card__action-logo" alt="" :src="$store.getters['explorer/getCoinIcon'](params.coin)">
+                    <div class="card__action-title">
+                        <div class="card__action-title-type">
+                            {{ action.title || $td('Stake & Earn', 'action.title-stake-by-lock') }}
+                        </div>
+                        <div class="card__action-title-value">{{ params.coin }}</div>
+                    </div>
+                    <div class="card__action-stats">
+                        <div class="card__action-stats-caption">APR</div>
+                        <div class="card__action-stats-value">{{ prettyRound(apr) }}%</div>
+                    </div>
+                </div>
+<!--                <h1 class="u-h3 u-mb-10">-->
+<!--                    {{ action.title || $td('Stake & Earn', 'action.title-stake-by-lock') }}-->
+<!--                </h1>-->
                 <!--
                 <p class="panel__header-description">
                     {{ $td('You can delegate your tokens to validators and receive related payments in accordance with the terms of participation.', 'form.delegate-description') }}
