@@ -445,19 +445,6 @@
 <template>
     <div>
         <form novalidate @submit.prevent="openConfirmation()">
-            <h1 class="u-h3 u-mb-10">
-                {{ $t(action.langKey + '-combined', {
-                    coin0: params.coinToSell ? params.coinToSell.toUpperCase() : $td('coins', action.langKey + '-coin0-empty'),
-                    conjunction: params.coinToBuy ? $td('for', action.langKey + '-conjunction') : undefined,
-                    coin1: params.coinToBuy ? params.coinToBuy.toUpperCase() : undefined,
-                }) }}
-                <!--
-                {{ $td('Buy', 'index.swap') }}
-                <template v-if="params.coinToSell">{{ params.coinToSell.toUpperCase() }}</template>
-                <template v-if="params.coinToBuy && !params.coinToSell">{{ $td('coins', 'form.coins-2') }}</template>
-                <template v-if="params.coinToBuy">for {{ params.coinToBuy.toUpperCase() }}</template>
-                -->
-            </h1>
             <div class="form-row">
                 <FieldCombined
                     v-if="!params.coinToSell"

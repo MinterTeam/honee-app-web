@@ -4,7 +4,20 @@ export default {
 
     },
     action: {
+        'title-buy': 'Buy BIP, HUB, & BEE for BNB & ETH',
+        'title-swap': 'Swap coins',
         'title-swap-combined': 'Swap {coin0} {conjunction} {coin1}',
+        'title-swap-coin0-empty': 'coins',
+        'title-swap-conjunction': 'for',
+        'title-send': 'Send coins',
+        'title-win': 'Win',
+        'title-farm': 'Yield farm',
+        'title-add-liquidity': 'Provide liquidity to pool',
+        'title-remove-liquidity': 'Remove liquidity from pool',
+        'title-delegate': 'Delegate',
+        'title-unbond': 'Unbond',
+        'title-stake': 'Stake & Earn',
+        'title-not-found': 'Action not found',
     },
     form: {
         'delegation-delegate-confirm-note': 'Note: in case of unbond, your coins will return to your address in approximately <strong>30&nbsp;days</strong> (518&#x202F;400 blocks) and will not be generating rewards during this&nbsp;period.',

@@ -21,6 +21,9 @@
                 type: String,
                 default: 'card card__content card--light-grey',
             },
+            modalContainerStyle: {
+                type: String,
+            },
             keepMarkup: {
                 type: Boolean,
                 default: false,
@@ -104,7 +107,7 @@
                         <span class="modal__close-icon">{{ $td('Close', 'common.close') }}</span>
                     </button>
                     <div class="modal__wrap">
-                        <div class="modal__container" ref="modalContainer" :class="modalContainerClass">
+                        <div class="modal__container" ref="modalContainer" :class="modalContainerClass" :style="modalContainerStyle">
                             <slot></slot>
                         </div>
                     </div>

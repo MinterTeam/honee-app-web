@@ -159,10 +159,8 @@ export default {
     'stake-by-lock': {
         'estimation-unlock': 'Срок разблокировки стейка',
         'estimation-earn': 'Вы заработаете',
-        'apr': 'Годовых',
     },
     action: {
-        'title-add-liquidity': 'Предоставьте ликвидность в пул',
         'title-buy': 'Купите BIP, HUB и BEE за BNB или ETH',
         'title-swap': 'Обменяйте монеты',
         'title-swap-combined': '@:action.title-swap {coin0} {conjunction} {coin1}',
@@ -171,10 +169,11 @@ export default {
         'title-send': 'Отправьте монеты',
         'title-win': 'Выигрывайте',
         'title-farm': 'Участвуйте в доходном фермерстве',
+        'title-add-liquidity': 'Предоставьте ликвидность в пул',
         'title-remove-liquidity': 'Отзыв ликвидности из пула',
         'title-delegate': 'Делегируйте',
         'title-unbond': 'Отзыв монет из делегирования',
-        'title-stake-by-lock': 'Стейкинг',
+        'title-stake': 'Стейкинг',
         'title-not-found': 'Действие не найдено',
         'tag-exchange': 'Обмен',
         'tag-staking': 'Стейкинг',
@@ -242,7 +241,6 @@ export default {
         'checks-issue-result-link-warning': 'Внимание! Пароль содержится в ссылке. Отправляйте ссылку только непосредственно получателю.',
         'checks-issue-button': 'Создать',
 
-        'wallet-send-title': 'Отправить монеты',
         'wallet-send-description': 'Отправляйте монеты кому пожелаете — друзьям, семье, бизнес-партнерам.',
         'wallet-send-address': 'Адрес',
         'wallet-send-address-error-required': 'Укажите адрес',

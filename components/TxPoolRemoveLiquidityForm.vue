@@ -273,15 +273,6 @@ export default {
         @success-tx="success()"
         @clear-form="clearForm()"
     >
-        <template v-slot:panel-header>
-            <h1 class="u-h3 u-mb-10">
-                {{ action.title || $td('Remove liquidity from swap pool', 'pool.remove-title') }}
-            </h1>
-            <!--            <p class="panel__header-description">-->
-            <!--                {{ $td('Choose one of the coins that you own and specify the amount you would like to add.', 'swap.remove-description') }}-->
-            <!--            </p>-->
-        </template>
-
         <template v-slot:default>
             <div class="form-row">
                 <FieldCombined
@@ -364,7 +355,7 @@ export default {
         <template v-slot:confirm-modal-header>
             <h2 class="u-h3 u-mb-10">
 <!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-feature-pool.svg`" alt="" role="presentation" width="40" height="40">-->
-                {{ $td('Remove liquidity from swap pool', 'form.pool-remove-title') }}
+                {{ action.title }}
             </h2>
         </template>
 

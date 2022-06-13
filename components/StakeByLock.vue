@@ -117,9 +117,13 @@ export default {
             return JSON.stringify({lock_id: this.stakingProgram?.id});
         },
     },
+    watch: {
+        apr() {
+            this.$emit('override-stats-value', prettyRound(this.apr) + '%');
+        },
+    },
     methods: {
         pretty,
-        prettyRound,
         getDate: getDateAmerican,
         getTimeDistance: (value) => getTimeDistance(value, true, {roundingMethod: 'round'}),
         fetchLatestBlock() {
@@ -160,30 +164,6 @@ function yearToBlock(year) {
             :before-post-tx="fetchLatestBlock"
             @clear-form="clearForm()"
         >
-            <template v-slot:panel-header>
-                <div class="card__action-head">
-                    <img class="card__action-logo" alt="" :src="$store.getters['explorer/getCoinIcon'](params.coin)">
-                    <div class="card__action-title">
-                        <div class="card__action-title-type">
-                            {{ action.title || $td('Stake & Earn', 'action.title-stake-by-lock') }}
-                        </div>
-                        <div class="card__action-title-value">{{ params.coin }}</div>
-                    </div>
-                    <div class="card__action-stats">
-                        <div class="card__action-stats-caption">{{ $td('APR', 'stake-by-lock.apr') }}</div>
-                        <div class="card__action-stats-value">{{ prettyRound(apr) }}%</div>
-                    </div>
-                </div>
-<!--                <h1 class="u-h3 u-mb-10">-->
-<!--                    {{ action.title || $td('Stake & Earn', 'action.title-stake-by-lock') }}-->
-<!--                </h1>-->
-                <!--
-                <p class="panel__header-description">
-                    {{ $td('You can delegate your tokens to validators and receive related payments in accordance with the terms of participation.', 'form.delegate-description') }}
-                </p>
-                -->
-            </template>
-
             <template v-slot:default="{fee}">
                 <div class="form-row">
                     <FieldCombined
@@ -249,7 +229,7 @@ function yearToBlock(year) {
             <template v-slot:confirm-modal-header>
                 <h2 class="u-h3 u-mb-10">
                     <!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-delegate.svg`" alt="" role="presentation" width="40" height="40">-->
-                    {{ $td('Stake & Earn', 'action.title-stake-by-lock') }}
+                    {{ action.title }}
                 </h2>
             </template>
 
@@ -277,7 +257,7 @@ function yearToBlock(year) {
                 </div>
             </template>
         </TxForm>
-        <div v-else-if="$fetchState.pending">{{ $td('Loading…', 'index.loading') }}</div>
-        <div v-else>{{ $td('Can\'t load staking program', 'stake-by-lock.error-not-found') }}</div>
+        <div class="u-mt-15" v-else-if="$fetchState.pending">{{ $td('Loading…', 'index.loading') }}</div>
+        <div class="u-mt-15" v-else>{{ $td('Can\'t load staking program', 'stake-by-lock.error-not-found') }}</div>
     </div>
 </template>

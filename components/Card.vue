@@ -2,6 +2,7 @@
 import get from 'lodash-es/get.js';
 import {DASHBOARD_URL} from '~/assets/variables.js';
 import hashColor from '~/assets/hash-color.js';
+import CardHead from '~/components/CardHead.vue';
 
 const ACTION_TYPE = {
     DEPOSIT: 'buy',
@@ -16,6 +17,9 @@ const ACTION_TYPE = {
 
 export default {
     ACTION_TYPE,
+    components: {
+        CardHead,
+    },
     props: {
         card: {
             type: Object,
@@ -25,13 +29,6 @@ export default {
     computed: {
         color() {
             return hashColor(this.card.action);
-        },
-        iconList() {
-            if (typeof this.card.icon === 'string') {
-                return [this.card.icon];
-            }
-
-            return this.card.icon;
         },
         undoActionType() {
             switch (this.card.actionType) {
@@ -67,27 +64,12 @@ export default {
         },
     },
     methods: {
-        getIconUrl(icon) {
-            return icon.indexOf('/') >= 0 ? icon : this.$store.getters['explorer/getCoinIcon'](icon);
-        },
         pageUrl(page) {
             return this.$i18nGetPreferredPath((DASHBOARD_URL + page).replace('//', '/'));
         },
         translate(key) {
-            const localeData = this.$i18n.locale === 'en' ? this.card : this.card[this.$i18n.locale];
-            const localeValue = get(localeData, key);
-            if (localeValue) {
-                return localeValue;
-            }
-            // fallback to en locale
-            return get(this.card, key);
-        },
-        $ts(locales) {
-            if (locales[this.$i18n.locale]) {
-                return locales[this.$i18n.locale];
-            }
-
-            return locales.en;
+            const localeData = this.$i18n.locale === 'en' ? this.card : this.card?.[this.$i18n.locale];
+            return get(localeData, key);
         },
     },
 };
@@ -99,20 +81,7 @@ function poolHasCoin(pool, symbol) {
 
 <template>
     <div class="card card--action card--invert card__content--small" :style="`background-color: ${color};`">
-        <div class="card__action-head">
-            <img class="card__action-logo" alt=""
-                 v-for="icon in iconList" :key="icon"
-                 :src="getIconUrl(icon)"
-            >
-            <div class="card__action-title">
-                <div class="card__action-title-type">{{ translate('type') }}</div>
-                <div class="card__action-title-value">{{ translate('title') }}</div>
-            </div>
-            <div class="card__action-stats">
-                <div class="card__action-stats-caption">{{ translate('stats.caption') }}</div>
-                <div class="card__action-stats-value">{{ translate('stats.value') }}</div>
-            </div>
-        </div>
+        <CardHead :card="card"></CardHead>
         <p class="card__action-description">{{ translate('description') }}</p>
 
         <!--<div class="card__action-tag-list">

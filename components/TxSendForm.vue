@@ -80,17 +80,6 @@ export default {
         :txType="$options.TX_TYPE.SEND"
         @clear-form="clearForm()"
     >
-        <template v-slot:panel-header>
-            <h1 class="u-h3 u-mb-10">
-                {{ action.title || $td('Send coins', 'form.wallet-send-title') }}
-            </h1>
-            <!--
-            <p class="panel__header-description">
-                {{ $td('Transfer your coins to whomever you want—friends, family members, or business partners.', 'form.wallet-send-description') }}
-            </p>
-            -->
-        </template>
-
         <template v-slot:default="{fee}">
             <div class="form-row">
                 <FieldCombined
@@ -121,7 +110,7 @@ export default {
         <template v-slot:confirm-modal-header>
             <h2 class="u-h3 u-mb-10">
 <!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-send.svg`" alt="" role="presentation" width="40" height="40">-->
-                {{ $td('Send coins', 'form.wallet-send-title') }}
+                {{ action.title }}
             </h2>
         </template>
 

@@ -954,11 +954,6 @@ function getSwapOutput(receipt) {
 
 <template>
     <div>
-        <h1 class="u-h3 u-mb-10">
-            <!-- @TODO get title from card -->
-            {{ params.coinToGet ? `Buy ${params.coinToGet} with BNB & ETH` : action.title }}
-        </h1>
-
         <div class="u-grid u-grid--small u-grid--vertical-margin--small" v-if="recovery">
             <div class="u-cell">{{ $td('You have unfinished purchase, do you want to continue?', 'form.unfinished-purchase') }}</div>
             <div class="u-cell u-cell--medium--1-4">
