@@ -54,6 +54,9 @@ export default {
         resultMax() {
             return this.listMax || this.max || 100;
         },
+        resultStep() {
+            return this.listStep || this.step;
+        },
         listMin() {
             if (!this.list?.length) {
                 return;
@@ -108,13 +111,12 @@ export default {
     <div class="h-field">
         <div class="h-field__content">
             <div class="h-field__title">{{ label }}</div>
-            <div class="h-field__range form-range-wrap">
+            <div class="h-field__range form-range-wrap" :style="`--val: ${value}; --min: ${resultMin}; --max: ${resultMax}; --step: ${resultStep}`">
                 <input
                     class="form-range" type="range"
-                    :style="`--val: ${value}; --min: ${resultMin}; --max: ${resultMax};`"
                     :min="resultMin"
                     :max="resultMax"
-                    :step="listStep || step"
+                    :step="resultStep"
                     :list="listId"
                     :value="value"
                     @input="$emit('input', $event.target.value)"
