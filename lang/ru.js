@@ -156,6 +156,11 @@ export default {
         'show-qr': 'Показать QR',
         'hide-qr': 'Скрыть QR',
     },
+    'stake-by-lock': {
+        'estimation-unlock': 'Срок разблокировки стейка',
+        'estimation-earn': 'Вы заработаете',
+        'apr': 'Годовых',
+    },
     action: {
         'title-add-liquidity': 'Предоставьте ликвидность в пул',
         'title-buy': 'Купите BIP, HUB и BEE за BNB или ETH',
@@ -169,7 +174,7 @@ export default {
         'title-remove-liquidity': 'Отзыв ликвидности из пула',
         'title-delegate': 'Делегируйте',
         'title-unbond': 'Отзыв монет из делегирования',
-        'title-stake-by-lock': 'Стейкуйте и зарабатывайте',
+        'title-stake-by-lock': 'Стейкинг',
         'title-not-found': 'Действие не найдено',
         'tag-exchange': 'Обмен',
         'tag-staking': 'Стейкинг',
@@ -427,5 +432,8 @@ export default {
         'broadcast-tx-button': 'Отправить',
 
         'hub-withdraw-cex-warning': 'Внимание! НЕ делайте вывод на биржи, так как многие не зачисляют средства из смарт-контрактов. Вы потеряете свои токены. Выводите на кошелек, которым владеете (от которого у вас есть сид-фраза).',
+
+        'stake-lock-duration-label': 'Период блокировки',
+        'stake-lock-duration-error-required': 'Укажите период',
     },
 };

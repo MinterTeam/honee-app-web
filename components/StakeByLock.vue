@@ -170,7 +170,7 @@ function yearToBlock(year) {
                         <div class="card__action-title-value">{{ params.coin }}</div>
                     </div>
                     <div class="card__action-stats">
-                        <div class="card__action-stats-caption">APR</div>
+                        <div class="card__action-stats-caption">{{ $td('APR', 'stake-by-lock.apr') }}</div>
                         <div class="card__action-stats-value">{{ prettyRound(apr) }}%</div>
                     </div>
                 </div>
