@@ -5,8 +5,6 @@ import {BASE_COIN} from '~/assets/variables.js';
  */
 export default {
     earn: {
-        //@TODO tags from coin
-        //@TODO stats from apr field
         cards: [
             {
                 caption: 'Stake & Earn',
@@ -31,6 +29,7 @@ export default {
                 stats: {
                     apy: {
                         percent: 10,
+                        rewardCoin: BASE_COIN,
                     },
                 },
                 tags: ['Staking'],
