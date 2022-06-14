@@ -1,7 +1,7 @@
 <script>
 import {pretty} from "~/assets/utils.js";
 import {DASHBOARD_URL} from '~/assets/variables.js';
-import cardList from '~/assets/data-card-list.js';
+import cardList from '~/content/card-list.js';
 import Card from '~/components/Card.vue';
 import CoinList from '~/components/CoinList.vue';
 
@@ -48,13 +48,7 @@ export default {
             let result = {};
             // transform cards
             for (const categorySlug in this.$options.cardList) {
-                result[categorySlug] = this.$options.cardList[categorySlug].cards.map((card) => {
-                    return {
-                        ...card,
-                        category: categorySlug,
-                        actionType: card.action.replace(/\?.*/, '').split('/').filter((item) => !!item)[0],
-                    };
-                });
+                result[categorySlug] = this.$options.cardList[categorySlug].cards;
             }
             // add base cards
             result.earn.push(BASE_CARD.DELEGATION);

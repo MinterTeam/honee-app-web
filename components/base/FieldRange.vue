@@ -33,10 +33,7 @@ export default {
             type: Array,
         },
         unit: {
-            type: String,
-        },
-        pluralizeUnit: {
-            type: Boolean,
+            type: [String, Function],
         },
         label: {
             type: String,
@@ -53,6 +50,9 @@ export default {
         },
         resultMax() {
             return this.listMax || this.max || 100;
+        },
+        resultStep() {
+            return this.listStep || this.step;
         },
         listMin() {
             if (!this.list?.length) {
@@ -85,15 +85,15 @@ export default {
             // number of digits after dot
             return (this.listStep || this.step).split('.')[1]?.length;
         },
-        resultUnit() {
-            if (!this.pluralizeUnit) {
-                return this.unit;
+        valueCaption() {
+            const prettyValue = this.pretty(this.value || 0);
+            if (typeof this.unit === 'string') {
+                return prettyValue + this.unit;
             }
-            if (this.value.toString() === '1') {
-                return this.unit;
-            } else {
-                return this.unit + 's';
+            if (typeof this.unit === 'function') {
+                return this.unit(this.value);
             }
+            return prettyValue;
         },
     },
     methods: {
@@ -108,23 +108,24 @@ export default {
     <div class="h-field">
         <div class="h-field__content">
             <div class="h-field__title">{{ label }}</div>
-            <input
-                class="h-field__range form-range" type="range"
-                :style="`--val: ${value}; --min: ${resultMin}; --max: ${resultMax};`"
-                :min="resultMin"
-                :max="resultMax"
-                :step="listStep || step"
-                :list="listId"
-                :value="value"
-                @input="$emit('input', $event.target.value)"
-            >
-            <datalist :id="listId" v-if="listId">
-                <option v-for="listValue in list" :key="listValue" :value="listValue"/>
-            </datalist>
+            <div class="h-field__range form-range-wrap" :style="`--val: ${value}; --min: ${resultMin}; --max: ${resultMax}; --step: ${resultStep}`">
+                <input
+                    class="form-range" type="range"
+                    :min="resultMin"
+                    :max="resultMax"
+                    :step="resultStep"
+                    :list="listId"
+                    :value="value"
+                    @input="$emit('input', $event.target.value)"
+                >
+                <datalist :id="listId" v-if="listId">
+                    <option v-for="listValue in list" :key="listValue" :value="listValue"/>
+                </datalist>
+            </div>
         </div>
         <div class="h-field__aside" :class="{'is-error': $value.$error}">
             <div class="h-field__input h-field__aside-input h-field__aside-range" >
-                {{ pretty(value || 0) }}{{ resultUnit }}
+                {{ valueCaption }}
             </div>
         </div>
     </div>

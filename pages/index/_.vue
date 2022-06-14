@@ -2,7 +2,8 @@
 import { waitUntil } from 'async-wait-until';
 import getTitle from '~/assets/get-title.js';
 import {DASHBOARD_URL} from '~/assets/variables.js';
-import cardList from '~/assets/data-card-list.js';
+import hashColor from '~/assets/hash-color.js';
+import {flatCardList} from '~/content/card-list.js';
 import HubBuyForm from '~/components/HubBuyForm.vue';
 import Swap from '~/components/Swap.vue';
 import TxSendForm from '~/components/TxSendForm.vue';
@@ -12,6 +13,7 @@ import TxStakeDelegateForm from '~/components/TxStakeDelegateForm.vue';
 import TxStakeUnbondForm from '~/components/TxStakeUnbondForm.vue';
 import StakeByLock from '~/components/StakeByLock.vue';
 import Modal from '~/components/base/Modal.vue';
+import CardHead from '~/components/CardHead.vue';
 
 // treat such param value as not defined
 const OMIT_PARAM_SYMBOL = '-';
@@ -19,58 +21,58 @@ const OMIT_PARAM_SYMBOL = '-';
 const COIN_PARAMS = ['coin', 'coin0', 'coin1', 'coinToSell', 'coinToBuy'];
 
 const addLiquidityAction = {
-    title: 'Provide liquidity to pool',
     params: ['coin0', 'coin1'],
     component: TxPoolAddLiquidityForm,
 };
 
+/**
+ * @typedef {ActionItemRaw&{title: string}} ActionItem
+ *
+ * @typedef {object} ActionItemRaw
+ * @property {Vue} component
+ * @property {Array<string>} [params]
+ * @property {Array<string>} [tags]
+ *
+ * @type {Object.<string, ActionItemRaw>}
+ */
 const actionList = {
     buy: {
-        title: 'Buy BIP, HUB, & BEE for BNB & ETH',
         params: ['coinToGet'],
         component: HubBuyForm,
         tags: [],
     },
     swap: {
-        title: 'Swap coins',
         params: ['coinToBuy', 'coinToSell'],
         component: Swap,
         tags: ['exchange'],
     },
     send: {
-        title: 'Send coins',
         params: [],
         component: TxSendForm,
     },
     'add-liquidity': addLiquidityAction,
     win: {
         ...addLiquidityAction,
-        title: 'Win',
         tags: ['lottery'],
     },
     farm: {
         ...addLiquidityAction,
-        title: 'Farm',
         tags: ['farming'],
     },
     'remove-liquidity': {
-        title: 'Remove liquidity from pool',
         params: ['coin0', 'coin1'],
         component: TxPoolRemoveLiquidityForm,
     },
     delegate: {
-        title: 'Delegate',
         params: ['coin', 'publicKey'],
         component: TxStakeDelegateForm,
         tags: ['staking'],
     },
     unbond: {
-        title: 'Unbond',
         params: ['coin', 'publicKey'],
         component: TxStakeUnbondForm,
     },
     stake: {
-        title: 'Stake & Earn',
         params: ['coin', 'duration'],
         component: StakeByLock,
     },
@@ -80,6 +82,7 @@ export default {
     DASHBOARD_URL,
     components: {
         Modal,
+        CardHead,
     },
     fetchOnServer: false,
     async fetch() {
@@ -98,7 +101,7 @@ export default {
         if (!action) {
             this.$nuxt.error({
                 status: 404,
-                message: this.$td('Action not found', 'action.title-not-found'),
+                message: this.$t('action.title-not-found'),
             });
         }
 
@@ -134,10 +137,24 @@ export default {
         };
 
         // action title
-        const langKey = `action.title-${actionType}`;
-        let title = this.$td(action.title, langKey);
+        let title = this.$t(`action.title-${actionType}`);
         if (actionType === 'delegate' && params.coin) {
             title += ' ' + params.coin;
+        }
+        if (actionType === 'swap') {
+            title = this.$t('action.title-swap-combined', {
+                coin0: params.coinToSell ? params.coinToSell.toUpperCase() : this.$t('action.title-swap-coin0-empty'),
+                conjunction: params.coinToBuy ? this.$t('action.title-swap-conjunction') : undefined,
+                coin1: params.coinToBuy ? params.coinToBuy.toUpperCase() : undefined,
+            });
+        }
+
+        // card
+        const card = flatCardList.find((card) => card.action.replace(/^\//, '').toLowerCase() === this.$route.params.pathMatch.toLowerCase());
+        this.card = Object.freeze(card);
+
+        if (card) {
+            title = [card.caption, card.title].join(' ');
         }
 
         // action
@@ -145,12 +162,10 @@ export default {
             ...action,
             title,
             params,
-            langKey,
         });
 
-        const flatCardList = [].concat(...Object.values(cardList).map((category) => category.cards));
-        const currentActionCard = flatCardList.find((card) => card.action.replace(/^\//, '').toLowerCase() === this.$route.params.pathMatch.toLowerCase());
-        let actionTags = (currentActionCard?.tags || []).map((tag) => tag.toLowerCase());
+        // tags
+        let actionTags = (card?.tags || []).map((tag) => tag.toLowerCase());
         //@TODO check each action.tags
         if (action.tags?.[0] && !actionTags.includes(action.tags[0])) {
             actionTags.push(action.tags[0]);
@@ -202,10 +217,19 @@ export default {
     data() {
         // https://github.com/nuxt/nuxt.js/issues/2444
         return {
+            /** @type {ActionItem|null} */
             action: this.action || null,
+            /** @type {CardListItem|null} */
+            card: this.card || null,
             faq: this.faq || null,
             isRedirecting: false,
+            overriddenStatsValue: '',
         };
+    },
+    computed: {
+        color() {
+            return hashColor(this.card?.action || this.$route.params.pathMatch);
+        },
     },
     watch: {
         '$route.params.pathMatch': {
@@ -226,21 +250,29 @@ export default {
         :isOpen="true"
         :hideCloseButton="false"
         :disableOutsideClick="true"
-        modalContainerClass="card card--light-grey"
+        modalContainerClass="card card--invert"
+        :modalContainerStyle="`background-color: ${color};`"
         @modal-close="$router.push($i18nGetPreferredPath({path: $options.DASHBOARD_URL}))"
     >
-        <div v-if="action">
-            <component
+        <template v-if="action">
+            <CardHead
                 class="card__content"
+                :card="card"
+                :fallback-title="action.title"
+                :override-value="overriddenStatsValue"
+            />
+            <component
+                class="card card--light-grey card__content card__content--pop"
                 :is="action.component"
                 :action="action"
                 :params="action.params"
+                @override-stats-value="overriddenStatsValue = $event"
             />
 
             <nuxt-content class="card__content" :document="faq" v-if="faq"/>
-        </div>
+        </template>
         <div v-else-if="$fetchState.pending || isRedirecting">{{ $td('Loading…', 'index.loading') }}</div>
-        <div v-else>{{ $td('Action not found', 'action.title-not-found') }}</div>
+        <div v-else>{{ $t('action.title-not-found') }}</div>
 
 
 

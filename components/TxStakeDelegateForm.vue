@@ -101,17 +101,6 @@ export default {
         :txType="$options.TX_TYPE.DELEGATE"
         @clear-form="clearForm()"
     >
-        <template v-slot:panel-header>
-            <h1 class="u-h3 u-mb-10">
-                {{ action.title || $td('Delegate', 'delegation.delegate-title') }}
-            </h1>
-            <!--
-            <p class="panel__header-description">
-                {{ $td('You can delegate your tokens to validators and receive related payments in accordance with the terms of participation.', 'form.delegate-description') }}
-            </p>
-            -->
-        </template>
-
         <template v-slot:default="{fee}">
             <div class="form-row">
                 <FieldCombined
@@ -146,7 +135,7 @@ export default {
         <template v-slot:confirm-modal-header>
             <h2 class="u-h3 u-mb-10">
 <!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-delegate.svg`" alt="" role="presentation" width="40" height="40">-->
-                {{ $td('Delegate', 'action.title-delegate') }}
+                {{ action.title }}
             </h2>
         </template>
 

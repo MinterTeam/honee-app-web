@@ -8,6 +8,10 @@ export default {
         'continue': 'Продолжить',
         'finish': 'Завершить',
         'retry': 'Попробовать снова',
+        'apr': 'Годовых',
+        'in': 'в',
+        'from': 'от',
+        'to': 'до',
     },
     error: {
         'title-error': 'Ошибка',
@@ -93,6 +97,7 @@ export default {
         'delegate': 'Делегировать',
         'participate': 'Участвовать',
         'withdraw-unbond': 'Отозвать',
+        'stake': 'Застейковать',
 
         'sign-up-subtitle': 'Крипто-кошелек для заработка',
         'sign-up': 'Зарегистрируйтесь',
@@ -155,8 +160,12 @@ export default {
         'show-qr': 'Показать QR',
         'hide-qr': 'Скрыть QR',
     },
+    'stake-by-lock': {
+        'estimation-unlock': 'Срок разблокировки стейка',
+        'estimation-unlock-preposition': ' ',
+        'estimation-earn': 'Вы заработаете',
+    },
     action: {
-        'title-add-liquidity': 'Предоставьте ликвидность в пул',
         'title-buy': 'Купите BIP, HUB и BEE за BNB или ETH',
         'title-swap': 'Обменяйте монеты',
         'title-swap-combined': '@:action.title-swap {coin0} {conjunction} {coin1}',
@@ -165,10 +174,11 @@ export default {
         'title-send': 'Отправьте монеты',
         'title-win': 'Выигрывайте',
         'title-farm': 'Участвуйте в доходном фермерстве',
+        'title-add-liquidity': 'Предоставьте ликвидность в пул',
         'title-remove-liquidity': 'Отзыв ликвидности из пула',
         'title-delegate': 'Делегируйте',
         'title-unbond': 'Отзыв монет из делегирования',
-        'title-stake-by-lock': 'Стейкуйте и зарабатывайте',
+        'title-stake': 'Стейкинг',
         'title-not-found': 'Действие не найдено',
         'tag-exchange': 'Обмен',
         'tag-staking': 'Стейкинг',
@@ -236,7 +246,6 @@ export default {
         'checks-issue-result-link-warning': 'Внимание! Пароль содержится в ссылке. Отправляйте ссылку только непосредственно получателю.',
         'checks-issue-button': 'Создать',
 
-        'wallet-send-title': 'Отправить монеты',
         'wallet-send-description': 'Отправляйте монеты кому пожелаете — друзьям, семье, бизнес-партнерам.',
         'wallet-send-address': 'Адрес',
         'wallet-send-address-error-required': 'Укажите адрес',
@@ -426,5 +435,8 @@ export default {
         'broadcast-tx-button': 'Отправить',
 
         'hub-withdraw-cex-warning': 'Внимание! НЕ делайте вывод на биржи, так как многие не зачисляют средства из смарт-контрактов. Вы потеряете свои токены. Выводите на кошелек, которым владеете (от которого у вас есть сид-фраза).',
+
+        'stake-lock-duration-label': 'Период блокировки',
+        'stake-lock-duration-error-required': 'Укажите период',
     },
 };

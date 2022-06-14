@@ -45,13 +45,13 @@ html {
     // Inter: disable 0x01 converting to cross sign
     font-variant-ligatures: no-contextual;
     font-size: 16px;
-    line-height: 1.42;
     color: @c-black;
     font-weight: 400;
     background: @body-bg-color;
 }
 body {
     font-size: 14px;
+    line-height: 1.357;
     margin: 0;
     //position: relative; //в данной реализации модала не актуально // чтобы не разъезжался абсолютный контент при открытии модального
 
@@ -376,10 +376,10 @@ blockquote {
 .form-range {
     --range:calc(var(--max) - var(--min));
     --ratio:calc((var(--val) - var(--min)) / var(--range) * 100%);
-    -webkit-appearance:none; display: block; width:100%;background: none;outline:0;padding:0; height: 24px;
+    -webkit-appearance:none; display: block; width:100%;background: none;outline:0;padding:0; height: 24px; cursor: pointer;
 }
 .form-range::-moz-focus-outer {border:0}
-.range-track() {width:100%;height:@range-track-height;border-radius:@range-track-radius;background:@range-color-bg;cursor:pointer;}
+.range-track() {width:100%; height: @range-track-height; border-radius: @range-track-radius; background-color: @range-color-bg;}
 .form-range::-webkit-slider-runnable-track {
     .range-track();
     background:linear-gradient(@range-color,@range-color) 0/var(--ratio) 100% no-repeat @range-color-bg
@@ -428,4 +428,33 @@ blockquote {
     .range-thumb();
     margin-top:-1px
 }
+//@TODO safari
+// ticks
+@range-tick-width: 3px;
+@range-tick-height: 8px;
+// wrap needed to position ticks under the thumb but above the track
+.form-range-wrap {
+    position: relative; z-index: 1; height: 24px;
+    // reimplement track to position it under ticks
+    &::before {.range-track(); content: ''; position: absolute; left: 0; top: ((24px - @range-track-height) / 2); z-index: -1;}
+    // hide original track
+    ::-webkit-slider-runnable-track {background-color: transparent;}
+    ::-moz-range-track {background-color: transparent;}
+    ::-ms-fill-lower {background-color: transparent;}
+    // ticks for safari
+    // <option> style doesn't work in safari @see https://bugs.webkit.org/show_bug.cgi?id=169039 so implement it with background
+    // background ticks doesn't support border radius so not use it as main solution
+    // (Safari + MobileSafari >= 14.6) or (All MobileSafari versions) @see https://www.bram.us/2021/06/23/css-at-supports-rules-to-target-only-firefox-safari-chromium/#safari
+    @supports  (selector(:nth-child(1 of x))) or (-webkit-touch-callout: none) {
+        &::after {
+            @range-tick-width-safari: 2px;
+            content: ''; position: absolute; left: 0; top: (24px / 2 - @range-tick-height / 2); width: 100%; height: @range-tick-height; z-index: -1;
+            background: linear-gradient(to right, @range-color @range-tick-width-safari, transparent 0px) repeat-x;
+            background-size: calc(100%/((var(--max) - var(--min)) / var(--step)) - (@range-tick-width / 2)) 100%;
+        }
+    }
+}
+// ticks
+.form-range + datalist {display: flex; justify-content: space-between; margin-top: (-24px / 2 - @range-tick-height / 2); position: relative; z-index: -1;}
+.form-range + datalist > option {width: @range-tick-width; height: @range-tick-height; padding: 0; margin: 0; border-radius: (@range-tick-width / 2); background: @range-color; font-size: 0;}
 

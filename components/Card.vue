@@ -1,6 +1,8 @@
 <script>
+import get from 'lodash-es/get.js';
 import {DASHBOARD_URL} from '~/assets/variables.js';
 import hashColor from '~/assets/hash-color.js';
+import CardHead from '~/components/CardHead.vue';
 
 const ACTION_TYPE = {
     DEPOSIT: 'buy',
@@ -10,11 +12,16 @@ const ACTION_TYPE = {
     WIN: 'win',
     REMOVE_LIQUIDITY: 'remove_liquidity',
     UNBOND: 'unbond',
+    STAKE: 'stake',
 };
 
 export default {
     ACTION_TYPE,
+    components: {
+        CardHead,
+    },
     props: {
+        /** @type {PropOptions<CardListItem>} */
         card: {
             type: Object,
             required: true,
@@ -23,13 +30,6 @@ export default {
     computed: {
         color() {
             return hashColor(this.card.action);
-        },
-        iconList() {
-            if (typeof this.card.icon === 'string') {
-                return [this.card.icon];
-            }
-
-            return this.card.icon;
         },
         undoActionType() {
             switch (this.card.actionType) {
@@ -65,26 +65,12 @@ export default {
         },
     },
     methods: {
-        getIconUrl(icon) {
-            return icon.indexOf('/') >= 0 ? icon : this.$store.getters['explorer/getCoinIcon'](icon);
-        },
         pageUrl(page) {
             return this.$i18nGetPreferredPath((DASHBOARD_URL + page).replace('//', '/'));
         },
         translate(key) {
-            const localeData = this.$i18n.locale === 'en' ? this.card : this.card[this.$i18n.locale];
-            if (localeData?.[key]) {
-                return localeData[key];
-            }
             // fallback to en locale
-            return this.card[key];
-        },
-        $ts(locales) {
-            if (locales[this.$i18n.locale]) {
-                return locales[this.$i18n.locale];
-            }
-
-            return locales.en;
+            return get(this.card?.[this.$i18n.locale], key) || get(this.card, key);
         },
     },
 };
@@ -96,20 +82,7 @@ function poolHasCoin(pool, symbol) {
 
 <template>
     <div class="card card--action card--invert card__content--small" :style="`background-color: ${color};`">
-        <div class="card__action-head">
-            <img class="card__action-logo" alt=""
-                 v-for="icon in iconList" :key="icon"
-                 :src="getIconUrl(icon)"
-            >
-            <div class="card__action-title">
-                <div class="card__action-title-type">{{ translate('type') }}</div>
-                <div class="card__action-title-value">{{ translate('title') }}</div>
-            </div>
-            <div class="card__action-stats">
-                <div class="card__action-stats-caption">{{ card.stats.caption }}</div>
-                <div class="card__action-stats-value">{{ card.stats.value }}</div>
-            </div>
-        </div>
+        <CardHead :card="card"></CardHead>
         <p class="card__action-description">{{ translate('description') }}</p>
 
         <!--<div class="card__action-tag-list">
@@ -125,6 +98,7 @@ function poolHasCoin(pool, symbol) {
                         <template v-if="card.actionType === $options.ACTION_TYPE.FARM">{{ $td('Add liquidity', 'index.add-liquidity') }}</template>
                         <template v-if="card.actionType === $options.ACTION_TYPE.DELEGATE">{{ $td('Delegate', 'index.delegate') }}</template>
                         <template v-if="card.actionType === $options.ACTION_TYPE.WIN">{{ $td('Participate', 'index.participate') }}</template>
+                        <template v-if="card.actionType === $options.ACTION_TYPE.STAKE">{{ $td('Stake', 'index.stake') }}</template>
                     </nuxt-link>
                 </div>
                 <div class="u-cell u-cell--4-10" v-if="isUndoAvailable">
