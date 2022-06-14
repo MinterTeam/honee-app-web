@@ -158,6 +158,7 @@ export default {
     },
     'stake-by-lock': {
         'estimation-unlock': 'Срок разблокировки стейка',
+        'estimation-unlock-preposition': ' ',
         'estimation-earn': 'Вы заработаете',
     },
     action: {

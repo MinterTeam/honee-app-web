@@ -33,10 +33,7 @@ export default {
             type: Array,
         },
         unit: {
-            type: String,
-        },
-        pluralizeUnit: {
-            type: Boolean,
+            type: [String, Function],
         },
         label: {
             type: String,
@@ -88,15 +85,15 @@ export default {
             // number of digits after dot
             return (this.listStep || this.step).split('.')[1]?.length;
         },
-        resultUnit() {
-            if (!this.pluralizeUnit) {
-                return this.unit;
+        valueCaption() {
+            const prettyValue = this.pretty(this.value || 0);
+            if (typeof this.unit === 'string') {
+                return prettyValue + this.unit;
             }
-            if (this.value.toString() === '1') {
-                return this.unit;
-            } else {
-                return this.unit + 's';
+            if (typeof this.unit === 'function') {
+                return this.unit(this.value);
             }
+            return prettyValue;
         },
     },
     methods: {
@@ -128,7 +125,7 @@ export default {
         </div>
         <div class="h-field__aside" :class="{'is-error': $value.$error}">
             <div class="h-field__input h-field__aside-input h-field__aside-range" >
-                {{ pretty(value || 0) }}{{ resultUnit }}
+                {{ valueCaption }}
             </div>
         </div>
     </div>

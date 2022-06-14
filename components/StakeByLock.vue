@@ -124,8 +124,15 @@ export default {
     },
     methods: {
         pretty,
-        getDate: getDateAmerican,
-        getTimeDistance: (value) => getTimeDistance(value, true, {roundingMethod: 'round'}),
+        getDate(value) {
+            return getDateAmerican(value, {locale: this.$i18n.locale});
+        },
+        getTimeDistance(value) {
+            return getTimeDistance(value, true, {
+                roundingMethod: 'round',
+                locale: this.$i18n.locale,
+            });
+        },
         fetchLatestBlock() {
             return getBlock('latest')
                 .then((block) => {
@@ -186,8 +193,7 @@ function yearToBlock(year) {
                         v-model="form.duration"
                         :list="rangeList"
                         step="1"
-                        unit=" year"
-                        :pluralize-unit="true"
+                        :unit="() => getTimeDistance(unlockTime)"
                         :label="$td('Lock duration', 'form.stake-lock-duration-label')"
                     />
                     <!--
@@ -217,7 +223,10 @@ function yearToBlock(year) {
                         <div>
                             {{ getTimeDistance(unlockTime) }}
                         </div>
-                        <div class="estimation__value">≈ On {{ getDate(unlockTime) }}</div>
+                        <div class="estimation__value">
+                            ≈ {{ $td('On', 'stake-by-lock.estimation-unlock-preposition') }}
+                            {{ getDate(unlockTime) }}
+                        </div>
                     </div>
                 </div>
         </template>
@@ -252,7 +261,10 @@ function yearToBlock(year) {
                         <div>
                             {{ getTimeDistance(unlockTime) }}
                         </div>
-                        <div class="estimation__value">≈ On {{ getDate(unlockTime) }}</div>
+                        <div class="estimation__value">
+                            ≈ {{ $td('On', 'stake-by-lock.estimation-unlock-preposition') }}
+                            {{ getDate(unlockTime) }}
+                        </div>
                     </div>
                 </div>
             </template>

@@ -7,6 +7,7 @@ import format from "date-fns/esm/format";
 import formatDistanceStrict from "date-fns/esm/formatDistanceStrict";
 // import formatDuration from "date-fns/esm/formatDuration";
 // import intervalToDuration from "date-fns/esm/intervalToDuration";
+import dateFnsRuLocale from 'date-fns/esm/locale/ru/index.js';
 import {txTypeList} from 'minterjs-util/src/tx-types.js';
 import {EXPLORER_HOST, HUB_TRANSFER_STATUS, HUB_CHAIN_BY_ID, ACCOUNTS_API_URL} from "~/assets/variables.js";
 
@@ -220,13 +221,26 @@ export function getTimeStamp(timestamp) {
     return format(parseTime(timestamp), 'dd MMM yyyy HH:mm:ss');
 }
 
-export function getDateAmerican(timestamp) {
+/**
+ * @param {string|number|Date} timestamp
+ * @param {object} options
+ * @param {'en'|'ru'} [options.locale]
+ * @return {string|false}
+ */
+export function getDateAmerican(timestamp, {locale} = {}) {
     timestamp = parseTime(timestamp);
     if (!timestamp) {
         return false;
     }
 
-    return format(parseTime(timestamp), 'MMMM d, yyyy');
+    let formatTemplate;
+    if (locale === 'ru') {
+        formatTemplate = 'd MMMM, yyyy';
+    } else { // en
+        formatTemplate = 'MMMM d, yyyy';
+    }
+
+    return format(parseTime(timestamp), formatTemplate, {locale: getDateFnsLocale(locale)});
 }
 
 export function getTime(timestamp) {
@@ -250,10 +264,10 @@ export function getTime(timestamp) {
 /**
  * @param {string|number|Date} timestamp
  * @param {boolean} [allowFuture]
- * @param {{addSuffix?: boolean, unit?: 'second'|'minute'|'hour'|'day'|'month'|'year', roundingMethod?: 'floor'|'ceil'|'round', locale?: Locale}} [options]
+ * @param {{addSuffix?: boolean, unit?: 'second'|'minute'|'hour'|'day'|'month'|'year', roundingMethod?: 'floor'|'ceil'|'round', locale?: string}} [options]
  * @return {boolean|string|*}
  */
-export function getTimeDistance(timestamp, allowFuture, options) {
+export function getTimeDistance(timestamp, allowFuture, options = {}) {
     timestamp = parseTime(timestamp);
     if (!timestamp) {
         return false;
@@ -265,7 +279,11 @@ export function getTimeDistance(timestamp, allowFuture, options) {
         timestamp = now;
     }
 
-    return formatDistanceStrict(timestamp, now, {roundingMethod: 'floor', ...options});
+    return formatDistanceStrict(timestamp, now, {
+        roundingMethod: 'floor',
+        ...options,
+        locale: getDateFnsLocale(options.locale),
+    });
 }
 /**
  * @param {string|number|Date} timestamp
@@ -284,6 +302,18 @@ export function getDuration(timestamp, options) {
 
     return formatDuration(duration, options);
 }*/
+
+/**
+ * @param {string} [i18nLocaleString]
+ * @return {Locale|undefined}
+ */
+function getDateFnsLocale(i18nLocaleString) {
+    if (i18nLocaleString === 'ru') {
+        return dateFnsRuLocale;
+    } else { // en
+        return undefined;
+    }
+}
 
 /**
  * @param {string} str
