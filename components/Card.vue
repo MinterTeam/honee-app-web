@@ -21,6 +21,7 @@ export default {
         CardHead,
     },
     props: {
+        /** @type {PropOptions<CardListItem>} */
         card: {
             type: Object,
             required: true,
@@ -68,8 +69,8 @@ export default {
             return this.$i18nGetPreferredPath((DASHBOARD_URL + page).replace('//', '/'));
         },
         translate(key) {
-            const localeData = this.$i18n.locale === 'en' ? this.card : this.card?.[this.$i18n.locale];
-            return get(localeData, key);
+            // fallback to en locale
+            return get(this.card?.[this.$i18n.locale], key) || get(this.card, key);
         },
     },
 };

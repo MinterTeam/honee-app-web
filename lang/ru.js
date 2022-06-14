@@ -8,6 +8,10 @@ export default {
         'continue': 'Продолжить',
         'finish': 'Завершить',
         'retry': 'Попробовать снова',
+        'apr': 'Годовых',
+        'in': 'в',
+        'from': 'от',
+        'to': 'до',
     },
     error: {
         'title-error': 'Ошибка',

@@ -3,7 +3,7 @@ import { waitUntil } from 'async-wait-until';
 import getTitle from '~/assets/get-title.js';
 import {DASHBOARD_URL} from '~/assets/variables.js';
 import hashColor from '~/assets/hash-color.js';
-import cardList from '~/assets/data-card-list.js';
+import {flatCardList} from '~/content/card-list.js';
 import HubBuyForm from '~/components/HubBuyForm.vue';
 import Swap from '~/components/Swap.vue';
 import TxSendForm from '~/components/TxSendForm.vue';
@@ -25,6 +25,16 @@ const addLiquidityAction = {
     component: TxPoolAddLiquidityForm,
 };
 
+/**
+ * @typedef {ActionItemRaw&{title: string}} ActionItem
+ *
+ * @typedef {object} ActionItemRaw
+ * @property {Vue} component
+ * @property {Array<string>} [params]
+ * @property {Array<string>} [tags]
+ *
+ * @type {Object.<string, ActionItemRaw>}
+ */
 const actionList = {
     buy: {
         params: ['coinToGet'],
@@ -140,7 +150,6 @@ export default {
         }
 
         // card
-        const flatCardList = [].concat(...Object.values(cardList).map((category) => category.cards));
         const card = flatCardList.find((card) => card.action.replace(/^\//, '').toLowerCase() === this.$route.params.pathMatch.toLowerCase());
         this.card = Object.freeze(card);
 
@@ -208,7 +217,9 @@ export default {
     data() {
         // https://github.com/nuxt/nuxt.js/issues/2444
         return {
+            /** @type {ActionItem|null} */
             action: this.action || null,
+            /** @type {CardListItem|null} */
             card: this.card || null,
             faq: this.faq || null,
             isRedirecting: false,

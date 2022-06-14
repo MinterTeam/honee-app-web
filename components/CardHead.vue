@@ -3,6 +3,7 @@ import get from 'lodash-es/get.js';
 
 export default {
     props: {
+        /** @type {PropOptions<CardListItem>} */
         card: {
             type: Object,
         },
@@ -15,7 +16,7 @@ export default {
     },
     computed: {
         iconList() {
-            const icon = this.card?.icon || this.card?.coin;
+            const icon = this.card?.icon;
 
             if (typeof icon === 'string') {
                 return [icon];
@@ -23,14 +24,54 @@ export default {
 
             return icon;
         },
+        statsCaption() {
+            const stats = this.card?.stats;
+
+            const aprOrApy = stats?.apr || stats?.apy;
+            if (aprOrApy) {
+                let result;
+                if (stats.apr) {
+                    result = this.$td('APR', 'common.apr');
+                } else if (stats.apy) {
+                    result = this.$td('APY', 'common.apy');
+                }
+
+                if (aprOrApy.rewardCoin) {
+                    result += ` ${this.$td('in', 'common.in')} ${aprOrApy.rewardCoin}`;
+                }
+
+                return result;
+            }
+
+            return this.translate('stats.caption');
+        },
+        statsValue() {
+            if (this.overrideValue) {
+                return this.overrideValue;
+            }
+            const stats = this.card?.stats;
+
+            let percent = stats?.apr?.percent || stats?.apy?.percent;
+            if (percent) {
+                const isRange = (/.+-.+/).test(percent.toString());
+                if (isRange) {
+                    const [percent1, percent2] = percent.split('-');
+                    return `${this.$td('from', 'common.from')} ${percent1} ${this.$td('to', 'common.to')} ${percent2}%`;
+                } else {
+                    return percent + '%';
+                }
+            }
+
+            return this.translate('stats.value');
+        },
     },
     methods: {
         getIconUrl(icon) {
             return icon.indexOf('/') >= 0 ? icon : this.$store.getters['explorer/getCoinIcon'](icon);
         },
         translate(key) {
-            const localeData = this.$i18n.locale === 'en' ? this.card : this.card?.[this.$i18n.locale];
-            return get(localeData, key);
+            // fallback to en locale
+            return get(this.card?.[this.$i18n.locale], key) || get(this.card, key);
         },
     },
 };
@@ -48,8 +89,8 @@ export default {
             <div class="card__action-title-value">{{ card ? translate('title') : fallbackTitle }}</div>
         </div>
         <div class="card__action-stats" v-if="card">
-            <div class="card__action-stats-caption">{{ translate('stats.caption') }}</div>
-            <div class="card__action-stats-value">{{ overrideValue || translate('stats.value') }}</div>
+            <div class="card__action-stats-caption">{{ statsCaption }}</div>
+            <div class="card__action-stats-value">{{ statsValue }}</div>
         </div>
     </div>
 </template>
