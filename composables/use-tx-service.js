@@ -1,7 +1,9 @@
 import {reactive, set} from '@vue/composition-api';
+import merge from 'lodash-es/merge';
 import {getProviderByChain, web3Utils, subscribeTransaction, toErcDecimals} from '~/api/web3.js';
 import {postTx} from '~/api/gate.js';
 import {HUB_BUY_STAGE as LOADING_STAGE} from '~/assets/variables.js';
+import {ensurePromise} from '~/assets/utils.js';
 
 
 /**
@@ -146,6 +148,27 @@ function estimateTxGas({to, value, data}) {
             }
             return gasLimit;
         });
+}
+
+/**
+ * @typedef {object} SendSequenceItem
+ * @property {TxParams} txParams
+ * @property {function: Promise} [prepare]
+ * @property {function: Promise} [finalize]
+ *
+ * @param {Array<SendSequenceItem>} list
+ * @return {Promise}
+ */
+async function sendTxSequence(list) {
+    let result;
+    for (const {txParams, prepare, finalize} of list) {
+        const txParamsAddition = await ensurePromise(prepare, result);
+        const preparedTxParams = merge({}, txParams, txParamsAddition);
+        let result = await sendMinterTx(preparedTxParams);
+        result = await ensurePromise(finalize, result);
+    }
+
+    return result;
 }
 
 function waitPendingStep(loadingStage) {

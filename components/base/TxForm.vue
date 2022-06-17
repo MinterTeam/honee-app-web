@@ -6,7 +6,7 @@ import {isValidMnemonic} from 'minterjs-wallet';
 import {postTx} from '~/api/gate.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import {getErrorText} from "~/assets/server-error.js";
-import {getExplorerTxUrl, pretty, prettyExact} from "~/assets/utils.js";
+import {getExplorerTxUrl, pretty, prettyExact, ensurePromise} from "~/assets/utils.js";
 import useFee from '~/composables/use-fee.js';
 // import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import Loader from '~/components/base/BaseLoader.vue';
@@ -52,7 +52,7 @@ export default {
             type: String,
             required: true,
         },
-        payload: {
+        enforcePayload: {
             type: String,
         },
         beforeConfirmModalShow: {
@@ -62,10 +62,6 @@ export default {
         beforePostTx: {
             type: [Function, null],
             default: null,
-        },
-        alwaysAdvanced: {
-            type: Boolean,
-            default: false,
         },
     },
     setup() {
@@ -84,10 +80,7 @@ export default {
             form: {
                 payload: '',
             },
-            formAdvanced: {
-                payload: '',
-            },
-            isModeAdvanced: false,
+            isPayloadActive: false,
             isConfirmModalVisible: false,
             isSuccessModalVisible: false,
         };
@@ -96,8 +89,8 @@ export default {
         const form = {
             payload: {
                 // considers unicode bytes @see https://stackoverflow.com/a/42684638/4936667
-                maxLength: (value) => this.payloadLength <= 10000,
-                isNotMnemonic: (value) => !isValidMnemonic(value),
+                maxLength: (value) => this.isPayloadActive ? this.payloadLength <= 10000 : true,
+                isNotMnemonic: (value) => this.isPayloadActive ? !isValidMnemonic(value) : true,
             },
         };
 
@@ -109,26 +102,34 @@ export default {
         };
     },
     computed: {
-        isShowPayload() {
-            return this.txType !== TX_TYPE.REDEEM_CHECK;
-        },
-        showAdvanced() {
-            return this.alwaysAdvanced || this.isModeAdvanced;
-        },
-        showSwitcherAdvanced() {
-            if (this.alwaysAdvanced) {
-                // switcher not needed for always visible advanced fields
+        // is user allowed to change payload or not
+        isPayloadInputEnabled() {
+            if (this.enforcePayload) {
                 return false;
             }
+            // only enable for send
             return this.txType === TX_TYPE.SEND;
+            // payload not supported for redeemCheck
+            // eslint-disable-next-line no-unreachable
+            return this.txType !== TX_TYPE.REDEEM_CHECK;
+        },
+        payload() {
+            if (this.enforcePayload) {
+                return this.enforcePayload;
+            }
+            // use form payload only if it is active
+            if (this.isPayloadActive) {
+                return this.form.payload;
+            }
+            return '';
         },
         payloadLength() {
-            return new Blob([this.form.payload]).size;
+            return new Blob([this.payload]).size;
         },
         feeBusParams() {
             return {
                 txParams: {
-                    payload: this.payload || this.form.payload,
+                    payload: this.payload,
                     type: this.txType,
                     data: this.txData,
                 },
@@ -211,28 +212,22 @@ export default {
             return {
                 chainId: this.$store.getters.CHAIN_ID,
                 // ...clearEmptyFields(this.form),
-                payload: this.payload || this.form.payload || undefined,
+                payload: this.payload || undefined,
                 data: clearEmptyFields(this.txData),
                 type: this.txType,
                 gasCoin: this.fee.coin,
                 signatureType: 1,
             };
         },
-        switchToAdvanced() {
-            this.isModeAdvanced = true;
-            // restore advanced data
-            this.form.payload = this.formAdvanced.payload;
+        showPayload() {
+            this.isPayloadActive = true;
         },
-        switchToSimple() {
-            this.isModeAdvanced = false;
-            // save advanced data
-            this.formAdvanced.payload = this.form.payload;
-            // clear advanced form
-            this.form.payload = '';
+        hidePayload() {
+            this.isPayloadActive = false;
         },
         clearForm() {
             this.form.payload = '';
-            this.formAdvanced.payload = '';
+            this.isPayloadActive = false;
             this.$v.$reset();
             //@TODO
             // clear txData
@@ -247,24 +242,6 @@ export default {
         getExplorerTxUrl,
     },
 };
-
-/**
- * @template T
- * @param {function(txFormContext?: Vue): Promise<T>} fn
- * @param {Vue} [txFormContext]
- * @return {Promise<T>}
- */
-function ensurePromise(fn, txFormContext) {
-    let fnPromise;
-    if (typeof fn === 'function') {
-        fnPromise = fn(txFormContext);
-    }
-    // ensure beforeShowPromise to be promise
-    if (!fnPromise || typeof fnPromise.then !== 'function') {
-        fnPromise = Promise.resolve();
-    }
-    return fnPromise;
-}
 
 /**
  * Ensure empty fields to be undefined
@@ -292,34 +269,37 @@ function clearEmptyFields(obj) {
             <!-- Tx Data Fields -->
             <slot :fee="fee"></slot>
 
-            <div class="form-row" v-show="showAdvanced && isShowPayload">
-                <label class="form-field" :class="{'is-error': $v.form.payload.$error}">
-                    <input
-                        class="form-field__input" type="text" v-check-empty
-                        v-model.trim="form.payload"
-                        @blur="$v.form.payload.$touch()"
-                    >
-                    <span class="form-field__label">{{ $td('Message', 'form.message') }}</span>
-                </label>
-                <span class="form-field__error" v-if="$v.form.payload.$dirty && !$v.form.payload.maxLength">{{ $td(`Max 10000 symbols, given ${payloadLength}`, 'form.message-error-max') }}</span>
-                <span class="form-field__error" v-if="$v.form.payload.$dirty && !$v.form.payload.isNotMnemonic">{{ $td('Message contains seed phrase', 'form.message-error-contains-seed') }}</span>
+            <div class="form-row" v-if="isPayloadActive && isPayloadInputEnabled">
+                <div class="h-field" :class="{'is-error': $v.form.payload.$error}">
+                    <div class="h-field__content">
+                        <div class="h-field__title">{{ $td('Message', 'form.message') }}</div>
+                        <textarea
+                            class="h-field__input h-field__input--medium" rows="1" autocapitalize="off"
+                            v-check-empty v-autosize
+                            v-model.trim="form.payload"
+                            @blur="$v.form.payload.$touch()"
+                        ></textarea>
+                    </div>
+                </div>
+                <div class="form-field__error" v-if="$v.form.payload.$dirty && !$v.form.payload.maxLength">{{ $td(`Max 10000 symbols, given ${payloadLength}`, 'form.message-error-max') }}</div>
+                <div class="form-field__error" v-if="$v.form.payload.$dirty && !$v.form.payload.isNotMnemonic">{{ $td('Message contains seed phrase', 'form.message-error-contains-seed') }}</div>
                 <div class="form-field__help">{{ $td('Any additional information about the transaction. Please&nbsp;note it will be stored on the blockchain and visible to&nbsp;anyone.', 'form.message-help') }}</div>
             </div>
 
 
             <!-- Controls -->
-            <div class="form-row" v-if="showSwitcherAdvanced">
+            <div class="form-row" v-if="isPayloadInputEnabled">
                 <button
                     class="link--default u-semantic-button" type="button"
-                    v-if="showAdvanced"
-                    @click="switchToSimple()"
+                    v-if="isPayloadActive"
+                    @click="hidePayload()"
                 >
                     {{ $td('Remove message', 'form.toggle-simple-mode') }}
                 </button>
                 <button
                     class="link--default u-semantic-button" type="button"
-                    v-if="!showAdvanced"
-                    @click="switchToAdvanced()"
+                    v-if="!isPayloadActive"
+                    @click="showPayload()"
                 >
                     {{ $td('Add message', 'form.toggle-advanced-mode') }}
                 </button>

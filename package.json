@@ -14,8 +14,8 @@
     "analyze": "gulp once && nuxt build --spa --analyze",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "lint:fix": "eslint --ext .js,.vue --ignore-path .gitignore . --fix",
-    "lint:staged": "eslint $(git diff --name-only HEAD | grep -E '\\.(js|vue)$' | xargs) --ignore-path .gitignore",
-    "lint:staged-fix": "eslint $(git diff --name-only HEAD | grep -E '\\.(js|vue)$' | xargs) --ignore-path .gitignore --fix",
+    "lint:staged": "eslint $(git diff --name-only HEAD --diff-filter=d | grep -E '\\.(js|vue)$' | xargs) --ignore-path .gitignore",
+    "lint:staged-fix": "eslint $(git diff --name-only HEAD --diff-filter=d | grep -E '\\.(js|vue)$' | xargs) --ignore-path .gitignore --fix",
     "precommit": "echo 'Pre-commit checks...' && npm run lint:staged"
   },
   "pre-commit": [
