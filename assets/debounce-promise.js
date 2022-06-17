@@ -8,15 +8,16 @@ import CancelError from '~/assets/utils/error-cancel.js';
  * @param {function(T): Promise<T2>} fn
  * @param {number} wait
  * @param {object} options
- * @return {function(T): Promise<T2>}
+ * @return {(function(T): Promise<T2>)&{flush: function}}
  * @template T, T2
  */
 export default function debouncePromise(fn, wait = 0, options = {}) {
     let lastCallAt;
     let deferred;
     let timer;
+    let pendingThis;
     let pendingArgs = [];
-    return function debounced(...args) {
+    function debounced(...args) {
         const currentWait = getWait(wait);
         const currentTime = new Date().getTime();
 
@@ -38,24 +39,31 @@ export default function debouncePromise(fn, wait = 0, options = {}) {
             deferred = defer();
         }
 
+        pendingThis = this;
         pendingArgs.push(args);
-        timer = setTimeout(flush.bind(this), currentWait);
+        timer = setTimeout(flush, currentWait);
 
         return deferred.promise;
-    };
+    }
 
     function flush() {
         const thisDeferred = deferred;
         clearTimeout(timer);
 
         Promise.resolve(
-                fn.apply(this, pendingArgs[pendingArgs.length - 1]),
+                fn.apply(pendingThis, pendingArgs[pendingArgs.length - 1]),
             )
             .then(thisDeferred.resolve, thisDeferred.reject);
 
+        pendingThis = undefined;
         pendingArgs = [];
         deferred = null;
+
+        return thisDeferred.promise;
     }
+
+    debounced.flush = flush;
+    return debounced;
 }
 
 function getWait(wait) {
