@@ -22,14 +22,34 @@ export function getStakingList() {
 }
 
 /**
+ * @param {string} coinSymbol
  * @return {Promise<StakingProgram>}
  */
-export function getStakingProgram() {
+export function getStakingProgram(coinSymbol) {
+    if (typeof coinSymbol !== 'string') {
+        return Promise.reject(new NotFoundError('Can\'t get staking program for such coin symbol'));
+    }
+    coinSymbol = coinSymbol.toUpperCase();
+    console.log(coinSymbol);
+
     return getStakingList()
         .then((stakingList) => {
-            delete stakingList[0].options[120960];
-            return stakingList[0];
+            const program = stakingList.find((item) => item.lockCoin.symbol === coinSymbol);
+            if (program) {
+                return program;
+            } else {
+                return Promise.reject(new NotFoundError('Staking program not found'));
+            }
         });
+}
+
+class NotFoundError extends Error {
+    constructor(message = 'Not found') {
+        super(message);
+        this.name = 'NotFoundError';
+        this.status = 404;
+        this.useMessage = true;
+    }
 }
 
 /**

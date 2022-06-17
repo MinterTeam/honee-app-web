@@ -31,10 +31,13 @@ export default {
     fetch() {
         this.fetchLatestBlock();
 
-        return getStakingProgram()
+        return getStakingProgram(this.params.coin)
             .then((stakingProgram) => {
                 this.stakingProgram = stakingProgram;
                 this.form.duration = blockToYear(Object.keys(stakingProgram.options)[0]);
+            })
+            .catch((error) => {
+                this.$nuxt.error(error);
             });
     },
     props: {
