@@ -161,6 +161,9 @@ export default {
         'show-qr': 'Показать QR',
         'hide-qr': 'Скрыть QR',
     },
+    receive: {
+        'title': 'Адрес вашего кошелька',
+    },
     'stake-by-lock': {
         'estimation-unlock': 'Срок разблокировки стейка',
         'estimation-unlock-preposition': ' ',
