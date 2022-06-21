@@ -168,6 +168,9 @@ export default {
         'estimation-unlock': 'Срок разблокировки стейка',
         'estimation-unlock-preposition': ' ',
         'estimation-earn': 'Вы заработаете',
+        'error-program-not-found': 'Не удаётся загрузить программу стейкинга',
+        'error-program-disabled': 'Текущая программа стейкинга отключена',
+        'error-program-timeout': 'Истекло время действия программа стейкинга',
     },
     action: {
         'title-buy': 'Купите BIP, HUB и BEE',

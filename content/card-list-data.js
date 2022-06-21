@@ -16,7 +16,7 @@ export default {
                     },
                 },
                 tags: ['Staking'],
-                action: `/stake/BEE`,
+                action: `/stake/1`,
                 ru: {
                     description: 'Стейкуйте BEE на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
                     caption: 'Стейкинг',
@@ -32,7 +32,7 @@ export default {
                     },
                 },
                 tags: ['Staking'],
-                action: `/stake/MUSD`,
+                action: `/stake/2`,
                 ru: {
                     description: 'Стейкуйте MUSD на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
                     caption: 'Стейкинг',

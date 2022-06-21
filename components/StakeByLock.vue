@@ -31,10 +31,22 @@ export default {
     fetch() {
         this.fetchLatestBlock();
 
-        return getStakingProgram(this.params.coin)
+        let programId = this.params.id;
+        if (programId === 'BEE') {
+            programId = 1;
+        }
+        if (programId === 'MUSD') {
+            programId = 2;
+        }
+
+        return getStakingProgram(programId)
             .then((stakingProgram) => {
                 this.stakingProgram = stakingProgram;
-                this.form.duration = blockToYear(Object.keys(stakingProgram.options)[0]);
+                const duration = stakingProgram.options[this.params.duration]
+                    ? this.params.duration
+                    : Object.keys(stakingProgram.options)[0];
+                this.form.duration = blockToYear(duration);
+                this.form.coin = stakingProgram.lockCoin.symbol;
             })
             .catch((error) => {
                 this.$nuxt.error(error);
@@ -52,8 +64,8 @@ export default {
     data() {
         return {
             form: {
-                value: this.params.value || '',
-                coin: this.params.coin?.toUpperCase() || '',
+                value: '',
+                coin: '',
                 duration: 0,
             },
             /** @type {StakingProgram|null}*/
@@ -81,6 +93,12 @@ export default {
         return {form};
     },
     computed: {
+        isProgramTimedOut() {
+            if (!this.stakingProgram || !this.$store.state.explorer.status) {
+                return false;
+            }
+            return this.stakingProgram.joinEndAtBlock - this.$store.state.explorer.status.latestBlockHeight <= BLOCKS_IN_DAY;
+        },
         rangeList() {
             if (!this.stakingProgram) {
                 return;
@@ -165,8 +183,12 @@ function yearToBlock(year) {
 
 <template>
     <div>
+        <div class="u-mt-15" v-if="!stakingProgram && $fetchState.pending">{{ $td('Loading…', 'index.loading') }}</div>
+        <div class="u-mt-15" v-else-if="!stakingProgram && !$fetchState.pending">{{ $td('Can\'t load staking program', 'stake-by-lock.error-program-not-found') }}</div>
+        <div class="u-mt-15" v-else-if="!stakingProgram.isEnabled">{{ $td('Staking program disabled', 'stake-by-lock.error-program-disabled') }}</div>
+        <div class="u-mt-15" v-else-if="isProgramTimedOut">{{ $td('Staking program timed out', 'stake-by-lock.error-program-timeout') }}</div>
         <TxForm
-            v-if="stakingProgram"
+            v-else-if="stakingProgram"
             :txData="txData"
             :$txData="$v.form"
             :txType="$options.TX_TYPE.LOCK"
@@ -272,7 +294,5 @@ function yearToBlock(year) {
                 </div>
             </template>
         </TxForm>
-        <div class="u-mt-15" v-else-if="$fetchState.pending">{{ $td('Loading…', 'index.loading') }}</div>
-        <div class="u-mt-15" v-else>{{ $td('Can\'t load staking program', 'stake-by-lock.error-not-found') }}</div>
     </div>
 </template>

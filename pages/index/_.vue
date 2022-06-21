@@ -73,7 +73,7 @@ const actionList = {
         component: TxStakeUnbondForm,
     },
     stake: {
-        params: ['coin', 'duration'],
+        params: ['id', 'duration'],
         component: StakeByLock,
     },
 };

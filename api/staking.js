@@ -22,19 +22,19 @@ export function getStakingList() {
 }
 
 /**
- * @param {string} coinSymbol
+ * @param {number|string} id - staking program ID
  * @return {Promise<StakingProgram>}
  */
-export function getStakingProgram(coinSymbol) {
-    if (typeof coinSymbol !== 'string') {
-        return Promise.reject(new NotFoundError('Can\'t get staking program for such coin symbol'));
+export function getStakingProgram(id) {
+    // check numberish
+    if (Number(id).toString() !== id.toString()) {
+        return Promise.reject(new NotFoundError('Invalid staking program ID'));
     }
-    coinSymbol = coinSymbol.toUpperCase();
-    console.log(coinSymbol);
+    id = Number(id);
 
     return getStakingList()
         .then((stakingList) => {
-            const program = stakingList.find((item) => item.lockCoin.symbol === coinSymbol);
+            const program = stakingList.find((item) => item.id === id);
             if (program) {
                 return program;
             } else {
