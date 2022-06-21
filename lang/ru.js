@@ -170,7 +170,7 @@ export default {
         'estimation-earn': 'Вы заработаете',
     },
     action: {
-        'title-buy': 'Купите BIP, HUB и BEE за BNB или ETH',
+        'title-buy': 'Купите BIP, HUB и BEE',
         'title-swap': 'Обменяйте монеты',
         'title-swap-combined': '@:action.title-swap {coin0} {conjunction} {coin1}',
         'title-swap-coin0-empty': '',

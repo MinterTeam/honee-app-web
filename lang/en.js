@@ -4,7 +4,7 @@ export default {
 
     },
     action: {
-        'title-buy': 'Buy BIP, HUB, & BEE for BNB & ETH',
+        'title-buy': 'Buy BIP, HUB, & BEE',
         'title-swap': 'Swap coins',
         'title-swap-combined': 'Swap {coin0} {conjunction} {coin1}',
         'title-swap-coin0-empty': 'coins',
