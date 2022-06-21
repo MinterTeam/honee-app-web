@@ -91,27 +91,29 @@ export default {
                             ${{ pretty($store.state.totalBalanceSumUsd) }}
                         </div>
                     </div>
-                    <div class="wallet__balance-links">
-                        <nuxt-link class="button button--yellow-light button--full-mobile u-text-nowrap" :to="pageUrl('buy')">
-                            <img class="button__icon" src="/img/icon-category-buy.svg" width="24" height="24" alt="" role="presentation">
-                            {{ $td('Buy BIP, HUB, & BEE', 'index.wallet-balance-links') }}
-                        </nuxt-link>
-                    </div>
+                    <nuxt-link class="button button--ghost-main" :to="pageUrl('topup')">
+                        <img class="button__icon" src="/img/icon-deposit.svg" width="24" height="24" alt="" role="presentation">
+                        {{ $td('Top up', 'index.topup') }}
+                    </nuxt-link>
+                    <nuxt-link class="wallet__balance-buy-link button button--yellow-light button--full-mobile u-text-nowrap" :to="pageUrl('buy')">
+                        <img class="button__icon" src="/img/icon-category-buy.svg" width="24" height="24" alt="" role="presentation">
+                        {{ $td('Buy BIP, HUB, & BEE', 'index.wallet-balance-links') }}
+                    </nuxt-link>
                 </div>
             </div>
             <div class="card__content">
                 <div class="button-group button-group--center">
-                    <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('topup')">
-                        <img class="button__icon" src="/img/icon-white-deposit.svg" width="24" height="24" alt="" role="presentation">
-                        {{ $td('Top up', 'index.topup') }}
-                    </nuxt-link>
-                    <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('swap')">
+                    <nuxt-link class="button button--main wallet__action-button" :to="pageUrl('swap')">
                         <img class="button__icon" src="/img/icon-white-swap.svg" width="24" height="24" alt="" role="presentation">
                         {{ $td('Swap', 'index.swap-wallet-button') }}
                     </nuxt-link>
-                    <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('send')">
+                    <nuxt-link class="button button--main wallet__action-button" :to="pageUrl('send')">
                         <img class="button__icon" src="/img/icon-white-send.svg" width="24" height="24" alt="" role="presentation">
                         {{ $td('Send', 'index.send') }}
+                    </nuxt-link>
+                    <nuxt-link class="button button--main wallet__action-button" :to="pageUrl('receive')">
+                        <img class="button__icon" src="/img/icon-white-receive.svg" width="24" height="24" alt="" role="presentation">
+                        {{ $td('Receive', 'index.receive') }}
                     </nuxt-link>
                 </div>
             </div>

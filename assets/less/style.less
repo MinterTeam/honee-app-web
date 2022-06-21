@@ -7,7 +7,7 @@
 @import "include/utils";
 //@import "include/suggest";
 @import "include/general";
-//@import "include/forms";
+@import "include/forms";
 @import "include/modal";
 @import "include/layout";
 
@@ -263,14 +263,23 @@
 
 
 // index
-.wallet__balance-wrap {margin-top: 8px;}
-.wallet__balance {}
+.wallet__balance-wrap {margin-top: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;}
+.wallet__balance {margin-right: auto;}
 .wallet__balance-value {font-size: 30px; line-height: 36px; font-weight: 700; font-feature-settings: "zero" on;}
-.wallet__balance-links {margin-top: 16px;}
+.wallet__balance-buy-link {margin-top: 16px;}
+.wallet__action-button {}
+@media (max-width: @breakpoint-medium-down) {
+    .wallet__balance-buy-link {margin-inline: auto; min-width: 60vw;}
+    .wallet__action-button {
+        font-size: 0; padding: 0; width: 40px; height: 40px; border-radius: 50%;
+        .button__icon {margin-right: 0;}
+    }
+}
 @media (min-width: @breakpoint-medium-up) {
-    .wallet__balance-wrap {display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;}
+    .wallet__balance-wrap {}
     .wallet__balance-value {font-size: 40px; line-height: 48px;}
-    .wallet__balance-links {margin-top: 0;}
+    .wallet__balance-buy-link {margin: 0 0 0 16px;}
+    .wallet__action-button {min-width: 128px;}
 }
 
 .wallet__coin-row {
