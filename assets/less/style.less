@@ -263,22 +263,26 @@
 
 
 // index
-.wallet__balance-wrap {margin-top: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;}
+.wallet__balance-wrap {
+    @margin: 16px;
+    margin-top: (8px - @margin); margin-inline: (-@margin / 2); display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap;
+    & > * {margin-inline: (@margin / 2); margin-top: @margin;}
+}
 .wallet__balance {margin-right: auto;}
 .wallet__balance-value {font-size: 30px; line-height: 36px; font-weight: 700; font-feature-settings: "zero" on;}
-.wallet__balance-buy-link {margin-top: 16px;}
+.wallet__balance-buy-link {}
 .wallet__action-button {}
 @media (max-width: @breakpoint-medium-down) {
-    .wallet__balance-buy-link {margin-inline: auto; min-width: 60vw;}
     .wallet__action-button {
-        font-size: 0; padding: 0; width: 40px; height: 40px; border-radius: 50%;
-        .button__icon {margin-right: 0;}
+        padding: 48px 0 0; min-width: 72px; position: relative;
+        &, &:hover, &:active, &:focus {background: none; color: @c-main;}
+        &:before {content: ''; background: @c-main; width: 40px; height: 40px; border-radius: 50%; position: absolute; left: 50%; top: 0; margin-left: -20px;}
+        .button__icon {margin: 0; position: absolute; left: 50%; top: ((40px - 24px) / 2); margin-left: -12px;}
     }
 }
 @media (min-width: @breakpoint-medium-up) {
     .wallet__balance-wrap {}
     .wallet__balance-value {font-size: 40px; line-height: 48px;}
-    .wallet__balance-buy-link {margin: 0 0 0 16px;}
     .wallet__action-button {min-width: 128px;}
 }
 
