@@ -100,7 +100,7 @@ export default {
         </p>
 
         <div class="h-field u-mt-10 u-mb-10">
-            <div class="h-field__content">
+            <div class="h-field__content" @click="copy(address)">
                 <div class="h-field__title">{{ $td('Your address', 'index.your-address') }}</div>
                 <div class="h-field__input is-not-empty">{{ address }}</div>
             </div>
