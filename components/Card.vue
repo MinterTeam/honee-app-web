@@ -65,9 +65,6 @@ export default {
         },
     },
     methods: {
-        pageUrl(page) {
-            return this.$i18nGetPreferredPath((DASHBOARD_URL + page).replace('//', '/'));
-        },
         translate(key) {
             // fallback to en locale
             return get(this.card?.[this.$i18n.locale], key) || get(this.card, key);

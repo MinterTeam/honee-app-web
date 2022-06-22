@@ -36,9 +36,9 @@ export default {
     data() {
         return {
             form: {
-                address: '',
-                amount: '',
-                coinSymbol: '',
+                address: this.params.address || '',
+                amount: this.params.amount || '',
+                coinSymbol: this.params.coin || '',
             },
         };
     },

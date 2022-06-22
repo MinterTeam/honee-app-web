@@ -47,7 +47,7 @@ const actionList = {
         tags: ['exchange'],
     },
     send: {
-        params: [],
+        params: ['address', 'coin', 'amount'],
         component: TxSendForm,
     },
     'add-liquidity': addLiquidityAction,
@@ -269,7 +269,7 @@ export default {
                 @override-stats-value="overriddenStatsValue = $event"
             />
 
-            <nuxt-content class="card__content" :document="faq" v-if="faq"/>
+            <nuxt-content class="card__content u-text-medium" :document="faq" v-if="faq"/>
         </template>
         <div v-else-if="$fetchState.pending || isRedirecting">{{ $td('Loading…', 'index.loading') }}</div>
         <div v-else>{{ $t('action.title-not-found') }}</div>
