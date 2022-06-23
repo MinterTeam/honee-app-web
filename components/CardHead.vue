@@ -56,7 +56,7 @@ export default {
                 const isRange = (/.+-.+/).test(percent.toString());
                 if (isRange) {
                     const [percent1, percent2] = percent.split('-');
-                    return `${this.$td('from', 'common.from')} ${percent1} ${this.$td('to', 'common.to')} ${percent2}%`;
+                    return `${this.$td('up to', 'common.upto')} ${percent2}%`;
                 } else {
                     return percent + '%';
                 }

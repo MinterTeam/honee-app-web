@@ -13,6 +13,7 @@ export default {
         'in': 'в',
         'from': 'от',
         'to': 'до',
+        'upto': 'до',
     },
     error: {
         'title-error': 'Ошибка',
@@ -92,6 +93,7 @@ export default {
         'swap': 'Купить',
         'swap-wallet-button': 'Обменять',
         'send': 'Отправить',
+        'receive': 'Получить',
 
         'card-button-deposit': 'Купить за BNB или ETH',
         'add-liquidity': 'Добавить ликвидность',
@@ -170,7 +172,7 @@ export default {
         'estimation-earn': 'Вы заработаете',
         'error-program-not-found': 'Не удаётся загрузить программу стейкинга',
         'error-program-disabled': 'Текущая программа стейкинга отключена',
-        'error-program-timeout': 'Истекло время действия программа стейкинга',
+        'error-program-timeout': 'Истекло время действия программы стейкинга',
     },
     action: {
         'title-buy': 'Купите BIP, HUB и BEE',

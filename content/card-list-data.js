@@ -214,19 +214,6 @@ export default {
                     caption: 'Купить',
                 },
             },
-            {
-                caption: 'Buy',
-                coin: 'GMTBSC',
-                description: 'STEPN is a self-styled “Web3 lifestyle app” with GameFi elements. It combines aspects of a play-to-earn game with a fitness app to create a new category coined “move-to-earn.”',
-                stats: {
-                },
-                tags: ['Exchange'],
-                action: '/swap/GMTBSC',
-                ru: {
-                    description: 'STEPN — это лайфстайл-приложение с элементами GameFi. Он сочетает в себе аспекты игры «играй, чтобы заработать» и фитнес-приложение с новой категорией «двигайся, чтобы зарабатывать».',
-                    caption: 'Купить',
-                },
-            },
         ],
     },
 };
