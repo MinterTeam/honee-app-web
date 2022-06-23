@@ -95,6 +95,16 @@ export default {
         'send': 'Отправить',
         'receive': 'Получить',
 
+        'assets-coins': 'Монеты',
+        'assets-coins-view-all': 'Показать все монеты',
+        'assets-coins-view-less': 'Показать меньше монет',
+        'assets-stakes': 'Стейки',
+        'assets-stakes-table-token': 'Токен',
+        'assets-stakes-table-unlock': 'Разблокировка',
+        'assets-stakes-table-unlock-on': 'Разблокировка',
+        'assets-stakes-table-amount': 'Количество',
+        'assets-transactions': 'Транзакции',
+
         'card-button-deposit': 'Купить за BNB или ETH',
         'add-liquidity': 'Добавить ликвидность',
         'delegate': 'Делегировать',
@@ -140,10 +150,6 @@ export default {
         'liquidity-pools': 'Пулы ликвидности',
         'farming-programs': 'Фарминг-программы',
         'giveaway-programs': 'Лотереи',
-
-        'coins': 'Монеты',
-        'view-all': 'Показать все',
-        'view-less': 'Показать меньше',
 
         'cam-allow': 'Разрешите доступ к камере',
     },

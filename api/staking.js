@@ -43,6 +43,25 @@ export function getStakingProgram(id) {
         });
 }
 
+/**
+ * @return {Promise<Array<StakingProgramAddressLock>>}
+ */
+export function getAddressLockList(address) {
+    return instance.get(`address/${address}/locks`)
+        .then((response) => {
+            let result = [];
+            response.data.data.forEach(({addressLocks, ...program}) => {
+                addressLocks.forEach((lock) => {
+                    result.push({
+                        ...lock,
+                        program,
+                    });
+                });
+            });
+            return result;
+        });
+}
+
 class NotFoundError extends Error {
     constructor(message = 'Not found') {
         super(message);
@@ -65,4 +84,12 @@ class NotFoundError extends Error {
  * @property {Coin} lockCoin
  * @property {Object.<number|string, number>} options
  * @property {boolean} isEnabled
+ */
+
+/**
+ * @typedef {object} StakingProgramAddressLock
+ * @property {number|string} amount
+ * @property {number} option
+ * @property {number} dueBlock
+ * @property {StakingProgram} program
  */

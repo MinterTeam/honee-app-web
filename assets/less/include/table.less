@@ -1,0 +1,10 @@
+// table
+@table-cell-padding: 8px;
+.table-wrap {overflow: auto;}
+table {width: 100%; border-collapse: collapse;}
+th {.u-h--uppercase();}
+td, th {
+    padding: @table-cell-padding; text-align: left; vertical-align: top;
+    &:first-child {padding-left: 0;}
+    &:last-child {padding-right: 0;}
+}
