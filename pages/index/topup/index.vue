@@ -1,11 +1,9 @@
 <script>
-import * as clipboard from 'clipbrd';
-import getTitle from '@/assets/get-title.js';
-import {DASHBOARD_URL, CARD_TO_MINTER_HOST, NETWORK, MAINNET} from '~/assets/variables.js';
-import Modal from '@/components/base/Modal.vue';
+import getTitle from '~/assets/get-title.js';
+import {CARD_TO_MINTER_HOST, NETWORK, MAINNET} from '~/assets/variables.js';
+import Modal from '~/components/base/Modal.vue';
 
 export default {
-    DASHBOARD_URL,
     CARD_TO_MINTER_HOST,
     components: {
         Modal,
@@ -25,12 +23,6 @@ export default {
         };
     },
     computed: {
-        isClipboardSupported() {
-            return clipboard.isSupported();
-        },
-        isShareSupported() {
-            return window.navigator.share;
-        },
         card2MinterUrl() {
             return `${CARD_TO_MINTER_HOST}/?address=${this.$store.getters.address}&return_url=${window.location.origin}`;
         },
@@ -39,16 +31,6 @@ export default {
         },
     },
     methods: {
-        copy(str) {
-            clipboard.copy(str);
-            this.isToastVisible = true;
-        },
-        shareAddress() {
-            window.navigator.share({
-                title: this.$td('My address', 'index.my-address'),
-                text: this.$store.getters.address,
-            });
-        },
     },
 };
 </script>
@@ -59,7 +41,7 @@ export default {
         :isOpen="true"
         :hideCloseButton="false"
         :disableOutsideClick="false"
-        @modal-close="$router.push($i18nGetPreferredPath({path: $options.DASHBOARD_URL}))"
+        @modal-close="$router.push(getDashboardUrl())"
     >
 
         <h1 class="u-h3 u-mb-025">
@@ -85,7 +67,7 @@ export default {
             {{ $td('Top up with Minter', 'topup.top-up-with-network', {network: 'Minter'}) }}
         </nuxt-link>
 
-        <nuxt-link class="button button--ghost button--full u-mt-10" :to="$i18nGetPreferredPath({path: $options.DASHBOARD_URL})">
+        <nuxt-link class="button button--ghost button--full u-mt-10" :to="getDashboardUrl()">
             {{ $td('Cancel', 'topup.cancel') }}
         </nuxt-link>
     </Modal>

@@ -1,11 +1,9 @@
 <script>
 import getTitle from '~/assets/get-title.js';
-import {DASHBOARD_URL} from '~/assets/variables.js';
 import Modal from '~/components/base/Modal.vue';
 import Topup, {TOP_UP_NETWORK} from '~/components/Topup.vue';
 
 export default {
-    DASHBOARD_URL,
     components: {
         Modal,
         Topup,
@@ -47,7 +45,7 @@ export default {
         :isOpen="true"
         :hideCloseButton="false"
         :disableOutsideClick="false"
-        @modal-close="$router.push($i18nGetPreferredPath({path: $options.DASHBOARD_URL}))"
+        @modal-close="$router.push(getDashboardUrl())"
     >
         <Topup v-if="networkSlug" :network-slug="networkSlug"/>
     </Modal>

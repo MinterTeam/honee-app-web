@@ -1,7 +1,6 @@
 <script>
 import * as clipboard from 'clipbrd';
 import QrcodeVue from 'qrcode.vue';
-import {DASHBOARD_URL} from '~/assets/variables.js';
 
 /**
  * @typedef {{prefix: string, name: string, coin: string}} TopUpNetwork
@@ -28,7 +27,6 @@ export const TOP_UP_NETWORK = {
 };
 
 export default {
-    DASHBOARD_URL,
     components: {
         QrcodeVue,
     },

@@ -73,10 +73,10 @@ export default {
                         <h3 class="card__action-title-value u-mb-05">{{ $td('Delegation', 'index.delegation') }}</h3>
                         <p class="">{{ $td('Bonding your BIP or custom coins to a network validator and getting rewards (portion of block rewards + transaction fees). The returns are shared among all delegators proportionally to their stake, minus validator’s fee.', 'index.delegation-desc') }}</p>
 
-                        <nuxt-link class="button button--main button--full u-mt-10" :to="pageUrl('delegate')">
+                        <nuxt-link class="button button--main button--full u-mt-10" :to="getDashboardUrl('delegate')">
                             {{ $td('Delegate', 'index.delegate') }}
                         </nuxt-link>
-                        <nuxt-link class="button button--main button--full u-mt-05" :to="pageUrl('unbond')">
+                        <nuxt-link class="button button--main button--full u-mt-05" :to="getDashboardUrl('unbond')">
                             {{ $td('Unbond', 'index.withdraw-unbond') }}
                         </nuxt-link>
                         <a class="button button--ghost-main button--full u-mt-05" href="https://chainik.io/validators" target="_blank">
@@ -95,10 +95,10 @@ export default {
                             </template>
                         </p>
 
-                        <nuxt-link class="button button--main button--full u-mt-10" :to="pageUrl('add-liquidity')">
+                        <nuxt-link class="button button--main button--full u-mt-10" :to="getDashboardUrl('add-liquidity')">
                             {{ $td('Provide liquidity', 'index.provide-liquidity') }}
                         </nuxt-link>
-                        <nuxt-link class="button button--main button--full u-mt-05" :to="pageUrl('remove-liquidity')">
+                        <nuxt-link class="button button--main button--full u-mt-05" :to="getDashboardUrl('remove-liquidity')">
                             {{ $td('Withdraw liquidity', 'index.withdraw-liquidity') }}
                         </nuxt-link>
                         <a class="button button--ghost-main button--full u-mt-05" href="https://explorer.minter.network/pools" target="_blank">

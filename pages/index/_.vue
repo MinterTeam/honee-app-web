@@ -1,7 +1,6 @@
 <script>
 import { waitUntil } from 'async-wait-until';
 import getTitle from '~/assets/get-title.js';
-import {DASHBOARD_URL} from '~/assets/variables.js';
 import hashColor from '~/assets/hash-color.js';
 import {flatCardList} from '~/content/card-list.js';
 import HubBuyForm from '~/components/HubBuyForm.vue';
@@ -79,7 +78,6 @@ const actionList = {
 };
 
 export default {
-    DASHBOARD_URL,
     components: {
         Modal,
         CardHead,
@@ -90,7 +88,7 @@ export default {
         this.faq = null;
         // remove ending slash
         if (!this.$route.params.pathMatch) {
-            const path = this.$i18nGetPreferredPath({path: DASHBOARD_URL});
+            const path = this.getDashboardUrl();
             if (path !== this.$route.path) {
                 return this.$router.replace(path);
             }
@@ -252,7 +250,7 @@ export default {
         :disableOutsideClick="true"
         modalContainerClass="card card--invert"
         :modalContainerStyle="`background-color: ${color};`"
-        @modal-close="$router.push($i18nGetPreferredPath({path: $options.DASHBOARD_URL}))"
+        @modal-close="$router.push(getDashboardUrl())"
     >
         <template v-if="action">
             <CardHead
