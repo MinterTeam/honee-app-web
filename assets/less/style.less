@@ -105,7 +105,7 @@
 //.auth__bg {position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin-top: 40px; margin-left: -3px; z-index: -1;}
 .auth__bee {position: absolute; bottom: 100%; right: 10px; margin-bottom: 8px;}
 .auth__logo {display: block; margin-inline: auto; margin-bottom: 24px; margin-top: 60px;}
-.auth__subtitle {text-align: center; margin-bottom: 40px;}
+.auth__subtitle {text-align: center; margin-bottom: 40px; font-size: 16px;}
 /*@media (min-width: @breakpoint-medium-up) {
     .auth__body {background-image: url(../img/auth-bg.svg); background-position: 50% 10%; background-repeat: no-repeat;}
 }*/
@@ -167,6 +167,9 @@
 .card__action-tag-list {display: flex; margin-top: (24px - 8px); margin-left: -8px; flex-wrap: wrap;}
 .card__action-tag {margin-left: 8px; margin-top: 8px; padding: 2px 8px; line-height: 20px; background: rgba(255,255,255, 0.3); border-radius: 6px; font-weight: 700;}
 
+@media (min-width: @breakpoint-small-up) {
+    .u-container--small .card {margin-inline: -16px;}
+}
 @media (min-width: @breakpoint-medium-up) {
     .card__content {
         padding: 24px @card-padding-large;
@@ -364,85 +367,6 @@
 .estimation__coin-icon {margin-right: 8px; border-radius: 50%;}
 .estimation__coin-symbol {}
 .estimation__value { .u-text-number(); min-width: 0; text-align: right; font-weight: 600; overflow-wrap: break-word;}
-
-@h-field-title-height: 16px;
-@h-field-title-margin: 6px;
-@h-field-input-height: 24px;
-@h-field-vertical-padding: 12px;
-@h-field-horizontal-padding: 16px;
-.h-field-input-text() {
-    font-size: 16px; font-weight: 500; line-height: @h-field-input-height;
-    @media (min-width: @breakpoint-medium-up) {
-        font-size: 18px; font-weight: 600;
-    }
-}
-.h-field-title-text-small() {
-    font-size: 10px; font-weight: 700; line-height: @h-field-title-height; text-transform: uppercase; letter-spacing: 1px;
-}
-.h-field-title-text() {
-    .h-field-title-text-small();
-    @media (min-width: @breakpoint-medium-up) {
-        font-size: 12px; letter-spacing: 0.6px;
-    }
-}
-.h-field {position: relative; display: flex; width: 100%; padding: (@h-field-vertical-padding - 2px) (@h-field-horizontal-padding - 2px); border: 2px solid transparent;}
-.h-field, .h-field__dropdown {background: #fff; border-radius: 12px; box-shadow: 0 4px 4px rgba(0,0,0,0.05);}
-.h-field--is-readonly {box-shadow: none; border: 2px dashed @c-border;}
-.h-field__content {flex-grow: 2; max-width: 100%;}
-.h-field__title {.h-field-title-text(); color: @c-black-light; margin-bottom: @h-field-title-margin;}
-.h-field__select-button {
-    display: flex; align-items: center; max-width: 100%;
-    &[disabled] {cursor: default;}
-}
-.h-field__select-icon {margin-right: 8px; border-radius: 50%;}
-.h-field__select-value {.h-field-input-text(); overflow: hidden; overflow-wrap: break-word;}
-.h-field__select-icon-arrow {margin-left: 8px;}
-.h-field__input {
-    .h-field-input-text(); /* fix line-height for fake-inputs (e.g. address) */ /*line-height: 20px; min-height: @h-field-input-height;*/ width: 100%; color: currentColor; padding: 0; background: transparent; border: none; overflow-wrap: break-word;
-    font-feature-settings: "calt" off;
-    /* safari disabled fix */
-    opacity: 1; -webkit-text-fill-color: currentcolor;
-    /* ios shadow fix */
-    -webkit-appearance: none;
-    // fix input letter size not to be larger than line-height
-    input& {height: @h-field-input-height;}
-    // fix firefox incorrectly set scrollHeight and cause incorrect autosize
-    textarea& {line-height: (@h-field-input-height + 6px); margin-top: -3px; margin-bottom: -3px;}
-    &::placeholder {color: @c-black-light;}
-    &:focus::placeholder {color: transparent;}
-}
-.h-field__range {margin-top: 12px;}
-
-.h-field__aside {margin-left: 20px; flex-shrink: 9999; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; min-width: 0;}
-//.h-field__aside--with-input {flex-grow: 3;}
-.h-field__aside-caption {.h-field-title-text-small(); margin-bottom: @h-field-title-margin;}
-.h-field__aside-loader {width: @h-field-title-height; height: @h-field-title-height; margin: 0; vertical-align: top;}
-.h-field__aside-max {
-    /*color: @c-black-light; transition: 0.1s;*/ margin-left: -20px; white-space: nowrap;
-    //&:hover, &:focus {color: @c-main;}
-    //&:active {color: fade(@c-main, 40%);}
-}
-.h-field__aside-input {text-align: right; margin-top: auto;}
-// possibly can be replaced with max value in pseudo content
-.h-field__aside-range {min-width: 4.25em;}
-.h-field__aside-control {font-size: 0;}
-
-.h-field__dropdown {position: absolute; top: 100%; left: -2px; right: -2px; /* border size */ padding: 16px @h-field-horizontal-padding 8px; margin-top: -1 * (@h-field-vertical-padding - 2px); z-index: 1;}
-.h-field__dropdown-field {position: relative;}
-.h-field__dropdown-field-icon {position: absolute; right: 16px; top: 8px; pointer-events: none;}
-.h-field__dropdown-input {
-    border-radius: 12px; border: none; padding: 10px 16px; padding-right: (24px + 16px); background: #d4d4d4; font-size: 16px; line-height: 20px; font-weight: 600; height: 40px; width: 100%;;
-    &::placeholder {color: @c-black;}
-}
-.h-field__suggestion-list {margin-top: 8px; margin-inline: -1 * @h-field-horizontal-padding; overflow: auto; max-height: 60vh;}
-.h-field__suggestion-item {
-    display: flex; align-items: center; width: 100%; padding: 8px @h-field-horizontal-padding; transition: 0.1s;
-    //&+& {margin-top: 16px;}
-    &:hover {background-color: rgba(0,0,0,0.1);}
-}
-.h-field__suggestion-icon {flex-shrink: 0; margin-right: 8px; border-radius: 50%;}
-.h-field__suggestion-symbol {.h-field-input-text();}
-.h-field__suggestion-amount {margin-left: 4px;}
 
 
 

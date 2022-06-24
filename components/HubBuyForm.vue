@@ -33,7 +33,7 @@ import useTxMinterPresets from '~/composables/use-tx-minter-presets.js';
 import BaseAmountEstimation from '@/components/base/BaseAmountEstimation.vue';
 import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '@/components/base/Modal.vue';
-import ButtonCopyIcon from '~/components/base/ButtonCopyIcon.vue';
+import ButtonCopyIcon from '~/components/base/BaseButtonCopyIcon.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import FieldSelect from '~/components/base/FieldSelect.vue';
 import HubBuyTxListItem from '@/components/HubBuyTxListItem.vue';
