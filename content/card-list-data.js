@@ -55,40 +55,6 @@ export default {
                     caption: 'Делегирование',
                 },
             },
-            {
-                caption: 'Yield farming',
-                coin: ['HUB', 'BNB'],
-                description: 'Put your HUB and BNB into a liquidity pool to start getting extra daily rewards.',
-                stats: {
-                    apr: {
-                        percent: 121.5,
-                        rewardCoin: 'HUB',
-                    },
-                },
-                tags: ['Farming'],
-                action: '/farm/HUB/BNB',
-                ru: {
-                    description: 'Положите свои HUB и BNB в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                    caption: 'Фарминг',
-                },
-            },
-            {
-                caption: 'Yield farming',
-                coin: ['BIP', 'MUSD'],
-                description: 'Put your BIP and MUSD into a liquidity pool to start getting extra daily rewards.',
-                stats: {
-                    apr: {
-                        percent: 121.5,
-                        rewardCoin: 'BIP',
-                    },
-                },
-                tags: ['Farming'],
-                action: '/farm/BIP/MUSD',
-                ru: {
-                    description: 'Положите свои BIP и MUSD в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                    caption: 'Фарминг',
-                },
-            },
         ],
     },
     swap: {
