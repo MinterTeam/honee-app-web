@@ -180,6 +180,9 @@ export default {
         'error-program-disabled': 'Текущая программа стейкинга отключена',
         'error-program-timeout': 'Истекло время действия программы стейкинга',
     },
+    onboarding: {
+        'skip': 'Пропустить',
+    },
     action: {
         'title-buy': 'Купите BIP, HUB и BEE',
         'title-swap': 'Обменяйте монеты',

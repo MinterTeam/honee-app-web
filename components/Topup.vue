@@ -40,6 +40,7 @@ export default {
         },
         description: {
             type: [String, Boolean],
+            default: undefined,
         },
         backUrl: {
             type: String,
@@ -92,22 +93,22 @@ export default {
                 {{ $td('Top up with', 'topup-network.title') }} {{ network.coin }}
             </template>
         </h1>
-        <p class="u-text-center" v-if="description">{{ description}}</p>
-        <p class="u-text-center" v-else-if="description !== false">
+        <p class="u-text-center u-text-medium" v-if="description">{{ description}}</p>
+        <p class="u-text-center u-text-medium" v-else-if="description !== false">
             {{ $td(`Send any amount of ${network.coin} to this address`, 'topup-network.description', {coin: network.coin}) }}
         </p>
 
-        <div class="h-field u-mt-10 u-mb-10">
+        <div class="h-field h-field--is-readonly u-mt-10 u-mb-10">
             <div class="h-field__content" @click="copy(address)">
                 <div class="h-field__title">{{ $td('Your address', 'index.your-address') }}</div>
-                <div class="h-field__input is-not-empty">{{ address }}</div>
+                <div class="h-field__input h-field__input--medium is-not-empty">{{ address }}</div>
             </div>
         </div>
 
-        <div class="u-grid">
+        <div class="u-grid u-grid--vertical-margin--small">
             <div class="u-cell u-cell--auto-grow" v-if="isClipboardSupported">
                 <button
-                    class="button button--main button--full button--narrow u-mt-05"
+                    class="button button--ghost-main button--full button--narrow"
                     @click="copy(address)"
                 >
                     {{ $td('Copy', 'topup-network.copy') }}
@@ -115,7 +116,7 @@ export default {
             </div>
             <div class="u-cell u-cell--auto-grow" v-if="isShareSupported">
                 <button
-                    class="button button--main button--full button--narrow u-mt-05"
+                    class="button button--ghost-main button--full button--narrow"
                     @click="shareAddress"
                 >
                     {{ $td('Share', 'topup-network.share') }}
@@ -123,7 +124,7 @@ export default {
             </div>
             <div class="u-cell u-cell--auto-grow">
                 <button
-                    class="button button--main button--full button--narrow u-mt-05"
+                    class="button button--ghost-main button--full button--narrow"
                     @click="isQrVisible = !isQrVisible"
                 >
                     <template v-if="!isQrVisible">

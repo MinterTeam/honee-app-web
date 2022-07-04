@@ -2,6 +2,7 @@
 import getTitle from '~/assets/get-title.js';
 import {CARD_TO_MINTER_HOST, NETWORK, MAINNET} from '~/assets/variables.js';
 import Modal from '~/components/base/Modal.vue';
+import {getCard2MinterUrl} from '~/assets/utils.js';
 
 export default {
     CARD_TO_MINTER_HOST,
@@ -24,7 +25,7 @@ export default {
     },
     computed: {
         card2MinterUrl() {
-            return `${CARD_TO_MINTER_HOST}/?address=${this.$store.getters.address}&return_url=${window.location.origin}`;
+            return getCard2MinterUrl(this.$store.getters.address, window.location.origin);
         },
         isMainnet() {
             return NETWORK === MAINNET;

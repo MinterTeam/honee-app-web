@@ -9,7 +9,7 @@ import formatDistanceStrict from "date-fns/esm/formatDistanceStrict";
 // import intervalToDuration from "date-fns/esm/intervalToDuration";
 import dateFnsRuLocale from 'date-fns/esm/locale/ru/index.js';
 import {txTypeList} from 'minterjs-util/src/tx-types.js';
-import {EXPLORER_HOST, HUB_TRANSFER_STATUS, HUB_CHAIN_BY_ID, ACCOUNTS_API_URL} from "~/assets/variables.js";
+import {EXPLORER_HOST, HUB_TRANSFER_STATUS, HUB_CHAIN_BY_ID, ACCOUNTS_API_URL, CARD_TO_MINTER_HOST} from "~/assets/variables.js";
 
 
 
@@ -64,6 +64,10 @@ export function getEthereumTxUrl(hash) {
 export function getEvmAddressUrl(chainId, hash) {
     const host = HUB_CHAIN_BY_ID[Number(chainId)]?.explorerHost;
     return host + '/address/' + hash;
+}
+
+export function getCard2MinterUrl(address, backUrl) {
+    return `${CARD_TO_MINTER_HOST}/?coin=BEE&address=${address}&return_url=${backUrl}`;
 }
 
 /**

@@ -18,7 +18,7 @@
 //.button--small {padding: 2px 8px; border-radius: 4px;}
 //.button--icon {padding-left: 48px;}
 //.button__icon {position: absolute; left: 28px; top: 50%; transform: translate(-50%, -50%);}
-.button__icon {margin: -2px 8px -2px -2px;}
+.button__icon {margin: -2px 8px -2px -2px; fill: currentColor;}
 .button--full {display: flex; width: 100%;}
 /*.button__content {transition: 0.1s;}*/
 //.button--small {padding-left: 14px; padding-right: 14px;}
@@ -148,7 +148,7 @@
 .h-field, .h-field__dropdown {background: #fff; border-radius: 12px; box-shadow: 0 4px 4px rgba(0,0,0,0.05);}
 .h-field--is-readonly {box-shadow: none; border: 1px solid @c-border; background: @c-white-light; padding: (@h-field-vertical-padding - 1px) (@h-field-horizontal-padding - 1px);}
 .h-field--is-dashed {box-shadow: none; border: 2px dashed @c-border;}
-.h-field__content {flex-grow: 2; max-width: 100%;}
+.h-field__content {flex-grow: 2; max-width: 100%; text-align: left;}
 .h-field__title {.h-field-title-text(); color: @c-black-light; margin-bottom: @h-field-title-margin; display: block;}
 .h-field__select-button {
     display: flex; align-items: center; max-width: 100%;
@@ -168,7 +168,7 @@
     input& {height: @h-field-input-height;}
     // fix firefox incorrectly set scrollHeight and cause incorrect autosize
     textarea& {line-height: (@h-field-input-height + 6px); margin-block: -3px;}
-    &.h-field__input--medium {font-size: 16px; font-weight: 500; line-height: 24px; margin-block: 0;}
+    &.h-field__input--medium {font-size: 16px; font-weight: 500; line-height: 22px; margin-block: 0;}
     &::placeholder {color: @c-black-light;}
     &:focus::placeholder {color: transparent;}
 }

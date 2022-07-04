@@ -1,11 +1,10 @@
 <script>
 import getTitle from '~/assets/get-title.js';
-import Modal from '~/components/base/Modal.vue';
 import Topup, {TOP_UP_NETWORK} from '~/components/Topup.vue';
 
 export default {
+    layout: 'splash',
     components: {
-        Modal,
         Topup,
     },
     asyncData({route, error}) {
@@ -41,13 +40,12 @@ export default {
 </script>
 
 <template>
-    <Modal
-        modalContainerClass="card card__content"
-        :isOpen="true"
-        :hideCloseButton="false"
-        :disableOutsideClick="false"
-        @modal-close="$router.push(getDashboardUrl())"
-    >
-        <Topup v-if="networkSlug" :network-slug="networkSlug"/>
-    </Modal>
+    <div class="u-section topup__vertical-container">
+        <Topup
+            class="card card__content card__content--small topup__vertical-center"
+            v-if="networkSlug"
+            :network-slug="networkSlug"
+            :back-url="$i18nGetPreferredPath('/onboarding/topup')"
+        />
+    </div>
 </template>
