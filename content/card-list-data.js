@@ -96,47 +96,6 @@ export default {
         cards: [
             {
                 caption: 'Buy',
-                coin: 'BEE',
-                description: 'Get native digital coin of Honee crypto wallet. Soon you\'ll be able to stake BEE to get everyday rewards.',
-                stats: {
-                },
-                tags: ['Exchange'],
-                action: '/swap/BEE',
-                ru: {
-                    description: 'Приобретите монету крипто-кошелька Honee. Вскоре вы сможете отправить BEE в стейкинг, чтобы получать ежедневные награды.',
-                    caption: 'Купить',
-                },
-            },
-            {
-                caption: 'Buy',
-                coin: 'HUB',
-                description: 'Get native digital token of Minter Hub, a cross-chain bridge to global crypto liquidity.',
-                stats: {
-
-                },
-                tags: ['Exchange'],
-                action: '/swap/HUB',
-                ru: {
-                    description: 'Приобретите основной токен Minter Hub — кросс-чейн моста в глобальную криптоликвидность.',
-                    caption: 'Купить',
-                },
-            },
-            {
-                caption: 'Buy',
-                coin: BASE_COIN,
-                description: 'Get native digital coin of Minter, a single decentralized network supporting many digital assets.',
-                stats: {
-                    price: BASE_COIN,
-                },
-                tags: ['Exchange'],
-                action: `/swap/${BASE_COIN}`,
-                ru: {
-                    description: 'Приобретите основную монету Minter — единой децентрализованной сети с поддержкой многих цифровых активов.',
-                    caption: 'Купить',
-                },
-            },
-            {
-                caption: 'Buy',
                 coin: 'BTC',
                 description: 'Buy Bitcoin, the first cryptocurrency.',
                 stats: {
@@ -184,6 +143,47 @@ export default {
                 action: '/swap/TON',
                 ru: {
                     description: 'Приобретите базовую монету TON — проекта, который стремится объединить все существующие блокчейны и сам Интернет в единую Web 3.0-сеть.',
+                    caption: 'Купить',
+                },
+            },
+            {
+                caption: 'Buy',
+                coin: 'BEE',
+                description: 'Get native digital coin of Honee crypto wallet. Soon you\'ll be able to stake BEE to get everyday rewards.',
+                stats: {
+                },
+                tags: ['Exchange'],
+                action: '/swap/BEE',
+                ru: {
+                    description: 'Приобретите монету крипто-кошелька Honee. Вскоре вы сможете отправить BEE в стейкинг, чтобы получать ежедневные награды.',
+                    caption: 'Купить',
+                },
+            },
+            {
+                caption: 'Buy',
+                coin: 'HUB',
+                description: 'Get native digital token of Minter Hub, a cross-chain bridge to global crypto liquidity.',
+                stats: {
+
+                },
+                tags: ['Exchange'],
+                action: '/swap/HUB',
+                ru: {
+                    description: 'Приобретите основной токен Minter Hub — кросс-чейн моста в глобальную криптоликвидность.',
+                    caption: 'Купить',
+                },
+            },
+            {
+                caption: 'Buy',
+                coin: BASE_COIN,
+                description: 'Get native digital coin of Minter, a single decentralized network supporting many digital assets.',
+                stats: {
+                    price: BASE_COIN,
+                },
+                tags: ['Exchange'],
+                action: `/swap/${BASE_COIN}`,
+                ru: {
+                    description: 'Приобретите основную монету Minter — единой децентрализованной сети с поддержкой многих цифровых активов.',
                     caption: 'Купить',
                 },
             },

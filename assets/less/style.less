@@ -300,6 +300,11 @@
     &:hover::before, &:focus::before {background: fade(@c-main, 40%);}
     &.is-active::before {background: @c-main;}
 }
+.wallet__asset-list-control-item.u-semantic-button{
+    color: #868686;
+    &:hover {color: inherit;}
+    &.is-active {color: inherit;}
+}
 .wallet__asset-list-tx-link {margin-left: auto; margin-top: 1px;}
 @media (min-width: @breakpoint-medium-up) {
     .wallet__asset-list-control-item {
