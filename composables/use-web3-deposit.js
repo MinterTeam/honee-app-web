@@ -76,7 +76,7 @@ const nativeBalance = computed(() => {
 });
 const wrappedBalance = computed(() => {
     if (isNativeToken.value) {
-        return web3Balance[props.chainId]?.[props.tokenSymbol] || 0;
+        return web3Balance[props.chainId]?.[tokenAddress.value] || 0;
     }
 
     return 0;
@@ -85,7 +85,7 @@ const balance = computed(() => {
     if (isNativeToken.value) {
         return new Big(wrappedBalance.value).plus(nativeBalance.value).toString();
     } else {
-        return web3Balance[props.chainId]?.[props.tokenSymbol] || 0;
+        return web3Balance[props.chainId]?.[tokenAddress.value] || 0;
     }
 });
 const amountToUnwrap = computed(() => {

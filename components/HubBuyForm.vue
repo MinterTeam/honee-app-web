@@ -150,7 +150,7 @@ export default {
         },
     },
     setup() {
-        const { discount, discountProps, discountUpsidePercent } = useHubDiscount();
+        const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
         const { web3Balance, web3Allowance, getBalance, getAllowance} = useWeb3Balance();
         const {
             setDepositProps,
@@ -172,8 +172,8 @@ export default {
 
         return {
             discount,
-            discountProps,
             discountUpsidePercent,
+            setDiscountProps,
 
             web3Balance,
             web3Allowance,
@@ -339,13 +339,13 @@ export default {
             return this.externalTokenSymbol;
         },
         coinContractAddress() {
-            return this.externalToken?.externalTokenId;
+            return this.externalToken?.externalTokenId.toLowerCase();
         },
         coinDecimals() {
             return this.externalToken ? Number(this.externalToken.externalDecimals) : undefined;
         },
         coinToDepositUnlocked() {
-            return this.web3Allowance[this.chainId]?.[this.externalTokenSymbol] || 0;
+            return this.web3Allowance[this.chainId]?.[this.coinContractAddress] || 0;
         },
         isCoinApproved() {
             const selectedUnlocked = new Big(this.coinToDepositUnlocked);
@@ -492,7 +492,7 @@ export default {
         },
     },
     mounted() {
-        this.discountProps.minterAddress = this.$store.getters.address;
+        this.setDiscountProps({minterAddress: this.$store.getters.address});
 
         this.debouncedGetEstimation = debounce(this.getEstimation, 1000);
 
@@ -547,7 +547,7 @@ export default {
                 return;
             }
 
-            return this.getBalance(this.ethAddress, this.chainId, this.coinContractAddress, this.externalTokenSymbol, this.coinDecimals)
+            return this.getBalance(this.ethAddress, this.chainId, this.coinContractAddress, this.coinDecimals)
                 .catch((error) => {
                     if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
                         this.serverError = 'Can\'t get balance';
@@ -567,7 +567,7 @@ export default {
                 return;
             }
 
-            return this.getAllowance(this.ethAddress, this.chainId, this.coinContractAddress, this.externalTokenSymbol, this.coinDecimals)
+            return this.getAllowance(this.ethAddress, this.chainId, this.coinContractAddress, this.coinDecimals)
                 .catch((error) => {
                     if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
                         this.serverError = 'Can\'t get allowance';
