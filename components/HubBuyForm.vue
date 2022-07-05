@@ -19,8 +19,6 @@ import wethAbi from '~/assets/abi-weth.js';
 import debounce from '~/assets/lodash5-debounce.js';
 import {NETWORK, MAINNET, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, HUB_TRANSFER_STATUS, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
-import CancelError from '~/assets/utils/error-cancel.js';
-import wait from '~/assets/utils/wait.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
@@ -118,13 +116,7 @@ export default {
             .then(([coinList, priceList]) => {
                 this.hubCoinList = Object.freeze(coinList);
                 this.priceList = Object.freeze(priceList);
-            })
-            // wait for computed coinContractAddress to recalculate
-            .then(() => wait(1))
-            .then(() => Promise.all([
-                this.updateBalance(),
-                this.updateAllowance(),
-            ]));
+            });
     },
     props: {
         action: {
@@ -184,7 +176,6 @@ export default {
     },
     data() {
         return {
-            allowanceRequest: null,
             form: {
                 selectedHubNetwork: HUB_CHAIN_ID.BSC,
                 amountEth: '',
@@ -295,9 +286,6 @@ export default {
         maxAmount() {
             return this.selectedBalance;
         },
-        coinEthereumName() {
-            return this.externalTokenSymbol;
-        },
         isCoinApproved() {
             const selectedUnlocked = new Big(this.coinToDepositUnlocked);
             return selectedUnlocked.gt(0) && selectedUnlocked.gt(this.form.amountEth || 0);
@@ -401,27 +389,6 @@ export default {
                 this.watchEstimation();
             },
         },
-        // @TODO move to useWeb3TokenBalance
-        externalToken: {
-            handler(newVal, oldVal) {
-                // check if not changed
-                if (newVal?.externalTokenId === oldVal?.externalTokenId && newVal?.chainId === oldVal?.chainId) {
-                    return;
-                }
-                // if (this.chainId === ETHEREUM_CHAIN_ID) {
-                //     web3.eth.setProvider(ETHEREUM_API_URL);
-                // }
-                // if (this.chainId === BSC_CHAIN_ID) {
-                //     web3.eth.setProvider(BSC_API_URL);
-                // }
-                this.serverError = '';
-
-                if (this.chainId === ETHEREUM_CHAIN_ID || this.chainId === BSC_CHAIN_ID) {
-                    this.updateBalance();
-                    this.updateAllowance();
-                }
-            },
-        },
         depositProps: {
             handler(newVal) {
                 this.setDepositProps(newVal);
@@ -459,8 +426,8 @@ export default {
             if (this.isFormSending) {
                 return;
             }
-            this.updateBalance();
-            this.updateAllowance();
+            this.updateTokenBalance();
+            this.updateTokenAllowance();
         }, 60 * 1000);
         timer2 = setInterval(() => {
             if (this.isFormSending) {
@@ -485,18 +452,7 @@ export default {
         getExplorerTxUrl,
         getEvmTxUrl,
         shortHashFilter,
-        updateBalance() {
-            return this.updateTokenBalance()
-                .catch((error) => {
-                    this.serverError = 'Can\'t get balance';
-                });
-        },
-        updateAllowance() {
-            return this.updateTokenBalance()
-                .catch((error) => {
-                    this.serverError = 'Can\'t get allowance';
-                });
-        },
+/*
         ensureNetworkData() {
             if (!this.hubCoinList.length || !this.priceList.length) {
                 return this.$fetch();
@@ -504,10 +460,11 @@ export default {
 
             // const uniswapPairPromise = this.uniswapPair ? Promise.resolve() : this.fetchUniswapPair();
             //@TODO handle change to composable (maybe promises should be exposed in web3Allowance?)
-            const allowancePromise = this.allowanceRequest && this.allowanceRequest.promiseStatus !== PROMISE_REJECTED ? this.allowanceRequest.promise : this.updateAllowance();
+            const allowancePromise = this.allowanceRequest && this.allowanceRequest.promiseStatus !== PROMISE_REJECTED ? this.allowanceRequest.promise : this.updateTokenAllowance();
 
-            return Promise.all([/*uniswapPairPromise, */allowancePromise]);
+            return Promise.all([/!*uniswapPairPromise, *!/allowancePromise]);
         },
+*/
         async recoverPurchase() {
             if (!this.$store.state.onLine) {
                 return;
@@ -532,34 +489,19 @@ export default {
         },
         waitEnoughExternalBalance({isTopUpRequired} = {}) {
             const targetAmount = isTopUpRequired ? new Big(this.selectedBalance).plus(this.form.amountEth).toString() : this.form.amountEth;
-            this.txServiceState.loadingStage = LOADING_STAGE.WAIT_ETH;
+            // don't show modal if balance already enough
+            if (new Big(this.selectedBalance).gte(targetAmount)) {
+                return Promise.resolve();
+            } else {
+                this.txServiceState.loadingStage = LOADING_STAGE.WAIT_ETH;
 
-            const promise = this.waitEnoughTokenBalance(targetAmount);
-            waitingCancel = () => {
-                promise.canceler();
-                waitingCancel = null;
-            };
-            return promise;
-        },
-        /**
-         * @param {number|string} targetAmount
-         * @param {{value: boolean}} isCanceled
-         * @return {Promise}
-         * @private
-         */
-        _waitEnoughExternalBalance(targetAmount, isCanceled) {
-            return this.updateBalance()
-                .then(() => {
-                    // Sending was canceled
-                    if (isCanceled.value) {
-                        return Promise.reject(new CancelError());
-                    }
-                    if (this.selectedBalance >= targetAmount) {
-                        return true;
-                    } else {
-                        return wait(10000).then(() => this._waitEnoughExternalBalance(targetAmount, isCanceled));
-                    }
-                });
+                const promise = this.waitEnoughTokenBalance(targetAmount);
+                waitingCancel = () => {
+                    promise.canceler();
+                    waitingCancel = null;
+                };
+                return promise;
+            }
         },
         submitConfirm() {
             if (this.isFormSending || !this.$store.state.onLine) {
@@ -599,7 +541,7 @@ export default {
             // don't wait eth if next steps already exists
             const waitEnoughEthPromise = fromRecovery ? Promise.resolve() : this.waitEnoughExternalBalance({isTopUpRequired: this.isFiatRampSelected});
 
-            return Promise.all([fiatRampPurchasePromise, waitEnoughEthPromise, this.ensureNetworkData()])
+            return Promise.all([fiatRampPurchasePromise, waitEnoughEthPromise/*, this.ensureNetworkData()*/])
                 .then(() => this.depositFromEthereum())
                 .then((outputAmount) => {
                     return this.sendMinterSwapTx({

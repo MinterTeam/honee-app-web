@@ -1,7 +1,7 @@
 import { ref, reactive, computed, watch } from '@vue/composition-api';
 import {findTokenInfo} from '~/api/hub.js';
 import Big from '~/assets/big.js';
-import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+import {BSC_CHAIN_ID, ETHEREUM_CHAIN_ID, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import wait from '~/assets/utils/wait.js';
 import CancelError from '~/assets/utils/error-cancel.js';
 import useWeb3Balance from '~/composables/use-web3-balance.js';
@@ -65,6 +65,20 @@ export default function useHubDiscount() {
     });
 
 
+    watch(tokenData, (newVal, oldVal) => {
+        // check if not changed
+        if (newVal?.externalTokenId === oldVal?.externalTokenId && newVal?.chainId === oldVal?.chainId) {
+            return;
+        }
+        // state.tokenError = '';
+
+        if (props.chainId === ETHEREUM_CHAIN_ID || props.chainId === BSC_CHAIN_ID) {
+            updateTokenBalance();
+            updateTokenAllowance();
+        }
+    }, {immediate: true});
+
+
     function updateTokenBalance() {
         const chainId = props.chainId;
         const tokenAddress = tokenContractAddress.value;
@@ -76,6 +90,8 @@ export default function useHubDiscount() {
         return getBalance(props.accountAddress, chainId, tokenAddress, tokenDecimals.value)
             .catch((error) => {
                 if (props.chainId === chainId && tokenContractAddress.value === tokenAddress) {
+                    //@TODO expose tokenError string
+                    // state.tokenError = 'Can\'t get balance';
                     throw error;
                 }
             });
@@ -97,6 +113,7 @@ export default function useHubDiscount() {
         return getAllowance(props.accountAddress, chainId, tokenAddress, tokenDecimals.value)
             .catch((error) => {
                 if (props.chainId === chainId && tokenContractAddress.value === tokenAddress) {
+                    // state.tokenError = 'Can\'t get allowance';
                     throw error;
                 }
             });

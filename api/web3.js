@@ -28,6 +28,10 @@ export default {
     utils: Utils,
 };
 
+const transactionPollingInterval = 5000;
+[web3Eth, web3EthEth, web3EthBsc]
+    .forEach((eth) => eth.transactionPollingInterval = transactionPollingInterval);
+
 /**
  *
  * @param {object} abi
