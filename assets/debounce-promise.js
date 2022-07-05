@@ -1,3 +1,5 @@
+import CancelError from '~/assets/utils/error-cancel.js';
+
 /**
  * Based on https://github.com/bjoerge/debounce-promise
  */
@@ -69,10 +71,3 @@ function defer() {
     return deferred;
 }
 
-export class CancelError extends Error {
-    constructor(message = 'Canceled') {
-        super(message);
-        this.name = 'CancelError';
-        this.isCanceled = true;
-    }
-}

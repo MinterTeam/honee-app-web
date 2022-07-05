@@ -8,7 +8,7 @@ import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_TRANSFER_STATUS, MA
 import Big from '~/assets/big.js';
 import wethAbi from '~/assets/abi-weth.js';
 import hubABI from '~/assets/abi-hub.js';
-import useWeb3Balance from '~/composables/use-web3-balance.js';
+import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useTxService from '~/composables/use-tx-service.js';
 
 const GAS_LIMIT_SWAP = 200000;
@@ -18,7 +18,7 @@ const GAS_LIMIT_UNLOCK = 75000;
 const GAS_LIMIT_BRIDGE = 75000;
 
 
-const { web3Balance, web3Allowance, getBalance, getAllowance} = useWeb3Balance();
+const { tokenContractAddress: tokenAddress, tokenDecimals, isNativeToken, nativeBalance, setTokenProps } = useWeb3TokenBalance();
 const { txServiceState, sendEthTx, addStepData, waitPendingStep } = useTxService();
 
 /**
@@ -40,6 +40,12 @@ const props = reactive({
  */
 function setProps(newProps) {
     Object.assign(props, newProps);
+    setTokenProps({
+        tokenSymbol: newProps.tokenSymbol,
+        accountAddress: newProps.accountAddress,
+        chainId: newProps.chainId,
+        hubCoinList: newProps.hubCoinList,
+    });
 }
 
 const state = reactive({
@@ -57,37 +63,7 @@ function getWrappedNativeContractAddress() {
  * @type {import('@vue/composition-api').ComputedRef<HubChainDataItem>}
  */
 // const hubChainData = computed(() => HUB_CHAIN_BY_ID[props.chainId]);
-/**
- * @type {import('@vue/composition-api').ComputedRef<HubCoinItem>}
- */
-const tokenData = computed(() => {
-    const coinItem = props.hubCoinList.find((item) => item.symbol === props.tokenSymbol);
-    return coinItem?.[HUB_CHAIN_BY_ID[props.chainId]?.hubChainId];
-});
-const tokenAddress = computed(() => tokenData.value?.externalTokenId.toLowerCase() || '');
-const tokenDecimals = computed(() => tokenData.value ? Number(tokenData.value.externalDecimals) : undefined);
-const isNativeToken = computed(() => tokenAddress.value === getWrappedNativeContractAddress());
-const nativeBalance = computed(() => {
-    if (isNativeToken.value) {
-        return web3Balance[props.chainId]?.[0] || 0;
-    }
 
-    return 0;
-});
-const wrappedBalance = computed(() => {
-    if (isNativeToken.value) {
-        return web3Balance[props.chainId]?.[tokenAddress.value] || 0;
-    }
-
-    return 0;
-});
-const balance = computed(() => {
-    if (isNativeToken.value) {
-        return new Big(wrappedBalance.value).plus(nativeBalance.value).toString();
-    } else {
-        return web3Balance[props.chainId]?.[tokenAddress.value] || 0;
-    }
-});
 const amountToUnwrap = computed(() => {
     const amountToUnwrapMinimum = new Big(props.amount || 0).minus(nativeBalance.value).toString();
     if (amountToUnwrapMinimum <= 0) {
@@ -298,13 +274,6 @@ export default function useWeb3Deposit(destinationMinterAddress) {
 
     return {
         // computed
-        tokenData,
-        tokenAddress,
-        tokenDecimals,
-        isNativeToken,
-        nativeBalance,
-        wrappedBalance,
-        balance,
         amountToUnwrap,
         isUnwrapRequired,
         isApproveRequired,

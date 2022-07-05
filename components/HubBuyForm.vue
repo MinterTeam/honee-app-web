@@ -24,9 +24,12 @@ import wethAbi from '~/assets/abi-weth.js';
 import debounce from '~/assets/lodash5-debounce.js';
 import {NETWORK, MAINNET, ETHEREUM_CHAIN_ID, ETHEREUM_API_URL, BSC_CHAIN_ID, BSC_API_URL, HUB_TRANSFER_STATUS, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, WETH_CONTRACT_ADDRESS, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
+import CancelError from '~/assets/utils/error-cancel.js';
+import wait from '~/assets/utils/wait.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
 import useWeb3Balance from '~/composables/use-web3-balance.js';
+import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useWeb3Deposit from '~/composables/use-web3-deposit.js';
 import useTxService from '~/composables/use-tx-service.js';
 import useTxMinterPresets from '~/composables/use-tx-minter-presets.js';
@@ -151,16 +154,24 @@ export default {
     },
     setup() {
         const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
-        const { web3Balance, web3Allowance, getBalance, getAllowance} = useWeb3Balance();
+
         const {
-            setDepositProps,
-            depositFromEthereum,
             tokenData: externalToken,
-            tokenDecimals: externalTokenDecimals,
+            tokenContractAddress: coinContractAddress,
+            tokenDecimals: coinDecimals,
             isNativeToken: isEthSelected,
             nativeBalance: selectedNative,
             wrappedBalance: selectedWrapped,
             balance: selectedBalance,
+            tokenAllowance: coinToDepositUnlocked,
+            setTokenProps,
+            updateTokenBalance,
+            updateTokenAllowance,
+            waitEnoughTokenBalance,
+        } = useWeb3TokenBalance();
+        const {
+            setDepositProps,
+            depositFromEthereum,
             amountToUnwrap,
             isUnwrapRequired,
             gasPriceGwei: ethGasPriceGwei,
@@ -175,12 +186,13 @@ export default {
             discountUpsidePercent,
             setDiscountProps,
 
-            web3Balance,
-            web3Allowance,
-            getBalance,
-            getAllowance,
+            externalToken, coinContractAddress, coinDecimals, isEthSelected, selectedNative, selectedWrapped, selectedBalance, coinToDepositUnlocked,
+            setTokenProps,
+            updateTokenBalance,
+            updateTokenAllowance,
+            waitEnoughTokenBalance,
 
-            setDepositProps, depositFromEthereum, externalToken, externalTokenDecimals, isEthSelected, selectedNative, selectedWrapped, selectedBalance, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, formAmountAfterGas,
+            setDepositProps, depositFromEthereum, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, formAmountAfterGas,
 
             txServiceState, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData,
 
@@ -338,15 +350,6 @@ export default {
         coinEthereumName() {
             return this.externalTokenSymbol;
         },
-        coinContractAddress() {
-            return this.externalToken?.externalTokenId.toLowerCase();
-        },
-        coinDecimals() {
-            return this.externalToken ? Number(this.externalToken.externalDecimals) : undefined;
-        },
-        coinToDepositUnlocked() {
-            return this.web3Allowance[this.chainId]?.[this.coinContractAddress] || 0;
-        },
         isCoinApproved() {
             const selectedUnlocked = new Big(this.coinToDepositUnlocked);
             // uniswap not used anymore
@@ -456,6 +459,7 @@ export default {
                 this.watchEstimation();
             },
         },
+        // @TODO move to useWeb3TokenBalance
         externalToken: {
             handler(newVal, oldVal) {
                 // check if not changed
@@ -479,6 +483,7 @@ export default {
         depositProps: {
             handler(newVal) {
                 this.setDepositProps(newVal);
+                this.setTokenProps(newVal);
             },
             deep: true,
             immediate: true,
@@ -540,38 +545,15 @@ export default {
         getEvmTxUrl,
         shortHashFilter,
         updateBalance() {
-            const chainId = this.chainId;
-            const contractAddress = this.coinContractAddress;
-
-            if (!this.coinContractAddress) {
-                return;
-            }
-
-            return this.getBalance(this.ethAddress, this.chainId, this.coinContractAddress, this.coinDecimals)
+            return this.updateTokenBalance()
                 .catch((error) => {
-                    if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
-                        this.serverError = 'Can\'t get balance';
-                    }
+                    this.serverError = 'Can\'t get balance';
                 });
         },
         updateAllowance() {
-            const chainId = this.chainId;
-            const contractAddress = this.coinContractAddress;
-
-            if (!this.coinContractAddress) {
-                return;
-            }
-            //@TODO allowance not used yet (will be used only for erc20 tokens)
-            // allowance not needed for native coins
-            if (this.isEthSelected) {
-                return;
-            }
-
-            return this.getAllowance(this.ethAddress, this.chainId, this.coinContractAddress, this.coinDecimals)
+            return this.updateTokenBalance()
                 .catch((error) => {
-                    if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
-                        this.serverError = 'Can\'t get allowance';
-                    }
+                    this.serverError = 'Can\'t get allowance';
                 });
         },
 /*
@@ -615,26 +597,19 @@ export default {
         fiatRampPurchase() {
             return initRampPurchase({
                 userAddress: this.ethAddress,
-                swapAmount: toErcDecimals(this.form.amountEth, this.externalTokenDecimals),
+                swapAmount: toErcDecimals(this.form.amountEth, this.coinDecimals),
             });
         },
         waitEnoughExternalBalance({isTopUpRequired} = {}) {
             const targetAmount = isTopUpRequired ? new Big(this.selectedBalance).plus(this.form.amountEth).toString() : this.form.amountEth;
-            // save request if balance already enough
-            if (this.selectedBalance >= targetAmount) {
-                return Promise.resolve();
-            } else {
-                this.txServiceState.loadingStage = LOADING_STAGE.WAIT_ETH;
-                return new Promise((resolve, reject) => {
-                    let isCanceled = {value: false};
-                    waitingCancel = () => {
-                        reject(new Error(CANCEL_MESSAGE));
-                        isCanceled.value = true;
-                        waitingCancel = null;
-                    };
-                    this._waitEnoughExternalBalance(targetAmount, isCanceled).then(resolve).catch(reject);
-                });
-            }
+            this.txServiceState.loadingStage = LOADING_STAGE.WAIT_ETH;
+
+            const promise = this.waitEnoughTokenBalance(targetAmount);
+            waitingCancel = () => {
+                promise.canceler();
+                waitingCancel = null;
+            };
+            return promise;
         },
         /**
          * @param {number|string} targetAmount
@@ -647,7 +622,7 @@ export default {
                 .then(() => {
                     // Sending was canceled
                     if (isCanceled.value) {
-                        return Promise.reject(new Error(CANCEL_MESSAGE));
+                        return Promise.reject(new CancelError());
                     }
                     if (this.selectedBalance >= targetAmount) {
                         return true;
@@ -724,7 +699,7 @@ export default {
                     // this.finishSending();
                 })
                 .catch((error) => {
-                    if (error.message !== CANCEL_MESSAGE) {
+                    if (!error.isCanceled) {
                         this.serverError = getErrorText(error);
                         // Error returned when rejected
                         console.error(error);
@@ -919,12 +894,6 @@ export default {
     },
 };
 
-function wait(time) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, time);
-    });
-}
-
 function _fetchUniswapPair(coinContractAddress, coinDecimals) {
     // const token = new Token(ETHEREUM_CHAIN_ID, '0xdbc941fec34e8965ebc4a25452ae7519d6bdfc4e', 6)
     const token = new Token(ETHEREUM_CHAIN_ID, coinContractAddress, coinDecimals);
@@ -954,12 +923,12 @@ function getSwapOutput(receipt) {
 
 <template>
     <div>
-        <div class="u-grid u-grid--small u-grid--vertical-margin--small" v-if="recovery">
-            <div class="u-cell">{{ $td('You have unfinished purchase, do you want to continue?', 'form.unfinished-purchase') }}</div>
-            <div class="u-cell u-cell--medium--1-4">
+        <div class="u-grid u-grid--vertical-margin--small" v-if="recovery">
+            <div class="u-cell u-text-center">{{ $td('You have unfinished purchase, do you want to continue?', 'form.unfinished-purchase') }}</div>
+            <div class="u-cell">
                 <button class="button button--main button--full" type="button" @click="recoverPurchase()">{{ $td('Continue', 'common.continue') }}</button>
             </div>
-            <div class="u-cell u-cell--medium--1-4">
+            <div class="u-cell">
                 <button class="button button--ghost button--full" type="button" @click="cancelRecovery()">{{ $td('Cancel', 'form.submit-cancel-button') }}</button>
             </div>
         </div>
@@ -1254,10 +1223,10 @@ function getSwapOutput(receipt) {
                 </div>
                 <HubBuySpeedup :steps-ordered="stepsOrdered" @speedup="speedup"/>
             </div>
-            <div class="form-row panel__section panel__section--tint u-fw-500" v-if="txServiceState.loadingStage !== $options.LOADING_STAGE.WAIT_ETH && txServiceState.loadingStage !== $options.LOADING_STAGE.FINISH">
+            <div class="form-row u-text-medium u-fw-500" v-if="txServiceState.loadingStage !== $options.LOADING_STAGE.WAIT_ETH && txServiceState.loadingStage !== $options.LOADING_STAGE.FINISH">
                 <span class="u-emoji">⚠️</span> {{ $td('Please keep this page active, otherwise progress may&nbsp;be&nbsp;lost.', 'index.keep-page-active') }}
             </div>
-            <div class="form-row panel__section" v-if="txServiceState.loadingStage === $options.LOADING_STAGE.FINISH">
+            <div class="form-row" v-if="txServiceState.loadingStage === $options.LOADING_STAGE.FINISH">
                 <button class="button button--ghost-main button--full" type="button" @click="finishSending()">
                     {{ $td('Close', 'common.close') }}
                 </button>
