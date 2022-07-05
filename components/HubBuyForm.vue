@@ -5,15 +5,11 @@ import required from 'vuelidate/lib/validators/required.js';
 import maxValue from 'vuelidate/lib/validators/maxValue.js';
 import minLength from 'vuelidate/lib/validators/minLength.js';
 import withParams from 'vuelidate/lib/withParams.js';
-import { ChainId, Token, WETH as WETH_TOKEN_DATA, Fetcher, Route, Trade, TokenAmount, TradeType } from '@uniswap/sdk';
-import IUniswapV2Router from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
-import {CloudflareProvider, JsonRpcProvider} from '@ethersproject/providers';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import {web3Utils, web3Abi, AbiEncoder, toErcDecimals} from '~/api/web3.js';
-import {getOracleCoinList, getOraclePriceList, subscribeTransfer} from '@/api/hub.js';
-import {getTransaction} from '@/api/explorer.js';
-import {estimateCoinSell, postTx} from '@/api/gate.js';
+import {web3Utils, AbiEncoder, toErcDecimals} from '~/api/web3.js';
+import {getOracleCoinList, getOraclePriceList} from '~/api/hub.js';
+import {estimateCoinSell} from '~/api/gate.js';
 import Big from '~/assets/big.js';
 import initRampPurchase, {fiatRampPurchaseNetwork} from '~/assets/fiat-ramp.js';
 import {pretty, prettyPrecise, prettyRound, prettyExact, decreasePrecisionSignificant, getExplorerTxUrl, getEvmTxUrl, shortHashFilter} from '~/assets/utils.js';
@@ -21,7 +17,7 @@ import erc20ABI from '~/assets/abi-erc20.js';
 import hubABI from '~/assets/abi-hub.js';
 import wethAbi from '~/assets/abi-weth.js';
 import debounce from '~/assets/lodash5-debounce.js';
-import {NETWORK, MAINNET, ETHEREUM_CHAIN_ID, ETHEREUM_API_URL, BSC_CHAIN_ID, BSC_API_URL, HUB_TRANSFER_STATUS, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, WETH_CONTRACT_ADDRESS, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+import {NETWORK, MAINNET, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, HUB_TRANSFER_STATUS, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import CancelError from '~/assets/utils/error-cancel.js';
 import wait from '~/assets/utils/wait.js';
@@ -41,8 +37,6 @@ import HubBuyTxListItem from '@/components/HubBuyTxListItem.vue';
 import HubBuySpeedup from '@/components/HubBuySpeedup.vue';
 
 
-const uniswapV2Abi = IUniswapV2Router.abi;
-
 const FIAT_RAMP_NETWORK = 'fiat-ramp';
 
 const PROMISE_FINISHED = 'finished';
@@ -60,14 +54,12 @@ const GAS_LIMIT_UNLOCK = 75000;
 const GAS_LIMIT_BRIDGE = 75000;
 
 let waitingCancel;
-const CANCEL_MESSAGE = 'Canceled';
 
 //@TODO timer2 triggers watchEstimation
 let timer;
 let timer2;
 
 
-const wethToken = WETH_TOKEN_DATA[ETHEREUM_CHAIN_ID];
 const DEPOSIT_COIN_DATA = {
     ETH: {
         testnetSymbol: 'TESTETH',
@@ -132,7 +124,6 @@ export default {
             .then(() => Promise.all([
                 this.updateBalance(),
                 this.updateAllowance(),
-                // this.fetchUniswapPair(),
             ]));
     },
     props: {
@@ -193,7 +184,6 @@ export default {
     },
     data() {
         return {
-            // uniswapPair: null,
             allowanceRequest: null,
             form: {
                 selectedHubNetwork: HUB_CHAIN_ID.BSC,
@@ -285,38 +275,6 @@ export default {
             amount = amount.gt(0) ? amount.toString() : 0;
             return amount;
         },
-        /*
-        ethToSwap() {
-            let amount = new Big(this.form.amountEth || 0).minus(this.ethTotalFee);
-            amount = amount.gt(0) ? amount.toString() : 0;
-            return amount;
-        },
-        uniswapEstimation() {
-            const pair = this.uniswapPair;
-            const decimals = this.coinDecimals;
-            const amountEth = toErcDecimals(this.ethToSwap, 18);
-            if (!pair || !(amountEth > 0)) {
-                return {
-                    price: 0,
-                    output: 0,
-                };
-            }
-            try {
-                const route = new Route([pair], wethToken);
-                const trade = new Trade(route, new TokenAmount(wethToken, amountEth), TradeType.EXACT_INPUT);
-                return {
-                    price: trade.executionPrice.toFixed(decimals),
-                    output: trade.outputAmount.toFixed(decimals),
-                };
-            } catch (error) {
-                console.log(error);
-                return {
-                    price: 0,
-                    output: 0,
-                };
-            }
-        },
-        */
         hubFeeRate() {
             const discountModifier = 1 - this.discount;
             // commission to deposit is taken from external token data (e.g. chainId: 'ethereum')
@@ -327,12 +285,10 @@ export default {
         },
         // fee to HUB bridge calculated in COIN
         hubFee() {
-            // const input = this.uniswapEstimation?.output;
             const input = this.formAmountAfterGas;
             return new Big(input || 0).times(this.hubFeeRate).toString();
         },
         coinAmountAfterBridge() {
-            // const input = this.uniswapEstimation?.output;
             const input = this.formAmountAfterGas;
             return new Big(input || 0).minus(this.hubFee).toString();
         },
@@ -344,13 +300,7 @@ export default {
         },
         isCoinApproved() {
             const selectedUnlocked = new Big(this.coinToDepositUnlocked);
-            // uniswap not used anymore
             return selectedUnlocked.gt(0) && selectedUnlocked.gt(this.form.amountEth || 0);
-            // compare with large number instead of uniswapEstimation to eliminate circular dependency (uniswapEstimation > isCoinApproved > ethTotalFee > ethToSwap > uniswapEstimation)
-            // eslint-disable-next-line no-unreachable
-            return selectedUnlocked.gt(1e15);
-            // сравниваем эстимейт с запасом
-            // return selectedUnlocked.gt(0) && selectedUnlocked.gt(this.uniswapEstimation?.output * 2);
         },
         isApproveRequired() {
             return !this.isEthSelected && !this.isCoinApproved;
@@ -511,7 +461,6 @@ export default {
             }
             this.updateBalance();
             this.updateAllowance();
-            // this.fetchUniswapPair();
         }, 60 * 1000);
         timer2 = setInterval(() => {
             if (this.isFormSending) {
@@ -548,17 +497,6 @@ export default {
                     this.serverError = 'Can\'t get allowance';
                 });
         },
-/*
-        fetchUniswapPair() {
-            if (!this.coinContractAddress || ! this.coinDecimals) {
-                return;
-            }
-            return _fetchUniswapPair(this.coinContractAddress, this.coinDecimals)
-                .then((pair) => {
-                    this.uniswapPair = pair;
-                });
-        },
-*/
         ensureNetworkData() {
             if (!this.hubCoinList.length || !this.priceList.length) {
                 return this.$fetch();
@@ -721,17 +659,6 @@ export default {
             this.$fetch();
         },
 /*
-        sendUniswapTx({nonce, gasPrice} = {}) {
-            const routerAddress = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D';
-            const poolAddress = this.uniswapPair.liquidityToken.address;
-            const poolContract = new web3.eth.Contract(uniswapV2Abi, poolAddress);
-            const amountOutMin = toErcDecimals(new Big(this.uniswapEstimation.output).times(0.97).toString(), this.coinDecimals);
-            // console.log('amountOutMin', new Big(this.uniswapEstimation.output).times(0.97).toString(), amountOutMin)
-            const deadline = Math.floor(Date.now() / 1000) + 60 * 30; // 30min
-            const data = poolContract.methods.swapExactETHForTokens(amountOutMin, [wethToken.address, this.coinContractAddress], this.ethAddress, deadline).encodeABI();
-
-            return this.sendEthTx({to: routerAddress, data, value: this.ethToSwap, nonce, gasPrice, gasLimit: GAS_LIMIT_SWAP}, LOADING_STAGE.SWAP_ETH);
-        },
         sendWrapTx({nonce, gasPrice} = {}) {
             return this.sendEthTx({
                 to: WETH_CONTRACT_ADDRESS,
@@ -885,31 +812,7 @@ export default {
     },
 };
 
-function _fetchUniswapPair(coinContractAddress, coinDecimals) {
-    // const token = new Token(ETHEREUM_CHAIN_ID, '0xdbc941fec34e8965ebc4a25452ae7519d6bdfc4e', 6)
-    const token = new Token(ETHEREUM_CHAIN_ID, coinContractAddress, coinDecimals);
-    const provider = NETWORK === MAINNET ? new CloudflareProvider('homestead') : new JsonRpcProvider(ETHEREUM_API_URL, 'ropsten');
 
-    return Fetcher.fetchPairData(token, wethToken, provider)
-        .then((pair) => {
-            return Object.freeze(pair);
-        });
-}
-
-function getSwapOutput(receipt) {
-    const logIndex = 5 - 1;
-    const dataIndex = 3 - 1;
-    const amount0StartIndex = 2 + 64 * dataIndex;
-    const amount1StartIndex = 2 + 64 * (dataIndex + 1);
-    // @TODO logs pruned from tx for now to save storage space
-    const amount0OutHex = receipt.logs[logIndex].data.slice(amount0StartIndex, amount0StartIndex + 64);
-    const amount1OutHex = receipt.logs[logIndex].data.slice(amount1StartIndex, amount1StartIndex + 64);
-    const amount0Out = web3Abi.decodeParameter('uint256', '0x' + amount0OutHex);
-    const amount1Out = web3Abi.decodeParameter('uint256', '0x' + amount1OutHex);
-
-    // received coin maybe 0 or 1, depending on position in uniswap pair
-    return Math.max(amount0Out, amount1Out);
-}
 </script>
 
 <template>
