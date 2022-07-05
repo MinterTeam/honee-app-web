@@ -10,8 +10,7 @@ import IUniswapV2Router from '@uniswap/v2-periphery/build/IUniswapV2Router02.jso
 import {CloudflareProvider, JsonRpcProvider} from '@ethersproject/providers';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import * as web3 from '@/api/web3.js';
-import {fromErcDecimals, subscribeTransaction, toErcDecimals} from '@/api/web3.js';
+import {web3Utils, web3Abi, AbiEncoder, toErcDecimals} from '~/api/web3.js';
 import {getOracleCoinList, getOraclePriceList, subscribeTransfer} from '@/api/hub.js';
 import {getTransaction} from '@/api/explorer.js';
 import {estimateCoinSell, postTx} from '@/api/gate.js';
@@ -28,7 +27,6 @@ import CancelError from '~/assets/utils/error-cancel.js';
 import wait from '~/assets/utils/wait.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
-import useWeb3Balance from '~/composables/use-web3-balance.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useWeb3Deposit from '~/composables/use-web3-deposit.js';
 import useTxService from '~/composables/use-tx-service.js';
@@ -68,12 +66,6 @@ const CANCEL_MESSAGE = 'Canceled';
 let timer;
 let timer2;
 
-function coinContract(coinContractAddress) {
-    return new web3.eth.Contract(erc20ABI, coinContractAddress);
-}
-
-const wethContract = new web3.eth.Contract(wethAbi, WETH_CONTRACT_ADDRESS);
-const wethDepositAbiData = wethContract.methods.deposit().encodeABI();
 
 const wethToken = WETH_TOKEN_DATA[ETHEREUM_CHAIN_ID];
 const DEPOSIT_COIN_DATA = {
@@ -466,12 +458,12 @@ export default {
                 if (newVal?.externalTokenId === oldVal?.externalTokenId && newVal?.chainId === oldVal?.chainId) {
                     return;
                 }
-                if (this.chainId === ETHEREUM_CHAIN_ID) {
-                    web3.eth.setProvider(ETHEREUM_API_URL);
-                }
-                if (this.chainId === BSC_CHAIN_ID) {
-                    web3.eth.setProvider(BSC_API_URL);
-                }
+                // if (this.chainId === ETHEREUM_CHAIN_ID) {
+                //     web3.eth.setProvider(ETHEREUM_API_URL);
+                // }
+                // if (this.chainId === BSC_CHAIN_ID) {
+                //     web3.eth.setProvider(BSC_API_URL);
+                // }
                 this.serverError = '';
 
                 if (this.chainId === ETHEREUM_CHAIN_ID || this.chainId === BSC_CHAIN_ID) {
@@ -753,8 +745,7 @@ export default {
 */
         unwrapToNativeCoin({nonce, gasPrice} = {}) {
             const amountToUnwrap = toErcDecimals(this.amountToUnwrap, this.coinDecimals);
-            const wrappedNativeContract = new web3.eth.Contract(wethAbi, this.wrappedNativeContractAddress);
-            const data = wrappedNativeContract.methods.withdraw(amountToUnwrap).encodeABI();
+            const data = AbiEncoder(wethAbi)('withdraw', amountToUnwrap);
             return this.sendEthTx({
                     to: this.wrappedNativeContractAddress,
                     data,
@@ -770,33 +761,33 @@ export default {
         },
         sendApproveTx({nonce, gasPrice} = {}) {
             let amountToUnlock = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-            let data = coinContract(this.coinContractAddress).methods.approve(this.hubAddress, amountToUnlock).encodeABI();
+            let data = AbiEncoder(erc20ABI)('approve', this.hubAddress, amountToUnlock);
 
             return this.sendEthTx({to: this.coinContractAddress, data, nonce, gasPrice, gasLimit: GAS_LIMIT_UNLOCK}, LOADING_STAGE.APPROVE_BRIDGE);
         },
         sendCoinTx({nonce}) {
-            const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3.utils.hexToBytes(this.$store.getters.address.replace("Mx", "0x")))]);
+            const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(this.$store.getters.address.replace("Mx", "0x")))]);
             const destinationChain = Buffer.from('minter', 'utf-8');
-            const hubContract = new web3.eth.Contract(hubABI, this.hubAddress);
             let txParams;
             if (this.isEthSelected) {
                 txParams = {
                     value: this.formAmountAfterGas,
-                    data: hubContract.methods.transferETHToChain(
+                    data: AbiEncoder(hubABI)(
+                        'transferETHToChain',
                         destinationChain,
                         address,
                         0,
-                    ).encodeABI(),
+                    ),
                 };
             } else {
                 txParams = {
-                    data: hubContract.methods.transferToChain(
-                        this.coinContractAddress,
+                    data: AbiEncoder(hubABI)(
+                        'transferToChain',
                         destinationChain,
                         address,
                         toErcDecimals(this.formAmountAfterGas, this.coinDecimals),
                         0,
-                    ).encodeABI(),
+                    ),
                 };
             }
 
@@ -913,8 +904,8 @@ function getSwapOutput(receipt) {
     // @TODO logs pruned from tx for now to save storage space
     const amount0OutHex = receipt.logs[logIndex].data.slice(amount0StartIndex, amount0StartIndex + 64);
     const amount1OutHex = receipt.logs[logIndex].data.slice(amount1StartIndex, amount1StartIndex + 64);
-    const amount0Out = web3.eth.abi.decodeParameter('uint256', '0x' + amount0OutHex);
-    const amount1Out = web3.eth.abi.decodeParameter('uint256', '0x' + amount1OutHex);
+    const amount0Out = web3Abi.decodeParameter('uint256', '0x' + amount0OutHex);
+    const amount1Out = web3Abi.decodeParameter('uint256', '0x' + amount1OutHex);
 
     // received coin maybe 0 or 1, depending on position in uniswap pair
     return Math.max(amount0Out, amount1Out);

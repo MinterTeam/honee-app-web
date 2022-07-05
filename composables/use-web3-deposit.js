@@ -1,8 +1,7 @@
 import {reactive, computed, watch} from '@vue/composition-api';
 
-import * as web3 from '~/api/web3.js';
 import {subscribeTransfer} from '~/api/hub.js';
-import {subscribeTransaction, toErcDecimals} from '~/api/web3.js';
+import {getProviderByChain, web3Utils, toErcDecimals} from '~/api/web3.js';
 import {getTransaction} from '~/api/explorer.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_TRANSFER_STATUS, MAINNET, NETWORK} from '~/assets/variables.js';
 import Big from '~/assets/big.js';
@@ -110,7 +109,7 @@ const gasTotalFee = computed(() => {
     const unlockGasLimit = isApproveRequired.value ? GAS_LIMIT_UNLOCK : 0;
     const totalGasLimit = /*GAS_LIMIT_SWAP + */unwrapGasLimit + unlockGasLimit + GAS_LIMIT_BRIDGE;
     // gwei to ether
-    const gasPrice = web3.utils.fromWei(web3.utils.toWei(gasPriceGwei.value.toString(), 'gwei'), 'ether');
+    const gasPrice = web3Utils.fromWei(web3Utils.toWei(gasPriceGwei.value.toString(), 'gwei'), 'ether');
 
     return new Big(gasPrice).times(totalGasLimit).toString();
 });
@@ -123,8 +122,9 @@ const depositAmountAfterGas = computed(() => {
 
 
 async function depositFromEthereum() {
+    const web3Eth = getProviderByChain(props.chainId);
     //@TODO properly work with nonce via queue service
-    let nonce = await web3.eth.getTransactionCount(props.accountAddress, 'latest');
+    let nonce = await web3Eth.getTransactionCount(props.accountAddress, 'latest');
     const gasPrice = gasPriceGwei.value;
 
     // txServiceState.loadingStage = LOADING_STAGE.SWAP_ETH;
@@ -192,11 +192,12 @@ async function depositFromEthereum() {
 }
 
 function unwrapToNativeCoin({nonce, gasPrice} = {}) {
+    const web3Eth = getProviderByChain(props.chainId);
     txServiceState.loadingStage = LOADING_STAGE.UNWRAP_ETH;
     addStepData(LOADING_STAGE.UNWRAP_ETH, {amount: amountToUnwrap.value});
 
     const amountToUnwrapWei = toErcDecimals(amountToUnwrap.value, tokenDecimals.value);
-    const wrappedNativeContract = new web3.eth.Contract(wethAbi, getWrappedNativeContractAddress());
+    const wrappedNativeContract = new web3Eth.Contract(wethAbi, getWrappedNativeContractAddress());
     const data = wrappedNativeContract.methods.withdraw(amountToUnwrapWei).encodeABI();
     return sendEthTx({
         to: getWrappedNativeContractAddress(),
@@ -234,9 +235,10 @@ function unwrapToNativeCoin({nonce, gasPrice} = {}) {
 
 
 function sendCoinTx({nonce, gasPrice}) {
-    const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3.utils.hexToBytes(props.destinationMinterAddress.replace("Mx", "0x")))]);
+    const web3Eth = getProviderByChain(props.chainId);
+    const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(props.destinationMinterAddress.replace("Mx", "0x")))]);
     const destinationChain = Buffer.from('minter', 'utf-8');
-    const hubContract = new web3.eth.Contract(hubABI, getHubContractAddress());
+    const hubContract = new web3Eth.Contract(hubABI, getHubContractAddress());
     let txParams;
     if (isNativeToken.value) {
         txParams = {

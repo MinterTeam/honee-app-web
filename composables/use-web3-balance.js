@@ -1,6 +1,5 @@
 import {reactive, set} from '@vue/composition-api';
-import * as web3 from '~/api/web3.js';
-import {fromErcDecimals} from '~/api/web3.js';
+import {getProviderByChain, web3Utils, fromErcDecimals} from '~/api/web3.js';
 import erc20ABI from '~/assets/abi-erc20.js';
 import {HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from '~/assets/variables.js';
 
@@ -50,6 +49,7 @@ function getBalance(accountAddress, chainId, tokenAddress, tokenDecimals) {
         return Promise.reject();
     }
     tokenAddress = tokenAddress.toLowerCase();
+    const web3Eth = getProviderByChain(chainId);
 
     if (balanceRequestData[chainId]?.[tokenAddress]?.promiseStatus === PROMISE_STATUS.PENDING) {
         return balanceRequestData[chainId][tokenAddress].promise;
@@ -62,13 +62,13 @@ function getBalance(accountAddress, chainId, tokenAddress, tokenDecimals) {
 
     const isNativeSelected = HUB_CHAIN_BY_ID[chainId]?.wrappedNativeContractAddress === tokenAddress;
     const balancePromise = Promise.all([
-            new web3.eth.Contract(erc20ABI, tokenAddress).methods.balanceOf(accountAddress).call(),
-            isNativeSelected ? web3.eth.getBalance(accountAddress) : Promise.resolve(),
+            new web3Eth.Contract(erc20ABI, tokenAddress).methods.balanceOf(accountAddress).call(),
+            isNativeSelected ? web3Eth.getBalance(accountAddress) : Promise.resolve(),
         ])
         .then(([balance, nativeBalance]) => {
             set(web3Balance[chainId], tokenAddress, fromErcDecimals(balance, tokenDecimals));
             if (isNativeSelected) {
-                set(web3Balance[chainId], 0, web3.utils.fromWei(nativeBalance));
+                set(web3Balance[chainId], 0, web3Utils.fromWei(nativeBalance));
             }
             balanceRequestData[chainId][tokenAddress] = {
                 promiseStatus: PROMISE_STATUS.FINISHED,
@@ -110,6 +110,7 @@ function getAllowance(accountAddress, chainId, tokenAddress, tokenDecimals) {
         return Promise.reject();
     }
     tokenAddress = tokenAddress.toLowerCase();
+    const web3Eth = getProviderByChain(chainId);
 
     const isNativeSelected = HUB_CHAIN_BY_ID[chainId]?.wrappedNativeContractAddress === tokenAddress;
     // allowance not needed for native coins
@@ -126,7 +127,7 @@ function getAllowance(accountAddress, chainId, tokenAddress, tokenDecimals) {
     }
 
     const hubAddress = HUB_CHAIN_BY_ID[chainId]?.hubContractAddress;
-    const allowancePromise = new web3.eth.Contract(erc20ABI, tokenAddress).methods.allowance(accountAddress, hubAddress).call()
+    const allowancePromise = new web3Eth.Contract(erc20ABI, tokenAddress).methods.allowance(accountAddress, hubAddress).call()
         .then((allowanceValue) => {
             set(web3Allowance[chainId], tokenAddress, fromErcDecimals(allowanceValue, tokenDecimals));
             allowanceRequestData[chainId][tokenAddress] = {

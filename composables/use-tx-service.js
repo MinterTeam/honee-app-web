@@ -1,6 +1,5 @@
 import {reactive, set} from '@vue/composition-api';
-import {subscribeTransaction, toErcDecimals} from '~/api/web3.js';
-import * as web3 from '~/api/web3.js';
+import {getProviderByChain, web3Utils, subscribeTransaction, toErcDecimals} from '~/api/web3.js';
 import {postTx} from '~/api/gate.js';
 import {HUB_BUY_STAGE as LOADING_STAGE} from '~/assets/variables.js';
 
@@ -71,6 +70,7 @@ function sendMinterTx(txParams) {
  * @return {PromiEvent<TransactionReceipt>}
  */
 async function sendEthTx({to, value, data, nonce, gasPrice, gasLimit}, loadingStage, isSpeedup = false) {
+    const web3Eth = getProviderByChain(props.chainId);
     // @TODO check recovery earlier
     const currentStep = state.steps[loadingStage];
     if (currentStep?.finished) {
@@ -84,7 +84,7 @@ async function sendEthTx({to, value, data, nonce, gasPrice, gasLimit}, loadingSt
             });
     }
 
-    nonce = (nonce || nonce === 0) ? nonce : await web3.eth.getTransactionCount(props.accountAddress, 'latest');
+    nonce = (nonce || nonce === 0) ? nonce : await web3Eth.getTransactionCount(props.accountAddress, 'latest');
     // force estimation to prevent smart contract errors
     const forceGasLimitEstimation = loadingStage === LOADING_STAGE.SEND_BRIDGE && !isSpeedup;
     gasLimit = gasLimit && !forceGasLimitEstimation ? gasLimit : await estimateTxGas({to, value, data});
@@ -95,12 +95,12 @@ async function sendEthTx({to, value, data, nonce, gasPrice, gasLimit}, loadingSt
         value: value ? toErcDecimals(value, 18) : "0x00",
         data,
         nonce,
-        gasPrice: web3.utils.toWei(gasPrice, 'gwei'),
+        gasPrice: web3Utils.toWei(gasPrice, 'gwei'),
         gas: gasLimit,
         chainId: props.chainId,
     };
     console.log('send', txParams);
-    const { rawTransaction, transactionHash } = await web3.eth.accounts.signTransaction(txParams, props.privateKey);
+    const { rawTransaction, transactionHash } = await web3Eth.accounts.signTransaction(txParams, props.privateKey);
 
     // @TODO maybe wait sendSignedTransaction().on('transactionHash') to ensure additional checks (e.g. tx underpriced) but then error will not be written to step.tx (no hash to find tx to write) and waitPendingStep will hang
     console.log(transactionHash);
@@ -114,7 +114,7 @@ async function sendEthTx({to, value, data, nonce, gasPrice, gasLimit}, loadingSt
     });
 
     // @TODO return tx from `steps` so it will have full data, instead of just receipt
-    return web3.eth.sendSignedTransaction(rawTransaction)
+    return web3Eth.sendSignedTransaction(rawTransaction)
         .on('receipt', (receipt) => {
             console.log("receipt:", receipt);
             addStepData(loadingStage, {tx: receipt, finished: true});
@@ -131,6 +131,7 @@ async function sendEthTx({to, value, data, nonce, gasPrice, gasLimit}, loadingSt
 }
 
 function estimateTxGas({to, value, data}) {
+    const web3Eth = getProviderByChain(props.chainId);
     const txParams = {
         from: props.accountAddress,
         to,
@@ -138,7 +139,7 @@ function estimateTxGas({to, value, data}) {
         data,
     };
 
-    return web3.eth.estimateGas(txParams)
+    return web3Eth.estimateGas(txParams)
         .then((gasLimit) => {
             if (gasLimit > 1000000) {
                 throw new Error(`Gas limit estimate is too high: ${gasLimit}. Probably tx will be failed.`);
