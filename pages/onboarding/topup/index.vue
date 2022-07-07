@@ -6,7 +6,7 @@ import InlineSvg from 'vue-inline-svg';
 
 export default {
     CARD_TO_MINTER_HOST,
-    layout: 'splash',
+    layout: 'onboarding',
     components: {
         InlineSvg,
     },
@@ -38,7 +38,7 @@ export default {
 </script>
 
 <template>
-    <div class="u-section u-text-center topup__vertical-container">
+    <div class="u-section u-text-center topup__vertical-container u-container u-container--small">
         <div class="card card__content card__content--small topup__vertical-center">
             <h1 class="u-h3 u-mb-025">
                 {{ $td('Top up your balance', 'topup.title') }}

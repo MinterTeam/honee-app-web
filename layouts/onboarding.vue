@@ -24,7 +24,7 @@ export default {
             <Language/>
         </div>
 
-        <nuxt class="u-container u-container--mini"/>
+        <nuxt class=""/>
 
         <Snackbar/>
     </div>

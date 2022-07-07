@@ -3,7 +3,7 @@ import getTitle from '~/assets/get-title.js';
 import Topup, {TOP_UP_NETWORK} from '~/components/Topup.vue';
 
 export default {
-    layout: 'splash',
+    layout: 'onboarding',
     components: {
         Topup,
     },
@@ -46,9 +46,9 @@ export default {
 </script>
 
 <template>
-    <div class="u-section topup__vertical-container">
+    <div class="u-section topup__vertical-container u-container u-container--small">
         <Topup
-            class="card card__content card__content--small topup__vertical-center"
+            class="card card__content topup__vertical-center"
             v-if="networkSlug"
             :network-slug="networkSlug"
             :back-url="$i18nGetPreferredPath('/onboarding/topup')"
