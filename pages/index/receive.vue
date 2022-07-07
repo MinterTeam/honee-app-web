@@ -1,5 +1,6 @@
 <script>
 import getTitle from '~/assets/get-title.js';
+import {HUB_CHAIN_ID} from '~/assets/variables.js';
 import Modal from '~/components/base/Modal.vue';
 import Topup from '~/components/Topup.vue';
 
@@ -20,7 +21,7 @@ export default {
     },
     data() {
         return {
-            networkSlug: 'bip',
+            networkSlug: HUB_CHAIN_ID.MINTER,
         };
     },
 };
@@ -34,7 +35,7 @@ export default {
         @modal-close="$router.push(getDashboardUrl())"
     >
         <Topup
-            network-slug="minter"
+            :network-slug="networkSlug"
             :title="$td('Your wallet address', 'receive.title')"
             :description="false"
             :back-url="getDashboardUrl()"

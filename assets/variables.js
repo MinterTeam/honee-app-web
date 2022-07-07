@@ -70,7 +70,7 @@ export const HUB_NETWORK = HUB_CHAIN_ID;
 
 /**
  * @readonly
- * @type {{[HUB_CHAIN_ID]: HubChainDataItem}}}
+ * @type {Object.<string, HubChainDataItem>}
  */
 export const HUB_CHAIN_DATA = {
     [HUB_CHAIN_ID.ETHEREUM]: {

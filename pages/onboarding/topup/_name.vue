@@ -33,8 +33,14 @@ export default {
         return {
             /** @type {TopUpNetwork|null} */
             network: null,
+            /** @type {HUB_CHAIN_ID|''} */
             networkSlug: '',
         };
+    },
+    methods: {
+        handleTopup() {
+            this.$router.push(this.$i18nGetPreferredPath('/onboarding/earning'));
+        },
     },
 };
 </script>
@@ -46,6 +52,8 @@ export default {
             v-if="networkSlug"
             :network-slug="networkSlug"
             :back-url="$i18nGetPreferredPath('/onboarding/topup')"
+            :show-wait-indicator="true"
+            @topup="handleTopup($event)"
         />
     </div>
 </template>

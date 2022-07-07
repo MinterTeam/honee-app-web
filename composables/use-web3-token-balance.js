@@ -8,7 +8,7 @@ import useWeb3Balance from '~/composables/use-web3-balance.js';
 
 const { web3Balance, web3Allowance, getBalance, getAllowance} = useWeb3Balance();
 
-export default function useHubDiscount() {
+export default function useWeb3TokenBalance() {
     const props = reactive({
         accountAddress: '',
         chainId: 0,
@@ -79,12 +79,14 @@ export default function useHubDiscount() {
     }, {immediate: true});
 
 
-    function updateTokenBalance() {
+    async function updateTokenBalance() {
+        // ensure computed props are recalculated
+        await wait(1);
         const chainId = props.chainId;
         const tokenAddress = tokenContractAddress.value;
 
         if (!tokenAddress) {
-            return;
+            return Promise.reject(new Error('Token is not specified'));
         }
 
         return getBalance(props.accountAddress, chainId, tokenAddress, tokenDecimals.value)
@@ -97,17 +99,19 @@ export default function useHubDiscount() {
             });
     }
 
-    function updateTokenAllowance() {
+    async function updateTokenAllowance() {
+        // ensure computed props are recalculated
+        await wait(1);
         const chainId = props.chainId;
         const tokenAddress = tokenContractAddress.value;
 
         if (!tokenAddress) {
-            return;
+            return Promise.reject(new Error('Token is not specified'));
         }
         //@TODO allowance not used yet (will be used only for erc20 tokens)
         // allowance not needed for native coins
         if (isNativeToken.value) {
-            return;
+            return Promise.resolve();
         }
 
         return getAllowance(props.accountAddress, chainId, tokenAddress, tokenDecimals.value)
@@ -120,12 +124,12 @@ export default function useHubDiscount() {
     }
 
     /**
-     * @param targetAmount
+     * @param {number|string} [targetAmount] - current balance will be used by default
      * @return {Promise&{canceler: function}}
      */
     function waitEnoughTokenBalance(targetAmount) {
         // save request if balance already enough
-        if (new Big(balance.value).gte(targetAmount)) {
+        if (targetAmount && new Big(balance.value).gte(targetAmount)) {
             return Promise.resolve();
         } else {
             let promiseReject;
@@ -138,11 +142,26 @@ export default function useHubDiscount() {
                 promiseReject(new CancelError());
                 isCanceled.value = true;
             };
+            // keep custom `canceler` property during chaining
+            // consider https://stackoverflow.com/a/41797215/4936667 or https://stackoverflow.com/a/48500142/4936667
+            const originalThen = promise.then;
+            const originalCatch = promise.catch;
+            promise.then = function(...args) {
+                const newPromise = originalThen.call(promise, ...args);
+                newPromise.canceler = promise.canceler;
+                return newPromise;
+            };
+            promise.catch = function(...args) {
+                const newPromise = originalCatch.call(promise, ...args);
+                newPromise.canceler = promise.canceler;
+                return newPromise;
+            };
+            return promise;
         }
     }
 
     /**
-     * @param {number|string} targetAmount
+     * @param {number|string} [targetAmount]
      * @param {{value: boolean}} isCanceled
      * @return {Promise}
      * @private
@@ -154,7 +173,11 @@ export default function useHubDiscount() {
                 if (isCanceled.value) {
                     return Promise.reject(new CancelError());
                 }
-                if (balance.value >= targetAmount) {
+                // use current balance as default value
+                if (!targetAmount) {
+                    targetAmount = new Big(balance.value).plus(1e-18).toString();
+                }
+                if (new Big(balance.value).gte(targetAmount)) {
                     return true;
                 } else {
                     return wait(10000).then(() => _waitEnoughTokenBalance(targetAmount, isCanceled));

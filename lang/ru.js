@@ -158,6 +158,7 @@ export default {
         'description': 'Выберите способ ниже',
         'top-up-with-network': 'Через {network}',
         'top-up-with-card2card': 'С карты на карту',
+        'waiting-topup': 'Ожидаем транзакцию пополнения',
         'cancel': 'Отмена',
         'back': 'Назад',
     },

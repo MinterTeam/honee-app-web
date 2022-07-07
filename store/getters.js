@@ -23,6 +23,9 @@ export default {
             return '';
         }
     },
+    evmAddress(state, getters) {
+        return getters.address.replace('Mx', '0x');
+    },
     // addressUrl(state, getters) {
     //     return getExplorerAddressUrl(getters.address);
     // },
@@ -46,6 +49,7 @@ export default {
         // stored avatar first, bc. it can be changed manually after uploading new
         return avatarByAddress;
     },
+    /** @type {BalanceItem} */
     baseCoin(state) {
         return state.balance.find((coinItem) => {
             return coinItem.coin.symbol === COIN_NAME;

@@ -34,6 +34,7 @@ export default {
         return {
             /** @type {TopUpNetwork|null} */
             network: null,
+            /** @type {HUB_CHAIN_ID|''} */
             networkSlug: '',
         };
     },

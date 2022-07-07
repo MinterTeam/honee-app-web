@@ -1,6 +1,8 @@
 <script>
 import * as clipboard from 'clipbrd';
+import {BASE_COIN, HUB_CHAIN_ID} from '~/assets/variables.js';
 import QrcodeVue from 'qrcode.vue';
+import TopupWait from '~/components/TopupWait.vue';
 
 /**
  * @typedef {{prefix: string, name: string, coin: string}} TopUpNetwork
@@ -9,17 +11,17 @@ import QrcodeVue from 'qrcode.vue';
  * @enum {Object.<'minter'|'bnb'|'eth', TopUpNetwork>}
  */
 export const TOP_UP_NETWORK = {
-    minter: {
+    [HUB_CHAIN_ID.MINTER]: {
         prefix: 'Mx',
         name: 'Minter',
-        coin: 'BIP',
+        coin: BASE_COIN,
     },
-    ethereum: {
+    [HUB_CHAIN_ID.ETHEREUM]: {
         prefix: '0x',
         name: 'Ethereum',
         coin: 'ETH',
     },
-    bsc: {
+    [HUB_CHAIN_ID.BSC]: {
         prefix: '0x',
         name: 'BNB Smart Chain',
         coin: 'BNB',
@@ -29,6 +31,7 @@ export const TOP_UP_NETWORK = {
 export default {
     components: {
         QrcodeVue,
+        TopupWait,
     },
     props: {
         networkSlug: {
@@ -45,7 +48,14 @@ export default {
         backUrl: {
             type: String,
         },
+        showWaitIndicator: {
+            type: Boolean,
+            default: false,
+        },
     },
+    emits: [
+        'topup',
+    ],
     data() {
         return {
             isQrVisible: false,
@@ -144,6 +154,13 @@ export default {
             :size="160"
             level="L"
             background="transparent"
+        />
+
+        <TopupWait
+            class="u-text-center u-mt-15 u-text-medium"
+            v-show="showWaitIndicator"
+            :network-slug="networkSlug"
+            @topup="$emit('topup', $event)"
         />
 
         <nuxt-link class="button button--ghost button--full u-mt-15" :to="backUrl || $i18nGetPreferredPath('/topup')">
