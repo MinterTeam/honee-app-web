@@ -22,14 +22,53 @@ export function getStakingList() {
 }
 
 /**
+ * @param {number|string} id - staking program ID
  * @return {Promise<StakingProgram>}
  */
-export function getStakingProgram() {
+export function getStakingProgram(id) {
+    // check numberish
+    if (Number(id).toString() !== id.toString()) {
+        return Promise.reject(new NotFoundError('Invalid staking program ID'));
+    }
+    id = Number(id);
+
     return getStakingList()
         .then((stakingList) => {
-            delete stakingList[0].options[120960];
-            return stakingList[0];
+            const program = stakingList.find((item) => item.id === id);
+            if (program) {
+                return program;
+            } else {
+                return Promise.reject(new NotFoundError('Staking program not found'));
+            }
         });
+}
+
+/**
+ * @return {Promise<Array<StakingProgramAddressLock>>}
+ */
+export function getAddressLockList(address) {
+    return instance.get(`address/${address}/locks`)
+        .then((response) => {
+            let result = [];
+            response.data.data.forEach(({addressLocks, ...program}) => {
+                addressLocks.forEach((lock) => {
+                    result.push({
+                        ...lock,
+                        program,
+                    });
+                });
+            });
+            return result;
+        });
+}
+
+class NotFoundError extends Error {
+    constructor(message = 'Not found') {
+        super(message);
+        this.name = 'NotFoundError';
+        this.status = 404;
+        this.useMessage = true;
+    }
 }
 
 /**
@@ -45,4 +84,12 @@ export function getStakingProgram() {
  * @property {Coin} lockCoin
  * @property {Object.<number|string, number>} options
  * @property {boolean} isEnabled
+ */
+
+/**
+ * @typedef {object} StakingProgramAddressLock
+ * @property {number|string} amount
+ * @property {number} option
+ * @property {number} dueBlock
+ * @property {StakingProgram} program
  */

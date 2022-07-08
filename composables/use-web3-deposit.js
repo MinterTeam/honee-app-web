@@ -1,14 +1,13 @@
 import {reactive, computed, watch} from '@vue/composition-api';
 
-import * as web3 from '~/api/web3.js';
 import {subscribeTransfer} from '~/api/hub.js';
-import {subscribeTransaction, toErcDecimals} from '~/api/web3.js';
+import {getProviderByChain, web3Utils, toErcDecimals} from '~/api/web3.js';
 import {getTransaction} from '~/api/explorer.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_TRANSFER_STATUS, MAINNET, NETWORK} from '~/assets/variables.js';
 import Big from '~/assets/big.js';
 import wethAbi from '~/assets/abi-weth.js';
 import hubABI from '~/assets/abi-hub.js';
-import useWeb3Balance from '~/composables/use-web3-balance.js';
+import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useTxService from '~/composables/use-tx-service.js';
 
 const GAS_LIMIT_SWAP = 200000;
@@ -18,7 +17,7 @@ const GAS_LIMIT_UNLOCK = 75000;
 const GAS_LIMIT_BRIDGE = 75000;
 
 
-const { web3Balance, web3Allowance, getBalance, getAllowance} = useWeb3Balance();
+const { tokenContractAddress: tokenAddress, tokenDecimals, isNativeToken, nativeBalance, setTokenProps } = useWeb3TokenBalance();
 const { txServiceState, sendEthTx, addStepData, waitPendingStep } = useTxService();
 
 /**
@@ -40,6 +39,12 @@ const props = reactive({
  */
 function setProps(newProps) {
     Object.assign(props, newProps);
+    setTokenProps({
+        tokenSymbol: newProps.tokenSymbol,
+        accountAddress: newProps.accountAddress,
+        chainId: newProps.chainId,
+        hubCoinList: newProps.hubCoinList,
+    });
 }
 
 const state = reactive({
@@ -57,37 +62,7 @@ function getWrappedNativeContractAddress() {
  * @type {import('@vue/composition-api').ComputedRef<HubChainDataItem>}
  */
 // const hubChainData = computed(() => HUB_CHAIN_BY_ID[props.chainId]);
-/**
- * @type {import('@vue/composition-api').ComputedRef<HubCoinItem>}
- */
-const tokenData = computed(() => {
-    const coinItem = props.hubCoinList.find((item) => item.symbol === props.tokenSymbol);
-    return coinItem?.[HUB_CHAIN_BY_ID[props.chainId]?.hubChainId];
-});
-const tokenAddress = computed(() => tokenData.value?.externalTokenId.toLowerCase() || '');
-const tokenDecimals = computed(() => tokenData.value ? Number(tokenData.value.externalDecimals) : undefined);
-const isNativeToken = computed(() => tokenAddress.value === getWrappedNativeContractAddress());
-const nativeBalance = computed(() => {
-    if (isNativeToken.value) {
-        return web3Balance[props.chainId]?.[0] || 0;
-    }
 
-    return 0;
-});
-const wrappedBalance = computed(() => {
-    if (isNativeToken.value) {
-        return web3Balance[props.chainId]?.[props.tokenSymbol] || 0;
-    }
-
-    return 0;
-});
-const balance = computed(() => {
-    if (isNativeToken.value) {
-        return new Big(wrappedBalance.value).plus(nativeBalance.value).toString();
-    } else {
-        return web3Balance[props.chainId]?.[props.tokenSymbol] || 0;
-    }
-});
 const amountToUnwrap = computed(() => {
     const amountToUnwrapMinimum = new Big(props.amount || 0).minus(nativeBalance.value).toString();
     if (amountToUnwrapMinimum <= 0) {
@@ -134,7 +109,7 @@ const gasTotalFee = computed(() => {
     const unlockGasLimit = isApproveRequired.value ? GAS_LIMIT_UNLOCK : 0;
     const totalGasLimit = /*GAS_LIMIT_SWAP + */unwrapGasLimit + unlockGasLimit + GAS_LIMIT_BRIDGE;
     // gwei to ether
-    const gasPrice = web3.utils.fromWei(web3.utils.toWei(gasPriceGwei.value.toString(), 'gwei'), 'ether');
+    const gasPrice = web3Utils.fromWei(web3Utils.toWei(gasPriceGwei.value.toString(), 'gwei'), 'ether');
 
     return new Big(gasPrice).times(totalGasLimit).toString();
 });
@@ -147,8 +122,9 @@ const depositAmountAfterGas = computed(() => {
 
 
 async function depositFromEthereum() {
+    const web3Eth = getProviderByChain(props.chainId);
     //@TODO properly work with nonce via queue service
-    let nonce = await web3.eth.getTransactionCount(props.accountAddress, 'latest');
+    let nonce = await web3Eth.getTransactionCount(props.accountAddress, 'latest');
     const gasPrice = gasPriceGwei.value;
 
     // txServiceState.loadingStage = LOADING_STAGE.SWAP_ETH;
@@ -216,11 +192,12 @@ async function depositFromEthereum() {
 }
 
 function unwrapToNativeCoin({nonce, gasPrice} = {}) {
+    const web3Eth = getProviderByChain(props.chainId);
     txServiceState.loadingStage = LOADING_STAGE.UNWRAP_ETH;
     addStepData(LOADING_STAGE.UNWRAP_ETH, {amount: amountToUnwrap.value});
 
     const amountToUnwrapWei = toErcDecimals(amountToUnwrap.value, tokenDecimals.value);
-    const wrappedNativeContract = new web3.eth.Contract(wethAbi, getWrappedNativeContractAddress());
+    const wrappedNativeContract = new web3Eth.Contract(wethAbi, getWrappedNativeContractAddress());
     const data = wrappedNativeContract.methods.withdraw(amountToUnwrapWei).encodeABI();
     return sendEthTx({
         to: getWrappedNativeContractAddress(),
@@ -258,9 +235,10 @@ function unwrapToNativeCoin({nonce, gasPrice} = {}) {
 
 
 function sendCoinTx({nonce, gasPrice}) {
-    const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3.utils.hexToBytes(props.destinationMinterAddress.replace("Mx", "0x")))]);
+    const web3Eth = getProviderByChain(props.chainId);
+    const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(props.destinationMinterAddress.replace("Mx", "0x")))]);
     const destinationChain = Buffer.from('minter', 'utf-8');
-    const hubContract = new web3.eth.Contract(hubABI, getHubContractAddress());
+    const hubContract = new web3Eth.Contract(hubABI, getHubContractAddress());
     let txParams;
     if (isNativeToken.value) {
         txParams = {
@@ -298,13 +276,6 @@ export default function useWeb3Deposit(destinationMinterAddress) {
 
     return {
         // computed
-        tokenData,
-        tokenAddress,
-        tokenDecimals,
-        isNativeToken,
-        nativeBalance,
-        wrappedBalance,
-        balance,
         amountToUnwrap,
         isUnwrapRequired,
         isApproveRequired,

@@ -41,7 +41,7 @@ export default {
             </div>
 
             <div class="header__controls">
-                <nuxt-link :to="$i18nGetPreferredPath('/topup')" class="header__controls-link header__controls-user">
+                <nuxt-link :to="$i18nGetPreferredPath('/receive')" class="header__controls-link header__controls-user">
                     <div class="header__controls-user-avatar u-hidden-mini-down" :style="`background-image: url(${$store.getters.avatar});`" v-if="$store.getters.avatar"></div>
                     <div class="header__controls-user-name">{{ $store.getters.username }}</div>
                 </nuxt-link>

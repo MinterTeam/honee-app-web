@@ -59,6 +59,10 @@ export default {
                 this.poolCoinList = Object.values(coinList);
             });
     },
+    emits: [
+        'success',
+        'success-modal-close',
+    ],
     props: {
         action: {
             type: Object,
@@ -272,6 +276,8 @@ export default {
         :before-confirm-modal-show="beforeConfirm"
         @success-tx="success()"
         @clear-form="clearForm()"
+        @success="$emit('success')"
+        @success-modal-close="$emit('success-modal-close')"
     >
         <template v-slot:default>
             <div class="form-row">

@@ -16,9 +16,25 @@ export default {
                     },
                 },
                 tags: ['Staking'],
-                action: `/stake/BEE`,
+                action: `/stake/1`,
                 ru: {
                     description: 'Стейкуйте BEE на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
+                    caption: 'Стейкинг',
+                },
+            },
+            {
+                caption: 'Stake & Earn',
+                coin: `MUSD`,
+                description: 'Stake MUSD for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
+                stats: {
+                    apr: {
+                        percent: '6-12',
+                    },
+                },
+                tags: ['Staking'],
+                action: `/stake/2`,
+                ru: {
+                    description: 'Стейкуйте MUSD на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
                     caption: 'Стейкинг',
                 },
             },
@@ -195,19 +211,6 @@ export default {
                 action: '/swap/ARCONA',
                 ru: {
                     description: 'Приобретите нативный токен метавселенной ARCONA, позволяющий покупать цифровые земли и размещать любые модели.',
-                    caption: 'Купить',
-                },
-            },
-            {
-                caption: 'Buy',
-                coin: 'GMTBSC',
-                description: 'STEPN is a self-styled “Web3 lifestyle app” with GameFi elements. It combines aspects of a play-to-earn game with a fitness app to create a new category coined “move-to-earn.”',
-                stats: {
-                },
-                tags: ['Exchange'],
-                action: '/swap/GMTBSC',
-                ru: {
-                    description: 'STEPN — это лайфстайл-приложение с элементами GameFi. Он сочетает в себе аспекты игры «играй, чтобы заработать» и фитнес-приложение с новой категорией «двигайся, чтобы зарабатывать».',
                     caption: 'Купить',
                 },
             },

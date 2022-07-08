@@ -1,13 +1,8 @@
 <script>
-import {pretty} from "~/assets/utils.js";
-import {DASHBOARD_URL} from '~/assets/variables.js';
 import cardList from '~/content/card-list.js';
 import Card from '~/components/Card.vue';
-import CoinList from '~/components/CoinList.vue';
+import AddressAssets from '~/components/AddressAssets.vue';
 
-const BALANCE_DISPLAY_BIP = 1;
-const BALANCE_DISPLAY_TOTAL = 2;
-const BALANCE_DISPLAY_TOTAL_USD = 3;
 const BASE_CARD = {
     DELEGATION: 'delegation',
     LIQUIDITY: 'liquidity',
@@ -16,18 +11,11 @@ const BASE_CARD = {
 };
 
 export default {
-    BALANCE_DISPLAY_BIP,
-    BALANCE_DISPLAY_TOTAL,
-    BALANCE_DISPLAY_TOTAL_USD,
     BASE_CARD,
     cardList,
     components: {
         Card,
-        CoinList,
-    },
-    filters: {
-        pretty,
-        uppercase: (value) => value.toUpperCase(),
+        AddressAssets,
     },
     fetch() {
         return Promise.all([
@@ -59,21 +47,9 @@ export default {
             return result;
         },
     },
-    watch: {
-        // update tx list on balance updated
-        // "$store.state.balance": function() {
-        //     this.$store.dispatch('FETCH_TRANSACTION_LIST');
-        // },
-    },
     methods: {
-        pretty,
         capitalize(value) {
             return value[0].toUpperCase() + value.substring(1);
-        },
-        pageUrl(page = '') {
-            // remove first slash
-            page = page.replace(/^\//, '');
-            return this.$i18nGetPreferredPath(DASHBOARD_URL + page);
         },
     },
 };
@@ -82,41 +58,7 @@ export default {
 
 <template>
     <div>
-        <div class="card">
-            <div class="card__content">
-                <h2 class="u-h--uppercase">{{ $td('Total balance', 'index.total-balance') }}</h2>
-                <div class="wallet__balance-wrap">
-                    <div class="wallet__balance">
-                        <div class="wallet__balance-value">
-                            ${{ pretty($store.state.totalBalanceSumUsd) }}
-                        </div>
-                    </div>
-                    <div class="wallet__balance-links">
-                        <nuxt-link class="button button--yellow-light button--full-mobile u-text-nowrap" :to="pageUrl('buy')">
-                            <img class="button__icon" src="/img/icon-category-buy.svg" width="24" height="24" alt="" role="presentation">
-                            {{ $td('Buy BIP, HUB, & BEE', 'index.wallet-balance-links') }}
-                        </nuxt-link>
-                    </div>
-                </div>
-            </div>
-            <div class="card__content">
-                <div class="button-group button-group--center">
-                    <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('topup')">
-                        <img class="button__icon" src="/img/icon-white-deposit.svg" width="24" height="24" alt="" role="presentation">
-                        {{ $td('Top up', 'index.topup') }}
-                    </nuxt-link>
-                    <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('swap')">
-                        <img class="button__icon" src="/img/icon-white-swap.svg" width="24" height="24" alt="" role="presentation">
-                        {{ $td('Swap', 'index.swap-wallet-button') }}
-                    </nuxt-link>
-                    <nuxt-link class="button button--main button--full-mobile" :to="pageUrl('send')">
-                        <img class="button__icon" src="/img/icon-white-send.svg" width="24" height="24" alt="" role="presentation">
-                        {{ $td('Send', 'index.send') }}
-                    </nuxt-link>
-                </div>
-            </div>
-            <CoinList class="card__content"/>
-        </div>
+        <AddressAssets/>
 
         <div class="u-mt-25" v-for="(categoryCards, categorySlug) in cardList" :key="categorySlug">
             <h2 class="dashboard__category-title u-mb-15">
@@ -131,10 +73,10 @@ export default {
                         <h3 class="card__action-title-value u-mb-05">{{ $td('Delegation', 'index.delegation') }}</h3>
                         <p class="">{{ $td('Bonding your BIP or custom coins to a network validator and getting rewards (portion of block rewards + transaction fees). The returns are shared among all delegators proportionally to their stake, minus validator’s fee.', 'index.delegation-desc') }}</p>
 
-                        <nuxt-link class="button button--main button--full u-mt-10" :to="pageUrl('delegate')">
+                        <nuxt-link class="button button--main button--full u-mt-10" :to="getDashboardUrl('delegate')">
                             {{ $td('Delegate', 'index.delegate') }}
                         </nuxt-link>
-                        <nuxt-link class="button button--main button--full u-mt-05" :to="pageUrl('unbond')">
+                        <nuxt-link class="button button--main button--full u-mt-05" :to="getDashboardUrl('unbond')">
                             {{ $td('Unbond', 'index.withdraw-unbond') }}
                         </nuxt-link>
                         <a class="button button--ghost-main button--full u-mt-05" href="https://chainik.io/validators" target="_blank">
@@ -153,10 +95,10 @@ export default {
                             </template>
                         </p>
 
-                        <nuxt-link class="button button--main button--full u-mt-10" :to="pageUrl('add-liquidity')">
+                        <nuxt-link class="button button--main button--full u-mt-10" :to="getDashboardUrl('add-liquidity')">
                             {{ $td('Provide liquidity', 'index.provide-liquidity') }}
                         </nuxt-link>
-                        <nuxt-link class="button button--main button--full u-mt-05" :to="pageUrl('remove-liquidity')">
+                        <nuxt-link class="button button--main button--full u-mt-05" :to="getDashboardUrl('remove-liquidity')">
                             {{ $td('Withdraw liquidity', 'index.withdraw-liquidity') }}
                         </nuxt-link>
                         <a class="button button--ghost-main button--full u-mt-05" href="https://explorer.minter.network/pools" target="_blank">

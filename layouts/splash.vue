@@ -23,10 +23,9 @@ export default {
         <div class="u-container u-container--wide header__language-container">
             <Language/>
         </div>
-        <div class="u-container u-container--small">
-            <nuxt/>
 
-            <Snackbar/>
-        </div>
+        <nuxt class="u-container u-container--mini"/>
+
+        <Snackbar/>
     </div>
 </template>

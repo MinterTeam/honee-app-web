@@ -1,98 +1,212 @@
 @import "variables";
 
+
 // button
-.bip-button {
-    display: flex; align-items: center; justify-content: center; width: 100%; padding: 14px 20px; font-size: 14px; line-height: 18px; font-weight: 700; font-family: @heading-font-family; /*color: @c-black;*/ text-transform: uppercase; text-align: center; border: 2px solid transparent; border-radius: 15px; text-decoration: none; transition: 0.15s; outline: none; cursor: pointer; position: relative;
-    &:hover, &:focus {}
-    &:active {}
+.button {
+    display: inline-flex; align-items: center; justify-content: center; padding: 8px 18px; font-size: 16px; line-height: 20px; font-weight: 700; font-family: @heading-font-family; background: #fff; color: @c-black; border-radius: 12px; text-align: center; border: 2px solid transparent; text-decoration: none; transition: 0.1s; position: relative; overflow: hidden; vertical-align: top;
+    &:hover, &:focus {background: #e8e8e8;}
+    &:active {background: #ddd;}
     &[disabled], &.is-disabled {
         cursor: default;
-        &:not(.is-loading) {opacity: 0.4; box-shadow: none;}
+        &:not(.is-loading) {background: shade(#fff, 25%);}
     }
-    &.is-loading .bip-button__content {color: transparent;}
-    &+& {margin-top: 16px;}
+    &.is-loading .button__content {color: transparent;}
 }
-.bip-button-shadow() {
-    box-shadow: 0 4px 8px fade(@c-main, 15%), 0 1px 2px fade(@c-main, 20%);
-    &:hover, &:focus {box-shadow: 0 6px 12px fade(@c-main, 15%), 0 1px 4px fade(@c-main, 20%);}
-    &:active {box-shadow: 0 2px 4px fade(@c-main, 15%), 0 1px 2px fade(@c-main, 20%);}
+.button--large {padding-top: 16px; padding-bottom: 16px;}
+.button--narrow {padding-inline: 12px;}
+//.button--medium {min-width: auto; width: 100%;}
+//.button--small {padding: 2px 8px; border-radius: 4px;}
+//.button--icon {padding-left: 48px;}
+//.button__icon {position: absolute; left: 28px; top: 50%; transform: translate(-50%, -50%);}
+.button__icon {margin: -2px 8px -2px -2px; fill: currentColor;}
+.button--full {display: flex; width: 100%;}
+/*.button__content {transition: 0.1s;}*/
+//.button--small {padding-left: 14px; padding-right: 14px;}
+@media (max-width: @breakpoint-small-down) {
+    .button--medium-mobile {min-width: auto; width: 100%;}
+    .button--full-mobile {display: flex; width: 100%;}
 }
-.bip-button--main {
-    color: #fff; background: @c-main; .bip-button-shadow();
-    &:hover, &:focus {background: tint(@c-main, 10%);}
-    &:active {background: shade(@c-main, 20%);}
-    &[disabled], &.is-disabled {background: @c-black-light;}
-    //&[disabled], &.is-disabled {
-    //    &:not(.is-loading) {background: fade(@c-black-light, 40%); opacity: 1;}
-    //}
+.button--main {
+    color: #fff; background: @c-main; /*box-shadow: 0 2px 4px rgba(0,0,0,0.5);*/
+    &:hover, &:focus {background: tint(@c-main, 15%);}
+    &:active {background: shade(@c-main, 6%);}
 }
-.bip-button--white {
-    color: @c-main; background: #fff; .bip-button-shadow();
-    &:hover, &:focus {background: mix(#fff, @c-main, 90%);}
-    &:active {background: mix(#fff, @c-main, 80%);}
+.button--yellow-light {
+    color: @c-black; background: @c-yellow-light; /*box-shadow: 0 2px 4px rgba(0,0,0,0.5);*/
+    &:hover, &:focus {background: tint(@c-yellow-light, 20%);}
+    &:active {background: shade(@c-yellow-light, 8%);}
 }
-.bip-button--ghost-main {
-    color: @c-main; background: transparent; border-color: @c-main;
-    &:hover, &:focus {color: #fff; background: @c-main;}
-    &:active {color: #fff; background: shade(@c-main, 20%); border-color: shade(@c-main, 20%);}
+.button--main--hover {
+    color: @c-main; background: transparent; /*box-shadow: 0 2px 4px rgba(0,0,0,0.5);*/
+    &:hover, &:focus {background: tint(@c-main, 80%);}
+    &:active {background: tint(@c-main, 75%);}
 }
-.bip-button--ghost-white {
+.button--green {
+    color: #fff; background: @c-green;
+    &:hover, &:focus {background: tint(@c-green, 15%);}
+    &:active {background: shade(@c-green, 10%);}
+}
+.button--white {
+    color: @c-main; background: #fff;
+    &:hover, &:focus {background: fade(@c-main, 20%);}
+    &:active {background: fade(@c-main, 40%);}
+}
+//.button--black {
+//    color: #fff; background: @c-black;
+//    &:hover, &:focus {background: tint(@c-black, 15%);}
+//    &:active {background: shade(@c-black, 10%);}
+//}
+//.button--white {
+//    color: @c-main; background: #fff;
+//    &:active {background: shade(#fff, 10%);}
+//}
+.button--ghost {
+    color: @c-black; background: transparent; border-color: @c-black;
+    &:hover, &:focus {background: fade(@c-black, 10%);}
+    &:active {background: fade(@c-black, 20%);}
+    &[disabled], &.is-disabled {
+        cursor: default;
+        &:not(.is-loading) {color: shade(#fff, 35%); background: transparent; border-color: shade(#fff, 25%);}
+    }
+}
+.button--ghost-white {
     color: #fff; background: transparent; border-color: #fff;
-    &:hover, &:focus {color: @c-main; background: #fff;}
-    &:active {color: @c-main; background: mix(#fff, @c-main, 80%); border-color: mix(#fff, @c-main, 80%);}
+    &:hover, &:focus {background: fade(#fff, 20%);}
+    &:active {background: fade(#fff, 40%);}
 }
-.bip-button__content {transition: 0.15s;}
-// button group
-//.button-group {
-//    display: flex; flex-direction: column; align-items: center; margin-top: -10px; margin-left: -20px; margin-bottom: @default-indent;
-//    .button {margin-top: 10px; margin-left: 20px;}
-//    * + & {margin-top: @default-indent - 10px;}
-//    &:last-child {margin-bottom: 0;}
-//}
-//.button-group--small {
-//    margin-left: -10px;
-//    .button {margin-left: 10px;}
-//}
-//@media (min-width: @breakpoint-medium-up) {
-//    .button-group {flex-direction: row; justify-content: center; flex-wrap: wrap;}
-//}
-@media (min-width: @breakpoint-small-up) {
-    .bip-button {max-width: 320px; margin-left: auto; margin-right: auto;}
+.button--ghost-green {
+    color: @c-green; background: transparent; border-color: @c-green;
+    &:hover, &:focus {background: fade(@c-green, 20%);}
+    &:active {background: fade(@c-green, 40%);}
 }
-@media (min-width: @breakpoint-medium-up) {
-    .bip-button {max-width: none;}
+.button--ghost-main {
+    color: @c-main; background: transparent; border-color: @c-main;
+    &:hover, &:focus {background: fade(@c-main, 20%);}
+    &:active {background: fade(@c-main, 40%);}
 }
+//.button--ghost-white {
+//    color: #fff; background: transparent; border-color: #fff;
+//    &:hover, &:focus {color: @c-black; background: #fff;}
+//    &:active {color: @c-black; background: shade(#fff, 10%);}
+//}
 
-.bip-link {
-    font-weight: 500; color: @c-main;
-    &:hover, &:focus {color: tint(@c-main, 20%);}
-    &:active {color: tint(@c-main, 40%);}
+.button-group {
+    display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; margin-top: -10px; margin-left: -16px;
+    .button, .link--default {margin-top: 10px; margin-left: 16px;}
 }
+.button-group--center {justify-content: center;}
 
 
 // button-loader
-//@loader-length: 16 * 3.14 * 2; // длина окружности
-//.loader {width: 40px; height: 40px; margin: auto; pointer-events: none; animation: loader-rotate 2s linear infinite;}
-//.loader--button {
-//    position: absolute; left: 0; right: 0; top: 0; bottom: 0; opacity: 0; transition: 0.05s;
-//    .is-loading > & { opacity: 1; transition: 0.15s 0.15s;}
-//}
-//.loader--inline {vertical-align: middle; margin-right: 10px;}
-//.loader__path { fill: none; stroke: currentColor; stroke-width: 3px; stroke-linecap: round; animation: loader-dash 1.5s ease-in-out infinite; }
-//@keyframes loader-rotate {
-//    0% {transform: rotate(-90deg);}
-//    100% { transform: rotate(270deg); }
-//}
-//@keyframes loader-dash {
-//    0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
-//    50% { stroke-dasharray: @loader-length * 0.8, 200; stroke-dashoffset: 0; }
-//    100% { stroke-dasharray: @loader-length * 0.8, 200; stroke-dashoffset: -@loader-length + 1px; }
-//}
+@loader-radius: 16; // same as `r` on svg `circle`
+@loader-length: @loader-radius * 3.14 * 2; // длина окружности
+.loader {width: 40px; height: 40px; margin: auto; pointer-events: none; animation: loader-rotate 2s linear infinite;}
+.loader--button {
+    position: absolute; left: 0; right: 0; top: 0; bottom: 0; opacity: 0; transition: 0.05s;
+    .is-loading > & { opacity: 1; transition: 0.15s 0.15s;}
+}
+.button__loader {
+    position: absolute; left: 0; right: 0; top: 0; bottom: 0; pointer-events: none; display: none;
+    .is-loading > & { display: block;}
+}
+.loader--inline {vertical-align: middle; margin-right: 10px;}
+.loader__path { fill: none; stroke: currentColor; stroke-width: 2px; stroke-linecap: round; animation: loader-dash 1.5s ease-in-out infinite; }
+@keyframes loader-rotate {
+    0% {transform: rotate(-90deg);}
+    100% { transform: rotate(270deg); }
+}
+@keyframes loader-dash {
+    0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
+    50% { stroke-dasharray: @loader-length * 0.8, 200; stroke-dashoffset: 0; }
+    100% { stroke-dasharray: @loader-length * 0.8, 200; stroke-dashoffset: -@loader-length + 1px; }
+}
 
 
 
-.u-text-error {color: @c-red; font-weight: 500;}
-.bip-form__error {color: @c-red; display: block; margin-top: 10px; text-align: center; overflow-wrap: break-word; font-weight: 500;}
+// input
+@h-field-title-height: 16px;
+@h-field-title-margin: 6px;
+@h-field-input-height: 24px;
+@h-field-vertical-padding: 12px;
+@h-field-horizontal-padding: 16px;
+.h-field-input-text() {
+    font-size: 16px; font-weight: 500; line-height: @h-field-input-height;
+    @media (min-width: @breakpoint-medium-up) {
+        font-size: 18px; font-weight: 600;
+    }
+}
+.h-field-title-text-small() {
+    font-size: 10px; font-weight: 700; line-height: @h-field-title-height; text-transform: uppercase; letter-spacing: 1px;
+}
+.h-field-title-text() {
+    .h-field-title-text-small();
+    @media (min-width: @breakpoint-medium-up) {
+        font-size: 12px; letter-spacing: 0.6px;
+    }
+}
+.h-field {position: relative; display: flex; width: 100%; padding: (@h-field-vertical-padding - 2px) (@h-field-horizontal-padding - 2px); border: 2px solid transparent;}
+.h-field, .h-field__dropdown {background: #fff; border-radius: 12px; box-shadow: 0 4px 4px rgba(0,0,0,0.05);}
+.h-field--is-readonly {box-shadow: none; border: 1px solid @c-border; background: @c-white-light; padding: (@h-field-vertical-padding - 1px) (@h-field-horizontal-padding - 1px);}
+.h-field--is-dashed {box-shadow: none; border: 2px dashed @c-border;}
+.h-field__content {flex-grow: 2; max-width: 100%; text-align: left;}
+.h-field__title {.h-field-title-text(); color: @c-black-light; margin-bottom: @h-field-title-margin; display: block;}
+.h-field__select-button {
+    display: flex; align-items: center; max-width: 100%;
+    &[disabled] {cursor: default;}
+}
+.h-field__select-icon {margin-right: 8px; border-radius: 50%;}
+.h-field__select-value {.h-field-input-text(); overflow: hidden; overflow-wrap: break-word;}
+.h-field__select-icon-arrow {margin-left: 8px;}
+.h-field__input {
+    .h-field-input-text(); /* fix line-height for fake-inputs (e.g. address) */ /*line-height: 20px; min-height: @h-field-input-height;*/ width: 100%; color: currentColor; padding: 0; background: transparent; border: none; overflow-wrap: break-word;
+    font-feature-settings: "calt" off;
+    /* safari disabled fix */
+    opacity: 1; -webkit-text-fill-color: currentcolor;
+    /* ios shadow fix */
+    -webkit-appearance: none;
+    // fix input letter size not to be larger than line-height
+    input& {height: @h-field-input-height;}
+    // fix firefox incorrectly set scrollHeight and cause incorrect autosize
+    textarea& {line-height: (@h-field-input-height + 6px); margin-block: -3px;}
+    &.h-field__input--medium {font-size: 16px; font-weight: 500; line-height: 22px; margin-block: 0;}
+    &::placeholder {color: @c-black-light;}
+    &:focus::placeholder {color: transparent;}
+}
+
+.h-field__range {margin-top: 12px;}
+
+.h-field__aside {margin-left: 20px; flex-shrink: 9999; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; min-width: 0;}
+.h-field__aside--with-icon {min-width: 24px; margin-left: 8px;;}
+//.h-field__aside--with-input {flex-grow: 3;}
+.h-field__aside-caption {.h-field-title-text-small(); margin-bottom: @h-field-title-margin;}
+.h-field__aside-loader {width: @h-field-title-height; height: @h-field-title-height; margin: 0; vertical-align: top;}
+.h-field__aside-max {
+    /*color: @c-black-light; transition: 0.1s;*/ margin-left: -20px; white-space: nowrap;
+    //&:hover, &:focus {color: @c-main;}
+    //&:active {color: fade(@c-main, 40%);}
+}
+.h-field__aside-input {text-align: right; margin-top: auto;}
+// possibly can be replaced with max value in pseudo content
+.h-field__aside-range {min-width: 4.25em;}
+.h-field__aside-control {font-size: 0;}
+
+.h-field__dropdown {position: absolute; top: 100%; left: -2px; right: -2px; /* border size */ padding: 16px @h-field-horizontal-padding 8px; margin-top: -1 * (@h-field-vertical-padding - 2px); z-index: 1;}
+.h-field__dropdown-field {position: relative;}
+.h-field__dropdown-field-icon {position: absolute; right: 16px; top: 8px; pointer-events: none;}
+.h-field__dropdown-input {
+    border-radius: 12px; border: none; padding: 10px 16px; padding-right: (24px + 16px); background: #d4d4d4; font-size: 16px; line-height: 20px; font-weight: 600; height: 40px; width: 100%;;
+    &::placeholder {color: @c-black;}
+}
+.h-field__suggestion-list {margin-top: 8px; margin-inline: -1 * @h-field-horizontal-padding; overflow: auto; max-height: 60vh;}
+.h-field__suggestion-item {
+    display: flex; align-items: center; width: 100%; padding: 8px @h-field-horizontal-padding; transition: 0.1s;
+    //&+& {margin-top: 16px;}
+    &:hover {background-color: rgba(0,0,0,0.1);}
+}
+.h-field__suggestion-icon {flex-shrink: 0; margin-right: 8px; border-radius: 50%;}
+.h-field__suggestion-symbol {.h-field-input-text();}
+.h-field__suggestion-amount {margin-left: 4px;}
+
 
 
 
@@ -100,47 +214,173 @@
 @field-input-padding: 4px;
 @field-label-height: 20px;
 @field-label-scale: 0.75;
-@field-padding: (@field-label-height * @field-label-scale);
-@field-label-top: (@field-padding + @field-input-padding);
-@field-label-translate: (@field-label-height + @field-input-padding);
-.bg-field-layer() {content: ''; position: absolute; top: (2px + 7px + 17px); right: 2px; width: 40px; height: 40px; border-radius: 6px;}
-.bg-field-icon() {content: ''; position: absolute; top: (18px + 7px + 17px); right: 16px;}
-.bip-field--row {
-    &+& {margin-top: 20px;}
+@field-label-top-line-height-compensation: 3px;
+@field-padding: (@field-label-height * @field-label-scale - @field-label-top-line-height-compensation);
+@field-label-top: 18px;
+@field-label-translate: -9px;
+.form-row {&+& {margin-top: 16px;}}
+.form-field {
+    display: block; position: relative; cursor: pointer; font-size: 16px; font-weight: 500; pointer-events: none;
+    &.is-disabled {opacity: 0.6;}
 }
-.bip-field {
-    display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; position: relative; cursor: pointer; font-weight: 500; pointer-events: none;
-    // show layer only when needed
-    &.is-success, &.is-error, &.bip-field--select {
-        &::before {.bg-field-layer(); background: linear-gradient(to right, #fff0, #fff 40%);}
+.form-field__input {
+    font-size: inherit; line-height: 20px; padding: 27px 16px 9px; min-height: 20px + 27px + 9px; color: @c-black; background: #fff; border: none; box-shadow: inset 0 0 0 1px @c-border; transition: 0.15s; display: block; width: 100%; pointer-events: auto; border-radius: 8px;
+    // safari disabled fix
+    opacity: 1; -webkit-text-fill-color: currentColor;
+    // ios shadow fix
+    -webkit-appearance: none;
+    &:hover {background-color: #f8f8f8;}
+    &:focus {box-shadow: inset 0 0 0 2px @c-main;}
+    .is-error > & {box-shadow: inset 0 0 0 2px @c-red;}
+    &[readonly], div&& {background: #fff; box-shadow: inset 0 0 0 1px @c-border; cursor: default; overflow-wrap: break-word;} //unset to initial
+    .form-field--with-icon & {padding-right: 24px + 16px;}
+    .form-field--with-use-max & {padding-right: 80px;}
+    .form-field--without-label & {padding-top: 12px; padding-bottom: 12px; min-height: 44px;}
+}
+//.form-field__input--select, select.form-field__input {
+//    appearance: none; background: url(../img/icon-dropdown.svg) no-repeat right 12px center; padding-right: 24px + 12px;
+//    option {font-weight: 300; font-size: 14px; background-color: #f8f8f8;}
+//}
+.form-field__label {
+    font-size: inherit; left: 16px; top: @field-label-top; line-height: 20px; color: @c-black-light; position: absolute; transition: 0.15s; transform-origin: 0 0; user-select: none; white-space: nowrap;
+    .form-field__input:focus:not([readonly]) ~ &, .is-not-empty ~ & {transform: translateY(@field-label-translate) scale(@field-label-scale); letter-spacing: 0.06em;}
+    .form-field__input:focus ~ & {color: @c-main;}
+    .form-field.is-error > & {color: @c-red;}
+    .form-field__input[readonly] ~ & {color: @c-black-light;} // unset to initial
+}
+.form-field__use-max {position: absolute; right: 16px; top: 28px; z-index: 1; cursor: pointer; pointer-events: auto; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700;}
+.form-field__max-available {font-size: 16px; line-height: @field-label-height; color: @c-black-light; position: absolute; right: 16px; top: @field-label-top; user-select: none; white-space: nowrap; transform: translateY(@field-label-translate) scale(@field-label-scale); transform-origin: 100% 0;}
+.help-text() {font-size: 12px; line-height: 16px; letter-spacing: 0.06em; font-weight: 600; padding: 0 16px; margin-top: 8px; display: block; overflow-wrap: break-word;}
+.error-text() {font-size: 12px; line-height: 16px; letter-spacing: 0.06em; font-weight: 600; color: @c-red; }
+.form-field__help {
+    .help-text(); color: @c-black-light;
+    .form-field__error + & {margin-top: 0;}
+}
+.form-field__error {.help-text(); .error-text();}
+.form__error {font-weight: 600; color: @c-red;}
+.form-field__icon {position: absolute; right: 16px; top: 16px; z-index: 1; cursor: pointer; pointer-events: auto; font-size: 0;}
+.form-field__icon--copy {top: calc((100% - 24px) / 2);}
+
+
+// checkbox & radio
+.form-check-label {font-weight: 700; margin-bottom: 12px;}
+.form-check-error {.error-text(); margin-top: 4px;}
+.form-check {
+    position: relative; display: inline-block; user-select: none; cursor: pointer; font-weight: 600; margin: 0; line-height: 0;
+    &.is-disabled {opacity: 0.5; cursor: default;}
+    &+& {margin-left: 16px;} /* сейчас используются только в профиле, при больше ширине понадобится отдельный хелпер form-check-inline-group */
+}
+.form-check__input {position: absolute; left: 0; top: 0; opacity: 0; z-index: -1;}
+.form-check__label {padding-left: 30px; display: inline-block; font-size: 14px; line-height: 22px;}
+.form-check__label--radio {
+    &::before {content: ''; width: 20px; height: 20px; position: absolute; left: 1px; top: 1px; border: 2px solid hsl(0,0,46%); border-radius: 99px; transition: 0.15s;}
+    &::after {content: ''; position: absolute; left: 11px; top: 11px; transform: translate(-50%, -50%); border: 0 solid @c-main; border-radius: 99px; transition: 0.15s;}
+    .form-check__input:focus + & {
+        &::before {box-shadow: 0 0 3px @c-main;}
     }
-    //&.is-success::after {.bg-field-icon(); .bg-url("../img/icon-success.svg");}
-    //&.is-error::after {.bg-field-icon(); .bg-url("../img/icon-error.svg");}
+    .form-check__input:checked + & {
+        &::before {border-color: @c-main;}
+        &::after {border-width: 5px;}
+    }
 }
-.bip-field--select {
-    .bip-field__input {appearance: none;}
-    //&::after {.bg-field-layer(); background: url(../img/icon-dropdown.svg) no-repeat right 6px top 50%;}
+.form-check__label--checkbox {
+    &::before {content: ''; width: 18px; height: 18px; position: absolute; left: 2px; top: 2px; background: @c-yellow-light; /*border: 2px solid hsl(0,0,46%);*/ border: 2px solid transparent; border-radius: 2px; transition: 0.15s;}
+    &::after {content: ''; position: absolute; left: 5px; top: 6px; width: 12px; height: 7px; border: solid #fff; border-width: 0 0 2px 2px; transform: rotate(-45deg); opacity: 0; transition: 0.15s;}
+    .form-check__input:focus + & {
+        &::before {box-shadow: 0 0 3px @c-main; border-color: @c-main;}
+    }
+    .form-check__input:checked + & {
+        &::before {border-color: @c-main; background-color: @c-main;}
+        &::after {opacity: 1;}
+    }
 }
-.bip-field--with-max {
-    .bip-field__input {padding-right: 77px;}
+
+@range-color-bg: #d7def6;
+@range-color: #707ba3;
+@range-track-height: 4px;
+@range-track-radius: 2px;
+.form-range {
+    --range:calc(var(--max) - var(--min));
+    --ratio:calc((var(--val) - var(--min)) / var(--range) * 100%);
+    -webkit-appearance:none; display: block; width:100%;background: none;outline:0;padding:0; height: 24px; cursor: pointer;
 }
-.bip-field__input {
-    padding: 10px 26px 10px 16px; margin-top: 7px; font-size: 16px; line-height: 22px; color: @c-black; background: #fff; border: 2px solid @c-border; transition: 0.2s; display: block; width: 100%; pointer-events: auto; border-radius: 8px; min-height: 46px; background-clip: padding-box; /* remove ios safari box shadow */
-    &:focus {border-color: @c-main;}
-    &:read-only:not(select) {border-color:@c-border; border-style: dotted; cursor: default;}
-    .is-success & {border-color: @c-green;}
-    .is-error & {border-color: @c-red;}
+.form-range::-moz-focus-outer {border:0}
+.range-track() {width:100%; height: @range-track-height; border-radius: @range-track-radius; background-color: @range-color-bg;}
+.form-range::-webkit-slider-runnable-track {
+    .range-track();
+    background:linear-gradient(@range-color,@range-color) 0/var(--ratio) 100% no-repeat @range-color-bg
 }
-.field-label-text() {font-size: 12px; /*line-height: 16px;*/ text-transform: uppercase; font-weight: 500;}
-.bip-field__label {
-    .field-label-text(); padding-left: 10px; pointer-events: auto; flex-grow: 2; /* fix IE11 justify-content: space-between */
+.form-range::-moz-range-track {
+    .range-track();
 }
-.bip-field__error {
-    .field-label-text(); padding-left: 10px; color: @c-red; display: none; margin-top: 6px;
-    .is-error > & {display: block;}
+.form-range::-moz-range-progress {
+    .range-track();
+    background:@range-color
 }
-.bip-field__asterisk {
-    padding-left: 22px; position: relative;
-    &::before {content: '*'; position: absolute; left: 0; top: 0;}
+.form-range::-ms-track {
+    .range-track();
+    background: none;
+    border-color:transparent;
+    color:transparent;
+    border-width:9px 0
 }
-.bip-field__button {text-transform: uppercase; position: absolute; top: (13px + 7px + 17px); right: 16px; pointer-events: auto; padding-left: 10px; background: linear-gradient(to right, #fff0, #fff 10px); z-index: 1; font-weight: 700;}
+.form-range::-ms-fill-lower {
+    border-radius:@range-track-radius;
+    background:@range-color
+}
+.form-range::-ms-fill-upper {
+    border-radius:@range-track-radius;
+    background:@range-color-bg
+}
+// thumb
+.range-thumb() {
+    width:22px;
+    height:22px;
+    border:2px solid #f2f2f2;
+    border-radius:50%;
+    background: @range-color;
+    box-shadow: -8px 8px 20px rgba(0,0,0,.2);
+    cursor:pointer;
+}
+.form-range::-webkit-slider-thumb {
+    .range-thumb();
+    -webkit-appearance:none;
+    margin-top:-9px
+}
+.form-range::-moz-range-thumb {
+    .range-thumb();
+}
+.form-range::-ms-thumb {
+    .range-thumb();
+    margin-top:-1px
+}
+//@TODO safari
+// ticks
+@range-tick-width: 3px;
+@range-tick-height: 8px;
+// wrap needed to position ticks under the thumb but above the track
+.form-range-wrap {
+    position: relative; z-index: 1; height: 24px;
+    // reimplement track to position it under ticks
+    &::before {.range-track(); content: ''; position: absolute; left: 0; top: ((24px - @range-track-height) / 2); z-index: -1;}
+    // hide original track
+    ::-webkit-slider-runnable-track {background-color: transparent;}
+    ::-moz-range-track {background-color: transparent;}
+    ::-ms-fill-lower {background-color: transparent;}
+    // ticks for safari
+    // <option> style doesn't work in safari @see https://bugs.webkit.org/show_bug.cgi?id=169039 so implement it with background
+    // background ticks doesn't support border radius so not use it as main solution
+    // (Safari + MobileSafari >= 14.6) or (All MobileSafari versions) @see https://www.bram.us/2021/06/23/css-at-supports-rules-to-target-only-firefox-safari-chromium/#safari
+    @supports  (selector(:nth-child(1 of x))) or (-webkit-touch-callout: none) {
+        &::after {
+            @range-tick-width-safari: 2px;
+            content: ''; position: absolute; left: 0; top: (24px / 2 - @range-tick-height / 2); width: 100%; height: @range-tick-height; z-index: -1;
+            background: linear-gradient(to right, @range-color @range-tick-width-safari, transparent 0px) repeat-x;
+            background-size: calc(100%/((var(--max) - var(--min)) / var(--step)) - (@range-tick-width / 2)) 100%;
+        }
+    }
+}
+// ticks
+.form-range + datalist {display: flex; justify-content: space-between; margin-top: (-24px / 2 - @range-tick-height / 2); position: relative; z-index: -1;}
+.form-range + datalist > option {width: @range-tick-width; height: @range-tick-height; padding: 0; margin: 0; border-radius: (@range-tick-width / 2); background: @range-color; font-size: 0;}
+

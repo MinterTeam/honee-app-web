@@ -119,7 +119,7 @@ export default {
 </script>
 
 <template>
-    <div class="h-field" :class="{'h-field--is-readonly': isEstimation}">
+    <div class="h-field" :class="{'h-field--is-dashed': isEstimation}">
         <!-- @TODO handle blur (amount blur fires and coin blur not) (maybe not fire blur at all?)-->
         <div class="h-field__content">
             <div class="h-field__title">{{ label }}</div>

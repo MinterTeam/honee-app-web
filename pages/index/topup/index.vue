@@ -1,11 +1,10 @@
 <script>
-import * as clipboard from 'clipbrd';
-import getTitle from '@/assets/get-title.js';
-import {DASHBOARD_URL, CARD_TO_MINTER_HOST, NETWORK, MAINNET} from '~/assets/variables.js';
-import Modal from '@/components/base/Modal.vue';
+import getTitle from '~/assets/get-title.js';
+import {CARD_TO_MINTER_HOST, NETWORK, MAINNET} from '~/assets/variables.js';
+import Modal from '~/components/base/Modal.vue';
+import {getCard2MinterUrl} from '~/assets/utils.js';
 
 export default {
-    DASHBOARD_URL,
     CARD_TO_MINTER_HOST,
     components: {
         Modal,
@@ -25,30 +24,14 @@ export default {
         };
     },
     computed: {
-        isClipboardSupported() {
-            return clipboard.isSupported();
-        },
-        isShareSupported() {
-            return window.navigator.share;
-        },
         card2MinterUrl() {
-            return `${CARD_TO_MINTER_HOST}/?address=${this.$store.getters.address}&return_url=${window.location.origin}`;
+            return getCard2MinterUrl(this.$store.getters.address, window.location.origin);
         },
         isMainnet() {
             return NETWORK === MAINNET;
         },
     },
     methods: {
-        copy(str) {
-            clipboard.copy(str);
-            this.isToastVisible = true;
-        },
-        shareAddress() {
-            window.navigator.share({
-                title: this.$td('My address', 'index.my-address'),
-                text: this.$store.getters.address,
-            });
-        },
     },
 };
 </script>
@@ -59,7 +42,7 @@ export default {
         :isOpen="true"
         :hideCloseButton="false"
         :disableOutsideClick="false"
-        @modal-close="$router.push($i18nGetPreferredPath({path: $options.DASHBOARD_URL}))"
+        @modal-close="$router.push(getDashboardUrl())"
     >
 
         <h1 class="u-h3 u-mb-025">
@@ -68,11 +51,11 @@ export default {
         <p>{{ $td('Choose one of these options', 'topup.description') }}</p>
 
 
-        <nuxt-link class="button button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/bnb')"  v-if="!isMainnet">
+        <nuxt-link class="button button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/bsc')"  v-if="!isMainnet">
             <img class="button__icon" src="/img/icon-topup-bnb.svg" alt="" role="presentation">
             {{ $td('Top up with BNB', 'topup.top-up-with-network', {network: 'BNB'}) }}
         </nuxt-link>
-        <nuxt-link class="button button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/eth')" v-if="!isMainnet">
+        <nuxt-link class="button button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/ethereum')" v-if="!isMainnet">
             <img class="button__icon" src="/img/icon-topup-eth.svg" alt="" role="presentation">
             {{ $td('Top up with ETH', 'topup.top-up-with-network', {network: 'ETH'}) }}
         </nuxt-link>
@@ -85,7 +68,7 @@ export default {
             {{ $td('Top up with Minter', 'topup.top-up-with-network', {network: 'Minter'}) }}
         </nuxt-link>
 
-        <nuxt-link class="button button--ghost button--full u-mt-10" :to="$i18nGetPreferredPath({path: $options.DASHBOARD_URL})">
+        <nuxt-link class="button button--ghost button--full u-mt-10" :to="getDashboardUrl()">
             {{ $td('Cancel', 'topup.cancel') }}
         </nuxt-link>
     </Modal>

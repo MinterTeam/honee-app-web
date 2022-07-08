@@ -5,16 +5,11 @@ import required from 'vuelidate/lib/validators/required.js';
 import maxValue from 'vuelidate/lib/validators/maxValue.js';
 import minLength from 'vuelidate/lib/validators/minLength.js';
 import withParams from 'vuelidate/lib/withParams.js';
-import { ChainId, Token, WETH as WETH_TOKEN_DATA, Fetcher, Route, Trade, TokenAmount, TradeType } from '@uniswap/sdk';
-import IUniswapV2Router from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
-import {CloudflareProvider, JsonRpcProvider} from '@ethersproject/providers';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import * as web3 from '@/api/web3.js';
-import {fromErcDecimals, subscribeTransaction, toErcDecimals} from '@/api/web3.js';
-import {getOracleCoinList, getOraclePriceList, subscribeTransfer} from '@/api/hub.js';
-import {getTransaction} from '@/api/explorer.js';
-import {estimateCoinSell, postTx} from '@/api/gate.js';
+import {web3Utils, AbiEncoder, toErcDecimals} from '~/api/web3.js';
+import {getOracleCoinList, getOraclePriceList} from '~/api/hub.js';
+import {estimateCoinSell} from '~/api/gate.js';
 import Big from '~/assets/big.js';
 import initRampPurchase, {fiatRampPurchaseNetwork} from '~/assets/fiat-ramp.js';
 import {pretty, prettyPrecise, prettyRound, prettyExact, decreasePrecisionSignificant, getExplorerTxUrl, getEvmTxUrl, shortHashFilter} from '~/assets/utils.js';
@@ -22,25 +17,23 @@ import erc20ABI from '~/assets/abi-erc20.js';
 import hubABI from '~/assets/abi-hub.js';
 import wethAbi from '~/assets/abi-weth.js';
 import debounce from '~/assets/lodash5-debounce.js';
-import {NETWORK, MAINNET, ETHEREUM_CHAIN_ID, ETHEREUM_API_URL, BSC_CHAIN_ID, BSC_API_URL, HUB_TRANSFER_STATUS, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, WETH_CONTRACT_ADDRESS, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+import {NETWORK, MAINNET, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, HUB_TRANSFER_STATUS, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
-import useWeb3Balance from '~/composables/use-web3-balance.js';
+import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useWeb3Deposit from '~/composables/use-web3-deposit.js';
 import useTxService from '~/composables/use-tx-service.js';
 import useTxMinterPresets from '~/composables/use-tx-minter-presets.js';
 import BaseAmountEstimation from '@/components/base/BaseAmountEstimation.vue';
 import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '@/components/base/Modal.vue';
-import ButtonCopyIcon from '~/components/base/ButtonCopyIcon.vue';
+import ButtonCopyIcon from '~/components/base/BaseButtonCopyIcon.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import FieldSelect from '~/components/base/FieldSelect.vue';
 import HubBuyTxListItem from '@/components/HubBuyTxListItem.vue';
 import HubBuySpeedup from '@/components/HubBuySpeedup.vue';
 
-
-const uniswapV2Abi = IUniswapV2Router.abi;
 
 const FIAT_RAMP_NETWORK = 'fiat-ramp';
 
@@ -59,20 +52,12 @@ const GAS_LIMIT_UNLOCK = 75000;
 const GAS_LIMIT_BRIDGE = 75000;
 
 let waitingCancel;
-const CANCEL_MESSAGE = 'Canceled';
 
 //@TODO timer2 triggers watchEstimation
 let timer;
 let timer2;
 
-function coinContract(coinContractAddress) {
-    return new web3.eth.Contract(erc20ABI, coinContractAddress);
-}
 
-const wethContract = new web3.eth.Contract(wethAbi, WETH_CONTRACT_ADDRESS);
-const wethDepositAbiData = wethContract.methods.deposit().encodeABI();
-
-const wethToken = WETH_TOKEN_DATA[ETHEREUM_CHAIN_ID];
 const DEPOSIT_COIN_DATA = {
     ETH: {
         testnetSymbol: 'TESTETH',
@@ -131,15 +116,12 @@ export default {
             .then(([coinList, priceList]) => {
                 this.hubCoinList = Object.freeze(coinList);
                 this.priceList = Object.freeze(priceList);
-            })
-            // wait for computed coinContractAddress to recalculate
-            .then(() => wait(1))
-            .then(() => Promise.all([
-                this.updateBalance(),
-                this.updateAllowance(),
-                // this.fetchUniswapPair(),
-            ]));
+            });
     },
+    emits: [
+        'success',
+        'success-modal-close',
+    ],
     props: {
         action: {
             type: Object,
@@ -150,17 +132,25 @@ export default {
         },
     },
     setup() {
-        const { discount, discountProps, discountUpsidePercent } = useHubDiscount();
-        const { web3Balance, web3Allowance, getBalance, getAllowance} = useWeb3Balance();
+        const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
+
         const {
-            setDepositProps,
-            depositFromEthereum,
             tokenData: externalToken,
-            tokenDecimals: externalTokenDecimals,
+            tokenContractAddress: coinContractAddress,
+            tokenDecimals: coinDecimals,
             isNativeToken: isEthSelected,
             nativeBalance: selectedNative,
             wrappedBalance: selectedWrapped,
             balance: selectedBalance,
+            tokenAllowance: coinToDepositUnlocked,
+            setTokenProps,
+            updateTokenBalance,
+            updateTokenAllowance,
+            waitEnoughTokenBalance,
+        } = useWeb3TokenBalance();
+        const {
+            setDepositProps,
+            depositFromEthereum,
             amountToUnwrap,
             isUnwrapRequired,
             gasPriceGwei: ethGasPriceGwei,
@@ -172,15 +162,16 @@ export default {
 
         return {
             discount,
-            discountProps,
             discountUpsidePercent,
+            setDiscountProps,
 
-            web3Balance,
-            web3Allowance,
-            getBalance,
-            getAllowance,
+            externalToken, coinContractAddress, coinDecimals, isEthSelected, selectedNative, selectedWrapped, selectedBalance, coinToDepositUnlocked,
+            setTokenProps,
+            updateTokenBalance,
+            updateTokenAllowance,
+            waitEnoughTokenBalance,
 
-            setDepositProps, depositFromEthereum, externalToken, externalTokenDecimals, isEthSelected, selectedNative, selectedWrapped, selectedBalance, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, formAmountAfterGas,
+            setDepositProps, depositFromEthereum, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, formAmountAfterGas,
 
             txServiceState, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData,
 
@@ -189,8 +180,6 @@ export default {
     },
     data() {
         return {
-            // uniswapPair: null,
-            allowanceRequest: null,
             form: {
                 selectedHubNetwork: HUB_CHAIN_ID.BSC,
                 amountEth: '',
@@ -281,38 +270,6 @@ export default {
             amount = amount.gt(0) ? amount.toString() : 0;
             return amount;
         },
-        /*
-        ethToSwap() {
-            let amount = new Big(this.form.amountEth || 0).minus(this.ethTotalFee);
-            amount = amount.gt(0) ? amount.toString() : 0;
-            return amount;
-        },
-        uniswapEstimation() {
-            const pair = this.uniswapPair;
-            const decimals = this.coinDecimals;
-            const amountEth = toErcDecimals(this.ethToSwap, 18);
-            if (!pair || !(amountEth > 0)) {
-                return {
-                    price: 0,
-                    output: 0,
-                };
-            }
-            try {
-                const route = new Route([pair], wethToken);
-                const trade = new Trade(route, new TokenAmount(wethToken, amountEth), TradeType.EXACT_INPUT);
-                return {
-                    price: trade.executionPrice.toFixed(decimals),
-                    output: trade.outputAmount.toFixed(decimals),
-                };
-            } catch (error) {
-                console.log(error);
-                return {
-                    price: 0,
-                    output: 0,
-                };
-            }
-        },
-        */
         hubFeeRate() {
             const discountModifier = 1 - this.discount;
             // commission to deposit is taken from external token data (e.g. chainId: 'ethereum')
@@ -323,39 +280,19 @@ export default {
         },
         // fee to HUB bridge calculated in COIN
         hubFee() {
-            // const input = this.uniswapEstimation?.output;
             const input = this.formAmountAfterGas;
             return new Big(input || 0).times(this.hubFeeRate).toString();
         },
         coinAmountAfterBridge() {
-            // const input = this.uniswapEstimation?.output;
             const input = this.formAmountAfterGas;
             return new Big(input || 0).minus(this.hubFee).toString();
         },
         maxAmount() {
             return this.selectedBalance;
         },
-        coinEthereumName() {
-            return this.externalTokenSymbol;
-        },
-        coinContractAddress() {
-            return this.externalToken?.externalTokenId;
-        },
-        coinDecimals() {
-            return this.externalToken ? Number(this.externalToken.externalDecimals) : undefined;
-        },
-        coinToDepositUnlocked() {
-            return this.web3Allowance[this.chainId]?.[this.externalTokenSymbol] || 0;
-        },
         isCoinApproved() {
             const selectedUnlocked = new Big(this.coinToDepositUnlocked);
-            // uniswap not used anymore
             return selectedUnlocked.gt(0) && selectedUnlocked.gt(this.form.amountEth || 0);
-            // compare with large number instead of uniswapEstimation to eliminate circular dependency (uniswapEstimation > isCoinApproved > ethTotalFee > ethToSwap > uniswapEstimation)
-            // eslint-disable-next-line no-unreachable
-            return selectedUnlocked.gt(1e15);
-            // сравниваем эстимейт с запасом
-            // return selectedUnlocked.gt(0) && selectedUnlocked.gt(this.uniswapEstimation?.output * 2);
         },
         isApproveRequired() {
             return !this.isEthSelected && !this.isCoinApproved;
@@ -456,29 +393,10 @@ export default {
                 this.watchEstimation();
             },
         },
-        externalToken: {
-            handler(newVal, oldVal) {
-                // check if not changed
-                if (newVal?.externalTokenId === oldVal?.externalTokenId && newVal?.chainId === oldVal?.chainId) {
-                    return;
-                }
-                if (this.chainId === ETHEREUM_CHAIN_ID) {
-                    web3.eth.setProvider(ETHEREUM_API_URL);
-                }
-                if (this.chainId === BSC_CHAIN_ID) {
-                    web3.eth.setProvider(BSC_API_URL);
-                }
-                this.serverError = '';
-
-                if (this.chainId === ETHEREUM_CHAIN_ID || this.chainId === BSC_CHAIN_ID) {
-                    this.updateBalance();
-                    this.updateAllowance();
-                }
-            },
-        },
         depositProps: {
             handler(newVal) {
                 this.setDepositProps(newVal);
+                this.setTokenProps(newVal);
             },
             deep: true,
             immediate: true,
@@ -492,7 +410,7 @@ export default {
         },
     },
     mounted() {
-        this.discountProps.minterAddress = this.$store.getters.address;
+        this.setDiscountProps({minterAddress: this.$store.getters.address});
 
         this.debouncedGetEstimation = debounce(this.getEstimation, 1000);
 
@@ -512,9 +430,8 @@ export default {
             if (this.isFormSending) {
                 return;
             }
-            this.updateBalance();
-            this.updateAllowance();
-            // this.fetchUniswapPair();
+            this.updateTokenBalance();
+            this.updateTokenAllowance();
         }, 60 * 1000);
         timer2 = setInterval(() => {
             if (this.isFormSending) {
@@ -539,52 +456,7 @@ export default {
         getExplorerTxUrl,
         getEvmTxUrl,
         shortHashFilter,
-        updateBalance() {
-            const chainId = this.chainId;
-            const contractAddress = this.coinContractAddress;
-
-            if (!this.coinContractAddress) {
-                return;
-            }
-
-            return this.getBalance(this.ethAddress, this.chainId, this.coinContractAddress, this.externalTokenSymbol, this.coinDecimals)
-                .catch((error) => {
-                    if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
-                        this.serverError = 'Can\'t get balance';
-                    }
-                });
-        },
-        updateAllowance() {
-            const chainId = this.chainId;
-            const contractAddress = this.coinContractAddress;
-
-            if (!this.coinContractAddress) {
-                return;
-            }
-            //@TODO allowance not used yet (will be used only for erc20 tokens)
-            // allowance not needed for native coins
-            if (this.isEthSelected) {
-                return;
-            }
-
-            return this.getAllowance(this.ethAddress, this.chainId, this.coinContractAddress, this.externalTokenSymbol, this.coinDecimals)
-                .catch((error) => {
-                    if (this.chainId === chainId && this.coinContractAddress === contractAddress) {
-                        this.serverError = 'Can\'t get allowance';
-                    }
-                });
-        },
 /*
-        fetchUniswapPair() {
-            if (!this.coinContractAddress || ! this.coinDecimals) {
-                return;
-            }
-            return _fetchUniswapPair(this.coinContractAddress, this.coinDecimals)
-                .then((pair) => {
-                    this.uniswapPair = pair;
-                });
-        },
-*/
         ensureNetworkData() {
             if (!this.hubCoinList.length || !this.priceList.length) {
                 return this.$fetch();
@@ -592,10 +464,11 @@ export default {
 
             // const uniswapPairPromise = this.uniswapPair ? Promise.resolve() : this.fetchUniswapPair();
             //@TODO handle change to composable (maybe promises should be exposed in web3Allowance?)
-            const allowancePromise = this.allowanceRequest && this.allowanceRequest.promiseStatus !== PROMISE_REJECTED ? this.allowanceRequest.promise : this.updateAllowance();
+            const allowancePromise = this.allowanceRequest && this.allowanceRequest.promiseStatus !== PROMISE_REJECTED ? this.allowanceRequest.promise : this.updateTokenAllowance();
 
-            return Promise.all([/*uniswapPairPromise, */allowancePromise]);
+            return Promise.all([/!*uniswapPairPromise, *!/allowancePromise]);
         },
+*/
         async recoverPurchase() {
             if (!this.$store.state.onLine) {
                 return;
@@ -615,46 +488,24 @@ export default {
         fiatRampPurchase() {
             return initRampPurchase({
                 userAddress: this.ethAddress,
-                swapAmount: toErcDecimals(this.form.amountEth, this.externalTokenDecimals),
+                swapAmount: toErcDecimals(this.form.amountEth, this.coinDecimals),
             });
         },
         waitEnoughExternalBalance({isTopUpRequired} = {}) {
             const targetAmount = isTopUpRequired ? new Big(this.selectedBalance).plus(this.form.amountEth).toString() : this.form.amountEth;
-            // save request if balance already enough
-            if (this.selectedBalance >= targetAmount) {
+            // don't show modal if balance already enough
+            if (new Big(this.selectedBalance).gte(targetAmount)) {
                 return Promise.resolve();
             } else {
                 this.txServiceState.loadingStage = LOADING_STAGE.WAIT_ETH;
-                return new Promise((resolve, reject) => {
-                    let isCanceled = {value: false};
-                    waitingCancel = () => {
-                        reject(new Error(CANCEL_MESSAGE));
-                        isCanceled.value = true;
-                        waitingCancel = null;
-                    };
-                    this._waitEnoughExternalBalance(targetAmount, isCanceled).then(resolve).catch(reject);
-                });
+
+                const promise = this.waitEnoughTokenBalance(targetAmount);
+                waitingCancel = () => {
+                    promise.canceler();
+                    waitingCancel = null;
+                };
+                return promise;
             }
-        },
-        /**
-         * @param {number|string} targetAmount
-         * @param {{value: boolean}} isCanceled
-         * @return {Promise}
-         * @private
-         */
-        _waitEnoughExternalBalance(targetAmount, isCanceled) {
-            return this.updateBalance()
-                .then(() => {
-                    // Sending was canceled
-                    if (isCanceled.value) {
-                        return Promise.reject(new Error(CANCEL_MESSAGE));
-                    }
-                    if (this.selectedBalance >= targetAmount) {
-                        return true;
-                    } else {
-                        return wait(10000).then(() => this._waitEnoughExternalBalance(targetAmount, isCanceled));
-                    }
-                });
         },
         submitConfirm() {
             if (this.isFormSending || !this.$store.state.onLine) {
@@ -694,7 +545,7 @@ export default {
             // don't wait eth if next steps already exists
             const waitEnoughEthPromise = fromRecovery ? Promise.resolve() : this.waitEnoughExternalBalance({isTopUpRequired: this.isFiatRampSelected});
 
-            return Promise.all([fiatRampPurchasePromise, waitEnoughEthPromise, this.ensureNetworkData()])
+            return Promise.all([fiatRampPurchasePromise, waitEnoughEthPromise/*, this.ensureNetworkData()*/])
                 .then(() => this.depositFromEthereum())
                 .then((outputAmount) => {
                     return this.sendMinterSwapTx({
@@ -706,13 +557,14 @@ export default {
                             },
                         },
                         prepare: () => this.prepareMinterSwapParams(outputAmount),
-                    })
-                        .then((tx) => {
-                            this.txServiceState.loadingStage = LOADING_STAGE.FINISH;
-                            this.addStepData(LOADING_STAGE.FINISH, {coin: this.form.coinToGet, amount: tx.result.returnAmount, finished: true});
-                        });
+                    });
                 })
-                .then(() => {
+                .then((tx) => {
+                    this.txServiceState.loadingStage = LOADING_STAGE.FINISH;
+                    this.addStepData(LOADING_STAGE.FINISH, {coin: this.form.coinToGet, amount: tx.result.returnAmount, finished: true});
+
+                    this.$emit('success');
+
                     this.$v.$reset();
                     // reset form
                     this.form.amountEth = '';
@@ -724,7 +576,7 @@ export default {
                     // this.finishSending();
                 })
                 .catch((error) => {
-                    if (error.message !== CANCEL_MESSAGE) {
+                    if (!error.isCanceled) {
                         this.serverError = getErrorText(error);
                         // Error returned when rejected
                         console.error(error);
@@ -754,17 +606,6 @@ export default {
             this.$fetch();
         },
 /*
-        sendUniswapTx({nonce, gasPrice} = {}) {
-            const routerAddress = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D';
-            const poolAddress = this.uniswapPair.liquidityToken.address;
-            const poolContract = new web3.eth.Contract(uniswapV2Abi, poolAddress);
-            const amountOutMin = toErcDecimals(new Big(this.uniswapEstimation.output).times(0.97).toString(), this.coinDecimals);
-            // console.log('amountOutMin', new Big(this.uniswapEstimation.output).times(0.97).toString(), amountOutMin)
-            const deadline = Math.floor(Date.now() / 1000) + 60 * 30; // 30min
-            const data = poolContract.methods.swapExactETHForTokens(amountOutMin, [wethToken.address, this.coinContractAddress], this.ethAddress, deadline).encodeABI();
-
-            return this.sendEthTx({to: routerAddress, data, value: this.ethToSwap, nonce, gasPrice, gasLimit: GAS_LIMIT_SWAP}, LOADING_STAGE.SWAP_ETH);
-        },
         sendWrapTx({nonce, gasPrice} = {}) {
             return this.sendEthTx({
                 to: WETH_CONTRACT_ADDRESS,
@@ -778,8 +619,7 @@ export default {
 */
         unwrapToNativeCoin({nonce, gasPrice} = {}) {
             const amountToUnwrap = toErcDecimals(this.amountToUnwrap, this.coinDecimals);
-            const wrappedNativeContract = new web3.eth.Contract(wethAbi, this.wrappedNativeContractAddress);
-            const data = wrappedNativeContract.methods.withdraw(amountToUnwrap).encodeABI();
+            const data = AbiEncoder(wethAbi)('withdraw', amountToUnwrap);
             return this.sendEthTx({
                     to: this.wrappedNativeContractAddress,
                     data,
@@ -795,33 +635,33 @@ export default {
         },
         sendApproveTx({nonce, gasPrice} = {}) {
             let amountToUnlock = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-            let data = coinContract(this.coinContractAddress).methods.approve(this.hubAddress, amountToUnlock).encodeABI();
+            let data = AbiEncoder(erc20ABI)('approve', this.hubAddress, amountToUnlock);
 
             return this.sendEthTx({to: this.coinContractAddress, data, nonce, gasPrice, gasLimit: GAS_LIMIT_UNLOCK}, LOADING_STAGE.APPROVE_BRIDGE);
         },
         sendCoinTx({nonce}) {
-            const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3.utils.hexToBytes(this.$store.getters.address.replace("Mx", "0x")))]);
+            const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(this.$store.getters.address.replace("Mx", "0x")))]);
             const destinationChain = Buffer.from('minter', 'utf-8');
-            const hubContract = new web3.eth.Contract(hubABI, this.hubAddress);
             let txParams;
             if (this.isEthSelected) {
                 txParams = {
                     value: this.formAmountAfterGas,
-                    data: hubContract.methods.transferETHToChain(
+                    data: AbiEncoder(hubABI)(
+                        'transferETHToChain',
                         destinationChain,
                         address,
                         0,
-                    ).encodeABI(),
+                    ),
                 };
             } else {
                 txParams = {
-                    data: hubContract.methods.transferToChain(
-                        this.coinContractAddress,
+                    data: AbiEncoder(hubABI)(
+                        'transferToChain',
                         destinationChain,
                         address,
                         toErcDecimals(this.formAmountAfterGas, this.coinDecimals),
                         0,
-                    ).encodeABI(),
+                    ),
                 };
             }
 
@@ -919,47 +759,17 @@ export default {
     },
 };
 
-function wait(time) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, time);
-    });
-}
 
-function _fetchUniswapPair(coinContractAddress, coinDecimals) {
-    // const token = new Token(ETHEREUM_CHAIN_ID, '0xdbc941fec34e8965ebc4a25452ae7519d6bdfc4e', 6)
-    const token = new Token(ETHEREUM_CHAIN_ID, coinContractAddress, coinDecimals);
-    const provider = NETWORK === MAINNET ? new CloudflareProvider('homestead') : new JsonRpcProvider(ETHEREUM_API_URL, 'ropsten');
-
-    return Fetcher.fetchPairData(token, wethToken, provider)
-        .then((pair) => {
-            return Object.freeze(pair);
-        });
-}
-
-function getSwapOutput(receipt) {
-    const logIndex = 5 - 1;
-    const dataIndex = 3 - 1;
-    const amount0StartIndex = 2 + 64 * dataIndex;
-    const amount1StartIndex = 2 + 64 * (dataIndex + 1);
-    // @TODO logs pruned from tx for now to save storage space
-    const amount0OutHex = receipt.logs[logIndex].data.slice(amount0StartIndex, amount0StartIndex + 64);
-    const amount1OutHex = receipt.logs[logIndex].data.slice(amount1StartIndex, amount1StartIndex + 64);
-    const amount0Out = web3.eth.abi.decodeParameter('uint256', '0x' + amount0OutHex);
-    const amount1Out = web3.eth.abi.decodeParameter('uint256', '0x' + amount1OutHex);
-
-    // received coin maybe 0 or 1, depending on position in uniswap pair
-    return Math.max(amount0Out, amount1Out);
-}
 </script>
 
 <template>
     <div>
-        <div class="u-grid u-grid--small u-grid--vertical-margin--small" v-if="recovery">
-            <div class="u-cell">{{ $td('You have unfinished purchase, do you want to continue?', 'form.unfinished-purchase') }}</div>
-            <div class="u-cell u-cell--medium--1-4">
+        <div class="u-grid u-grid--vertical-margin--small" v-if="recovery">
+            <div class="u-cell u-text-center">{{ $td('You have unfinished purchase, do you want to continue?', 'form.unfinished-purchase') }}</div>
+            <div class="u-cell">
                 <button class="button button--main button--full" type="button" @click="recoverPurchase()">{{ $td('Continue', 'common.continue') }}</button>
             </div>
-            <div class="u-cell u-cell--medium--1-4">
+            <div class="u-cell">
                 <button class="button button--ghost button--full" type="button" @click="cancelRecovery()">{{ $td('Cancel', 'form.submit-cancel-button') }}</button>
             </div>
         </div>
@@ -1254,11 +1064,11 @@ function getSwapOutput(receipt) {
                 </div>
                 <HubBuySpeedup :steps-ordered="stepsOrdered" @speedup="speedup"/>
             </div>
-            <div class="form-row panel__section panel__section--tint u-fw-500" v-if="txServiceState.loadingStage !== $options.LOADING_STAGE.WAIT_ETH && txServiceState.loadingStage !== $options.LOADING_STAGE.FINISH">
+            <div class="form-row u-text-medium u-fw-500" v-if="txServiceState.loadingStage !== $options.LOADING_STAGE.WAIT_ETH && txServiceState.loadingStage !== $options.LOADING_STAGE.FINISH">
                 <span class="u-emoji">⚠️</span> {{ $td('Please keep this page active, otherwise progress may&nbsp;be&nbsp;lost.', 'index.keep-page-active') }}
             </div>
-            <div class="form-row panel__section" v-if="txServiceState.loadingStage === $options.LOADING_STAGE.FINISH">
-                <button class="button button--ghost-main button--full" type="button" @click="finishSending()">
+            <div class="form-row" v-if="txServiceState.loadingStage === $options.LOADING_STAGE.FINISH">
+                <button class="button button--ghost-main button--full" type="button" @click="finishSending(); $emit('success-modal-close')">
                     {{ $td('Close', 'common.close') }}
                 </button>
             </div>

@@ -36,6 +36,10 @@
         mixins: [validationMixin],
         directives: {
         },
+        emits: [
+            'success',
+            'success-modal-close',
+        ],
         props: {
             action: {
                 type: Object,
@@ -384,6 +388,7 @@
                     gasCoin: this.fee.coin,
                 }, {privateKey: this.$store.getters.privateKey})
                     .then((tx) => {
+                        this.$emit('success');
                         this.serverSuccess = tx;
                         this.isSuccessModalVisible = true;
                         this.isFormSending = false;
@@ -604,7 +609,7 @@
         </Modal>
 
         <!-- success modal -->
-        <Modal :isOpen.sync="isSuccessModalVisible">
+        <Modal :isOpen.sync="isSuccessModalVisible" @modal-close="$emit('success-modal-close')">
             <h2 class="u-h3 u-mb-10">{{ $td('Success', 'form.success-title') }}</h2>
             <p class="u-mb-10">{{ $td('Coins successfully exchanged!', 'form.success-desc') }}</p>
 

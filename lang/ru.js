@@ -13,6 +13,7 @@ export default {
         'in': 'в',
         'from': 'от',
         'to': 'до',
+        'upto': 'до',
     },
     error: {
         'title-error': 'Ошибка',
@@ -92,6 +93,17 @@ export default {
         'swap': 'Купить',
         'swap-wallet-button': 'Обменять',
         'send': 'Отправить',
+        'receive': 'Получить',
+
+        'assets-coins': 'Монеты',
+        'assets-coins-view-all': 'Показать все монеты',
+        'assets-coins-view-less': 'Показать меньше монет',
+        'assets-stakes': 'Стейки',
+        'assets-stakes-table-token': 'Токен',
+        'assets-stakes-table-unlock': 'Разблокировка',
+        'assets-stakes-table-unlock-on': 'Разблокировка',
+        'assets-stakes-table-amount': 'Количество',
+        'assets-transactions': 'Транзакции',
 
         'card-button-deposit': 'Купить за BNB или ETH',
         'add-liquidity': 'Добавить ликвидность',
@@ -139,10 +151,6 @@ export default {
         'farming-programs': 'Фарминг-программы',
         'giveaway-programs': 'Лотереи',
 
-        'coins': 'Монеты',
-        'view-all': 'Показать все',
-        'view-less': 'Показать меньше',
-
         'cam-allow': 'Разрешите доступ к камере',
     },
     topup: {
@@ -150,6 +158,7 @@ export default {
         'description': 'Выберите способ ниже',
         'top-up-with-network': 'Через {network}',
         'top-up-with-card2card': 'С карты на карту',
+        'waiting-topup': 'Ожидаем транзакцию пополнения',
         'cancel': 'Отмена',
         'back': 'Назад',
     },
@@ -161,13 +170,22 @@ export default {
         'show-qr': 'Показать QR',
         'hide-qr': 'Скрыть QR',
     },
+    receive: {
+        'title': 'Адрес вашего кошелька',
+    },
     'stake-by-lock': {
         'estimation-unlock': 'Срок разблокировки стейка',
         'estimation-unlock-preposition': ' ',
         'estimation-earn': 'Вы заработаете',
+        'error-program-not-found': 'Не удаётся загрузить программу стейкинга',
+        'error-program-disabled': 'Текущая программа стейкинга отключена',
+        'error-program-timeout': 'Истекло время действия программы стейкинга',
+    },
+    onboarding: {
+        'skip': 'Пропустить',
     },
     action: {
-        'title-buy': 'Купите BIP, HUB и BEE за BNB или ETH',
+        'title-buy': 'Купите BIP, HUB и BEE',
         'title-swap': 'Обменяйте монеты',
         'title-swap-combined': '@:action.title-swap {coin0} {conjunction} {coin1}',
         'title-swap-coin0-empty': '',

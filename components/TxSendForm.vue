@@ -24,6 +24,10 @@ export default {
         autosize,
     },
     mixins: [validationMixin],
+    emits: [
+        'success',
+        'success-modal-close',
+    ],
     props: {
         action: {
             type: Object,
@@ -36,9 +40,9 @@ export default {
     data() {
         return {
             form: {
-                address: '',
-                amount: '',
-                coinSymbol: '',
+                address: this.params.address || '',
+                amount: this.params.amount || '',
+                coinSymbol: this.params.coin || '',
             },
         };
     },
@@ -79,6 +83,8 @@ export default {
         :$txData="$v.form"
         :txType="$options.TX_TYPE.SEND"
         @clear-form="clearForm()"
+        @success="$emit('success')"
+        @success-modal-close="$emit('success-modal-close')"
     >
         <template v-slot:default="{fee}">
             <div class="form-row">

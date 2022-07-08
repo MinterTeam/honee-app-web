@@ -36,12 +36,12 @@ export default {
 </script>
 
 <template>
-    <div class="error__container u-container u-container--small">
+    <div class="error__container">
         <div class="error__section u-section">
             <h1 class="error__title">{{ $td('Error', 'error.title-error') }} {{ statusCode }}</h1>
-            <p class="error__description" v-if="statusCode === 404">{{ $td('Page not found', 'error.message-404') }}</p>
-            <p class="error__description" v-else-if="statusCode === 504" v-html="$td('Request failed with status code 504. <br> Gateway time-out.', 'error.message-504')"></p>
-            <p class="error__description" v-else-if="statusCode === 503" v-html="$td('The webpage is currently unavailable. <br> It may be overloaded or down for maintenance.', 'error.message-503')"></p>
+            <p class="error__description" v-if="statusCode === 404 && !error.useMessage">{{ $td('Page not found', 'error.message-404') }}</p>
+            <p class="error__description" v-else-if="statusCode === 504 && !error.useMessage" v-html="$td('Request failed with status code 504. <br> Gateway time-out.', 'error.message-504')"></p>
+            <p class="error__description" v-else-if="statusCode === 503 && !error.useMessage" v-html="$td('The webpage is currently unavailable. <br> It may be overloaded or down for maintenance.', 'error.message-503')"></p>
             <p class="error__description" v-else-if="message === 'Network Error'">{{ $td('Network Error', 'error.message-network') }}</p>
             <p class="error__description" v-else>{{ message }}</p>
             <p>

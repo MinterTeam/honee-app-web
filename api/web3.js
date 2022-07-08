@@ -1,16 +1,49 @@
 import Big from '~/assets/big.js';
 import Eth from 'web3-eth';
 import Utils from 'web3-utils';
+import Contract from 'web3-eth-contract';
+import AbiCoder from 'web3-eth-abi';
 import {TinyEmitter as Emitter} from 'tiny-emitter';
 import {ETHEREUM_API_URL, BSC_API_URL, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, HUB_DEPOSIT_TX_PURPOSE, HUB_CHAIN_ID, HUB_CHAIN_DATA, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import erc20ABI from '~/assets/abi-erc20.js';
 
 export const CONFIRMATION_COUNT = 5;
 
-export const utils = Utils;
-export const ethEth = new Eth(ETHEREUM_API_URL);
-export const ethBsc = new Eth(BSC_API_URL);
-export const eth = new Eth(ETHEREUM_API_URL);
+export const web3Utils = Utils;
+/** @deprecated use getProviderByChain instead */
+export const web3Eth = new Eth(ETHEREUM_API_URL);
+export const web3EthEth = new Eth(ETHEREUM_API_URL);
+export const web3EthBsc = new Eth(BSC_API_URL);
+export const web3Abi = AbiCoder;
+/** @deprecated */
+const utils = Utils;
+
+/**
+ * @deprecated
+ * don't use eth, use getProviderByChain instead to ensure correct provider
+ * don't use eth.Contract for encodeAbi(), use AbiEncoder instead
+ */
+export default {
+    eth: web3Eth,
+    utils: Utils,
+};
+
+const transactionPollingInterval = 5000;
+[web3Eth, web3EthEth, web3EthBsc]
+    .forEach((eth) => eth.transactionPollingInterval = transactionPollingInterval);
+
+/**
+ *
+ * @param {object} abi
+ * @return {function(method: string, ...[*]): string}
+ * @constructor
+ */
+export function AbiEncoder(abi) {
+    const contract = new Contract(abi);
+    return function abiMethodEncoder(method, ...args) {
+        return contract.methods[method](...args).encodeABI();
+    };
+}
 
 const WEI_DECIMALS = 18;
 /**
@@ -50,13 +83,20 @@ export function toErcDecimals(balance, ercDecimals = 18) {
 
 /**
  * @param {string} hash
- * @param {number} [confirmationCount = CONFIRMATION_COUNT]
- * @param {number} [chainId]
+ * @param {object} options
+ * @param {number} [options.confirmationCount = CONFIRMATION_COUNT]
+ * @param {number} [options.chainId]
+ * @param {boolean} [options.needReceipt=true]
+ * @param {boolean} [options.needExactConfirmationCount]
+ * @param {boolean} [options.needExactTimestamp=true]
  * @return {PromiseWithEmitter<Web3Tx>}
  */
 export function subscribeTransaction(hash, {
     confirmationCount = CONFIRMATION_COUNT,
     chainId,
+    needReceipt = true,
+    needExactConfirmationCount = CONFIRMATION_COUNT > 1,
+    needExactTimestamp = true,
 } = {}) {
     let isUnsubscribed = false;
     const emitter = new Emitter();
@@ -65,8 +105,15 @@ export function subscribeTransaction(hash, {
         const providerHost = getProviderHostByChain(chainId);
         if (providerHost) {
             // keep provider for this tx, because later it can be changed
-            const ethSaved = new Eth(getProviderHostByChain(chainId));
-            txPromise = _subscribeTransaction(hash, confirmationCount, ethSaved, emitter);
+            const ethSaved = new Eth(providerHost);
+            txPromise = _subscribeTransaction(hash, {
+                confirmationCount,
+                ethProvider: ethSaved,
+                emitter,
+                needReceipt,
+                needExactConfirmationCount,
+                needExactTimestamp,
+            });
         } else {
             txPromise = Promise.reject(new Error(`Can't subscribe to tx, chainId ${chainId} is not supported`));
         }
@@ -111,40 +158,46 @@ export function subscribeTransaction(hash, {
 /**
  *
  * @param {string} hash
- * @param {number} confirmationCount
- * @param {Eth} ethProvider
- * @param {Emitter} emitter
+ * @param {object} options
+ * @param {number} options.confirmationCount
+ * @param {Eth} options.ethProvider
+ * @param {Emitter} options.emitter
+ * @param {boolean} [options.needReceipt]
+ * @param {boolean} [options.needExactConfirmationCount]
+ * @param {boolean} [options.needExactTimestamp]
  * @return {Promise<Web3Tx>}
  * @private
  */
-function _subscribeTransaction(hash, confirmationCount, ethProvider, emitter) {
+function _subscribeTransaction(hash, {confirmationCount, ethProvider, emitter, needReceipt, needExactConfirmationCount, needExactTimestamp}) {
     let isUnsubscribed = false;
 
     return waitTxInBlock(hash)
         .then((tx) => {
             return Promise.all([
-                ethProvider.getTransactionReceipt(hash),
-                ethProvider.getBlock(tx.blockNumber),
-                getConfirmations(tx),
+                needReceipt ? ethProvider.getTransactionReceipt(hash) : Promise.resolve(),
+                needExactTimestamp ? ethProvider.getBlock(tx.blockNumber) : Promise.resolve(),
+                needExactConfirmationCount ? getConfirmations(tx) : Promise.resolve(1),
                 Promise.resolve(tx),
             ]);
         })
         .then(([receipt, block, confirmations, txData]) => {
+            // console.debug({receipt, block, confirmations, txData});
             const tx = {
                 // input, hash from tx
                 ...txData,
-                // logs, status from receipt
+                // logs, status, gasUsed from receipt
                 ...receipt,
                 confirmations,
-                timestamp: block.timestamp * 1000,
+                timestamp: needExactTimestamp ? block.timestamp * 1000 : Date.now(),
             };
             emitter.emit('confirmation', tx);
 
-            if (!tx.status) {
+            // status only available of receipt was requested
+            if (needReceipt && !tx.status) {
                 throw new Error('Transaction failed');
             }
 
-            if (confirmations >= confirmationCount) {
+            if (confirmations >= confirmationCount || !needExactConfirmationCount) {
                 return tx;
             } else {
                 return waitConfirmations(tx);
@@ -221,10 +274,10 @@ let cachedBlock = {
 };
 
 /**
- * @param {Eth} [web3Eth]
+ * @param {Eth} web3Eth
  * @return {Promise<number>}
  */
-export function getBlockNumber(web3Eth = eth) {
+export function getBlockNumber(web3Eth) {
     const savedProviderHost = web3Eth.currentProvider.host;
     const isSameProviderHost = savedProviderHost === cachedBlock.providerHost;
     if (cachedBlock.isLoading && isSameProviderHost) {
@@ -343,7 +396,7 @@ export async function getDepositTxInfo(tx, chainId, hubCoinList, skipAmount) {
     if (itemCount === 2) {
         // unlock
         const beneficiaryHex = '0x' + input.slice(0, 64);
-        const beneficiaryAddress = eth.abi.decodeParameter('address', beneficiaryHex);
+        const beneficiaryAddress = web3Abi.decodeParameter('address', beneficiaryHex);
         const isUnlockedForBridge = beneficiaryAddress.toLowerCase() === hubContractAddress;
         if (isUnlockedForBridge) {
             type = HUB_DEPOSIT_TX_PURPOSE.UNLOCK;
@@ -358,7 +411,7 @@ export async function getDepositTxInfo(tx, chainId, hubCoinList, skipAmount) {
         // transferToChain
         type = HUB_DEPOSIT_TX_PURPOSE.SEND;
         const tokenContractHex = '0x' + input.slice(0, 64);
-        tokenContract = eth.abi.decodeParameter('address', tokenContractHex);
+        tokenContract = web3Abi.decodeParameter('address', tokenContractHex);
         amount = skipAmount ? 0 : await getAmountFromInputValue(input.slice((itemCount - 2) * 64), tokenContract, chainId, hubCoinList);
     } else if (tx.to.toLowerCase() === hubContractAddress && itemCount === 3) {
         // transferETHToChain
@@ -405,7 +458,7 @@ export async function getDepositTxInfo(tx, chainId, hubCoinList, skipAmount) {
 async function getAmountFromInputValue(hex, tokenContract, chainId, hubCoinList) {
     const amountHex = '0x' + hex;
     const decimals = await getTokenDecimals(tokenContract, chainId, hubCoinList);
-    const amount = fromErcDecimals(eth.abi.decodeParameter('uint256', amountHex), decimals);
+    const amount = fromErcDecimals(web3Abi.decodeParameter('uint256', amountHex), decimals);
 
     return amount;
 }
@@ -436,16 +489,16 @@ export function getExternalCoinList(hubCoinList, chainId) {
  * @param {number} chainId
  * @return {Eth}
  */
-function getProviderByChain(chainId) {
+export function getProviderByChain(chainId) {
     validateChainId(chainId);
     if (!chainId) {
-        return eth;
+        return web3Eth;
     }
     if (chainId === ETHEREUM_CHAIN_ID) {
-        return ethEth;
+        return web3EthEth;
     }
     if (chainId === BSC_CHAIN_ID) {
-        return ethBsc;
+        return web3EthBsc;
     }
 }
 
@@ -456,7 +509,7 @@ function getProviderByChain(chainId) {
 function getProviderHostByChain(chainId) {
     validateChainId(chainId);
     if (!chainId) {
-        return eth.currentProvider.host;
+        return web3Eth.currentProvider.host;
     }
 
     return HUB_CHAIN_DATA[getHubNetworkByChain(chainId)]?.apiUrl;

@@ -1,6 +1,5 @@
 import {reactive, set} from '@vue/composition-api';
-import * as web3 from '~/api/web3.js';
-import {fromErcDecimals} from '~/api/web3.js';
+import {getProviderByChain, web3Utils, fromErcDecimals} from '~/api/web3.js';
 import erc20ABI from '~/assets/abi-erc20.js';
 import {HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from '~/assets/variables.js';
 
@@ -10,10 +9,15 @@ export const PROMISE_STATUS = {
     PENDING: 'pending',
 };
 
-//workaround for `set` not trigger computed properly
+// workaround for `set` not trigger computed properly
 // @see https://github.com/vuejs/composition-api/issues/580
-function getInitialChainData() {
-    return Object.fromEntries(Object.values(HUB_CHAIN_DATA).map((item) => [item.chainId, {}]));
+function getInitialChainData(isBalance) {
+    return Object.fromEntries(Object.values(HUB_CHAIN_DATA).map((item) => [item.chainId, getEmptyItem()]));
+
+    function getEmptyItem() {
+        // init with native balance
+        return isBalance ? {'0': 0} : {};
+    }
 }
 
 /**
@@ -27,7 +31,7 @@ let allowanceRequestData = getInitialChainData();
 /**
  * @type {UnwrapRef<Object.<number, Object.<string, number|string>>>}
  */
-const web3Balance = reactive(getInitialChainData());
+const web3Balance = reactive(getInitialChainData(true));
 /**
  * @type {UnwrapRef<Object.<number, Object.<string, number|string>>>}
  */
@@ -37,17 +41,18 @@ const web3Allowance = reactive(getInitialChainData());
  * @param {string} accountAddress
  * @param {number} chainId
  * @param {string} tokenAddress
- * @param {string} tokenSymbol
  * @param {number} tokenDecimals
- * @return {Promise}
+ * @return {Promise<string>}
  */
-function getBalance(accountAddress, chainId, tokenAddress, tokenSymbol, tokenDecimals) {
-    if (!accountAddress || !chainId || !tokenAddress || !tokenSymbol || !tokenDecimals) {
+function getBalance(accountAddress, chainId, tokenAddress, tokenDecimals) {
+    if (!accountAddress || !chainId || !tokenAddress || !tokenDecimals) {
         return Promise.reject();
     }
+    tokenAddress = tokenAddress.toLowerCase();
+    const web3Eth = getProviderByChain(chainId);
 
-    if (balanceRequestData[chainId]?.[tokenSymbol]?.promiseStatus === PROMISE_STATUS.PENDING) {
-        return balanceRequestData[chainId][tokenSymbol].promise;
+    if (balanceRequestData[chainId]?.[tokenAddress]?.promiseStatus === PROMISE_STATUS.PENDING) {
+        return balanceRequestData[chainId][tokenAddress].promise;
     }
 
     if (!web3Balance[chainId]) {
@@ -55,35 +60,36 @@ function getBalance(accountAddress, chainId, tokenAddress, tokenSymbol, tokenDec
         balanceRequestData[chainId] = {};
     }
 
-    const isNativeSelected = HUB_CHAIN_BY_ID[chainId]?.wrappedNativeContractAddress === tokenAddress.toLowerCase();
+    const isNativeSelected = HUB_CHAIN_BY_ID[chainId]?.wrappedNativeContractAddress === tokenAddress;
     const balancePromise = Promise.all([
-            new web3.eth.Contract(erc20ABI, tokenAddress).methods.balanceOf(accountAddress).call(),
-            isNativeSelected ? web3.eth.getBalance(accountAddress) : Promise.resolve(),
+            new web3Eth.Contract(erc20ABI, tokenAddress).methods.balanceOf(accountAddress).call(),
+            isNativeSelected ? web3Eth.getBalance(accountAddress) : Promise.resolve(),
         ])
-        .then(([balance, ethBalance]) => {
-            set(web3Balance[chainId], tokenSymbol, fromErcDecimals(balance, tokenDecimals));
+        .then(([balance, nativeBalance]) => {
+            set(web3Balance[chainId], tokenAddress, fromErcDecimals(balance, tokenDecimals));
             if (isNativeSelected) {
-                set(web3Balance[chainId], 0, web3.utils.fromWei(ethBalance));
+                set(web3Balance[chainId], 0, web3Utils.fromWei(nativeBalance));
             }
-            balanceRequestData[chainId][tokenSymbol] = {
+            balanceRequestData[chainId][tokenAddress] = {
                 promiseStatus: PROMISE_STATUS.FINISHED,
                 promise: balancePromise,
             };
+            return fromErcDecimals(balance, tokenDecimals);
         })
         .catch((error) => {
             console.log(error);
-            set(web3Balance[chainId], tokenSymbol, undefined);
+            set(web3Balance[chainId], tokenAddress, undefined);
             if (isNativeSelected) {
                 set(web3Balance[chainId], 0, undefined);
             }
-            balanceRequestData[chainId][tokenSymbol] = {
+            balanceRequestData[chainId][tokenAddress] = {
                 promiseStatus: PROMISE_STATUS.REJECTED,
                 promise: balancePromise,
             };
             return Promise.reject(error);
         });
 
-    balanceRequestData[chainId][tokenSymbol] = {
+    balanceRequestData[chainId][tokenAddress] = {
         promiseStatus: PROMISE_STATUS.PENDING,
         promise: balancePromise,
     };
@@ -91,18 +97,28 @@ function getBalance(accountAddress, chainId, tokenAddress, tokenSymbol, tokenDec
     return balancePromise;
 }
 
-function getAllowance(accountAddress, chainId, tokenAddress, tokenSymbol, tokenDecimals) {
-    if (!accountAddress || !chainId || !tokenAddress || !tokenSymbol || !tokenDecimals) {
+/**
+ * Get allowance for Hub bridge contract
+ * @param {string} accountAddress
+ * @param {number} chainId
+ * @param {string} tokenAddress
+ * @param {number} tokenDecimals
+ * @return {Promise<string>|undefined}
+ */
+function getAllowance(accountAddress, chainId, tokenAddress, tokenDecimals) {
+    if (!accountAddress || !chainId || !tokenAddress || !tokenDecimals) {
         return Promise.reject();
     }
+    tokenAddress = tokenAddress.toLowerCase();
+    const web3Eth = getProviderByChain(chainId);
 
-    const isNativeSelected = HUB_CHAIN_BY_ID[chainId]?.wrappedNativeContractAddress === tokenAddress.toLowerCase();
+    const isNativeSelected = HUB_CHAIN_BY_ID[chainId]?.wrappedNativeContractAddress === tokenAddress;
     // allowance not needed for native coins
     if (isNativeSelected) {
         return;
     }
-    if (allowanceRequestData[chainId]?.[tokenSymbol]?.promiseStatus === PROMISE_STATUS.PENDING) {
-        return allowanceRequestData[chainId][tokenSymbol].promise;
+    if (allowanceRequestData[chainId]?.[tokenAddress]?.promiseStatus === PROMISE_STATUS.PENDING) {
+        return allowanceRequestData[chainId][tokenAddress].promise;
     }
 
     if (!web3Allowance[chainId]) {
@@ -111,24 +127,25 @@ function getAllowance(accountAddress, chainId, tokenAddress, tokenSymbol, tokenD
     }
 
     const hubAddress = HUB_CHAIN_BY_ID[chainId]?.hubContractAddress;
-    const allowancePromise = new web3.eth.Contract(erc20ABI, tokenAddress).methods.allowance(accountAddress, hubAddress).call()
+    const allowancePromise = new web3Eth.Contract(erc20ABI, tokenAddress).methods.allowance(accountAddress, hubAddress).call()
         .then((allowanceValue) => {
-            set(web3Allowance[chainId], tokenSymbol, fromErcDecimals(allowanceValue, tokenDecimals));
-            allowanceRequestData[chainId][tokenSymbol] = {
+            set(web3Allowance[chainId], tokenAddress, fromErcDecimals(allowanceValue, tokenDecimals));
+            allowanceRequestData[chainId][tokenAddress] = {
                 promiseStatus: PROMISE_STATUS.FINISHED,
                 promise: allowancePromise,
             };
+            return fromErcDecimals(allowanceValue, tokenDecimals);
         })
         .catch((error) => {
             console.log(error);
-            set(web3Allowance[chainId], tokenSymbol, undefined);
-            allowanceRequestData[chainId][tokenSymbol] = {
+            set(web3Allowance[chainId], tokenAddress, undefined);
+            allowanceRequestData[chainId][tokenAddress] = {
                 promiseStatus: PROMISE_STATUS.REJECTED,
                 promise: allowancePromise,
             };
         });
 
-    allowanceRequestData[chainId][tokenSymbol] = {
+    allowanceRequestData[chainId][tokenAddress] = {
         promiseStatus: PROMISE_STATUS.PENDING,
         promise: allowancePromise,
     };

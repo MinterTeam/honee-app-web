@@ -39,7 +39,7 @@ export default {
             </div>
             <nuxt-link class="footer__logo" :to="$i18nGetPreferredPath('/')"><img src="/img/logo-honee.svg" alt="" width="82" height="16"/></nuxt-link>
             <div class="footer__copyright">
-                Copyright © 2021 Grom R&D Limited.<br>
+                Copyright © {{ (new Date()).getFullYear() }} Grom R&D Limited.<br>
                 All Rights Reserved.
             </div>
         </div>

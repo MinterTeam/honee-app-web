@@ -1,6 +1,5 @@
 <script>
 import get from 'lodash-es/get.js';
-import {DASHBOARD_URL} from '~/assets/variables.js';
 import hashColor from '~/assets/hash-color.js';
 import CardHead from '~/components/CardHead.vue';
 
@@ -65,9 +64,6 @@ export default {
         },
     },
     methods: {
-        pageUrl(page) {
-            return this.$i18nGetPreferredPath((DASHBOARD_URL + page).replace('//', '/'));
-        },
         translate(key) {
             // fallback to en locale
             return get(this.card?.[this.$i18n.locale], key) || get(this.card, key);
@@ -92,7 +88,7 @@ function poolHasCoin(pool, symbol) {
         <div class="u-mt-10">
             <div class="u-grid">
                 <div class="u-cell" :class="isUndoAvailable ? 'u-cell--6-10': ''">
-                    <nuxt-link class="button button--full " :to="pageUrl(card.action)">
+                    <nuxt-link class="button button--full " :to="getDashboardUrl(card.action)">
                         <template v-if="card.actionType === $options.ACTION_TYPE.DEPOSIT">{{ $td('Buy with BNB & ETH', 'index.card-button-deposit') }}</template>
                         <template v-if="card.actionType === $options.ACTION_TYPE.SWAP">{{ $td('Buy', 'index.swap') }}</template>
                         <template v-if="card.actionType === $options.ACTION_TYPE.FARM">{{ $td('Add liquidity', 'index.add-liquidity') }}</template>
@@ -102,7 +98,7 @@ function poolHasCoin(pool, symbol) {
                     </nuxt-link>
                 </div>
                 <div class="u-cell u-cell--4-10" v-if="isUndoAvailable">
-                    <nuxt-link class="button button--full button--ghost-white" :to="pageUrl(undoActionUrl)">
+                    <nuxt-link class="button button--full button--ghost-white" :to="getDashboardUrl(undoActionUrl)">
                         <template v-if="undoActionType === $options.ACTION_TYPE.REMOVE_LIQUIDITY">{{ $td('Withdraw', 'index.withdraw-unbond') }}</template>
                         <template v-if="undoActionType === $options.ACTION_TYPE.UNBOND">{{ $td('Unbond', 'index.withdraw-unbond') }}</template>
                     </nuxt-link>
