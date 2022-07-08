@@ -64,8 +64,8 @@ export default {
 </script>
 
 <template>
-    <div class="u-section">
-        <form class="card card__content card__content--small" @submit.prevent="authorize()">
+    <div class="u-section u-container--small">
+        <form class="card card__content" @submit.prevent="authorize()">
             <div class="form-row u-text-center">
                 <h1 class="u-h3 u-mb-05">{{ $td('Sign up', 'index.sign-up-2') }}</h1>
                 <p class="u-text-medium">{{ $td('Save this seed phrase to access your funds in&nbsp;the&nbsp;future.', 'index.save-phrase-warning') }}</p>

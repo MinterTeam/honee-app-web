@@ -26,7 +26,7 @@ export default {
 </script>
 
 <template>
-    <div class="u-section u-relative">
+    <div class="u-section u-relative u-container--mini">
         <div class="u-relative">
             <!--<img class="auth__bee" src="/img/logo-bee.svg" alt="" role="presentation">-->
             <img class="auth__logo" src="/img/logo-honee.svg" alt="Honee" width="280" height="56">

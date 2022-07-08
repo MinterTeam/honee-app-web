@@ -9,11 +9,6 @@ export default {
         Language,
         Snackbar,
     },
-    head: {
-        bodyAttrs: {
-            class: 'splash-layout',
-        },
-    },
 };
 </script>
 
