@@ -45,7 +45,7 @@ export default {
                     <div class="header__controls-user-avatar u-hidden-mini-down" :style="`background-image: url(${$store.getters.avatar});`" v-if="$store.getters.avatar"></div>
                     <div class="header__controls-user-name">{{ $store.getters.username }}</div>
                 </nuxt-link>
-                <button class="header__controls-link link u-semantic-button" @click="logout" >
+                <button type="button" class="header__controls-link link u-semantic-button" @click="logout()">
                     <img src="/img/icon-logout.svg" width="24" height="24" alt="Logout">
                 </button>
                 <div class="header__controls-language header__controls-link">

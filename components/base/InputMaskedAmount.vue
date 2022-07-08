@@ -23,6 +23,9 @@ export default {
             default: '',
         },
     },
+    emits: [
+        'input',
+    ],
     data() {
         return {
             // inner value set by imask
@@ -63,5 +66,5 @@ export default {
 </script>
 
 <template>
-    <input type="text" autocapitalize="off" inputmode="decimal" v-imask="$options.imaskAmount" v-on="listeners" @accept="onAcceptInput" ref="input"/>
+    <input type="text" autocapitalize="off" inputmode="decimal" v-imask="$options.imaskAmount" v-on="listeners" @accept="onAcceptInput($event)" ref="input"/>
 </template>

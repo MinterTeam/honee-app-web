@@ -65,7 +65,7 @@ export default {
 
 <template>
     <div class="u-section">
-        <div class="card card__content card__content--small">
+        <form class="card card__content card__content--small" @submit.prevent="authorize()">
             <div class="form-row u-text-center">
                 <h1 class="u-h3 u-mb-05">{{ $td('Sign up', 'index.sign-up-2') }}</h1>
                 <p class="u-text-medium">{{ $td('Save this seed phrase to access your funds in&nbsp;the&nbsp;future.', 'index.save-phrase-warning') }}</p>
@@ -85,7 +85,7 @@ export default {
                 </label>
             </div>
             <div class="form-row">
-                <button class="button button--main button--full" :class="{'is-disabled': !isMnemonicSaved}" @click="authorize()">{{ $td('Launch Honee', 'index.launch-honee') }}</button>
+                <button type="submit" class="button button--main button--full" :class="{'is-disabled': !isMnemonicSaved}">{{ $td('Launch Honee', 'index.launch-honee') }}</button>
                 <div class="form__error u-mt-05 u-text-center" v-if="$v.isMnemonicSaved.$error">{{ $td('You must save the phrase', 'index.save-phrase-error') }}</div>
 
                 <nuxt-link class="button button--ghost button--full u-mt-05" :to="$i18nGetPreferredPath('/auth')">{{ $td('Back', 'index.back') }}</nuxt-link>
@@ -94,7 +94,7 @@ export default {
             <p class="u-mt-20 u-text-medium">
                 {{ $td('We do not provide custody services for any virtual assets. It is your sole responsibility to store your seed phrase in a safe location. You should backup your seed phrase immediately upon its generation. If you lose your seed phrase, you will not be able to restore it and will lose all of your funds stored in the respective wallet.', 'index.create-wallet-disclaimer') }}
             </p>
-        </div>
+        </form>
     </div>
 </template>
 

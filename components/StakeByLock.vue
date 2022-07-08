@@ -261,7 +261,7 @@ function yearToBlock(year) {
                         </div>
                     </div>
                 </div>
-        </template>
+            </template>
 
             <template v-slot:submit-title>
                 {{ $td('Confirm', `form.submit-confirm-button`) }}

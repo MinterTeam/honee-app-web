@@ -26,7 +26,7 @@ export default {
 </script>
 
 <template>
-    <button @click="copy(copyText)" v-if="isClipboardSupported" type="button">
+    <button v-if="isClipboardSupported" @click="copy(copyText)" type="button">
         <slot/>
     </button>
 </template>

@@ -30,6 +30,10 @@ export default {
             default: true,
         },
     },
+    emits: [
+        'update:isOpen',
+        'select',
+    ],
     computed: {
         useSpecifiedCoinList() {
             if (!this.fallbackToFullList) {

@@ -36,6 +36,9 @@ export default {
             type: String,
         },
     },
+    emits: [
+        'input',
+    ],
     data() {
         return {
             isSelectVisible: false,
@@ -114,7 +117,7 @@ export default {
             :is-open.sync="isSelectVisible"
             :input-uppercase="false"
             :filter="suggestionFilterDefault"
-            @select="handleSelect"
+            @select="handleSelect($event)"
         >
             <template v-slot:suggestion-item="{suggestion}">
                 <img class="h-field__suggestion-icon" :src="getIconUrl(suggestion)" width="24" height="24" alt="" role="presentation">

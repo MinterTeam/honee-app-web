@@ -75,6 +75,13 @@ export default {
             default: '',
         },
     },
+    emits: [
+        'update:coin',
+        'update:amount',
+        'update:is-use-max',
+        'use-max',
+        'input-native',
+    ],
     data() {
         return {
             isSelectVisible: false,
@@ -149,7 +156,7 @@ export default {
             :coin-list="coinList"
             :coin-type="coinType"
             :fallback-to-full-list="fallbackToFullList"
-            @select="handleSelect"
+            @select="handleSelect($event)"
         />
     </div>
 </template>

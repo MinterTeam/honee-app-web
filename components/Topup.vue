@@ -103,7 +103,7 @@ export default {
                 {{ $td('Top up with', 'topup-network.title') }} {{ network.coin }}
             </template>
         </h1>
-        <p class="u-text-center u-text-medium" v-if="description">{{ description}}</p>
+        <p class="u-text-center u-text-medium" v-if="description">{{ description }}</p>
         <p class="u-text-center u-text-medium" v-else-if="description !== false">
             {{ $td(`Send any amount of ${network.coin} to this address`, 'topup-network.description', {coin: network.coin}) }}
         </p>
@@ -119,6 +119,7 @@ export default {
             <div class="u-cell u-cell--auto-grow" v-if="isClipboardSupported">
                 <button
                     class="button button--ghost-main button--full button--narrow"
+                    type="button"
                     @click="copy(address)"
                 >
                     {{ $td('Copy', 'topup-network.copy') }}
@@ -127,7 +128,8 @@ export default {
             <div class="u-cell u-cell--auto-grow" v-if="isShareSupported">
                 <button
                     class="button button--ghost-main button--full button--narrow"
-                    @click="shareAddress"
+                    type="button"
+                    @click="shareAddress()"
                 >
                     {{ $td('Share', 'topup-network.share') }}
                 </button>
@@ -135,6 +137,7 @@ export default {
             <div class="u-cell u-cell--auto-grow">
                 <button
                     class="button button--ghost-main button--full button--narrow"
+                    type="button"
                     @click="isQrVisible = !isQrVisible"
                 >
                     <template v-if="!isQrVisible">

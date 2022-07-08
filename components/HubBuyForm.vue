@@ -456,7 +456,7 @@ export default {
         getExplorerTxUrl,
         getEvmTxUrl,
         shortHashFilter,
-/*
+        /*
         ensureNetworkData() {
             if (!this.hubCoinList.length || !this.priceList.length) {
                 return this.$fetch();
@@ -605,7 +605,7 @@ export default {
             // reload everything, because polling was stopped during isFormSending
             this.$fetch();
         },
-/*
+        /*
         sendWrapTx({nonce, gasPrice} = {}) {
             return this.sendEthTx({
                 to: WETH_CONTRACT_ADDRESS,
@@ -621,17 +621,17 @@ export default {
             const amountToUnwrap = toErcDecimals(this.amountToUnwrap, this.coinDecimals);
             const data = AbiEncoder(wethAbi)('withdraw', amountToUnwrap);
             return this.sendEthTx({
-                    to: this.wrappedNativeContractAddress,
-                    data,
-                    nonce,
-                    gasPrice,
-                    gasLimit: GAS_LIMIT_UNWRAP,
-                }, LOADING_STAGE.UNWRAP_ETH);
-                // .then((hash) => {
-                //     this.waitUnwrapConfirmation = true;
-                //
-                //     return hash;
-                // });
+                to: this.wrappedNativeContractAddress,
+                data,
+                nonce,
+                gasPrice,
+                gasLimit: GAS_LIMIT_UNWRAP,
+            }, LOADING_STAGE.UNWRAP_ETH);
+            // .then((hash) => {
+            //     this.waitUnwrapConfirmation = true;
+            //
+            //     return hash;
+            // });
         },
         sendApproveTx({nonce, gasPrice} = {}) {
             let amountToUnlock = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
@@ -861,6 +861,7 @@ export default {
 
 
                 <button
+                    type="submit"
                     class="form-row button button--main button--full"
                     :class="{'is-loading': isFormSending, 'is-disabled': ($v.$invalid || !$store.state.onLine)}"
                 >
@@ -930,7 +931,7 @@ export default {
         </template>
 
         <!-- Confirm modal -->
-        <Modal v-bind:isOpen.sync="isConfirmModalVisible">
+        <Modal :isOpen.sync="isConfirmModalVisible">
             <h2 class="u-h3 form-row">
                 {{ $td('Buy', 'form.buy-button') }} {{ form.coinToGet }}
             </h2>
@@ -968,8 +969,9 @@ export default {
             </div>
 
             <div class="form-row">
-                <button class="button button--main button--full" type="button" data-focus-on-open
-                        @click="submit()"
+                <button
+                    class="button button--main button--full" type="button" data-focus-on-open
+                    @click="submit()"
                 >
                     {{ $td('Confirm', 'form.submit-confirm-button') }}
                 </button>
@@ -980,7 +982,7 @@ export default {
         </Modal>
 
         <!-- Loading modal -->
-        <Modal v-bind:isOpen.sync="isFormSending" :disable-outside-click="true">
+        <Modal :isOpen.sync="isFormSending" :disable-outside-click="true">
             <h2 class="u-h3 u-mb-10">
                 <template v-if="txServiceState.loadingStage === $options.LOADING_STAGE.WAIT_ETH">
                     <Loader class="hub__buy-title-loader" :is-loading="true"/>
@@ -1001,7 +1003,7 @@ export default {
                 <template v-if="!isFiatRampSelected">
                     <div class="form-row">
                         <div class="form-field form-field--dashed form-field--with-icon">
-                            <div class="form-field__input is-not-empty">{{ prettyExact(ethToTopUp) }} {{externalTokenSymbol}}</div>
+                            <div class="form-field__input is-not-empty">{{ prettyExact(ethToTopUp) }} {{ externalTokenSymbol }}</div>
                             <span class="form-field__label">{{ $td('Send', 'form.wallet-send-button') }}</span>
                             <ButtonCopyIcon class="form-field__icon form-field__icon--copy" :copy-text="ethToTopUp.toString()"/>
                         </div>
@@ -1062,7 +1064,7 @@ export default {
                         </button>
                     </div>
                 </div>
-                <HubBuySpeedup :steps-ordered="stepsOrdered" @speedup="speedup"/>
+                <HubBuySpeedup :steps-ordered="stepsOrdered" @speedup="speedup($event)"/>
             </div>
             <div class="form-row u-text-medium u-fw-500" v-if="txServiceState.loadingStage !== $options.LOADING_STAGE.WAIT_ETH && txServiceState.loadingStage !== $options.LOADING_STAGE.FINISH">
                 <span class="u-emoji">⚠️</span> {{ $td('Please keep this page active, otherwise progress may&nbsp;be&nbsp;lost.', 'index.keep-page-active') }}

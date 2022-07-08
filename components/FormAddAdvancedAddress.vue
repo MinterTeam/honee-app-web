@@ -63,7 +63,7 @@ export default {
         </div>
 
         <div class="form-row">
-            <button class="button button--main button--full" :class="{'is-disabled': $v.$invalid}">{{ $td('Sign in', 'index.sign-in') }}</button>
+            <button type="submit" class="button button--main button--full" :class="{'is-disabled': $v.$invalid}">{{ $td('Sign in', 'index.sign-in') }}</button>
         </div>
     </form>
 </template>

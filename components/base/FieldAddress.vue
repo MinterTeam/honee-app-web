@@ -25,6 +25,9 @@ export default {
             default: 'Address',
         },
     },
+    emits: [
+        'input',
+    ],
     data() {
         return {
         };

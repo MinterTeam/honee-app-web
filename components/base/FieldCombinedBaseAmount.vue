@@ -53,6 +53,13 @@ export default {
             default: false,
         },
     },
+    emits: [
+        'update:is-use-max',
+        'use-max',
+        'input',
+        'input-native',
+        'blur',
+    ],
     data() {
         return {
             isUseMax: false,
@@ -167,7 +174,7 @@ function isSelectedCoinSameAsFeeCoin(selectedCoinItem, feeCoinIdOrSymbol) {
             <button
                 class="h-field__aside-max link--main link--opacity u-semantic-button" type="button"
                 v-else-if="isMaxValueDefined && !isUseMax"
-                @click="useMax"
+                @click="useMax()"
             >
                 {{ $td('Use max', 'index.use-max') }}. {{ isMaxValueRounded ? '≈' : '' }}{{ pretty(maxValueComputed) }}
             </button>

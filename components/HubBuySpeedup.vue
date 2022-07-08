@@ -27,6 +27,9 @@ export default {
             required: true,
         },
     },
+    emits: [
+        'speedup',
+    ],
     data() {
         return {
             priceList: [],

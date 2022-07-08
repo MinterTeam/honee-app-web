@@ -49,8 +49,22 @@ export default {
             </div>
         </div>
         <div class="u-text-right u-mt-15" v-if="$options.SHORT_COUNT < $store.state.balance.length">
-            <button class="link--default u-semantic-button" @click="isFullListActive = true" v-if="!isFullListActive">{{ $td('View all coins', 'index.assets-coins-view-all') }}</button>
-            <button class="link--default u-semantic-button" @click="isFullListActive = false" v-else>{{ $td('View less coins', 'index.assets-coins-view-less') }}</button>
+            <button
+                type="button"
+                class="link--default u-semantic-button"
+                v-if="!isFullListActive"
+                @click="isFullListActive = true"
+            >
+                {{ $td('View all coins', 'index.assets-coins-view-all') }}
+            </button>
+            <button
+                type="button"
+                class="link--default u-semantic-button"
+                v-else
+                @click="isFullListActive = false"
+            >
+                {{ $td('View less coins', 'index.assets-coins-view-less') }}
+            </button>
         </div>
     </div>
 </template>

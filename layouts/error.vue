@@ -19,9 +19,9 @@ export default {
             }
             // axios status
             return this.error.response?.status || this.error.request?.status
-            // custom status
-            || this.error.status
-            || this.error.statusCode;
+                // custom status
+                || this.error.status
+                || this.error.statusCode;
         },
         message() {
             let errorText = getErrorText(this.error, '');

@@ -1,17 +1,17 @@
 <script>
-    export default {
-        props: {
-            isLoading: {
-                type: Boolean,
-                default: false,
-            },
+export default {
+    props: {
+        isLoading: {
+            type: Boolean,
+            default: false,
         },
-    };
+    },
+};
 </script>
 
 <template>
     <svg class="loader" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" v-if="isLoading">
-        <circle class="loader__path" cx="25" cy="25" r="16"></circle>
+        <circle class="loader__path" cx="25" cy="25" r="16"/>
     </svg>
 </template>
 
