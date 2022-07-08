@@ -53,8 +53,8 @@ export default {
             this.$store.commit('LOGOUT');
             this.$store.commit('ADD_AUTH_ADVANCED', this.mnemonic);
             // redirect
-            // const nextUrl = '/onboarding/topup';
-            const nextUrl = DASHBOARD_URL;
+            const nextUrl = '/onboarding/topup';
+            // const nextUrl = DASHBOARD_URL;
             const authRedirectPath = this.$store.state.authRedirectPath || nextUrl;
             this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
             this.$router.push(this.$i18nGetPreferredPath({path: authRedirectPath}));
