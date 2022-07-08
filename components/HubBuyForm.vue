@@ -118,6 +118,10 @@ export default {
                 this.priceList = Object.freeze(priceList);
             });
     },
+    emits: [
+        'success',
+        'success-modal-close',
+    ],
     props: {
         action: {
             type: Object,
@@ -553,13 +557,14 @@ export default {
                             },
                         },
                         prepare: () => this.prepareMinterSwapParams(outputAmount),
-                    })
-                        .then((tx) => {
-                            this.txServiceState.loadingStage = LOADING_STAGE.FINISH;
-                            this.addStepData(LOADING_STAGE.FINISH, {coin: this.form.coinToGet, amount: tx.result.returnAmount, finished: true});
-                        });
+                    });
                 })
-                .then(() => {
+                .then((tx) => {
+                    this.txServiceState.loadingStage = LOADING_STAGE.FINISH;
+                    this.addStepData(LOADING_STAGE.FINISH, {coin: this.form.coinToGet, amount: tx.result.returnAmount, finished: true});
+
+                    this.$emit('success');
+
                     this.$v.$reset();
                     // reset form
                     this.form.amountEth = '';
@@ -1063,7 +1068,7 @@ export default {
                 <span class="u-emoji">⚠️</span> {{ $td('Please keep this page active, otherwise progress may&nbsp;be&nbsp;lost.', 'index.keep-page-active') }}
             </div>
             <div class="form-row" v-if="txServiceState.loadingStage === $options.LOADING_STAGE.FINISH">
-                <button class="button button--ghost-main button--full" type="button" @click="finishSending()">
+                <button class="button button--ghost-main button--full" type="button" @click="finishSending(); $emit('success-modal-close')">
                     {{ $td('Close', 'common.close') }}
                 </button>
             </div>

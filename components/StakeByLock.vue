@@ -52,6 +52,11 @@ export default {
                 this.$nuxt.error(error);
             });
     },
+    emits: [
+        'success',
+        'success-modal-close',
+        'override-stats-value',
+    ],
     props: {
         action: {
             type: Object,
@@ -195,6 +200,8 @@ function yearToBlock(year) {
             :payload="payload"
             :before-post-tx="fetchLatestBlock"
             @clear-form="clearForm()"
+            @success="$emit('success')"
+            @success-modal-close="$emit('success-modal-close')"
         >
             <template v-slot:default="{fee}">
                 <div class="form-row">

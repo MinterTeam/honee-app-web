@@ -1,4 +1,5 @@
 @container-width: 640px;
+@container-width-large: 968px;
 @container-padding-small: 16px;
 @container-padding: 24px;
 @section-margin: 32px;
@@ -11,9 +12,9 @@
 @breakpoint-mini-down: (@breakpoint-mini-up - 1px);
 @breakpoint-small-up: 460px;
 @breakpoint-small-down: (@breakpoint-small-up - 1px);
-@breakpoint-medium-up: 680px;
+@breakpoint-medium-up: @container-width + @container-padding * 2;
 @breakpoint-medium-down: (@breakpoint-medium-up - 1px);
-@breakpoint-large-up: 960px;
+@breakpoint-large-up: @container-width-large + @container-padding * 2;
 @breakpoint-large-down: (@breakpoint-large-up - 1px);
 @breakpoint-xlarge-up: 1200px;
 @breakpoint-xlarge-down: (@breakpoint-xlarge-up - 1px);

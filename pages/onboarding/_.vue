@@ -1,12 +1,11 @@
 <script>
 import getTitle from '~/assets/get-title.js';
-import Modal from '~/components/base/Modal.vue';
 import CardAction from '~/components/CardAction.vue';
 
 export default {
+    layout: 'onboarding',
     components: {
         CardAction,
-        Modal,
     },
     head() {
         if (!this.action) {
@@ -32,18 +31,11 @@ export default {
 </script>
 
 <template>
-    <Modal
-        v-if="$route.params.pathMatch"
-        :isOpen="true"
-        :hideCloseButton="false"
-        :disableOutsideClick="true"
-        modalContainerClass=""
-        @modal-close="$router.push(getDashboardUrl())"
-    >
+    <div class="u-section u-container u-container--small">
         <CardAction
-            :base-url="getDashboardUrl()"
+            base-url="/onboarding"
             @update:action="action = $event"
             @success-modal-close="$router.push(getDashboardUrl())"
         />
-    </Modal>
+    </div>
 </template>

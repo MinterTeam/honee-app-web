@@ -64,8 +64,7 @@ export default {
                     return;
                 }
                 if (newVal.amount > oldVal.amount) {
-                    this.isWaiting = false;
-                    this.$emit('topup', newVal.amount);
+                    this.finishTopup(newVal.amount, newVal.coin.symbol);
                 }
             },
         },
@@ -79,17 +78,17 @@ export default {
                 .then((coinList) => {
                     this.hubCoinList = Object.freeze(coinList);
 
+                    const coinSymbol = findNativeCoinSymbol(this.hubCoinList, this.networkSlug);
                     this.setTokenProps({
                         accountAddress: this.$store.getters.evmAddress,
                         hubCoinList: this.hubCoinList,
-                        tokenSymbol: findNativeCoinSymbol(this.hubCoinList, this.networkSlug),
+                        tokenSymbol: coinSymbol,
                         chainId: HUB_CHAIN_DATA[this.networkSlug].chainId,
                     });
 
                     const {canceler} = this.waitEnoughTokenBalance()
                         .then(() => {
-                            this.isWaiting = false;
-                            this.$emit('topup', this.balance);
+                            this.finishTopup(this.balance, coinSymbol);
                         });
                     this.evmWaitCanceler = canceler;
                 })
@@ -100,6 +99,10 @@ export default {
                     console.error(error);
                     this.serverError = getErrorText(error);
                 });
+        },
+        finishTopup(amount, coinSymbol) {
+            this.isWaiting = false;
+            this.$emit('topup', {amount, coinSymbol});
         },
     },
 };

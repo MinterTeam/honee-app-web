@@ -1,5 +1,9 @@
 <script>
     export default {
+        emits: [
+            'update:isOpen',
+            'modal-close',
+        ],
         props: {
             isOpen: {
                 type: Boolean,
@@ -50,6 +54,7 @@
                     }, 0);
                 } else {
                     // on close
+                    this.$emit('modal-close');
                     setTimeout(() => {
                         if (this.elFocusedBeforeOpen) {
                             setTimeout(() => {
@@ -64,7 +69,6 @@
         methods: {
             closeModal() {
                 this.$emit('update:isOpen', false);
-                this.$emit('modal-close');
             },
             handleModalClick(e) {
                 const elCloseButton = this.$refs.modalCloseButton;
@@ -98,7 +102,7 @@
         <div class="modal-wrap" v-if="isOpen || keepMarkup">
             <transition name="v-transition-modal">
                 <div class="modal u-container u-container--wide" tabindex="-1" role="dialog"
-                     v-show="isOpen || !keepMarkup"
+                     v-show="isOpen"
                      :class="modalClass"
                      @click="handleModalClick"
                      @keydown="handleModalKeydown"

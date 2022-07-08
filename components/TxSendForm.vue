@@ -24,6 +24,10 @@ export default {
         autosize,
     },
     mixins: [validationMixin],
+    emits: [
+        'success',
+        'success-modal-close',
+    ],
     props: {
         action: {
             type: Object,
@@ -79,6 +83,8 @@ export default {
         :$txData="$v.form"
         :txType="$options.TX_TYPE.SEND"
         @clear-form="clearForm()"
+        @success="$emit('success')"
+        @success-modal-close="$emit('success-modal-close')"
     >
         <template v-slot:default="{fee}">
             <div class="form-row">

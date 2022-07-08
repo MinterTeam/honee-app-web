@@ -10,7 +10,7 @@
     .u-container--small {max-width: 376px + @container-padding * 2;}
     .u-container--mini {max-width: 312px + @container-padding * 2;}
     //.u-container--medium {max-width: @container-width-medium + @container-padding * 2;}
-    //.u-container--large {max-width: @container-width-large + @container-padding * 2;}
+    .u-container--large {max-width: @container-width-large + @container-padding * 2;}
     .u-container--2k {max-width: 2560px;}
     .u-container--wide {max-width: none;}
 }
@@ -78,4 +78,11 @@
     .u-cell--medium--2-3 { width: 66.6666%;}
     .u-cell--medium--4-10 { width: 40%;}
     .u-cell--medium--6-10 { width: 60%;}
+}
+@media (min-width: @breakpoint-large-up) {
+    .u-cell--large--1-2 { width: 50%;}
+    .u-cell--large--1-3 { width: 33.3333%;}
+    .u-cell--large--2-3 { width: 66.6666%;}
+    //.u-cell--large--4-10 { width: 40%;}
+    //.u-cell--large--6-10 { width: 60%;}
 }

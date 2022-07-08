@@ -30,6 +30,10 @@ export default {
     fetch() {
         this.$store.dispatch('FETCH_VALIDATOR_META_LIST');
     },
+    emits: [
+        'success',
+        'success-modal-close',
+    ],
     props: {
         action: {
             type: Object,
@@ -100,6 +104,8 @@ export default {
         :$txData="$v.form"
         :txType="$options.TX_TYPE.DELEGATE"
         @clear-form="clearForm()"
+        @success="$emit('success')"
+        @success-modal-close="$emit('success-modal-close')"
     >
         <template v-slot:default="{fee}">
             <div class="form-row">

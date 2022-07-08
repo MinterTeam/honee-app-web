@@ -23,6 +23,13 @@ export default {
         checkEmpty,
     },
     mixins: [validationMixin],
+    emits: [
+        'success',
+        'success-modal-close',
+        'success-tx',
+        'clear-form',
+        'update:txForm',
+    ],
     props: {
         txData: {
             type: Object,
@@ -190,6 +197,7 @@ export default {
                     this.isFormSending = false;
                     this.serverSuccess = tx;
                     this.$emit('success-tx', this.serverSuccess);
+                    this.$emit('success');
                     this.isSuccessModalVisible = true;
                     this.clearForm();
                 })
@@ -362,7 +370,7 @@ function clearEmptyFields(obj) {
         </Modal>
 
         <!-- Success Modal -->
-        <Modal v-bind:isOpen.sync="isSuccessModalVisible">
+        <Modal v-bind:isOpen.sync="isSuccessModalVisible" @modal-close="$emit('success-modal-close')">
             <slot name="success-modal-header">
                 <h2 class="u-h3 u-mb-10">
                     {{ $td('Success!', 'form.success-title') }}

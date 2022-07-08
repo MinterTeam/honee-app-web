@@ -38,8 +38,8 @@ export default {
         };
     },
     methods: {
-        handleTopup() {
-            this.$router.push(this.$i18nGetPreferredPath('/onboarding/earning'));
+        handleTopup(balance) {
+            this.$router.push(this.$i18nGetPreferredPath('/onboarding') + `?topupAmount=${balance.amount}&topupCoin=${balance.coinSymbol}`);
         },
     },
 };

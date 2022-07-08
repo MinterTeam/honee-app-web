@@ -31,6 +31,10 @@
         fetch() {
             return this.$store.dispatch('FETCH_STAKE_LIST');
         },
+        emits: [
+            'success',
+            'success-modal-close',
+        ],
         props: {
             action: {
                 type: Object,
@@ -177,6 +181,8 @@
             :$txData="$v.form"
             :txType="$options.TX_TYPE.UNBOND"
             @clear-form="clearForm()"
+            @success="$emit('success')"
+            @success-modal-close="$emit('success-modal-close')"
         >
             <template v-slot:default>
                 <div class="form-row">
