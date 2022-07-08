@@ -39,10 +39,14 @@ export default {
     },
     methods: {
         handleTopup(balance) {
-            this.$router.push(this.$i18nGetPreferredPath('/onboarding') + `?topupAmount=${balance.amount}&topupCoin=${balance.coinSymbol}`);
+            this.$router.push(this.$i18nGetPreferredPath('/onboarding') + getTopupFinishQuery(balance.coinSymbol, balance.amount));
         },
     },
 };
+
+export function getTopupFinishQuery(coinSymbol, amount) {
+    return `?topupAmount=${amount}&topupCoin=${coinSymbol}`;
+}
 </script>
 
 <template>

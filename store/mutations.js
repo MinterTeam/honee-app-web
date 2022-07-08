@@ -37,6 +37,11 @@ export default {
         state.validatorMetaList = Object.freeze(validatorList);
     },
     SET_AUTH_REDIRECT_PATH: (state, authRedirectPath) => {
+        const cleanPath = authRedirectPath.replace('/ru', '');
+        if (!cleanPath || cleanPath === '/') {
+            state.authRedirectPath = '';
+            return;
+        }
         state.authRedirectPath = authRedirectPath;
     },
     PUSH_HISTORY: (state, historyItem) => {

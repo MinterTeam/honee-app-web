@@ -26,7 +26,7 @@ export default {
     },
     computed: {
         card2MinterUrl() {
-            return getCard2MinterUrl(this.$store.getters.address, window.location.origin + this.$i18nGetPreferredPath('/onboarding/earning'));
+            return getCard2MinterUrl(this.$store.getters.address, window.location.origin + this.$i18nGetPreferredPath('/onboarding/topup/finish-card2minter'));
         },
         isMainnet() {
             return NETWORK === MAINNET;
