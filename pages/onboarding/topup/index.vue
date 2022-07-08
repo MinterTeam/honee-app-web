@@ -46,7 +46,7 @@ export default {
             <p>{{ $td('Choose one of these options', 'topup.description') }}</p>
 
 
-            <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath('/onboarding/topup/bsc')"  v-if="!isMainnet">
+            <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath('/onboarding/topup/bsc')" v-if="!isMainnet">
                 <InlineSvg class="button__icon" src="/img/icon-topup-bnb.svg" alt="" role="presentation"/>
                 {{ $td('Top up with BNB', 'topup.top-up-with-network', {network: 'BNB'}) }}
             </nuxt-link>

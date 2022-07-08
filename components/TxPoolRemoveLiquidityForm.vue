@@ -360,7 +360,7 @@ export default {
 
         <template v-slot:confirm-modal-header>
             <h2 class="u-h3 u-mb-10">
-<!--                <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-feature-pool.svg`" alt="" role="presentation" width="40" height="40">-->
+                <!-- <img class="panel__header-title-icon" :src="`${BASE_URL_PREFIX}/img/icon-feature-pool.svg`" alt="" role="presentation" width="40" height="40">-->
                 {{ action.title }}
             </h2>
         </template>

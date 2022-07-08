@@ -81,7 +81,7 @@ export default {
             </template>
         </div>
         <div class="hub__buy-transaction-row hub__buy-transaction-meta">
-<!-- @TODO chainId -->
+            <!-- @TODO chainId -->
             <a v-if="hash.indexOf('0x') === 0" :href="getEvmTxUrl(step.tx.params.chainId, hash)" class="link--main link--hover" target="_blank">{{ formatHash(hash) }}</a>
             <a v-if="hash.indexOf('Mt') === 0" :href="getExplorerTxUrl(hash)" class="link--main link--hover" target="_blank">{{ formatHash(hash) }}</a>
             <div class="hub__buy-time" v-if="time">

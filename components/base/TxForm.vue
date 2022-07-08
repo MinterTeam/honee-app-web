@@ -288,15 +288,16 @@ function clearEmptyFields(obj) {
         <slot name="panel-header"></slot>
 
         <!-- Form -->
-        <form novalidate @submit.prevent="submitConfirm">
+        <form novalidate @submit.prevent="submitConfirm()">
             <!-- Tx Data Fields -->
             <slot :fee="fee"></slot>
 
             <div class="form-row" v-show="showAdvanced && isShowPayload">
                 <label class="form-field" :class="{'is-error': $v.form.payload.$error}">
-                    <input class="form-field__input" type="text" v-check-empty
-                           v-model.trim="form.payload"
-                           @blur="$v.form.payload.$touch()"
+                    <input
+                        class="form-field__input" type="text" v-check-empty
+                        v-model.trim="form.payload"
+                        @blur="$v.form.payload.$touch()"
                     >
                     <span class="form-field__label">{{ $td('Message', 'form.message') }}</span>
                 </label>
@@ -308,20 +309,29 @@ function clearEmptyFields(obj) {
 
             <!-- Controls -->
             <div class="form-row" v-if="showSwitcherAdvanced">
-                <button class="link--default u-semantic-button" type="button" @click="switchToSimple" v-if="showAdvanced">
+                <button
+                    class="link--default u-semantic-button" type="button"
+                    v-if="showAdvanced"
+                    @click="switchToSimple()"
+                >
                     {{ $td('Remove message', 'form.toggle-simple-mode') }}
                 </button>
-                <button class="link--default u-semantic-button" type="button" @click="switchToAdvanced" v-if="!showAdvanced">
+                <button
+                    class="link--default u-semantic-button" type="button"
+                    v-if="!showAdvanced"
+                    @click="switchToAdvanced()"
+                >
                     {{ $td('Add message', 'form.toggle-advanced-mode') }}
                 </button>
             </div>
             <div class="form-row">
                 <button
+                    type="submit"
                     class="button button--main button--full"
                     :class="{
-                                'is-loading': isFormSending,
-                                'is-disabled': $v.$invalid
-                            }"
+                        'is-loading': isFormSending,
+                        'is-disabled': $v.$invalid
+                    }"
                 >
                     <span class="button__content">
                         <slot name="submit-title">
@@ -339,7 +349,7 @@ function clearEmptyFields(obj) {
         <slot name="panel-footer"></slot>
 
         <!-- Confirm Modal -->
-        <Modal v-bind:isOpen.sync="isConfirmModalVisible">
+        <Modal :isOpen.sync="isConfirmModalVisible">
             <slot name="confirm-modal-header">
                 <h2 class="u-h3 u-mb-10">
                     {{ $td('Send transaction', 'form.confirm-title') }}
@@ -355,9 +365,10 @@ function clearEmptyFields(obj) {
             </div>
             -->
             <div class="form-row">
-                <button class="button button--main button--full" type="button" data-focus-on-open
-                        :class="{'is-loading': isFormSending}"
-                        @click="submit"
+                <button
+                    class="button button--main button--full" type="button" data-focus-on-open
+                    :class="{'is-loading': isFormSending}"
+                    @click="submit()"
                 >
                     <span class="button__content">{{ $td('Confirm', 'form.submit-confirm-button') }}</span>
                     <Loader class="button__loader" :isLoading="true"/>
@@ -370,7 +381,7 @@ function clearEmptyFields(obj) {
         </Modal>
 
         <!-- Success Modal -->
-        <Modal v-bind:isOpen.sync="isSuccessModalVisible" @modal-close="$emit('success-modal-close')">
+        <Modal :isOpen.sync="isSuccessModalVisible" @modal-close="$emit('success-modal-close')">
             <slot name="success-modal-header">
                 <h2 class="u-h3 u-mb-10">
                     {{ $td('Success!', 'form.success-title') }}

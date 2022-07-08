@@ -6,6 +6,9 @@ export default {
             default: '',
         },
     },
+    emits: [
+        'input', 'blur', 'focus',
+    ],
     computed: {
         // all parent listeners except `input`, `blur`, and `focus`
         listeners() {

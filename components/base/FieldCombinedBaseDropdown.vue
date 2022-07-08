@@ -41,6 +41,12 @@ export default {
             type: String,
         },
     },
+    emits: [
+        'update:isOpen',
+        'select',
+        'blur',
+        'focus',
+    ],
     data() {
         return {
             value: '',
@@ -175,8 +181,9 @@ export default {
                 :key="getSuggestionValue(suggestion)"
                 @click="handleSuggestionClick(suggestion)"
             >
-                <slot name="suggestion-item"
-                      :suggestion="suggestion"
+                <slot
+                    name="suggestion-item"
+                    :suggestion="suggestion"
                 >
                     <span>{{ getSuggestionValue(suggestion) }}</span>
                 </slot>

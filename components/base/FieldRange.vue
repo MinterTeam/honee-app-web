@@ -40,6 +40,9 @@ export default {
             default: 'Range',
         },
     },
+    emits: [
+        'input',
+    ],
     data() {
         return {
         };

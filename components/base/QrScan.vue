@@ -1,106 +1,108 @@
 <script>
-    import QrScanner from 'qr-scanner/src/qr-scanner.js';
-    import QrScannerWorkerPath from '!!file-loader!~/node_modules/qr-scanner/qr-scanner-worker.min.js';
-    import BaseLoader from '~/components/base/BaseLoader.vue';
-    import Modal from '~/components/base/Modal.vue';
+import QrScanner from 'qr-scanner/src/qr-scanner.js';
+import QrScannerWorkerPath from '!!file-loader!~/node_modules/qr-scanner/qr-scanner-worker.min.js';
+import BaseLoader from '~/components/base/BaseLoader.vue';
+import Modal from '~/components/base/Modal.vue';
 
-    QrScanner.WORKER_PATH = QrScannerWorkerPath;
+QrScanner.WORKER_PATH = QrScannerWorkerPath;
 
 
-    export default {
-        components: {
-            BaseLoader,
-            Modal,
+export default {
+    components: {
+        BaseLoader,
+        Modal,
+    },
+    props: {
+        qrVisible: {
+            type: Boolean,
+            default: false,
         },
-        props: {
-            qrVisible: {
-                type: Boolean,
-                default: false,
-            },
-        },
-        data() {
-            return {
-                /** @type QrScanner */
-                qrScanner: null,
-                cameraError: false,
-                isModalVisible: false,
-                isPlaying: false,
-            };
-        },
-        mounted() {
-            QrScanner.hasCamera()
-                .then((hasCamera) => {
-                    this.$emit('update:qrVisible', hasCamera);
-                    if (hasCamera) {
-                        this.qrScanner = new QrScanner(this.$refs.qrVideo, (result) => {
-                            this.stopScanQr();
-                            this.isModalVisible = false;
-                            this.$emit('qr-scanned', result);
-                        });
-                    }
-                });
-        },
-        destroyed() {
-            if (this.qrScanner) {
-                this.qrScanner.destroy();
-            }
-        },
-        methods: {
-            scanQr() {
-                this.isModalVisible = true;
-                this.$refs.qrVideo.addEventListener('canplay', this.handlePlayStart);
-                this.qrScanner.start()
-                    .then(() => {
-                        this.cameraError = false;
-                    })
-                    .catch(() => {
-                        this.cameraError = true;
+    },
+    emits: ['update:qrVisible', 'qr-scanned'],
+    data() {
+        return {
+            /** @type QrScanner */
+            qrScanner: null,
+            cameraError: false,
+            isModalVisible: false,
+            isPlaying: false,
+        };
+    },
+    mounted() {
+        QrScanner.hasCamera()
+            .then((hasCamera) => {
+                this.$emit('update:qrVisible', hasCamera);
+                if (hasCamera) {
+                    this.qrScanner = new QrScanner(this.$refs.qrVideo, (result) => {
+                        this.stopScanQr();
+                        this.isModalVisible = false;
+                        this.$emit('qr-scanned', result);
                     });
-            },
-            stopScanQr() {
-                this.qrScanner.stop();
-                this.isPlaying = false;
-                window.removeEventListener('resize', this.repositionOverlay);
-            },
-            handlePlayStart() {
-                this.repositionOverlay();
-                this.isPlaying = true;
-                window.addEventListener('resize', this.repositionOverlay);
-                this.$refs.qrVideo.removeEventListener('canplay', this.handlePlayStart);
-            },
-            repositionOverlay() {
-                requestAnimationFrame(() => {
-                    if (!this.$refs.qrVideo) {
-                        return;
-                    }
-                    const scannerHeight = this.$refs.qrVideo.offsetHeight;
-                    const scannerWidth = this.$refs.qrVideo.offsetWidth;
-                    const smallerDimension = Math.min(scannerHeight, scannerWidth);
-                    if (smallerDimension === 0) return; // component not visible or destroyed
-                    const overlaySize = Math.ceil(2 / 3 * smallerDimension);
-                    // not always the accurate size of the sourceRect for QR detection in QrScanner (e.g. if video is landscape and screen portrait) but looks nicer in the UI.
-                    const $qrOverlay = this.$refs.overlay;
-                    $qrOverlay.style.width = overlaySize + 'px';
-                    $qrOverlay.style.height = overlaySize + 'px';
-                    $qrOverlay.style.top = ((scannerHeight - overlaySize) / 2) + 'px';
-                    $qrOverlay.style.left = ((scannerWidth - overlaySize) / 2) + 'px';
+                }
+            });
+    },
+    destroyed() {
+        if (this.qrScanner) {
+            this.qrScanner.destroy();
+        }
+    },
+    methods: {
+        scanQr() {
+            this.isModalVisible = true;
+            this.$refs.qrVideo.addEventListener('canplay', this.handlePlayStart);
+            this.qrScanner.start()
+                .then(() => {
+                    this.cameraError = false;
+                })
+                .catch(() => {
+                    this.cameraError = true;
                 });
-            },
         },
+        stopScanQr() {
+            this.qrScanner.stop();
+            this.isPlaying = false;
+            window.removeEventListener('resize', this.repositionOverlay);
+        },
+        handlePlayStart() {
+            this.repositionOverlay();
+            this.isPlaying = true;
+            window.addEventListener('resize', this.repositionOverlay);
+            this.$refs.qrVideo.removeEventListener('canplay', this.handlePlayStart);
+        },
+        repositionOverlay() {
+            requestAnimationFrame(() => {
+                if (!this.$refs.qrVideo) {
+                    return;
+                }
+                const scannerHeight = this.$refs.qrVideo.offsetHeight;
+                const scannerWidth = this.$refs.qrVideo.offsetWidth;
+                const smallerDimension = Math.min(scannerHeight, scannerWidth);
+                if (smallerDimension === 0) return; // component not visible or destroyed
+                const overlaySize = Math.ceil(2 / 3 * smallerDimension);
+                // not always the accurate size of the sourceRect for QR detection in QrScanner (e.g. if video is landscape and screen portrait) but looks nicer in the UI.
+                const $qrOverlay = this.$refs.overlay;
+                $qrOverlay.style.width = overlaySize + 'px';
+                $qrOverlay.style.height = overlaySize + 'px';
+                $qrOverlay.style.top = ((scannerHeight - overlaySize) / 2) + 'px';
+                $qrOverlay.style.left = ((scannerWidth - overlaySize) / 2) + 'px';
+            });
+        },
+    },
 
-    };
+};
 </script>
 
 <template>
     <div v-show="qrScanner" @click.prevent>
-        <button class="h-field__aside-control u-semantic-button link--opacity" type="button" @click.prevent="scanQr">
+        <button class="h-field__aside-control u-semantic-button link--opacity" type="button" @click.prevent="scanQr()">
             <img :src="`${BASE_URL_PREFIX}/img/icon-qr.svg`" alt="Scan QR Code" width="24" height="24">
         </button>
-        <Modal class="qr-scan__modal"
-               modal-container-class="qr-scan__modal-container"
-               v-bind:isOpen.sync="isModalVisible"
-               :keepMarkup="true"
-               @modal-close="stopScanQr"
+        <Modal
+            class="qr-scan__modal"
+            modal-container-class="qr-scan__modal-container"
+            :isOpen.sync="isModalVisible"
+            :keepMarkup="true"
+            @modal-close="stopScanQr()"
         >
             <div class="qr-scan__wrap">
                 <div class="qr-scan__notice">

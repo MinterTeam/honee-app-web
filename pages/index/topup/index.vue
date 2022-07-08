@@ -44,14 +44,13 @@ export default {
         :disableOutsideClick="false"
         @modal-close="$router.push(getDashboardUrl())"
     >
-
         <h1 class="u-h3 u-mb-025">
             {{ $td('Top up your balance', 'topup.title') }}
         </h1>
         <p>{{ $td('Choose one of these options', 'topup.description') }}</p>
 
 
-        <nuxt-link class="button button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/bsc')"  v-if="!isMainnet">
+        <nuxt-link class="button button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/bsc')" v-if="!isMainnet">
             <img class="button__icon" src="/img/icon-topup-bnb.svg" alt="" role="presentation">
             {{ $td('Top up with BNB', 'topup.top-up-with-network', {network: 'BNB'}) }}
         </nuxt-link>
