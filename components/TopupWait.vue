@@ -1,6 +1,7 @@
 <script>
 import {findNativeCoinSymbol, getOracleCoinList} from '~/api/hub.js';
 import {HUB_CHAIN_DATA, HUB_CHAIN_ID} from '~/assets/variables.js';
+import {arrayToMap} from '~/assets/utils/array-to-map.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import {TOP_UP_NETWORK} from '~/components/Topup.vue';
@@ -55,7 +56,11 @@ export default {
         },
     },
     watch: {
-        '$store.getters.baseCoin': {
+        '$store.state.balance': {
+            /**
+             * @param {Array<BalanceItem>} newVal
+             * @param {Array<BalanceItem>} oldVal
+             */
             handler(newVal, oldVal) {
                 if (!this.isWaiting) {
                     return;
@@ -63,9 +68,15 @@ export default {
                 if (this.networkSlug !== HUB_CHAIN_ID.MINTER) {
                     return;
                 }
-                if (newVal.amount > oldVal.amount) {
-                    this.finishTopup(newVal.amount, newVal.coin.symbol);
-                }
+                const oldBalanceMap = arrayToMap(oldVal, 'coin.id');
+                newVal.some((newBalanceItem) => {
+                    const oldBalanceItem = oldBalanceMap[newBalanceItem.coin.id];
+                    const oldAmount = oldBalanceItem?.amount || 0;
+                    if (newBalanceItem.amount > oldAmount) {
+                        this.finishTopup(newBalanceItem.amount, newBalanceItem.coin.symbol);
+                        return true;
+                    }
+                });
             },
         },
     },
