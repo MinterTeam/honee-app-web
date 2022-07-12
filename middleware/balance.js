@@ -21,6 +21,7 @@ export default function({app, store, redirect}) {
         return store.dispatch('FETCH_BALANCE')
             .then(() => {
                 centrifuge = new Centrifuge(EXPLORER_RTM_URL, {
+                    // debug: true,
                     // user: connectData.user ? connectData.user : '',
                     // timestamp: connectData.timestamp.toString(),
                     // token: connectData.token,
@@ -33,7 +34,12 @@ export default function({app, store, redirect}) {
                         .then((preparedBalance) => {
                             store.commit('SET_BALANCE', preparedBalance);
                         });
-                });
+                })
+                    .on('subscribe', (context) => {
+                        if (context.isResubscribe && !context.recovered) {
+                            store.dispatch('FETCH_BALANCE');
+                        }
+                    });
 
                 centrifuge.subscribe("blocks", (response) => {
                     const newBlock = toCamel(response.data);
