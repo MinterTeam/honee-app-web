@@ -135,7 +135,7 @@ module.exports = {
               "data",
               // "fetch", // allow fetch above data
               // "head", // allow head on top
-              "computed",
+              ["computed", "validations"],
               "watch",
               "watchQuery",
               "LIFECYCLE_HOOKS",
