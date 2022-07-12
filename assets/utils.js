@@ -333,6 +333,31 @@ export function fromBase64(str) {
     }
 }
 
+/**
+ * @template T
+ * @param {(function(...any): Promise<T>) | any} [fn]
+ * @param {any|Array<any>} [args]
+ * @param {object} [options]
+ * @param {boolean} [fallbackToArg]
+ * @return {Promise<T>}
+ */
+export function ensurePromise(fn, args, {fallbackToArg} = {}) {
+    // ensure `args` is an array
+    if (!Array.isArray(args)) {
+        args = [args];
+    }
+
+    let fnPromise;
+    if (typeof fn === 'function') {
+        fnPromise = fn(...args);
+    }
+    if (!fnPromise || typeof fnPromise.then !== 'function') {
+        const result = fallbackToArg ? args[0] : undefined;
+        fnPromise = Promise.resolve(result);
+    }
+    return fnPromise;
+}
+
 export function suggestionValidatorFilter(suggestion, query) {
     if (!query) {
         return true;

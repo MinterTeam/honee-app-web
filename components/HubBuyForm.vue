@@ -20,6 +20,7 @@ import debounce from '~/assets/lodash5-debounce.js';
 import {NETWORK, MAINNET, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, HUB_TRANSFER_STATUS, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import checkEmpty from '~/assets/v-check-empty.js';
+import useEstimateSwap from '~/composables/use-estimate-swap.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useWeb3Deposit from '~/composables/use-web3-deposit.js';
@@ -131,8 +132,20 @@ export default {
             default: () => ({}),
         },
     },
-    setup() {
-        const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
+    setup(props, context) {
+        // just `estimation` refers to minter swap estimation
+        const {
+            estimation,
+            estimationRoute,
+            estimationError,
+            isEstimationWaiting,
+            handleInputBlur,
+            estimateSwap,
+        } = useEstimateSwap({
+            $td: context.root.$td,
+            idPreventConcurrency: 'hubBuy',
+        });
+        const { discount, discountProps, discountUpsidePercent } = useHubDiscount();
 
         const {
             tokenData: externalToken,
@@ -161,6 +174,13 @@ export default {
         const {sendMinterSwapTx} = useTxMinterPresets();
 
         return {
+            estimation,
+            estimationRoute,
+            estimationError,
+            isEstimationWaiting,
+            handleInputBlur,
+            estimateSwap,
+
             discount,
             discountUpsidePercent,
             setDiscountProps,
@@ -193,15 +213,6 @@ export default {
             serverError: '',
             isConfirmModalVisible: false,
             recovery: null,
-
-            // just `estimation` refers to minter swap estimation
-            estimation: null,
-            estimationRoute: null,
-            isEstimationLoading: false,
-            estimationError: false,
-            isEstimationPending: false,
-            /** @type {getEstimation} */
-            debouncedGetEstimation: null,
         };
     },
     validations() {
@@ -312,21 +323,11 @@ export default {
         minterGasCoin() {
             return this.externalTokenSymbol;
         },
-        currentEstimation() {
-            if (this.$v.form.$invalid || !this.estimation || this.isEstimationWaiting || this.estimationError) {
-                return 0;
-            }
-
-            return this.estimation;
-        },
-        isEstimationWaiting() {
-            return this.isEstimationPending || this.isEstimationLoading;
-        },
         isEstimationErrorVisible() {
             return this.estimationError && !this.isEstimationWaiting;
         },
         currentPrice() {
-            if (!this.currentEstimation) {
+            if (this.$v.form.$invalid || !this.estimation || this.isEstimationWaiting || this.estimationError) {
                 return 0;
             }
             const priceItem = this.priceList.find((item) => item.name === this.externalTokenSymbol.toLowerCase());
@@ -334,7 +335,7 @@ export default {
                 return 0;
             }
             const ethPrice = priceItem.value;
-            return this.form.amountEth * ethPrice / this.currentEstimation;
+            return this.form.amountEth * ethPrice / this.estimation;
         },
         /** @type {Array<SequenceOrderedStepItem>} */
         stepsOrdered() {
@@ -411,8 +412,6 @@ export default {
     },
     mounted() {
         this.setDiscountProps({minterAddress: this.$store.getters.address});
-
-        this.debouncedGetEstimation = debounce(this.getEstimation, 1000);
 
         const recoveryJson = window.localStorage.getItem('hub-buy-recovery');
         if (recoveryJson) {
@@ -697,12 +696,6 @@ export default {
                     };
                 });
         },
-        inputBlur() {
-            // force estimation after blur if estimation was delayed
-            if (this.debouncedGetEstimation.pending()) {
-                this.debouncedGetEstimation.flush();
-            }
-        },
         watchEstimation() {
             if (!this.$store.state.onLine) {
                 return;
@@ -710,47 +703,28 @@ export default {
             if (this.$v.form.$invalid) {
                 return;
             }
-            this.debouncedGetEstimation();
-            this.isEstimationPending = true;
+            this.getEstimation();
         },
         getEstimation(params) {
-            this.isEstimationPending = false;
             if (!this.$store.state.onLine) {
                 return;
             }
             if (this.$v.form.$invalid) {
                 return;
             }
-            this.isEstimationLoading = true;
-            this.estimationError = false;
-            return estimateCoinSell({
+
+            return this.estimateSwap({
                 coinToSell: this.externalTokenSymbol,
                 valueToSell: this.coinAmountAfterBridge,
                 coinToBuy: this.form.coinToGet,
                 swapFrom: SWAP_TYPE.POOL,
-                findRoute: true,
                 gasCoin: this.minterGasCoin,
+                isSelling: true,
                 ...params,
-            }, {
-                idPreventConcurrency: 'hubBuy',
-            })
-                .then((result) => {
-                    this.estimation = result.will_get;
-                    this.estimationRoute = result.route;
-                    this.isEstimationLoading = false;
-                })
-                .catch((error) => {
-                    if (error.isCanceled) {
-                        return;
-                    }
-                    this.isEstimationLoading = false;
-                    this.estimationError = getErrorText(error, 'Estimation error: ');
-                });
+            });
         },
-        forceEstimation(params) {
-            // force new estimation without delay
-            this.debouncedGetEstimation(params);
-            return this.debouncedGetEstimation.flush();
+        forceEstimation({sellAll} = {}) {
+            return this.getEstimation({sellAll, force: true});
         },
         cancelRecovery() {
             this.recovery = null;
@@ -812,7 +786,7 @@ export default {
                         :$amount="$v.form.amountEth"
                         :label="$td('You spend', 'form.you-spend')"
                         :max-value="maxAmount"
-                        @blur="inputBlur(); $v.form.buyAmount.$touch()"
+                        @blur="handleInputBlur(); $v.form.buyAmount.$touch()"
                     />
                     <span class="form-field__error" v-if="$v.form.amountEth.$dirty && !$v.form.amountEth.required">{{ $td('Enter amount', 'form.enter-amount') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && (!$v.form.amountEth.validAmount || !$v.form.amountEth.minValue)">{{ $td('Invalid amount', 'form.invalid-amount') }}</span>
@@ -823,13 +797,13 @@ export default {
                     <FieldCombined
                         :coin.sync="form.coinToGet"
                         :$coin="$v.form.coinToGet"
-                        :amount="decreasePrecisionSignificant(estimation || 0)"
+                        :amount="decreasePrecisionSignificant(form.coinToGet && estimation ? estimation : 0)"
                         :label="$td('You receive', 'form.you-receive')"
                         :coin-list="suggestionList"
                         :fallback-to-full-list="false"
                         :is-estimation="true"
                         :isLoading="isEstimationWaiting"
-                        @blur="inputBlur(); $v.form.buyAmount.$touch()"
+                        @blur="handleInputBlur(); $v.form.buyAmount.$touch()"
                     />
 
                     <span class="form-field__error" v-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.required">{{ $td('Enter coin symbol', 'form.enter-coin-symbol') }}</span>
@@ -941,7 +915,7 @@ export default {
                 <BaseAmountEstimation :coin="externalTokenSymbol" :amount="form.amountEth" format="exact"/>
 
                 <h3 class="estimation__title">{{ $td('You will get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
-                <BaseAmountEstimation :coin="form.coinToGet" :amount="currentEstimation" format="approx"/>
+                <BaseAmountEstimation :coin="form.coinToGet" :amount="estimation" format="approx"/>
 
                 <h3 class="estimation__title">{{ $td('Estimated price', 'form.swap-confirm-price-estimation') }}</h3>
                 <div class="estimation__item">

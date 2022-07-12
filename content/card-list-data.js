@@ -55,86 +55,11 @@ export default {
                     caption: 'Делегирование',
                 },
             },
-            {
-                caption: 'Yield farming',
-                coin: ['HUB', 'BNB'],
-                description: 'Put your HUB and BNB into a liquidity pool to start getting extra daily rewards.',
-                stats: {
-                    apr: {
-                        percent: 121.5,
-                        rewardCoin: 'HUB',
-                    },
-                },
-                tags: ['Farming'],
-                action: '/farm/HUB/BNB',
-                ru: {
-                    description: 'Положите свои HUB и BNB в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                    caption: 'Фарминг',
-                },
-            },
-            {
-                caption: 'Yield farming',
-                coin: ['BIP', 'MUSD'],
-                description: 'Put your BIP and MUSD into a liquidity pool to start getting extra daily rewards.',
-                stats: {
-                    apr: {
-                        percent: 121.5,
-                        rewardCoin: 'BIP',
-                    },
-                },
-                tags: ['Farming'],
-                action: '/farm/BIP/MUSD',
-                ru: {
-                    description: 'Положите свои BIP и MUSD в пул ликвидности и получайте дополнительные вознаграждения ежедневно.',
-                    caption: 'Фарминг',
-                },
-            },
         ],
     },
     swap: {
         title: 'Buy',
         cards: [
-            {
-                caption: 'Buy',
-                coin: 'BEE',
-                description: 'Get native digital coin of Honee crypto wallet. Soon you\'ll be able to stake BEE to get everyday rewards.',
-                stats: {
-                },
-                tags: ['Exchange'],
-                action: '/swap/BEE',
-                ru: {
-                    description: 'Приобретите монету крипто-кошелька Honee. Вскоре вы сможете отправить BEE в стейкинг, чтобы получать ежедневные награды.',
-                    caption: 'Купить',
-                },
-            },
-            {
-                caption: 'Buy',
-                coin: 'HUB',
-                description: 'Get native digital token of Minter Hub, a cross-chain bridge to global crypto liquidity.',
-                stats: {
-
-                },
-                tags: ['Exchange'],
-                action: '/swap/HUB',
-                ru: {
-                    description: 'Приобретите основной токен Minter Hub — кросс-чейн моста в глобальную криптоликвидность.',
-                    caption: 'Купить',
-                },
-            },
-            {
-                caption: 'Buy',
-                coin: BASE_COIN,
-                description: 'Get native digital coin of Minter, a single decentralized network supporting many digital assets.',
-                stats: {
-                    price: BASE_COIN,
-                },
-                tags: ['Exchange'],
-                action: `/swap/${BASE_COIN}`,
-                ru: {
-                    description: 'Приобретите основную монету Minter — единой децентрализованной сети с поддержкой многих цифровых активов.',
-                    caption: 'Купить',
-                },
-            },
             {
                 caption: 'Buy',
                 coin: 'BTC',
@@ -184,6 +109,47 @@ export default {
                 action: '/swap/TON',
                 ru: {
                     description: 'Приобретите базовую монету TON — проекта, который стремится объединить все существующие блокчейны и сам Интернет в единую Web 3.0-сеть.',
+                    caption: 'Купить',
+                },
+            },
+            {
+                caption: 'Buy',
+                coin: 'BEE',
+                description: 'Get native digital coin of Honee crypto wallet. Soon you\'ll be able to stake BEE to get everyday rewards.',
+                stats: {
+                },
+                tags: ['Exchange'],
+                action: '/swap/BEE',
+                ru: {
+                    description: 'Приобретите монету крипто-кошелька Honee. Вскоре вы сможете отправить BEE в стейкинг, чтобы получать ежедневные награды.',
+                    caption: 'Купить',
+                },
+            },
+            {
+                caption: 'Buy',
+                coin: 'HUB',
+                description: 'Get native digital token of Minter Hub, a cross-chain bridge to global crypto liquidity.',
+                stats: {
+
+                },
+                tags: ['Exchange'],
+                action: '/swap/HUB',
+                ru: {
+                    description: 'Приобретите основной токен Minter Hub — кросс-чейн моста в глобальную криптоликвидность.',
+                    caption: 'Купить',
+                },
+            },
+            {
+                caption: 'Buy',
+                coin: BASE_COIN,
+                description: 'Get native digital coin of Minter, a single decentralized network supporting many digital assets.',
+                stats: {
+                    price: BASE_COIN,
+                },
+                tags: ['Exchange'],
+                action: `/swap/${BASE_COIN}`,
+                ru: {
+                    description: 'Приобретите основную монету Minter — единой децентрализованной сети с поддержкой многих цифровых активов.',
                     caption: 'Купить',
                 },
             },

@@ -197,7 +197,7 @@ function yearToBlock(year) {
             :txData="txData"
             :$txData="$v.form"
             :txType="$options.TX_TYPE.LOCK"
-            :payload="payload"
+            :enforce-payload="payload"
             :before-post-tx="fetchLatestBlock"
             @clear-form="clearForm()"
             @success="$emit('success')"

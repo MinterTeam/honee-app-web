@@ -29,7 +29,7 @@ import CancelError from '~/assets/utils/error-cancel.js';
  */
 
 /**
- * @return {{fee: FeeData, feeProps: feeProps}}
+ * @return {{fee: ComputedRef<FeeData>, feeProps: feeProps}}
  */
 
 export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinToSpend, isOffline}*/) {
@@ -94,7 +94,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     });
 
     // watching feeProps directly leads to strange behavior (newVal and oldVal are always same)
-    watch(() => JSON.stringify(feeProps), fetchCoinData, {deep: true/*, immediate: true*/});
+    watch(() => JSON.stringify(feeProps), handleChangedProps, {deep: true/*, immediate: true*/});
     watch(() => feeProps.isOffline, () => {
         if (feeProps.isOffline || coinMap.value[0]) {
             return;
@@ -110,103 +110,22 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     }, {deep: true, immediate: true});
 
     // --- methods
-    function getPrimaryCoinToCheck() {
-        if (isCoinDefined(feeProps.txParams.gasCoin)) {
-            return feeProps.txParams.gasCoin;
-        }
-
-        return feeProps.isOffline ? 0 : BASE_COIN;
-    }
-    // secondary it will try to check coinToSpend and use if primary coin is not enough to pay fee
-    function getSecondaryCoinToCheck() {
-        // 1. only check if fallback flag activated
-        // 2. if gasCoin is defined - no need to guess
-        if (!feeProps.fallbackToCoinToSpend || isCoinDefined(feeProps.txParams.gasCoin)) {
-            return '';
-        }
-
-        try {
-            const txParamsClone = cloneObject(feeProps.txParams);
-            const {gasCoin} = decorateTxParams(txParamsClone, {setGasCoinAsCoinToSpend: true});
-            if (typeof gasCoin !== 'undefined' && !isBaseCoin(gasCoin)) {
-                return gasCoin;
-            }
-        } catch (e) {
-
-        }
-        return '';
-    }
-
-    async function estimateFee(gasCoin, idDebounce, savedPropsString) {
-        // clone is needed because clean doesn't handle arrays
-        const cleanTxParams = await replaceCoinSymbol(cloneObject(cleanObject(feeProps.txParams)));
-        let needGasCoinFee;
-        if (feeProps.precision === FEE_PRECISION_SETTING.AUTO) {
-            needGasCoinFee = isValidTxData(cleanTxParams.type, cleanTxParams.data) ? FEE_PRECISION_SETTING.PRECISE : FEE_PRECISION_SETTING.IMPRECISE;
-        } else {
-            needGasCoinFee = feeProps.precision;
-        }
-
-        return estimateTxCommission({
-            ...cleanTxParams,
-            chainId: CHAIN_ID,
-            gasCoin,
-        }, {
-            needGasCoinFee,
-            needBaseCoinFee: FEE_PRECISION_SETTING.IMPRECISE,
-            needPriceCoinFee: FEE_PRECISION_SETTING.PRECISE,
-        }, {idDebounce})
-            .then((result) => {
-                if (isPropsChanged(savedPropsString)) {
-                    return Promise.reject(new CancelError());
-                }
-                // console.debug({...result, gasCoin});
-                return {...result, gasCoin};
-            });
-    }
-
-    async function fetchCoinData(newVal, oldVal) {
+    async function handleChangedProps(newVal, oldVal) {
         // sometimes watcher fires on same value
         if (newVal === oldVal) {
             return;
         }
         if (feeProps.isOffline) {
-            state.feeCoin = getPrimaryCoinToCheck();
+            state.feeCoin = 0;
             return;
         }
-
-        // save current coins to check if it will be actual after resolution
-        const savedFeePropsString = JSON.stringify(feeProps);
-        const primaryCoinToCheck = getPrimaryCoinToCheck();
-        const secondaryCoinToCheck = getSecondaryCoinToCheck();
 
         state.isLoading = true;
         state.feeError = '';
 
-        // state.priceCoinFeeValue = 0;
-        // state.baseCoinFeeValue = 0;
-        // state.feeCoin = primaryCoinToCheck;
-        // state.feeValue = '';
-
         try {
-            let feeData = await estimateFee(primaryCoinToCheck, idPrimary, savedFeePropsString);
-
-            const isBaseCoinEnough = new Big(feeProps.baseCoinAmount || 0).gte(feeData.baseCoinCommission || 0);
-            // select between primary fallback and secondary fallback
-            // secondaryFeeData may be defined only if primary is fallback base coin
-            const isSecondarySelected = !isBaseCoinEnough && secondaryCoinToCheck && secondaryCoinToCheck !== primaryCoinToCheck;
-
-            if (isSecondarySelected) {
-                feeData = await estimateFee(secondaryCoinToCheck, idSecondary, savedFeePropsString)
-                    .catch((error) => {
-                        if (error.isCanceled) {
-                            throw error;
-                        } else {
-                            // restore primaryCoinToCheck
-                            return feeData;
-                        }
-                    });
-            }
+            const estimatePromise = estimateFeeWithFallback(feeProps.txParams, feeProps.fallbackToCoinToSpend, feeProps.baseCoinAmount, feeProps.precision, idPrimary, idSecondary);
+            const {feeData, isBaseCoinEnough} = await ensurePropsNotChanged(estimatePromise);
 
             state.priceCoinFeeValue = feeData.priceCoinCommission;
             state.baseCoinFeeValue = feeData.baseCoinCommission;
@@ -229,23 +148,24 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
             console.debug(error);
         }
     }
-    /**
-     * @param {string|number} coinIdOrSymbol
-     * @return {boolean}
-     */
-    function isCoinDefined(coinIdOrSymbol) {
-        return !!coinIdOrSymbol || coinIdOrSymbol === 0;
-    }
-    /**
-     * @param {string|number} coinIdOrSymbol
-     * @return {boolean}
-     */
-    function isBaseCoin(coinIdOrSymbol) {
-        return coinIdOrSymbol === BASE_COIN || coinIdOrSymbol === 0 || coinIdOrSymbol === '0';
-    }
 
-    function isPropsChanged(savedPropsString) {
-        return savedPropsString !== JSON.stringify(feeProps);
+    /**
+     * @template T
+     * @param {Promise<T>} promise
+     * @return {Promise<T>}
+     */
+    function ensurePropsNotChanged(promise) {
+        // save current coins to check if it will be actual after resolution
+        const savedPropsString = JSON.stringify(feeProps);
+
+        return promise
+            .then((result) => {
+                if (savedPropsString !== JSON.stringify(feeProps)) {
+                    return Promise.reject(new CancelError());
+                }
+
+                return result;
+            });
     }
 
     return {
@@ -254,6 +174,145 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     };
 }
 
+/**
+ * Primary it will check explicitly defined gasCoin or base coin
+ * @pure
+ * @nosideeffects
+ * @param {TxParams} txParams
+ * @return {string}
+ */
+function getPrimaryCoinToCheck(txParams) {
+    if (isCoinDefined(txParams.gasCoin)) {
+        return txParams.gasCoin;
+    }
+
+    return BASE_COIN;
+}
+
+/**
+ * Secondary it will try to check coinToSpend and use if primary coin is not enough to pay fee
+ * @pure
+ * @nosideeffects
+ * @param {TxParams} txParams
+ * @param {boolean} fallbackToCoinToSpend
+ * @return {string}
+ */
+function getSecondaryCoinToCheck(txParams, fallbackToCoinToSpend) {
+    // 1. only check if fallback flag activated
+    // 2. if gasCoin is defined - no need to guess
+    if (!fallbackToCoinToSpend || isCoinDefined(txParams.gasCoin)) {
+        return '';
+    }
+
+    try {
+        const txParamsClone = cloneObject(txParams);
+        const {gasCoin} = decorateTxParams(txParamsClone, {setGasCoinAsCoinToSpend: true});
+        if (typeof gasCoin !== 'undefined' && !isBaseCoin(gasCoin)) {
+            return gasCoin;
+        }
+    } catch (e) {
+
+    }
+    return '';
+}
+
+/**
+ * @pure
+ * @nosideeffects
+ * @param {TxParams} txParams
+ * @param {FEE_PRECISION_SETTING} precision
+ * @param {string} idDebounce
+ * @return {Promise<MinterFeeEstimation&{gasCoin: string|number}>}
+ */
+async function estimateFee(txParams, precision, idDebounce) {
+    // clone is needed because clean doesn't handle arrays
+    const cleanTxParams = await replaceCoinSymbol(cloneObject(cleanObject(txParams)));
+    let needGasCoinFee;
+    if (precision === FEE_PRECISION_SETTING.AUTO) {
+        needGasCoinFee = isValidTxData(cleanTxParams.type, cleanTxParams.data) ? FEE_PRECISION_SETTING.PRECISE : FEE_PRECISION_SETTING.IMPRECISE;
+    } else {
+        needGasCoinFee = precision;
+    }
+
+    return estimateTxCommission({
+        ...cleanTxParams,
+        chainId: CHAIN_ID,
+    }, {
+        needGasCoinFee,
+        needBaseCoinFee: FEE_PRECISION_SETTING.IMPRECISE,
+        needPriceCoinFee: FEE_PRECISION_SETTING.PRECISE,
+    }, {idDebounce})
+        .then((result) => {
+            return {...result, gasCoin: txParams.gasCoin};
+        });
+}
+
+/**
+ * @pure
+ * @nosideeffects
+ * @param {TxParams} txParams
+ * @param {boolean} fallbackToCoinToSpend
+ * @param {number|string} baseCoinAmount
+ * @param {FEE_PRECISION_SETTING} precision
+ * @param {string} idDebouncePrimary
+ * @param {string} idDebounceSecondary
+ * @return {Promise<{isBaseCoinEnough: boolean, feeData: MinterFeeEstimation&{gasCoin: string|number}}>}
+ */
+async function estimateFeeWithFallback(txParams, fallbackToCoinToSpend, baseCoinAmount, precision, idDebouncePrimary, idDebounceSecondary) {
+    const primaryCoinToCheck = getPrimaryCoinToCheck(txParams);
+    const secondaryCoinToCheck = getSecondaryCoinToCheck(txParams, fallbackToCoinToSpend);
+
+    let feeData = await estimateFee({...txParams, gasCoin: primaryCoinToCheck}, precision, idDebouncePrimary);
+
+    const isBaseCoinEnough = new Big(baseCoinAmount || 0).gte(feeData.baseCoinCommission || 0);
+    // select between primary fallback and secondary fallback
+    // secondaryFeeData may be defined only if primary is fallback base coin
+    const isSecondarySelected = !isBaseCoinEnough && secondaryCoinToCheck && secondaryCoinToCheck !== primaryCoinToCheck;
+
+    if (isSecondarySelected) {
+        feeData = await estimateFee({...txParams, gasCoin: secondaryCoinToCheck}, precision, idDebounceSecondary)
+            .catch((error) => {
+                if (error.isCanceled) {
+                    throw error;
+                } else {
+                    // restore primaryCoinToCheck
+                    return feeData;
+                }
+            });
+    }
+
+    return {
+        feeData,
+        isBaseCoinEnough,
+    };
+}
+
+/**
+ * @pure
+ * @nosideeffects
+ * @param {string|number} coinIdOrSymbol
+ * @return {boolean}
+ */
+function isCoinDefined(coinIdOrSymbol) {
+    return !!coinIdOrSymbol || coinIdOrSymbol === 0;
+}
+/**
+ * @pure
+ * @nosideeffects
+ * @param {string|number} coinIdOrSymbol
+ * @return {boolean}
+ */
+function isBaseCoin(coinIdOrSymbol) {
+    return coinIdOrSymbol === BASE_COIN || coinIdOrSymbol === 0 || coinIdOrSymbol === '0';
+}
+
+/**
+ * @pure
+ * @nosideeffects
+ * @param txType
+ * @param txData
+ * @return {boolean}
+ */
 function isValidTxData(txType, txData) {
     try {
         const TxDataConstructor = getTxData(txType);
@@ -264,6 +323,12 @@ function isValidTxData(txType, txData) {
     }
 }
 
+/**
+ * @pure
+ * @nosideeffects
+ * @param {object} txParams
+ * @return {object}
+ */
 function cleanObject(txParams) {
     let clean = {};
     for (const key in txParams) {
@@ -287,6 +352,13 @@ function cleanObject(txParams) {
     }
 }
 
+/**
+ * @pure
+ * @nosideeffects
+ * @template {object} T
+ * @param {T} obj
+ * @return {T}
+ */
 function cloneObject(obj) {
     return JSON.parse(JSON.stringify(obj));
 }

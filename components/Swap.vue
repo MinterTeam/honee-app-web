@@ -6,16 +6,14 @@ import maxLength from 'vuelidate/lib/validators/maxLength';
 import maxValue from 'vuelidate/lib/validators/maxValue';
 import minValue from 'vuelidate/lib/validators/minValue';
 import withParams from 'vuelidate/lib/withParams';
-import decode from 'entity-decode';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {ESTIMATE_SWAP_TYPE} from 'minter-js-sdk/src/variables.js';
-import debounce from '~/assets/lodash5-debounce.js';
-import Big from '~/assets/big.js';
-import {postTx, estimateCoinSell, estimateCoinBuy} from '~/api/gate.js';
+import {postTx} from '~/api/gate.js';
 import {getErrorText} from "~/assets/server-error";
 import {pretty, prettyExact, prettyPrecise, decreasePrecisionSignificant, getExplorerTxUrl} from '~/assets/utils.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import useFee from '~/composables/use-fee.js';
+import useEstimateSwap from '~/composables/use-estimate-swap.js';
 import BaseAmountEstimation from '@/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '@/components/base/BaseLoader.vue';
 import Modal from '@/components/base/Modal.vue';
@@ -34,8 +32,6 @@ export default {
         FieldCombined,
     },
     mixins: [validationMixin],
-    directives: {
-    },
     emits: [
         'success',
         'success-modal-close',
@@ -49,12 +45,32 @@ export default {
             default: () => ({}),
         },
     },
-    setup() {
+    setup(props, context) {
         const {fee, feeProps} = useFee();
+        const {
+            estimation,
+            estimationType,
+            estimationRoute,
+            estimationError,
+            isEstimationWaiting,
+            handleInputBlur,
+            estimateSwap,
+        } = useEstimateSwap({
+            $td: context.root.$td,
+            idPreventConcurrency: 'swapForm',
+        });
 
         return {
             fee,
             feeProps,
+
+            estimation,
+            estimationType,
+            estimationRoute,
+            estimationError,
+            isEstimationWaiting,
+            handleInputBlur,
+            estimateSwap,
         };
     },
     data() {
@@ -75,13 +91,6 @@ export default {
                 buyAmount: this.params.valueToBuy || '',
             },
             isSelling: true,
-            estimation: null,
-            estimationType: null,
-            estimationRoute: null,
-            isEstimationLoading: false,
-            estimationError: false,
-            isEstimationPending: false,
-            debouncedGetEstimation: null,
             isUseMax: false, // should sellAllTx be used
             isConfirmModalVisible: false,
             isSuccessModalVisible: false,
@@ -119,34 +128,6 @@ export default {
                 minValue: (value) => Number(value) >= Number(this.form.sellAmount),
             },
         };
-    },
-    watch: {
-        'form.sellAmount': function(newVal, oldVal) {
-            // wait computed to recalculate after @use-max
-            setTimeout(() => {
-                if (this.isSelling) {
-                    this.watchForm();
-                }
-            }, 0);
-        },
-        'form.buyAmount': function(newVal, oldVal) {
-            if (!this.isSelling) {
-                this.watchForm();
-            }
-        },
-        'form.coinFrom': function(newVal, oldVal) {
-            this.watchForm();
-        },
-        'form.coinTo': function(newVal, oldVal) {
-            this.watchForm();
-        },
-        feeBusParams: {
-            handler(newVal) {
-                Object.assign(this.feeProps, newVal);
-            },
-            deep: true,
-            immediate: true,
-        },
     },
     computed: {
         isPool() {
@@ -239,16 +220,6 @@ export default {
                 fallbackToCoinToSpend: true,
             };
         },
-        // currentEstimation() {
-        //     if (this.$v.form.$invalid || !this.estimation || this.isEstimationWaiting || this.estimationError) {
-        //         return 0;
-        //     }
-        //
-        //     return this.estimation;
-        // },
-        isEstimationWaiting() {
-            return this.isEstimationPending || this.isEstimationLoading;
-        },
         isEstimationErrorVisible() {
             const isEstimationServerErrorVisible = this.estimationError && !this.isEstimationWaiting;
 
@@ -256,92 +227,72 @@ export default {
             return !this.$v.form.$invalid && (isEstimationServerErrorVisible || this.$v.minimumValueToBuy.$error || this.$v.maximumValueToSell.$error);
         },
     },
-    created() {
-        this.debouncedGetEstimation = debounce(this.getEstimation, 1000);
+    watch: {
+        'form.sellAmount': function(newVal, oldVal) {
+            // wait computed to recalculate after @use-max
+            setTimeout(() => {
+                if (this.isSelling) {
+                    this.watchForm();
+                }
+            }, 0);
+        },
+        'form.buyAmount': function(newVal, oldVal) {
+            if (!this.isSelling) {
+                this.watchForm();
+            }
+        },
+        'form.coinFrom': function(newVal, oldVal) {
+            this.watchForm();
+        },
+        'form.coinTo': function(newVal, oldVal) {
+            this.watchForm();
+        },
+        feeBusParams: {
+            handler(newVal) {
+                Object.assign(this.feeProps, newVal);
+            },
+            deep: true,
+            immediate: true,
+        },
     },
     methods: {
         pretty,
         prettyExact,
         prettyPrecise,
         getExplorerTxUrl,
-        inputBlur() {
-            // force estimation after blur if estimation was delayed
-            if (this.debouncedGetEstimation.pending()) {
-                this.debouncedGetEstimation.flush();
-            }
-        },
         watchForm() {
             if (this.$v.form.$invalid) {
                 return;
             }
-            this.debouncedGetEstimation();
-            this.isEstimationPending = true;
+            this.getEstimation();
         },
-        forceEstimation() {
-            // force new estimation without delay
-            this.debouncedGetEstimation();
-            return this.debouncedGetEstimation.flush();
-        },
-        getEstimation() {
-            this.isEstimationPending = false;
+        getEstimation(force) {
             if (this.$v.form.$invalid) {
                 return;
             }
-            this.isEstimationLoading = true;
-            this.estimationError = false;
 
-            let estimatePromise;
-            if (this.isSelling) {
-                estimatePromise = estimateCoinSell({
-                    coinToSell: this.form.coinFrom,
-                    valueToSell: this.form.sellAmount,
-                    coinToBuy: this.form.coinTo,
-                    findRoute: true,
-                    // gasCoin: this.fee.coin || 0,
-                }, {
-                    idPreventConcurrency: 'swapForm',
-                })
-                    .then((result) => {
-                        this.form.buyAmount = decreasePrecisionSignificant(result.will_get);
-                        // this.estimation = result.will_get;
-                        return result;
-                    })
-                    .catch((error) => {
-                        this.form.buyAmount = 0;
-                        return Promise.reject(error);
-                    });
-            } else {
-                estimatePromise = estimateCoinBuy({
-                    coinToSell: this.form.coinFrom,
-                    valueToBuy: this.form.buyAmount,
-                    coinToBuy: this.form.coinTo,
-                    findRoute: true,
-                    // gasCoin: this.fee.coin || 0,
-                }, {
-                    idPreventConcurrency: 'swapForm',
-                })
-                    .then((result) => {
-                        this.form.sellAmount = result.will_pay;
-                        // this.estimation = result.will_pay;
-                        return result;
-                    })
-                    .catch((error) => {
-                        this.form.sellAmount = 0;
-                        return Promise.reject(error);
-                    });
-            }
-            return estimatePromise
+            return this.estimateSwap({
+                coinToSell: this.form.coinFrom,
+                valueToSell: this.form.sellAmount,
+                coinToBuy: this.form.coinTo,
+                valueToBuy: this.form.buyAmount,
+                isSelling: this.isSelling,
+                force,
+                throwOnError: true,
+            })
                 .then((result) => {
-                    this.estimationType = result.swap_from;
-                    this.estimationRoute = result.route;
-                    this.isEstimationLoading = false;
+                    if (this.isSelling) {
+                        this.form.buyAmount = decreasePrecisionSignificant(result.will_get);
+                    } else {
+                        this.form.sellAmount = result.will_pay;
+                    }
                 })
                 .catch((error) => {
-                    if (error.isCanceled) {
-                        return;
+                    if (this.isSelling) {
+                        this.form.buyAmount = 0;
+                    } else {
+                        this.form.sellAmount = 0;
                     }
-                    this.isEstimationLoading = false;
-                    this.estimationError = getErrorText(error, this.$td('Estimation error', 'form.estimation-error') + ': ');
                 });
         },
         openConfirmation() {
@@ -354,7 +305,7 @@ export default {
                 return;
             }
             if (this.estimationError) {
-                this.forceEstimation();
+                this.getEstimation(true);
                 return;
             }
 
@@ -362,7 +313,7 @@ export default {
             this.serverError = '';
             this.serverSuccess = '';
             //@TODO in case if last estimation still loading we can use it instead of forcing new estimation
-            this.forceEstimation()
+            this.getEstimation(true)
                 .then(() => {
                     this.isConfirmModalVisible = true;
                     this.isFormSending = false;
@@ -464,7 +415,7 @@ function getTxType({isPool, isSelling, isSellAll}) {
                     :label="$td('You pay', 'form.swap-sell-coin')"
                     @input-native="isSelling = true"
                     @use-max="isSelling = true"
-                    @blur="inputBlur()"
+                    @blur="handleInputBlur()"
                 />
                 <span class="form-field__error" v-if="$v.form.coinFrom.$dirty && !$v.form.coinFrom.required">{{ $td('Enter coin', 'form.coin-error-required') }}</span>
                 <span class="form-field__error" v-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
@@ -490,7 +441,7 @@ function getTxType({isPool, isSelling, isSellAll}) {
                     :$amount="$v.form.buyAmount"
                     :label="$td('You receive', 'form.swap-buy-coin')"
                     @input-native="isSelling = false"
-                    @blur="inputBlur()"
+                    @blur="handleInputBlur()"
                 />
 
                 <span class="form-field__error" v-if="$v.form.coinTo.$dirty && !$v.form.coinTo.required">{{ $td('Enter coin', 'form.coin-error-required') }}</span>

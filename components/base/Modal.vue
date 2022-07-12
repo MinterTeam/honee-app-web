@@ -54,6 +54,7 @@ export default {
                 }, 0);
             } else {
                 // on close
+                // close by prop change
                 this.$emit('modal-close');
                 setTimeout(() => {
                     if (this.elFocusedBeforeOpen) {
@@ -69,6 +70,8 @@ export default {
     methods: {
         closeModal() {
             this.$emit('update:isOpen', false);
+            // close by user action (isOpen prop may not change here, if parent component not implement it)
+            this.$emit('modal-close');
         },
         handleModalClick(e) {
             const elCloseButton = this.$refs.modalCloseButton;
