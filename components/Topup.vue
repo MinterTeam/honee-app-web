@@ -105,7 +105,12 @@ export default {
         </h1>
         <p class="u-text-center u-text-medium" v-if="description">{{ description }}</p>
         <p class="u-text-center u-text-medium" v-else-if="description !== false">
-            {{ $td(`Send any amount of ${network.coin} to this address`, 'topup-network.description', {coin: network.coin}) }}
+            <template v-if="network.coin === $store.getters.BASE_COIN">
+                {{ $td(`Send any amount of ${network.coin}, BEE, or any other Minter coin to this address`, 'topup-network.description-minter', {coin: network.coin}) }}
+            </template>
+            <template v-else>
+                {{ $td(`Send any amount of ${network.coin} to this address`, 'topup-network.description', {coin: network.coin}) }}
+            </template>
         </p>
 
         <div class="h-field h-field--is-readonly u-mt-10 u-mb-10">

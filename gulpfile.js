@@ -10,6 +10,7 @@ const postcss = require('gulp-postcss');
 const postcssNormalize = require('postcss-normalize');
 const autoprefixer = require('autoprefixer');
 const postcssPresetEnv = require('postcss-preset-env');
+const postcss100vhFix = require('postcss-100vh-fix');
 const cleanCss = require('gulp-clean-css');
 // images
 const del = require('del');
@@ -46,6 +47,7 @@ gulp.task('less', function() {
         .pipe(plumber({errorHandler: onError}))
         .pipe(less())
         .pipe(postcss([
+            postcss100vhFix(),
             autoprefixer({cascade: false}),
             postcssNormalize({forceImport: true}),
             postcssPresetEnv({

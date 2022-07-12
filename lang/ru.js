@@ -165,6 +165,7 @@ export default {
     'topup-network': {
         'title': 'Пополнить через',
         'description': 'Отправьте любое кол-во {coin} на адрес ниже',
+        'description-minter': 'Отправьте любое кол-во {coin}, BEE или любого другого Minter токена на адрес ниже',
         'copy': 'Копировать',
         'share': 'Поделиться',
         'show-qr': 'Показать QR',

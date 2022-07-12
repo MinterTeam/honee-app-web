@@ -59,27 +59,36 @@ export default {
 </script>
 
 <template>
-    <div class="u-section">
-        <div class="u-container u-container--small u-text-center u-text-medium u-mb-10">
-            <h1 class="u-h3 u-mb-05">
-                <span class="u-emoji u-h1">🎉</span> <br>
-                Welcome to Honee!
-            </h1>
+    <div class="u-section topup__vertical-container">
+        <div class="topup__vertical-center">
+            <div class="u-container u-container--small u-text-center u-text-medium u-mb-10">
+                <h1 class="u-h3 u-mb-05">
+                    <span class="u-emoji u-h1">🎉</span> <br>
+                    Welcome to Honee!
+                </h1>
 
-            <p>
-                You’ve added {{ $route.query.topupAmount }}&nbsp;{{ topupCoin }}
-                <span v-if="topupAmountUsd">(≈${{ pretty(topupAmountUsd) }})</span>
-                to your balance. Now&nbsp;you are just a few clicks away from earning!
-            </p>
-            <p>Please choose one of our curated programs:</p>
-        </div>
+                <p>
+                    You’ve added
+                    <strong>{{ $route.query.topupAmount }}&nbsp;{{ topupCoin }}</strong>
+                    <span v-if="topupAmountUsd">(≈${{ pretty(topupAmountUsd) }})</span>
+                    to your balance. Now&nbsp;you are just a&nbsp;few clicks away from earning!
+                </p>
+                <p>Please choose one of our curated programs:</p>
+            </div>
 
-        <div class="u-container u-container--large">
-            <div class="u-grid u-grid--vertical-margin u-grid--justify-center">
-                <div class="u-cell u-cell--large--1-3 u-cell--medium--1-2 card-wrap-cell" v-for="card in cardList" :key="card.action">
-                    <Card :card="card"/>
+            <div class="u-container u-container--large">
+                <div class="u-grid u-grid--vertical-margin u-grid--justify-center">
+                    <div class="u-cell u-cell--large--1-3 u-cell--medium--1-2 card-wrap-cell" v-for="card in cardList" :key="card.action">
+                        <Card :card="card"/>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <div class="u-mt-15 u-text-center">
+            <nuxt-link class="link--default-black" :to="getDashboardUrl()">
+                {{ $td('I\'ll do it later', 'onboarding.skip') }}
+            </nuxt-link>
         </div>
     </div>
 </template>
