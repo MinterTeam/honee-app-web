@@ -1,13 +1,15 @@
 <script>
 import {flatCardList} from '~/content/card-list.js';
 import {pretty} from '~/assets/utils.js';
+import {BASE_COIN} from '~/assets/variables.js';
 import Card from '~/components/Card.vue';
 
-const ACTION_LIST = [
-    '/stake/1',
-    '/stake/2',
-    '/swap/BTC',
-];
+const ACTION_LIST = {
+    BEE: '/stake/1',
+    MUSD: '/stake/2',
+    BIP: `/delegate/${BASE_COIN}`,
+    '*': '/swap/BTC',
+};
 
 const MAX_PAGE = 3;
 
@@ -25,6 +27,10 @@ export default {
         }
     },
     computed: {
+        topupCoin() {
+            return this.$route.query.topupCoin?.toUpperCase();
+        },
+        /*
         currentPage() {
             return Number(this.$route.query.page) || 1;
         },
@@ -34,12 +40,16 @@ export default {
         nextPage() {
             return this.currentPage < MAX_PAGE ? this.currentPage + 1 : null;
         },
+        */
         topupAmountUsd() {
-            const balanceItem = this.$store.state.balance.find((item) => item.coin.symbol === this.$route.query.topupCoin);
+            const balanceItem = this.$store.state.balance.find((item) => item.coin.symbol === this.topupCoin);
             return balanceItem ? this.$store.getters['explorer/bipPriceUsd'] * balanceItem.bipAmount : 0;
         },
         cardList() {
-            return flatCardList.filter((item) => ACTION_LIST.includes(item.action));
+            const actionList = Object.keys(ACTION_LIST)
+                .filter((key) => key === '*' || key === this.topupCoin)
+                .map((key) => ACTION_LIST[key]);
+            return flatCardList.filter((item) => actionList.includes(item.action));
         },
     },
     methods: {
@@ -57,7 +67,7 @@ export default {
             </h1>
 
             <p>
-                You’ve added {{ $route.query.topupAmount }}&nbsp;{{ $route.query.topupCoin }}
+                You’ve added {{ $route.query.topupAmount }}&nbsp;{{ topupCoin }}
                 <span v-if="topupAmountUsd">(≈${{ pretty(topupAmountUsd) }})</span>
                 to your balance. Now&nbsp;you are just a few clicks away from earning!
             </p>
@@ -65,7 +75,7 @@ export default {
         </div>
 
         <div class="u-container u-container--large">
-            <div class="u-grid u-grid--vertical-margin">
+            <div class="u-grid u-grid--vertical-margin u-grid--justify-center">
                 <div class="u-cell u-cell--large--1-3 u-cell--medium--1-2 card-wrap-cell" v-for="card in cardList" :key="card.action">
                     <Card :card="card"/>
                 </div>
