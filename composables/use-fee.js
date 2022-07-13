@@ -48,11 +48,11 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     /** @type {Object.<number, string>}*/
     const coinMap = ref({});
     const state = reactive({
-        priceCoinFeeValue: 0,
-        baseCoinFeeValue: 0,
+        priceCoinCommission: 0,
+        baseCoinCommission: 0,
         isBaseCoinEnough: true,
-        feeCoin: BASE_COIN,
-        feeValue: '',
+        gasCoin: BASE_COIN,
+        commission: '',
         feeError: '',
         /** @type CommissionPriceData|null */
         commissionPriceData: null,
@@ -60,7 +60,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     });
 
     const fee = computed(() => {
-        const isBaseCoinFee = isBaseCoin(state.feeCoin);
+        const isBaseCoinFee = isBaseCoin(state.gasCoin);
         const isHighFee = (() => {
             if (!state.commissionPriceData) {
                 return false;
@@ -68,25 +68,25 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
             const feePrice = new FeePrice(state.commissionPriceData);
 
             const sendFee = feePrice.getFeeValue(TX_TYPE.SEND);
-            return sendFee && state.priceCoinFeeValue / sendFee >= 10000;
+            return sendFee && state.priceCoinCommission / sendFee >= 10000;
         })();
-        const feeCoinSymbol = (() => {
-            if (isCoinId(state.feeCoin)) {
-                return coinMap.value[state.feeCoin];
+        const gasCoinSymbol = (() => {
+            if (isCoinId(state.gasCoin)) {
+                return coinMap.value[state.gasCoin];
             } else {
-                return state.feeCoin;
+                return state.gasCoin;
             }
         })();
 
         return {
-            priceCoinValue: state.priceCoinFeeValue,
+            priceCoinValue: state.priceCoinCommission,
             priceCoin: state.commissionPriceData?.coin || {},
-            baseCoinValue: state.baseCoinFeeValue,
+            baseCoinValue: state.baseCoinCommission,
             isBaseCoin: isBaseCoinFee,
             isBaseCoinEnough: state.isBaseCoinEnough,
-            value: state.feeValue,
-            coin: state.feeCoin,
-            coinSymbol: feeCoinSymbol,
+            value: state.commission,
+            coin: state.gasCoin,
+            coinSymbol: gasCoinSymbol,
             isHighFee: isHighFee,
             error: state.feeError,
             isLoading: state.isLoading,
@@ -116,7 +116,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
             return;
         }
         if (feeProps.isOffline) {
-            state.feeCoin = 0;
+            state.gasCoin = 0;
             return;
         }
 
@@ -127,11 +127,11 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
             const estimatePromise = estimateFeeWithFallback(feeProps.txParams, feeProps.fallbackToCoinToSpend, feeProps.baseCoinAmount, feeProps.precision, idPrimary, idSecondary);
             const {feeData, isBaseCoinEnough} = await ensurePropsNotChanged(estimatePromise);
 
-            state.priceCoinFeeValue = feeData.priceCoinCommission;
-            state.baseCoinFeeValue = feeData.baseCoinCommission;
+            state.priceCoinCommission = feeData.priceCoinCommission;
+            state.baseCoinCommission = feeData.baseCoinCommission;
             state.isBaseCoinEnough = isBaseCoinEnough;
-            state.feeCoin = feeData.gasCoin;
-            state.feeValue = feeData.commission;
+            state.gasCoin = feeData.gasCoin;
+            state.commission = feeData.commission;
             state.commissionPriceData = feeData.commissionPriceData;
             // feeError must be cleaned after promise because several promises can be processed parallel and some may fail
             state.feeError = '';
