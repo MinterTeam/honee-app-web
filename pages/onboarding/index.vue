@@ -64,16 +64,16 @@ export default {
             <div class="u-container u-container--small u-text-center u-text-medium u-mb-10">
                 <h1 class="u-h3 u-mb-05">
                     <span class="u-emoji u-h1">🎉</span> <br>
-                    Welcome to Honee!
+                    {{ $td('Welcome to Honee!', 'onboarding.welcome') }}
                 </h1>
 
                 <p>
-                    You’ve added
+                    {{ $td('You\’ve added', 'onboarding.text-added') }}
                     <strong>{{ $route.query.topupAmount }}&nbsp;{{ topupCoin }}</strong>
-                    <span v-if="topupAmountUsd">(≈${{ pretty(topupAmountUsd) }})</span>
-                    to your balance. Now&nbsp;you are just a&nbsp;few clicks away from earning!
+                    <span v-if="topupAmountUsd">(≈${{ pretty(topupAmountUsd) }})</span>&nbsp;
+                    {{ $td('to your balance. Now you are just a few clicks away from earning!', 'onboarding.text-earning') }}
                 </p>
-                <p>Please choose one of our curated programs:</p>
+                <p>{{ $td('Please choose one of our curated programs:', 'onboarding.text-choose') }}</p>
             </div>
 
             <div class="u-container u-container--large">

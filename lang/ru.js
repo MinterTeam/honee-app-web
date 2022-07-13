@@ -165,7 +165,7 @@ export default {
     'topup-network': {
         'title': 'Пополнить через',
         'description': 'Отправьте любое кол-во {coin} на адрес ниже',
-        'description-minter': 'Отправьте любое кол-во {coin}, BEE или любого другого Minter токена на адрес ниже',
+        'description-minter': 'Отправьте любое количество {coin}, BEE или другого Minter-токена на адрес ниже',
         'copy': 'Копировать',
         'share': 'Поделиться',
         'show-qr': 'Показать QR',
@@ -184,6 +184,10 @@ export default {
     },
     onboarding: {
         'skip': 'Пропустить',
+        'welcome': 'Добро пожаловать в Honee!',
+        'text-added': 'Вы пополнили свой баланс на',
+        'text-earning': '. Начните зарабатывать всего в пару кликов!',
+        'text-choose': 'Для этого выберите одну из наших программ:',
     },
     action: {
         'title-buy': 'Купите BIP, HUB и BEE',
