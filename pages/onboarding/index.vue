@@ -70,10 +70,10 @@ export default {
                 <p>
                     {{ $td('You\’ve added', 'onboarding.text-added') }}
                     <strong>{{ $route.query.topupAmount }}&nbsp;{{ topupCoin }}</strong>
-                    <span v-if="topupAmountUsd">(≈${{ pretty(topupAmountUsd) }})</span>&nbsp;
+                    <span v-if="topupAmountUsd">(≈${{ pretty(topupAmountUsd) }})</span>
                     {{ $td('to your balance. Now you are just a few clicks away from earning!', 'onboarding.text-earning') }}
                 </p>
-                <p>{{ $td('Please choose one of our curated programs:', 'onboarding.text-choose') }}</p>
+                <p>{{ $td('Please choose one of our top programs:', 'onboarding.text-choose') }}</p>
             </div>
 
             <div class="u-container u-container--large">
