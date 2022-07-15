@@ -6,6 +6,7 @@ import {isValidMnemonic} from 'minterjs-wallet';
 import {postTx} from '~/api/gate.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import {getErrorText} from "~/assets/server-error.js";
+import {clearEmptyFields} from '~/assets/utils/collection.js';
 import {getExplorerTxUrl, pretty, prettyExact, ensurePromise} from "~/assets/utils.js";
 import useFee from '~/composables/use-fee.js';
 // import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
@@ -242,22 +243,6 @@ export default {
         getExplorerTxUrl,
     },
 };
-
-/**
- * Ensure empty fields to be undefined
- * @param {Object} obj
- * @return {Object}
- */
-function clearEmptyFields(obj) {
-    let result = {};
-    Object.keys(obj).forEach((key) => {
-        if (obj[key] || obj[key] === 0 || obj[key] === false) {
-            result[key] = obj[key];
-        }
-    });
-
-    return result;
-}
 </script>
 
 <template>

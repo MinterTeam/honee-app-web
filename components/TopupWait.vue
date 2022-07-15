@@ -1,7 +1,7 @@
 <script>
 import {findNativeCoinSymbol, getOracleCoinList} from '~/api/hub.js';
 import {HUB_CHAIN_DATA, HUB_CHAIN_ID} from '~/assets/variables.js';
-import {arrayToMap} from '~/assets/utils/array-to-map.js';
+import {arrayToMap} from '~/assets/utils/collection.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import {TOP_UP_NETWORK} from '~/components/Topup.vue';
