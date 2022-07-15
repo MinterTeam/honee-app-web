@@ -145,7 +145,7 @@ export default {
             $td: context.root.$td,
             idPreventConcurrency: 'hubBuy',
         });
-        const { discount, discountProps, discountUpsidePercent } = useHubDiscount();
+        const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
 
         const {
             tokenData: externalToken,
@@ -170,7 +170,7 @@ export default {
             gasTotalFee: ethTotalFee,
             depositAmountAfterGas: formAmountAfterGas,
         } = useWeb3Deposit();
-        const {txServiceState, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData} = useTxService();
+        const {txServiceState, currentLoadingStage, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData} = useTxService();
         const {sendMinterSwapTx} = useTxMinterPresets();
 
         return {
@@ -193,7 +193,7 @@ export default {
 
             setDepositProps, depositFromEthereum, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, formAmountAfterGas,
 
-            txServiceState, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData,
+            txServiceState, currentLoadingStage, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData,
 
             sendMinterSwapTx,
         };
@@ -337,13 +337,14 @@ export default {
             const ethPrice = priceItem.value;
             return this.form.amountEth * ethPrice / this.estimation;
         },
-        /** @type {Array<SequenceOrderedStepItem>} */
+        /** @type {Array<SequenceStepItem>} */
+        //@TODO
         stepsOrdered() {
             const stages = Object.values(LOADING_STAGE).reverse();
             let result = [];
             stages.forEach((stageName) => {
                 if (this.txServiceState.steps[stageName]) {
-                    result.push({step: this.txServiceState.steps[stageName], loadingStage: stageName});
+                    result.push(this.txServiceState.steps[stageName]);
                 }
             });
 
@@ -496,7 +497,7 @@ export default {
             if (new Big(this.selectedBalance).gte(targetAmount)) {
                 return Promise.resolve();
             } else {
-                this.txServiceState.loadingStage = LOADING_STAGE.WAIT_ETH;
+                this.addStepData(LOADING_STAGE.WAIT_ETH, {waitAmount: targetAmount});
 
                 const promise = this.waitEnoughTokenBalance(targetAmount);
                 waitingCancel = () => {
@@ -559,8 +560,7 @@ export default {
                     });
                 })
                 .then((tx) => {
-                    this.txServiceState.loadingStage = LOADING_STAGE.FINISH;
-                    this.addStepData(LOADING_STAGE.FINISH, {coin: this.form.coinToGet, amount: tx.result.returnAmount, finished: true});
+                    this.addStepData(LOADING_STAGE.FINISH, {coin: this.form.coinToGet, amount: tx.result.returnAmount, finished: true}, true);
 
                     this.$emit('success');
 
@@ -584,7 +584,7 @@ export default {
                     }
 
                     // don't close modal, user will decide if he wants retry or finish
-                    if (this.txServiceState.loadingStage === LOADING_STAGE.WAIT_ETH) {
+                    if (this.currentLoadingStage === LOADING_STAGE.WAIT_ETH) {
                         // only close for WAIT_ETH because there is no recovery for such loadingStage
                         this.finishSending();
                     }
@@ -958,7 +958,7 @@ export default {
         <!-- Loading modal -->
         <Modal :isOpen.sync="isFormSending" :disable-outside-click="true">
             <h2 class="u-h3 u-mb-10">
-                <template v-if="txServiceState.loadingStage === $options.LOADING_STAGE.WAIT_ETH">
+                <template v-if="currentLoadingStage === $options.LOADING_STAGE.WAIT_ETH">
                     <Loader class="hub__buy-title-loader" :is-loading="true"/>
                     <template v-if="!isFiatRampSelected">
                         {{ $td(`Waiting ${externalTokenSymbol} deposit`, 'form.eth-waiting', {symbol: externalTokenSymbol}) }}
@@ -967,13 +967,13 @@ export default {
                         {{ $td(`Waiting ${externalTokenSymbol} purchase`, 'form.eth-purchase-waiting', {symbol: externalTokenSymbol}) }}
                     </template>
                 </template>
-                <template v-else-if="txServiceState.loadingStage === $options.LOADING_STAGE.FINISH">
+                <template v-else-if="currentLoadingStage === $options.LOADING_STAGE.FINISH">
                     {{ $td('Success', 'form.success-title') }}!
                 </template>
                 <template v-else>{{ $td('Buy', 'form.buy-button') }} {{ form.coinToGet }}</template>
             </h2>
 
-            <template v-if="txServiceState.loadingStage === $options.LOADING_STAGE.WAIT_ETH">
+            <template v-if="currentLoadingStage === $options.LOADING_STAGE.WAIT_ETH">
                 <template v-if="!isFiatRampSelected">
                     <div class="form-row">
                         <div class="form-field form-field--dashed form-field--with-icon">
@@ -1018,7 +1018,7 @@ export default {
                 class="hub__buy-stage form-row"
                 v-for="item in stepsOrdered"
                 :key="item.loadingStage"
-                :step="item.step"
+                :step="item"
                 :loadingStage="item.loadingStage"
             />
             <div class="form-row" v-if="serverError || !$store.state.onLine">
@@ -1040,10 +1040,10 @@ export default {
                 </div>
                 <HubBuySpeedup :steps-ordered="stepsOrdered" @speedup="speedup($event)"/>
             </div>
-            <div class="form-row u-text-medium u-fw-500" v-if="txServiceState.loadingStage !== $options.LOADING_STAGE.WAIT_ETH && txServiceState.loadingStage !== $options.LOADING_STAGE.FINISH">
+            <div class="form-row u-text-medium u-fw-500" v-if="currentLoadingStage !== $options.LOADING_STAGE.WAIT_ETH && currentLoadingStage !== $options.LOADING_STAGE.FINISH">
                 <span class="u-emoji">⚠️</span> {{ $td('Please keep this page active, otherwise progress may&nbsp;be&nbsp;lost.', 'index.keep-page-active') }}
             </div>
-            <div class="form-row" v-if="txServiceState.loadingStage === $options.LOADING_STAGE.FINISH">
+            <div class="form-row" v-if="currentLoadingStage === $options.LOADING_STAGE.FINISH">
                 <button class="button button--ghost-main button--full" type="button" @click="finishSending(); $emit('success-modal-close')">
                     {{ $td('Close', 'common.close') }}
                 </button>

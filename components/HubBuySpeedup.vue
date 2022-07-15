@@ -9,19 +9,13 @@ import {HUB_BUY_STAGE as LOADING_STAGE} from '~/assets/variables.js';
 
 let timer;
 
-/**
- * @typedef {object} SequenceOrderedStepItem
- * @property {SequenceStepItem} step
- * @property {LOADING_STAGE} loadingStage
- */
-
 export default {
     LOADING_STAGE,
     mixins: [
         VueNowMixinFactory(1000),
     ],
     props: {
-        /** @type {Array<SequenceOrderedStepItem>} */
+        /** @type {Array<SequenceStepItem>} */
         stepsOrdered: {
             type: Array,
             required: true,
@@ -41,7 +35,7 @@ export default {
         },
         slowStep() {
             const item = this.stepsOrdered.slice().reverse().find((item) => {
-                const tx = item.step.tx;
+                const tx = item.tx;
                 if (!tx || !tx.timestamp || !tx.params) {
                     return false;
                 }
@@ -55,11 +49,8 @@ export default {
             });
 
             if (item) {
-                item.step.tx.chainId = Number(item.step.tx.chainId);
-                return {
-                    ...item.step,
-                    loadingStage: item.loadingStage,
-                };
+                item.tx.chainId = Number(item.tx.chainId);
+                return item;
             }
             return undefined;
         },
