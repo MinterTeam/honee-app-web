@@ -205,11 +205,22 @@ function estimateTxGas({to, value, data}) {
 }
 
 /**
+ * @typedef {Partial<TxParams> & {extra: object}} PrepareTxParamsResult
+ */
+/**
+ * @typedef {function(PostTxResponse?, PrepareTxParamsResult?): (Promise<PrepareTxParamsResult>|PrepareTxParamsResult)} PrepareTxParams
+ */
+/**
+ * @typedef {function(PostTxResponse): (Promise<PostTxResponse&object>|PostTxResponse&object)} FinalizePostTx
+ */
+
+/**
  * @typedef {object} SendSequenceItem
  * @property {TxParams} txParams
- * @property {function: Promise} [prepare]
- * @property {function: Promise} [finalize]
- *
+ * @property {Array<PrepareTxParams> | PrepareTxParams} [prepare] - functions to prepare txParams, executes in series, as se
+ * @property {FinalizePostTx} [finalize]
+ */
+/**
  * @param {Array<SendSequenceItem>} list
  * @param {PostTxOptions} [options]
  * @return {Promise}
@@ -217,11 +228,16 @@ function estimateTxGas({to, value, data}) {
 async function sendTxSequence(list, options) {
     let result;
     for (const [index, {txParams, prepare, finalize}] of Object.entries(list)) {
+        // init
         addStepData(`minter${index}`);
-        const txParamsAddition = await ensurePromise(prepare, result);
-        const preparedTxParams = merge({}, txParams, txParamsAddition);
+        // prepare
+        const txParamsAdditionList = await awaitSeries(prepare, result);
+        const preparedTxParams = merge({}, txParams, ...txParamsAdditionList);
+        console.debug('prepare', [txParams, ...txParamsAdditionList]);
+        // execute
         addStepData(`minter${index}`, {txParams: preparedTxParams});
         let result = await sendMinterTx(preparedTxParams, options);
+        // finalize
         result = await ensurePromise(finalize, result, {fallbackToArg: true});
         addStepData(`minter${index}`, {tx: result, finished: true});
     }
@@ -345,6 +361,26 @@ function addStepData(loadingStage, data = {}, finishPrev) {
         window.localStorage.removeItem('hub-buy-recovery');
     }
 }
+
+/**
+ *
+ * @param {Array<function>|function} list
+ * @param arg
+ * @param options
+ * @return {Promise<Array<any>>}
+ */
+async function awaitSeries(list, arg, options) {
+    list = Array.isArray(list) ? list : [list];
+    let listResult = [];
+    let itemResult;
+    for (const item of list) {
+        itemResult = await ensurePromise(item, [arg, itemResult], options);
+        listResult.push(itemResult);
+    }
+    return listResult;
+}
+
+
 
 export default function useTxService() {
     return {

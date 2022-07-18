@@ -36,6 +36,7 @@ export default {
             type: [Number, String],
             required: true,
         },
+        /** @type {SendSequenceItem|Array<SendSequenceItem>} */
         sequenceParams: {
             type: [Array, Object],
             required: true,

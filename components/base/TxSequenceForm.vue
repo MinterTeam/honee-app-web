@@ -25,6 +25,7 @@ export default {
         'update:fee',
     ],
     props: {
+        /** @type {SendSequenceItem|Array<SendSequenceItem>} */
         sequenceParams: {
             type: [Array, Object],
             required: true,
@@ -51,12 +52,13 @@ export default {
         },
     },
     setup() {
-        const {fee, feeProps} = useFee();
+        const {fee, feeProps, refineByIndex} = useFee();
         const { txServiceState, currentLoadingStage, sendTxSequence} = useTxService();
 
         return {
             fee,
             feeProps,
+            refineByIndex,
 
             txServiceState,
             currentLoadingStage,
@@ -139,7 +141,29 @@ export default {
 
             ensurePromise(this.beforePostSequence, this)
                 .then(() => {
-                    return this.sendTxSequence(this.sequenceParams, {
+                    const sequenceParams = this.sequenceParams.map((item, index) => {
+                        //@TODO pass refinedByIndex result to StakeByLock prepare (probably use useFee state)
+                        // fill txParams with gasCoin
+                        const prepareGasCoin = index === 0
+                            ? () => ({gasCoin: this.fee.resultList[0].coin})
+                            : () => this.refineByIndex(index).then((fee) => ({
+                                gasCoin: fee.coin,
+                                // extra data to pass to next `prepare`
+                                extra: {fee},
+                            }));
+                        const itemPrepare = Array.isArray(item.prepare)
+                            ? item.prepare
+                            : (item.prepare ? [item.prepare] : []);
+
+                        return {
+                            ...item,
+                            prepare: [
+                                prepareGasCoin,
+                                ...itemPrepare,
+                            ],
+                        };
+                    });
+                    return this.sendTxSequence(sequenceParams, {
                         // private key to sign
                         privateKey: this.$store.getters.privateKey,
                         // don't increase gasPrice for high-fee tx

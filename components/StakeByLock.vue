@@ -11,6 +11,7 @@ import checkEmpty from '~/assets/v-check-empty.js';
 import {pretty, prettyRound, getDateAmerican, getTimeDistance} from '~/assets/utils.js';
 import {getStakingProgram} from '~/api/staking.js';
 import {getBlock} from '~/api/explorer.js';
+import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import TxSequenceWithSwapForm from '~/components/base/TxSequenceWithSwapForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
@@ -157,10 +158,16 @@ export default {
         },
         sequenceParams() {
             return {
-                prepare: this.isSelectedLockCoin ? undefined : (swapTx) => {
+                prepare: this.isSelectedLockCoin ? undefined : (swapTx, prevPrepare) => {
+                    const coinToBuy = swapTx.data.coin_to_buy || swapTx.data.coins.find((item) => item.id === swapTx.tags['tx.coin_to_buy']);
+                    const value = getAvailableSelectedBalance({
+                        coin: coinToBuy,
+                        amount: swapTx.returnAmount,
+                    }, prevPrepare.extra.fee);
+
                     return {
                         data: {
-                            value: swapTx.returnAmount,
+                            value,
                         },
                     };
                 },

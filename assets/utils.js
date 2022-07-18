@@ -335,7 +335,7 @@ export function fromBase64(str) {
 
 /**
  * @template T
- * @param {(function(...any): Promise<T>) | any} [fn]
+ * @param {function(...any): Promise<T>} [fn]
  * @param {any|Array<any>} [args]
  * @param {object} [options]
  * @param {boolean} [fallbackToArg]
