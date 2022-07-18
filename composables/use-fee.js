@@ -15,6 +15,7 @@ import CancelError from '~/assets/utils/error-cancel.js';
 
 /**
  * @typedef {Object} FeeData
+ * @property {Array<FeeData>} resultList
  * @property {Coin} priceCoin
  * @property {boolean} isBaseCoin
  * @property {boolean} isBaseCoinEnough
@@ -38,6 +39,8 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     const feeProps = reactive({
         /** @type {TxParams} */
         txParams: {},
+        /** @type {Array<TxParams>} */
+        txParamsList: [],
         baseCoinAmount: 0,
         /** @type {Boolean} - by default fallback to baseCoin, additionally it can try to fallback to coinToSpend, if baseCoin is not enough */
         fallbackToCoinToSpend: false,
@@ -48,6 +51,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     /** @type {Object.<number, string>}*/
     const coinMap = ref({});
     const state = reactive({
+        resultList: [],
         priceCoinCommission: 0,
         baseCoinCommission: 0,
         isBaseCoinEnough: true,
@@ -60,34 +64,46 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     });
 
     const fee = computed(() => {
-        const isBaseCoinFee = isBaseCoin(state.gasCoin);
-        const isHighFee = (() => {
+        const sendFee = (() => {
             if (!state.commissionPriceData) {
                 return false;
             }
             const feePrice = new FeePrice(state.commissionPriceData);
 
-            const sendFee = feePrice.getFeeValue(TX_TYPE.SEND);
-            return sendFee && state.priceCoinCommission / sendFee >= 10000;
+            return feePrice.getFeeValue(TX_TYPE.SEND);
         })();
-        const gasCoinSymbol = (() => {
-            if (isCoinId(state.gasCoin)) {
-                return coinMap.value[state.gasCoin];
+        const getIsHighFee = (priceCoinCommission) => {
+            return sendFee && priceCoinCommission / sendFee >= 10000;
+        };
+        const getGasCoinSymbol = (gasCoin) => {
+            if (isCoinId(gasCoin)) {
+                return coinMap.value[gasCoin];
             } else {
-                return state.gasCoin;
+                return gasCoin;
             }
-        })();
+        };
 
         return {
+            resultList: state.resultList.map((item) => ({
+                priceCoinValue: item.priceCoinCommission,
+                priceCoin: state.commissionPriceData?.coin || {},
+                baseCoinValue: item.baseCoinCommission,
+                isBaseCoin: isBaseCoin(item.gasCoin),
+                isBaseCoinEnough: item.isBaseCoinEnough,
+                value: item.commission,
+                coin: item.gasCoin,
+                coinSymbol: getGasCoinSymbol(item.gasCoin),
+                isHighFee: getIsHighFee(item.priceCoinCommission),
+            })),
             priceCoinValue: state.priceCoinCommission,
             priceCoin: state.commissionPriceData?.coin || {},
             baseCoinValue: state.baseCoinCommission,
-            isBaseCoin: isBaseCoinFee,
+            isBaseCoin: isBaseCoin(state.gasCoin),
             isBaseCoinEnough: state.isBaseCoinEnough,
             value: state.commission,
             coin: state.gasCoin,
-            coinSymbol: gasCoinSymbol,
-            isHighFee: isHighFee,
+            coinSymbol: getGasCoinSymbol(state.gasCoin),
+            isHighFee: getIsHighFee(state.priceCoinCommission),
             error: state.feeError,
             isLoading: state.isLoading,
         };
@@ -124,6 +140,24 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         state.feeError = '';
 
         try {
+            const txParamsList = feeProps.txParamsList?.length ? feeProps.txParamsList : [feeProps.txParams];
+            const promiseList = txParamsList.map((txParams,  index) => {
+                const precision = index > 1 ? FEE_PRECISION_SETTING.IMPRECISE : feeProps.precision;
+
+                const estimatePromise = estimateFeeWithFallback(txParams, feeProps.fallbackToCoinToSpend, feeProps.baseCoinAmount, precision, idPrimary + index, idSecondary + index);
+                return ensurePropsNotChanged(estimatePromise);
+            });
+            const resultList = await Promise.all(promiseList);
+            state.resultList = resultList;
+            state.priceCoinCommission = sumBy(resultList, 'priceCoinCommission');
+            state.baseCoinCommission = sumBy(resultList, 'baseCoinCommission');
+            const isBaseCoinNotEnough = resultList.some(({isBaseCoinEnough}) => !isBaseCoinEnough);
+            state.isBaseCoinEnough = !isBaseCoinNotEnough;
+            const isDifferentGasCoins = resultList.some(({gasCoin}) => gasCoin !== resultList[0].gasCoin);
+            state.gasCoin = isDifferentGasCoins ? '' : resultList[0].gasCoin;
+            state.commission = isDifferentGasCoins ? '' : sumBy(resultList, 'commission');
+            state.commissionPriceData = resultList[0].commissionPriceData;
+/*
             const estimatePromise = estimateFeeWithFallback(feeProps.txParams, feeProps.fallbackToCoinToSpend, feeProps.baseCoinAmount, feeProps.precision, idPrimary, idSecondary);
             const {feeData, isBaseCoinEnough} = await ensurePropsNotChanged(estimatePromise);
 
@@ -133,6 +167,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
             state.gasCoin = feeData.gasCoin;
             state.commission = feeData.commission;
             state.commissionPriceData = feeData.commissionPriceData;
+ */
             // feeError must be cleaned after promise because several promises can be processed parallel and some may fail
             state.feeError = '';
             state.isLoading = false;
@@ -256,7 +291,7 @@ async function estimateFee(txParams, precision, idDebounce) {
  * @param {FEE_PRECISION_SETTING} precision
  * @param {string} idDebouncePrimary
  * @param {string} idDebounceSecondary
- * @return {Promise<{isBaseCoinEnough: boolean, feeData: MinterFeeEstimation&{gasCoin: string|number}}>}
+ * @return {Promise<{isBaseCoinEnough: boolean}&MinterFeeEstimation&{gasCoin: string|number}>}
  */
 async function estimateFeeWithFallback(txParams, fallbackToCoinToSpend, baseCoinAmount, precision, idDebouncePrimary, idDebounceSecondary) {
     const primaryCoinToCheck = getPrimaryCoinToCheck(txParams);
@@ -282,7 +317,7 @@ async function estimateFeeWithFallback(txParams, fallbackToCoinToSpend, baseCoin
     }
 
     return {
-        feeData,
+        ...feeData,
         isBaseCoinEnough,
     };
 }
@@ -361,4 +396,17 @@ function cleanObject(txParams) {
  */
 function cloneObject(obj) {
     return JSON.parse(JSON.stringify(obj));
+}
+
+/**
+ * @param {Array<object>} arr
+ * @param {string} key
+ * @return {number|string}
+ */
+function sumBy(arr, key) {
+    return arr
+        .reduce((accumulator, item) => {
+            return accumulator.plus(item[key]);
+        }, new Big(0))
+        .toString();
 }

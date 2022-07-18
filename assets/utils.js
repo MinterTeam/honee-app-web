@@ -350,8 +350,11 @@ export function ensurePromise(fn, args, {fallbackToArg} = {}) {
     let fnPromise;
     if (typeof fn === 'function') {
         fnPromise = fn(...args);
-    }
-    if (!fnPromise || typeof fnPromise.then !== 'function') {
+        // promisify returned value
+        if (typeof fnPromise.then !== 'function') {
+            fnPromise = Promise.resolve(fnPromise);
+        }
+    } else {
         const result = fallbackToArg ? args[0] : undefined;
         fnPromise = Promise.resolve(result);
     }

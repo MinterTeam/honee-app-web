@@ -373,7 +373,7 @@ export default {
  * @param {boolean} [isSellAll]
  * @return {TX_TYPE}
  */
-function getTxType({isPool, isSelling, isSellAll}) {
+export function getTxType({isPool, isSelling, isSellAll}) {
     // buy
     const isBuy = !isSelling;
     if (isBuy && isPool) {

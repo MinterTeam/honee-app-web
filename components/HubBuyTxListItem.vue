@@ -1,12 +1,14 @@
 <script>
 import {shortHashFilter, getTime, getEvmTxUrl, getExplorerTxUrl, pretty} from '~/assets/utils.js';
-import Loader from '@/components/base/BaseLoader.vue';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+import Loader from '~/components/base/BaseLoader.vue';
+import TxPreview from '~/components/base/TxPreview.vue';
 
 export default {
     LOADING_STAGE,
     components: {
         Loader,
+        TxPreview,
     },
     props: {
         step: {
@@ -76,9 +78,14 @@ export default {
             <template v-if="loadingStage === $options.LOADING_STAGE.SWAP_MINTER">
                 {{ $td('Swap', 'form.stage-swap') }} {{ pretty(step.amount0) }} {{ step.coin0 }} {{ $td('for', 'form.stage-for') }} {{ step.coin1 }}
             </template>
-            <template v-if="loadingStage === $options.LOADING_STAGE.FINISH">
+            <template v-if="loadingStage === $options.LOADING_STAGE.FINISH && step.amount && step.coin">
                 {{ $td('Received', 'form.stage-received') }} {{ pretty(step.amount) }} {{ step.coin }}
             </template>
+            <TxPreview
+                class="u-display-ib"
+                v-if="step.txParams && /^minter\d+$/.test(loadingStage)"
+                :tx="step.txParams"
+            />
         </div>
         <div class="hub__buy-transaction-row hub__buy-transaction-meta">
             <!-- @TODO chainId -->

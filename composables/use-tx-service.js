@@ -2,7 +2,8 @@ import {reactive, computed, set} from '@vue/composition-api';
 import merge from 'lodash-es/merge';
 import {getProviderByChain, web3Utils, subscribeTransaction, toErcDecimals} from '~/api/web3.js';
 import {postTx} from '~/api/gate.js';
-import {HUB_BUY_STAGE as LOADING_STAGE} from '~/assets/variables.js';
+import {HUB_BUY_STAGE as LOADING_STAGE, CHAIN_ID as MINTER_CHAIN_ID} from '~/assets/variables.js';
+import {clearEmptyFields} from '~/assets/utils/collection.js';
 import {ensurePromise} from '~/assets/utils.js';
 
 
@@ -79,11 +80,25 @@ const currentStep = computed(() => {
 
 /**
  * @param {TxParams} txParams
- * @param {ByteArray} [privateKey]
+ * @param {PostTxOptions} [options]
  * @return {Promise<PostTxResponse>}
  */
-function sendMinterTx(txParams, privateKey = props.privateKey) {
-    return postTx(txParams, {privateKey})
+function sendMinterTx(txParams, options= {}) {
+    txParams = {
+        // default params
+        chainId: MINTER_CHAIN_ID,
+        signatureType: 1,
+        // defined params
+        ...txParams,
+        // override params
+        payload: txParams.payload || undefined,
+        data: clearEmptyFields(txParams.data),
+    };
+
+    return postTx(txParams, {
+        ...options,
+        privateKey: options.privateKey || props.privateKey,
+    })
         .then((tx) => {
             tx = Object.freeze({...tx, timestamp: (new Date()).toISOString()});
             return tx;
@@ -196,16 +211,21 @@ function estimateTxGas({to, value, data}) {
  * @property {function: Promise} [finalize]
  *
  * @param {Array<SendSequenceItem>} list
+ * @param {PostTxOptions} [options]
  * @return {Promise}
  */
-async function sendTxSequence(list) {
+async function sendTxSequence(list, options) {
     let result;
-    for (const {txParams, prepare, finalize} of list) {
+    for (const [index, {txParams, prepare, finalize}] of Object.entries(list)) {
+        addStepData(`minter${index}`);
         const txParamsAddition = await ensurePromise(prepare, result);
         const preparedTxParams = merge({}, txParams, txParamsAddition);
-        let result = await sendMinterTx(preparedTxParams);
-        result = await ensurePromise(finalize, result);
+        addStepData(`minter${index}`, {txParams: preparedTxParams});
+        let result = await sendMinterTx(preparedTxParams, options);
+        result = await ensurePromise(finalize, result, {fallbackToArg: true});
+        addStepData(`minter${index}`, {tx: result, finished: true});
     }
+    addStepData(LOADING_STAGE.FINISH, {finished: true}, true);
 
     return result;
 }
@@ -249,7 +269,7 @@ function waitPendingStep(loadingStage) {
  * @param {object} [data]
  * @param {boolean} [finishPrev] - mark all previous steps as finished
  */
-function addStepData(loadingStage, data, finishPrev) {
+function addStepData(loadingStage, data = {}, finishPrev) {
     if (finishPrev) {
         for (const step of Object.values(state.steps)) {
             if (step.loadingStage !== loadingStage && !step.finished) {
@@ -304,7 +324,7 @@ function addStepData(loadingStage, data, finishPrev) {
         ...(state.steps[loadingStage] ? {index: Object.keys(state.steps).length} : undefined),
     }));
     const needSaveRecovery = loadingStage !== LOADING_STAGE.FINISH;
-    console.log('addStepData result', {needSaveRecovery}, state.steps[loadingStage]);
+    console.log('addStepData result', state.steps[loadingStage], {needSaveRecovery});
     if (needSaveRecovery) {
         let stepsToSave = JSON.parse(JSON.stringify(state.steps));
         // remove errored tx from recovery, so they will not cause subscribe for them on repeat
@@ -335,6 +355,7 @@ export default function useTxService() {
         currentStep,
         setTxServiceProps: setProps,
         sendMinterTx,
+        sendTxSequence,
         sendEthTx,
         estimateTxGas,
         waitPendingStep,
