@@ -33,7 +33,7 @@ export default {
 
         let programId = this.params.id;
         if (programId === 'BEE') {
-            programId = 1;
+            programId = 19;
         }
         if (programId === 'MUSD') {
             programId = 2;
