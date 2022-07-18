@@ -8,22 +8,6 @@ export default {
         cards: [
             {
                 caption: 'Stake & Earn',
-                coin: `BEE`,
-                description: 'Stake BEE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
-                stats: {
-                    apr: {
-                        percent: '6-24',
-                    },
-                },
-                tags: ['Staking'],
-                action: `/stake/1`,
-                ru: {
-                    description: 'Стейкуйте BEE на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
-                    caption: 'Стейкинг',
-                },
-            },
-            {
-                caption: 'Stake & Earn',
                 coin: `MUSD`,
                 description: 'Stake MUSD for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
                 stats: {
