@@ -278,7 +278,7 @@ function yearToBlock(year) {
                 <div class="estimation form-row">
                     <template v-if="!isSelectedLockCoin">
                         <h3 class="estimation__title">{{ $td('You will buy and stake approximately', 'stake-by-lock.estimation-buy') }}</h3>
-                        <BaseAmountEstimation :coin="stakingProgram.rewardCoin.symbol" :amount="estimation || 0" format="approx"/>
+                        <BaseAmountEstimation :coin="stakingProgram.lockCoin.symbol" :amount="estimation || 0" format="approx"/>
                     </template>
 
                     <h3 class="estimation__title">{{ $td('You will earn', 'stake-by-lock.estimation-earn') }}</h3>
@@ -328,7 +328,7 @@ function yearToBlock(year) {
                         <BaseAmountEstimation :coin="form.coin" :amount="form.value" format="exact"/>
 
                         <h3 class="estimation__title">{{ $td('You will buy and stake approximately', 'stake-by-lock.buy-estimation') }}</h3>
-                        <BaseAmountEstimation :coin="stakingProgram.rewardCoin.symbol" :amount="estimation" format="approx"/>
+                        <BaseAmountEstimation :coin="stakingProgram.lockCoin.symbol" :amount="estimation" format="approx"/>
                     </template>
 
                     <h3 class="estimation__title">{{ $td('You will earn', 'stake-by-lock.estimation-earn') }}</h3>
