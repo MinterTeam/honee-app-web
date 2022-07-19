@@ -4,11 +4,13 @@ import {pretty} from '~/assets/utils.js';
 import {BASE_COIN} from '~/assets/variables.js';
 import Card from '~/components/Card.vue';
 
-const ACTION_LIST = {
-    BEE: '/stake/1',
-    MUSD: '/stake/2',
+const ACTION_LIST = [
+    '/stake/1',
+    '/stake/2',
+    '/swap/BTC',
+];
+const ACTION_LIST_CONDITIONAL = {
     BIP: `/delegate/${BASE_COIN}`,
-    '*': '/swap/BTC',
 };
 
 const MAX_PAGE = 3;
@@ -46,9 +48,10 @@ export default {
             return balanceItem ? this.$store.getters['explorer/bipPriceUsd'] * balanceItem.bipAmount : 0;
         },
         cardList() {
-            const actionList = Object.keys(ACTION_LIST)
-                .filter((key) => key === '*' || key === this.topupCoin)
-                .map((key) => ACTION_LIST[key]);
+            const actionList = ACTION_LIST;
+            const actionListConditional = Object.keys(ACTION_LIST_CONDITIONAL)
+                .filter((key) => key === this.topupCoin)
+                .map((key) => ACTION_LIST_CONDITIONAL[key]);
             return flatCardList.filter((item) => actionList.includes(item.action));
         },
     },
