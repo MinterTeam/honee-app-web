@@ -22,6 +22,7 @@ export default {
         'progress-modal-close',
         'success-modal-close',
         'clear-form',
+        'validation-touch',
         'update:fee',
     ],
     props: {
@@ -120,6 +121,7 @@ export default {
             if (this.$v.$invalid) {
                 this.$v.$touch();
                 this.v$sequenceParams.$touch();
+                this.$emit('validation-touch');
                 return;
             }
 

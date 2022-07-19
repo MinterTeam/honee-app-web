@@ -6,7 +6,7 @@ import {ESTIMATE_SWAP_TYPE} from 'minter-js-sdk/src/variables.js';
 import {convertFromPip} from 'minterjs-util/src/converter.js';
 import useEstimateSwap from '~/composables/use-estimate-swap.js';
 import Big from '~/assets/big.js';
-import {decreasePrecisionSignificant} from '~/assets/utils.js';
+import {pretty, decreasePrecisionSignificant} from '~/assets/utils.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import TxSequenceForm from '~/components/base/TxSequenceForm.vue';
 import {getTxType} from '~/components/Swap.vue';
@@ -22,6 +22,7 @@ export default {
         'success',
         'success-modal-close',
         'update:estimation',
+        'validation-touch',
     ],
     props: {
         coinToSell: {
@@ -133,7 +134,7 @@ export default {
             }
             // selling custom coin
             // base coin is not enough try use selected coin to pay fee
-            if (!this.fee?.isBaseCoinEnough) {
+            if (!this.swapFee?.isBaseCoinEnough) {
                 return true;
             } else {
                 return false;
@@ -179,7 +180,10 @@ export default {
             if (!selectedCoin) {
                 return 0;
             }
-            return getAvailableSelectedBalance(selectedCoin, this.fee);
+            return getAvailableSelectedBalance(selectedCoin, this.swapFee);
+        },
+        swapFee() {
+            return this.fee.resultList?.[0] || this.fee;
         },
         sequenceParamsFinal() {
             const baseSequenceParamsArray = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
@@ -224,6 +228,7 @@ export default {
         },
     },
     methods: {
+        pretty,
         watchForm() {
             if (this.v$SwapInvalid) {
                 return;
@@ -258,12 +263,21 @@ export default {
         :before-post-sequence="beforePostSequence"
         :before-confirm-modal-show="beforeConfirmModalShow"
         @update:fee="fee = $event"
+        @validation-touch="$emit('validation-touch'); $v.$touch(); v$sequenceParams.$touch()"
         @clear-form="clearForm()"
         @success="$emit('success')"
         @success-modal-close="$emit('success-modal-close')"
     >
         <template v-slot:default="{fee}">
             <slot :fee="fee" :estimation="estimation"/>
+
+
+            <div class="form__error u-mt-10" v-if="$v.coinToSell.$error">{{ $td('Invalid coin to sell', 'form.swap-coin-sell-error-invalid') }}</div>
+            <div class="form__error u-mt-10" v-if="$v.coinToBuy.$error">{{ $td('Invalid coin to buy', 'form.swap-coin-buy-error-invalid') }}</div>
+            <div class="form__error u-mt-10" v-if="$v.valueToSell.$dirty && !$v.valueToSell.required">{{ $td('Enter amount', 'form.amount-error-required') }}</div>
+            <div class="form__error u-mt-10" v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</div>
+            <div class="form__error u-mt-10" v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.maxValue">{{ $td('Not enough coins', 'form.not-enough-coins') }}</div>
+            <div class="form__error u-mt-10" v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.maxValueAfterFee">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(swapFee.value) }} {{ swapFee.coinSymbol }}</div>
         </template>
 
         <template v-slot:submit-title>
