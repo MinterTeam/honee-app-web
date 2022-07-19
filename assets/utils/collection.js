@@ -17,3 +17,20 @@ export function arrayToMap(arr, path, itemTransformer) {
 
     return map;
 }
+
+/**
+ * Ensure empty fields to be undefined
+ * @template {object} T
+ * @param {T} obj
+ * @return {T}
+ */
+export function clearEmptyFields(obj) {
+    let result = {};
+    Object.keys(obj).forEach((key) => {
+        if (obj[key] || obj[key] === 0 || obj[key] === false) {
+            result[key] = obj[key];
+        }
+    });
+
+    return result;
+}

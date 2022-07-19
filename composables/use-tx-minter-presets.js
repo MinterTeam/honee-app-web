@@ -2,7 +2,7 @@ import {convertFromPip} from 'minterjs-util/src/converter.js';
 import {HUB_BUY_STAGE as LOADING_STAGE} from '~/assets/variables.js';
 import useTxService from '~/composables/use-tx-service.js';
 
-const { txServiceState, sendMinterTx, addStepData } = useTxService();
+const { sendMinterTx, addStepData } = useTxService();
 
 
 // @TODO buy not supported
@@ -16,12 +16,11 @@ async function sendMinterSwapTx({initialTxParams, prepare} = {}) {
 
     function initStepFromParams(txParams) {
         txParams.data = txParams.data || {};
-        txServiceState.loadingStage = LOADING_STAGE.SWAP_MINTER;
         addStepData(LOADING_STAGE.SWAP_MINTER, {
             coin0: txParams.data.coinToSell || txParams.data.coins?.[0],
             amount0: txParams.data.valueToSell,
             coin1: txParams.data.coinToBuy ||  txParams.data.coins?.slice(-1),
-        });
+        }, true);
     }
 
     const txParams = {

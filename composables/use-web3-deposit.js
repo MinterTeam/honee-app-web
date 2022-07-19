@@ -127,8 +127,7 @@ async function depositFromEthereum() {
     let nonce = await web3Eth.getTransactionCount(props.accountAddress, 'latest');
     const gasPrice = gasPriceGwei.value;
 
-    // txServiceState.loadingStage = LOADING_STAGE.SWAP_ETH;
-    // addStepData(LOADING_STAGE.SWAP_ETH, {coin0: 'ETH', amount0: props.amount, coin1: props.tokenSymbol});
+    // addStepData(LOADING_STAGE.SWAP_ETH, {coin0: 'ETH', amount0: props.amount, coin1: props.tokenSymbol}, true);
 
     let unwrapPromise;
     if (isUnwrapRequired.value) {
@@ -157,14 +156,12 @@ async function depositFromEthereum() {
     // const outputAmountHumanReadable = fromErcDecimals(outputAmount, tokenDecimals.value);
     // addStepData(LOADING_STAGE.SWAP_ETH, {amount1: outputAmountHumanReadable});
 
-    txServiceState.loadingStage = LOADING_STAGE.SEND_BRIDGE;
-    addStepData(LOADING_STAGE.SEND_BRIDGE, {coin: props.tokenSymbol, amount: depositAmountAfterGas.value});
+    addStepData(LOADING_STAGE.SEND_BRIDGE, {coin: props.tokenSymbol, amount: depositAmountAfterGas.value}, true);
     const depositNonce = txServiceState.steps[LOADING_STAGE.APPROVE_BRIDGE] ? unwrapReceipt.nonce + 2 : unwrapReceipt.nonce + 1;
     sendCoinTx({nonce: depositNonce, gasPrice});
     const depositReceipt = await waitPendingStep(LOADING_STAGE.SEND_BRIDGE);
 
-    txServiceState.loadingStage = LOADING_STAGE.WAIT_BRIDGE;
-    addStepData(LOADING_STAGE.WAIT_BRIDGE, {coin: props.tokenSymbol /* calculate receive amount? */});
+    addStepData(LOADING_STAGE.WAIT_BRIDGE, {coin: props.tokenSymbol /* calculate receive amount? */}, true);
     return subscribeTransfer(depositReceipt.transactionHash)
         .then((transfer) => {
             if (transfer.status !== HUB_TRANSFER_STATUS.batch_executed) {
@@ -193,8 +190,7 @@ async function depositFromEthereum() {
 
 function unwrapToNativeCoin({nonce, gasPrice} = {}) {
     const web3Eth = getProviderByChain(props.chainId);
-    txServiceState.loadingStage = LOADING_STAGE.UNWRAP_ETH;
-    addStepData(LOADING_STAGE.UNWRAP_ETH, {amount: amountToUnwrap.value});
+    addStepData(LOADING_STAGE.UNWRAP_ETH, {amount: amountToUnwrap.value}, true);
 
     const amountToUnwrapWei = toErcDecimals(amountToUnwrap.value, tokenDecimals.value);
     const wrappedNativeContract = new web3Eth.Contract(wethAbi, getWrappedNativeContractAddress());

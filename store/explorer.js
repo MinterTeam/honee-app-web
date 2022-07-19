@@ -1,6 +1,6 @@
 // import {isCoinId} from 'minter-js-sdk/src/utils.js';
 import {getStatus, getCoinList} from '~/api/explorer.js';
-import {arrayToMap} from '~/assets/utils/array-to-map.js';
+import {arrayToMap} from '~/assets/utils/collection.js';
 import {ACCOUNTS_API_URL, EXPLORER_STATIC_HOST} from '~/assets/variables.js';
 // import {BASE_URL_PREFIX} from '~/assets/variables.js';
 const BASE_URL_PREFIX = '';

@@ -130,7 +130,7 @@ export const HUB_DEPOSIT_TX_PURPOSE = {
 
 /**
  * Order matters
- * @enum
+ * @enum {string}
  */
 export const HUB_BUY_STAGE = {
     WAIT_ETH: 'wait_eth',

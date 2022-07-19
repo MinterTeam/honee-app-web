@@ -11,7 +11,9 @@ import checkEmpty from '~/assets/v-check-empty.js';
 import {pretty, prettyRound, getDateAmerican, getTimeDistance} from '~/assets/utils.js';
 import {getStakingProgram} from '~/api/staking.js';
 import {getBlock} from '~/api/explorer.js';
-import TxForm from '~/components/base/TxForm.vue';
+import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
+import TxSequenceWithSwapForm from '~/components/base/TxSequenceWithSwapForm.vue';
+import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import FieldRange from '~/components/base/FieldRange.vue';
 
@@ -19,7 +21,8 @@ import FieldRange from '~/components/base/FieldRange.vue';
 export default {
     TX_TYPE,
     components: {
-        TxForm,
+        TxSequenceWithSwapForm,
+        BaseAmountEstimation,
         FieldCombined,
         FieldRange,
     },
@@ -33,7 +36,7 @@ export default {
 
         let programId = this.params.id;
         if (programId === 'BEE') {
-            programId = 1;
+            programId = 19;
         }
         if (programId === 'MUSD') {
             programId = 2;
@@ -73,9 +76,10 @@ export default {
                 coin: '',
                 duration: 0,
             },
-            /** @type {StakingProgram|null}*/
+            /** @type {StakingProgram|null} */
             stakingProgram: null,
             latestBlockHeight: 0,
+            estimation: 0,
         };
     },
     validations() {
@@ -118,6 +122,16 @@ export default {
         unlockTime() {
             return Date.now() + this.selectedBlock * 5 * 1000;
         },
+        isSelectedLockCoin() {
+            return this.form.coin === this.stakingProgram?.lockCoin.symbol;
+        },
+        lockValue() {
+            if (this.isSelectedLockCoin) {
+                return this.form.value;
+            } else {
+                return this.estimation;
+            }
+        },
         dailyYieldPercent() {
             return this.stakingProgram?.options[this.selectedBlock];
         },
@@ -130,17 +144,39 @@ export default {
             return lockDays * this.dailyYieldPercent;
         },
         totalYieldAmount() {
-            return this.form.value * this.totalYieldPercent / 100;
+            return this.lockValue * this.totalYieldPercent / 100;
         },
         txData() {
             return {
-                value: this.form.value,
-                coin: this.form.coin,
+                value: this.lockValue,
+                coin: this.stakingProgram?.lockCoin.symbol,
                 dueBlock: this.latestBlockHeight + this.selectedBlock,
             };
         },
         payload() {
             return JSON.stringify({lock_id: this.stakingProgram?.id});
+        },
+        sequenceParams() {
+            return {
+                prepare: this.isSelectedLockCoin ? undefined : (swapTx, prevPrepare) => {
+                    const coinToBuy = swapTx.data.coin_to_buy || swapTx.data.coins.find((item) => item.id === swapTx.tags['tx.coin_to_buy']);
+                    const value = getAvailableSelectedBalance({
+                        coin: coinToBuy,
+                        amount: swapTx.returnAmount,
+                    }, prevPrepare.extra.fee);
+
+                    return {
+                        data: {
+                            value,
+                        },
+                    };
+                },
+                txParams: {
+                    data: this.txData,
+                    type: TX_TYPE.LOCK,
+                    payload: this.payload,
+                },
+            };
         },
     },
     watch: {
@@ -166,8 +202,7 @@ export default {
                 });
         },
         clearForm() {
-            this.form.publicKey = '';
-            this.form.stake = '';
+            this.form.value = '';
             this.form.coin = '';
             this.$v.$reset();
         },
@@ -192,27 +227,29 @@ function yearToBlock(year) {
         <div class="u-mt-15" v-else-if="!stakingProgram && !$fetchState.pending">{{ $td('Can\'t load staking program', 'stake-by-lock.error-program-not-found') }}</div>
         <div class="u-mt-15" v-else-if="!stakingProgram.isEnabled">{{ $td('Staking program disabled', 'stake-by-lock.error-program-disabled') }}</div>
         <div class="u-mt-15" v-else-if="isProgramTimedOut">{{ $td('Staking program timed out', 'stake-by-lock.error-program-timeout') }}</div>
-        <TxForm
+        <TxSequenceWithSwapForm
             v-else-if="stakingProgram"
-            :txData="txData"
-            :$txData="$v.form"
-            :txType="$options.TX_TYPE.LOCK"
-            :enforce-payload="payload"
-            :before-post-tx="fetchLatestBlock"
+            :coin-to-sell="form.coin"
+            :coin-to-buy="stakingProgram.lockCoin.symbol"
+            :value-to-sell="form.value"
+            :sequence-params="sequenceParams"
+            :v$sequence-params="$v.form"
+            :before-post-sequence="fetchLatestBlock"
+            @update:estimation="estimation = $event"
             @clear-form="clearForm()"
             @success="$emit('success')"
             @success-modal-close="$emit('success-modal-close')"
         >
-            <template v-slot:default="{fee}">
+            <template v-slot:default="{fee, estimation}">
                 <div class="form-row">
                     <FieldCombined
                         :coin.sync="form.coin"
                         :$coin="$v.form.coin"
-                        :fallback-to-full-list="false"
+                        :coinList="$store.state.balance"
                         :amount.sync="form.value"
                         :$amount="$v.form.value"
                         :useBalanceForMaxValue="true"
-                        :fee="fee"
+                        :fee="fee.resultList[0]"
                         :label="$td('Amount', 'form.wallet-send-amount')"
                     />
                     <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
@@ -238,6 +275,11 @@ function yearToBlock(year) {
                 </div>
 
                 <div class="estimation form-row">
+                    <template v-if="!isSelectedLockCoin">
+                        <h3 class="estimation__title">{{ $td('You will buy and stake approximately', 'stake-by-lock.estimation-buy') }}</h3>
+                        <BaseAmountEstimation :coin="stakingProgram.rewardCoin.symbol" :amount="estimation || 0" format="approx"/>
+                    </template>
+
                     <h3 class="estimation__title">{{ $td('You will earn', 'stake-by-lock.estimation-earn') }}</h3>
                     <div class="estimation__item">
                         <div class="estimation__coin">
@@ -276,6 +318,18 @@ function yearToBlock(year) {
 
             <template v-slot:confirm-modal-body>
                 <div class="estimation form-row">
+                    <template v-if="isSelectedLockCoin">
+                        <h3 class="estimation__title">{{ $td('You will stake', 'stake-by-lock.confirm-lock') }}</h3>
+                        <BaseAmountEstimation :coin="form.coin" :amount="form.value" format="exact"/>
+                    </template>
+                    <template v-else>
+                        <h3 class="estimation__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
+                        <BaseAmountEstimation :coin="form.coin" :amount="form.value" format="exact"/>
+
+                        <h3 class="estimation__title">{{ $td('You will buy and stake approximately', 'stake-by-lock.buy-estimation') }}</h3>
+                        <BaseAmountEstimation :coin="stakingProgram.rewardCoin.symbol" :amount="estimation" format="approx"/>
+                    </template>
+
                     <h3 class="estimation__title">{{ $td('You will earn', 'stake-by-lock.estimation-earn') }}</h3>
                     <div class="estimation__item">
                         <div class="estimation__coin">
@@ -300,6 +354,6 @@ function yearToBlock(year) {
                     </div>
                 </div>
             </template>
-        </TxForm>
+        </TxSequenceWithSwapForm>
     </div>
 </template>

@@ -6,7 +6,7 @@ export default function({from, store, route}) {
 
     let storeHistory = store.state.history;
 
-    if (storeHistory.length && storeHistory[storeHistory.length - 1].key === window.history.state.key) {
+    if (storeHistory.length && storeHistory[storeHistory.length - 1]?.key === window.history.state?.key) {
         // произведен history.back(), откатываем состояние
         store.commit('POP_HISTORY');
     } else {
@@ -16,7 +16,7 @@ export default function({from, store, route}) {
             // ключ страницы с которой производится переход
             // при popstate (например Назад), history будет содержать состоянии страницы, куда произодится переход
             // т.к. история меняется быстрее, чем отрабатывает эта функция,
-            key: window.history.state.key,
+            key: window.history.state?.key,
         });
     }
 }

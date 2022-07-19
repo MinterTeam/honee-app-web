@@ -160,7 +160,8 @@ export default {
         }
 
         // card
-        const card = flatCardList.find((card) => card.action.replace(/^\//, '').toLowerCase() === this.$route.params.pathMatch.toLowerCase());
+        const pathMatch = this.$route.params.pathMatch.replace(/\/$/, '').toLowerCase();
+        const card = flatCardList.find((card) => card.action.replace(/^\//, '').toLowerCase() === pathMatch);
         this.card = Object.freeze(card);
 
         if (card) {
@@ -225,7 +226,7 @@ export default {
     },
     computed: {
         color() {
-            return hashColor(this.card?.action || this.$route.params.pathMatch);
+            return hashColor(this.card?.action || this.$route.params.pathMatch.replace(/\/$/, ''));
         },
     },
     watch: {
