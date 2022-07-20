@@ -5,7 +5,7 @@ import {BASE_COIN} from '~/assets/variables.js';
 import Card from '~/components/Card.vue';
 
 const ACTION_LIST = [
-    '/stake/1',
+    '/stake/19',
     '/stake/2',
     '/swap/BTC',
 ];
