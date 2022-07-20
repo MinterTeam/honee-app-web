@@ -53,12 +53,12 @@ export default {
         },
     },
     setup() {
-        const {fee, feeProps, refineByIndex} = useFee();
+        const {fee, setFeeProps, refineByIndex} = useFee();
         const { txServiceState, currentLoadingStage, sendTxSequence} = useTxService();
 
         return {
             fee,
-            feeProps,
+            setFeeProps,
             refineByIndex,
 
             txServiceState,
@@ -90,13 +90,14 @@ export default {
                     : [this.sequenceParams.txParams],
                 baseCoinAmount: this.$store.getters.baseCoin?.amount,
                 fallbackToCoinToSpend: true,
+                isLocked: this.isFormSending,
             };
         },
     },
     watch: {
         feeBusParams: {
             handler(newVal) {
-                Object.assign(this.feeProps, newVal);
+                this.setFeeProps(newVal);
             },
             deep: true,
             immediate: true,
