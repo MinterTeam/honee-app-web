@@ -177,6 +177,7 @@ export default {
     'stake-by-lock': {
         'estimation-unlock': 'Срок разблокировки стейка',
         'estimation-unlock-preposition': ' ',
+        'estimation-buy': 'Вы купите и застейкуете примерно',
         'estimation-earn': 'Вы заработаете',
         'error-program-not-found': 'Не удаётся загрузить программу стейкинга',
         'error-program-disabled': 'Текущая программа стейкинга отключена',

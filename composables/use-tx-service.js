@@ -228,18 +228,23 @@ function estimateTxGas({to, value, data}) {
 async function sendTxSequence(list, options) {
     let result;
     for (const [index, {txParams, prepare, finalize}] of Object.entries(list)) {
-        // init
-        addStepData(`minter${index}`);
-        // prepare
-        const txParamsAdditionList = await awaitSeries(prepare, result);
-        const preparedTxParams = merge({}, txParams, ...txParamsAdditionList);
-        console.debug('prepare', [txParams, ...txParamsAdditionList]);
-        // execute
-        addStepData(`minter${index}`, {txParams: preparedTxParams});
-        let result = await sendMinterTx(preparedTxParams, options);
-        // finalize
-        result = await ensurePromise(finalize, result, {fallbackToArg: true});
-        addStepData(`minter${index}`, {tx: result, finished: true});
+        try {
+            // init
+            addStepData(`minter${index}`);
+            // prepare
+            const txParamsAdditionList = await awaitSeries(prepare, result);
+            const preparedTxParams = merge({}, txParams, ...txParamsAdditionList);
+            console.debug('prepare', [txParams, ...txParamsAdditionList]);
+            // execute
+            addStepData(`minter${index}`, {txParams: preparedTxParams});
+            let result = await sendMinterTx(preparedTxParams, options);
+            // finalize
+            result = await ensurePromise(finalize, result, {fallbackToArg: true});
+            addStepData(`minter${index}`, {tx: result, finished: true});
+        } catch (error) {
+            addStepData(`minter${index}`, {error});
+            return Promise.reject(error);
+        }
     }
     addStepData(LOADING_STAGE.FINISH, {finished: true}, true);
 

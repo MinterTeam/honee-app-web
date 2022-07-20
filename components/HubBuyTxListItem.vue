@@ -56,8 +56,10 @@ export default {
 
 <template>
     <div>
-        <div class="hub__buy-transaction-row">
-            <Loader class="hub__buy-loader" :is-loading="!step.finished"/>
+        <div class="hub__buy-transaction-row" :class="{'u-hidden': loadingStage === $options.LOADING_STAGE.FINISH && (!step.amount || !step.coin)}">
+            <span class="hub__buy-transaction-emoji u-emoji" v-if="step.error || (step.tx && step.tx.error)">❌</span>
+            <span class="hub__buy-transaction-emoji u-emoji" v-else-if="step.finished">✅</span>
+            <Loader class="hub__buy-loader" v-else :is-loading="true"/>
 
             <template v-if="loadingStage === $options.LOADING_STAGE.WRAP_ETH">
                 {{ $td('Wrap', 'form.stage-wrap') }} {{ pretty(step.amount) }} {{ nativeSymbol }}
@@ -78,7 +80,7 @@ export default {
             <template v-if="loadingStage === $options.LOADING_STAGE.SWAP_MINTER">
                 {{ $td('Swap', 'form.stage-swap') }} {{ pretty(step.amount0) }} {{ step.coin0 }} {{ $td('for', 'form.stage-for') }} {{ step.coin1 }}
             </template>
-            <template v-if="loadingStage === $options.LOADING_STAGE.FINISH && step.amount && step.coin">
+            <template v-if="loadingStage === $options.LOADING_STAGE.FINISH">
                 {{ $td('Received', 'form.stage-received') }} {{ pretty(step.amount) }} {{ step.coin }}
             </template>
             <TxPreview

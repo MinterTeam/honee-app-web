@@ -29,6 +29,7 @@ export default {
 
 <template>
     <Modal
+        modalContainerClass="card card__content"
         :isOpen="true"
         :hideCloseButton="false"
         :disableOutsideClick="false"

@@ -7,10 +7,10 @@ import Card from '~/components/Card.vue';
 const ACTION_LIST = [
     '/stake/19',
     '/stake/2',
-    '/swap/BTC',
 ];
 const ACTION_LIST_CONDITIONAL = {
     BIP: `/delegate/${BASE_COIN}`,
+    '*': '/swap/BTC',
 };
 
 const MAX_PAGE = 3;
@@ -49,10 +49,8 @@ export default {
         },
         cardList() {
             const actionList = ACTION_LIST;
-            const actionListConditional = Object.keys(ACTION_LIST_CONDITIONAL)
-                .filter((key) => key === this.topupCoin)
-                .map((key) => ACTION_LIST_CONDITIONAL[key]);
-            return flatCardList.filter((item) => actionList.includes(item.action));
+            const conditionalAction = ACTION_LIST_CONDITIONAL[this.topupCoin] || ACTION_LIST_CONDITIONAL['*'];
+            return flatCardList.filter((item) => [...actionList, conditionalAction].includes(item.action));
         },
     },
     methods: {

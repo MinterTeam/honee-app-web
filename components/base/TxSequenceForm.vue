@@ -301,7 +301,7 @@ export default {
                         </button>
                     </div>
                     -->
-                    <div class="u-cel">
+                    <div class="u-cell">
                         <button class="button button--ghost button--full" type="button" @click="finishSending()">
                             {{ $td('Finish', 'common.finish') }}
                         </button>
