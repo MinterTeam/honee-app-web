@@ -33,7 +33,7 @@ import CancelError from '~/assets/utils/error-cancel.js';
  */
 
 /**
- * @return {{fee: ComputedRef<FeeData>, feeProps: feeProps, refineByIndex: function(index: number): Promise<FeeItemData>}}
+ * @return {{fee: ComputedRef<FeeData>, feeProps: feeProps, setFeeProps: setProps, refineByIndex: function(index: number): Promise<FeeItemData>}}
  */
 export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinToSpend, isOffline}*/) {
     const idPrimary = Math.random().toString();
@@ -47,9 +47,16 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         /** @type {Boolean} - by default fallback to baseCoin, additionally it can try to fallback to coinToSpend, if baseCoin is not enough */
         fallbackToCoinToSpend: false,
         isOffline: false,
+        isLocked: false,
         //@TODO throttle is used but we should use exact estimation only before confirmation
         precision: FEE_PRECISION_SETTING.PRECISE,
     });
+
+    function setProps(newProps) {
+        Object.assign(feeProps, newProps);
+    }
+
+
     /** @type {Object.<number, string>}*/
     const coinMap = ref({});
     const state = reactive({
@@ -131,6 +138,9 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     async function handleChangedProps(newVal, oldVal) {
         // sometimes watcher fires on same value
         if (newVal === oldVal) {
+            return;
+        }
+        if (feeProps.isLocked) {
             return;
         }
         if (feeProps.isOffline) {
@@ -238,6 +248,8 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     return {
         feeProps,
         fee,
+
+        setFeeProps: setProps,
         refineByIndex,
     };
 }

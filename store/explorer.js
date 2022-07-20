@@ -1,4 +1,4 @@
-// import {isCoinId} from 'minter-js-sdk/src/utils.js';
+import {isCoinId} from 'minter-js-sdk/src/utils.js';
 import {getStatus, getCoinList} from '~/api/explorer.js';
 import {arrayToMap} from '~/assets/utils/collection.js';
 import {ACCOUNTS_API_URL, EXPLORER_STATIC_HOST} from '~/assets/variables.js';
@@ -58,6 +58,17 @@ export const getters = {
             }
 
             return state.coinMap[coinSymbol].verified;
+        };
+    },
+    getCoinSymbol(state) {
+        return function(coinId) {
+            if (isCoinId(coinId)) {
+                coinId = Number(coinId);
+                const coin = state.coinList.find((coin) => Number(coin.id) === coinId);
+                return coin.symbol;
+            } else {
+                return coinId;
+            }
         };
     },
 };

@@ -35,7 +35,7 @@ export default {
             if (this.isMultisend(tx) && this.isMultisendMultipleCoin(tx)) {
                 return 'Multiple coins';
             } else {
-                return pretty(this.getAmount(tx) || 0) + ' ' + (getCoinSymbol(tx.data.coin) || tx.data.symbol || this.getConvertCoinSymbol(tx) /* || getCoinSymbol(tx.data.check?.coin) */ || this.getMultisendCoin(tx));
+                return pretty(this.getAmount(tx) || 0) + ' ' + (this.getCoinSymbol(tx.data.coin) || tx.data.symbol || this.getConvertCoinSymbol(tx) /* || this.getCoinSymbol(tx.data.check?.coin) */ || this.getMultisendCoin(tx));
             }
         },
         isEditPool(tx) {
@@ -43,30 +43,30 @@ export default {
         },
         getConvertCoinSymbol(tx) {
             if (this.isSell(tx)) {
-                return getCoinSymbol(tx.data.coinToSell);
+                return this.getCoinSymbol(tx.data.coinToSell);
             }
             if (this.isBuy(tx)) {
-                return getCoinSymbol(tx.data.coinToBuy);
+                return this.getCoinSymbol(tx.data.coinToBuy);
             }
             if (this.isSellPool(tx)) {
-                return getCoinSymbol(tx.data.coins[0]);
+                return this.getCoinSymbol(tx.data.coins[0]);
             }
             if (this.isBuyPool(tx)) {
-                return getCoinSymbol(tx.data.coins[tx.data.coins.length - 1]);
+                return this.getCoinSymbol(tx.data.coins[tx.data.coins.length - 1]);
             }
         },
         getSwapOppositeCoinSymbol(tx) {
             if (this.isSell(tx)) {
-                return getCoinSymbol(tx.data.coinToBuy);
+                return this.getCoinSymbol(tx.data.coinToBuy);
             }
             if (this.isBuy(tx)) {
-                return getCoinSymbol(tx.data.coinToSell);
+                return this.getCoinSymbol(tx.data.coinToSell);
             }
             if (this.isSellPool(tx)) {
-                return getCoinSymbol(tx.data.coins[tx.data.coins.length - 1]);
+                return this.getCoinSymbol(tx.data.coins[tx.data.coins.length - 1]);
             }
             if (this.isBuyPool(tx)) {
-                return getCoinSymbol(tx.data.coins[0]);
+                return this.getCoinSymbol(tx.data.coins[0]);
             }
         },
         getConvertValue(tx) {
@@ -115,7 +115,7 @@ export default {
                 return;
             }
             if (!this.isMultisendMultipleCoin(tx)) {
-                return getCoinSymbol(this.getMultisendDeliveryList(tx)[0].coin);
+                return this.getCoinSymbol(this.getMultisendDeliveryList(tx)[0].coin);
             }
         },
         getMultisendValue(tx) {
@@ -129,17 +129,17 @@ export default {
                 return currentUserDeliveryList.reduce((accumulator, delivery) => accumulator.plus(new Big(delivery.value)), new Big(0)).toString();
             }
         },
+        /**
+         * Accept coin object from explorer or coin string from txParams
+         * @param {Coin|string} coin
+         * @return {string}
+         */
+        getCoinSymbol(coin) {
+            return this.$store.getters['explorer/getCoinSymbol'](coin?.symbol || coin);
+        },
     },
 };
 
-/**
- * Accept coin object from explorer or coin string from txParams
- * @param {Coin|string} coin
- * @return {string}
- */
-function getCoinSymbol(coin) {
-    return coin?.symbol || coin;
-}
 /**
  * Accept coin object from explorer or coin string from txParams
  * @param {Coin|number|string} coin

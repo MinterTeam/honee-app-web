@@ -363,6 +363,13 @@ function addStepData(loadingStage, data = {}, finishPrev) {
 }
 
 /**
+ * @param {Object.<LOADING_STAGE, SequenceStepItem>} steps
+ */
+function setStepList(steps) {
+    state.steps = steps;
+}
+
+/**
  *
  * @param {Array<function>|function} list
  * @param arg
@@ -390,6 +397,7 @@ export default function useTxService() {
         currentLoadingStage,
         currentStep,
         setTxServiceProps: setProps,
+        setStepList,
         sendMinterTx,
         sendTxSequence,
         sendEthTx,

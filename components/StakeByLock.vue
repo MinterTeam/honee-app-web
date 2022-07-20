@@ -160,6 +160,7 @@ export default {
             return {
                 prepare: this.isSelectedLockCoin ? undefined : (swapTx, prevPrepare) => {
                     const coinToBuy = swapTx.data.coin_to_buy || swapTx.data.coins.find((item) => item.id === swapTx.tags['tx.coin_to_buy']);
+                    // @TODO if user had some coinToBuy on balance, it's better to deduct fee from old balance, than from swapTx.returnAmount
                     const value = getAvailableSelectedBalance({
                         coin: coinToBuy,
                         amount: swapTx.returnAmount,
@@ -277,7 +278,7 @@ function yearToBlock(year) {
                 <div class="estimation form-row">
                     <template v-if="!isSelectedLockCoin">
                         <h3 class="estimation__title">{{ $td('You will buy and stake approximately', 'stake-by-lock.estimation-buy') }}</h3>
-                        <BaseAmountEstimation :coin="stakingProgram.rewardCoin.symbol" :amount="estimation || 0" format="approx"/>
+                        <BaseAmountEstimation :coin="stakingProgram.lockCoin.symbol" :amount="estimation || 0" format="approx"/>
                     </template>
 
                     <h3 class="estimation__title">{{ $td('You will earn', 'stake-by-lock.estimation-earn') }}</h3>
@@ -327,7 +328,7 @@ function yearToBlock(year) {
                         <BaseAmountEstimation :coin="form.coin" :amount="form.value" format="exact"/>
 
                         <h3 class="estimation__title">{{ $td('You will buy and stake approximately', 'stake-by-lock.buy-estimation') }}</h3>
-                        <BaseAmountEstimation :coin="stakingProgram.rewardCoin.symbol" :amount="estimation" format="approx"/>
+                        <BaseAmountEstimation :coin="stakingProgram.lockCoin.symbol" :amount="estimation" format="approx"/>
                     </template>
 
                     <h3 class="estimation__title">{{ $td('You will earn', 'stake-by-lock.estimation-earn') }}</h3>
