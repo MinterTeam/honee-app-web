@@ -186,6 +186,9 @@ export default {
             return this.fee.resultList?.[0] || this.fee;
         },
         sequenceParamsFinal() {
+            if (this.coinToSell === this.coinToBuy) {
+                return this.sequenceParams;
+            }
             const baseSequenceParamsArray = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
             return [
                 {
@@ -254,6 +257,9 @@ export default {
     methods: {
         pretty,
         watchForm() {
+            if (this.coinToSell === this.coinToBuy) {
+                return;
+            }
             if (this.v$SwapInvalid) {
                 return;
             }
