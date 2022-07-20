@@ -196,8 +196,32 @@ export default {
                     /**
                      * @param {PostTxResponse} tx - successful swap tx
                      */
-                    finalize(tx) {
+                    finalize: (tx) => {
                         const returnAmount = convertFromPip(tx.tags['tx.return']);
+
+                        if (new Date(tx.timestamp) > new Date(this.$store.state.balanceTimestamp)) {
+                            const deductBalanceList = [
+                                {
+                                    coin: tx.gas_coin,
+                                    amount: convertFromPip(tx.tags['tx.commission_amount']),
+                                },
+                                {
+                                    coin: this.$store.state.explorer.coinMap[this.coinToSell],
+                                    amount: this.valueToSell,
+                                },
+                            ];
+                            const addBalanceList = [
+                                {
+                                    coin: this.$store.state.explorer.coinMap[this.coinToBuy],
+                                    amount: returnAmount,
+                                },
+                            ];
+                            this.$store.commit('UPDATE_BALANCE', {
+                                deduct: deductBalanceList,
+                                add: addBalanceList,
+                            });
+                        }
+
                         return {
                             ...tx,
                             returnAmount,
@@ -272,12 +296,14 @@ export default {
             <slot :fee="fee" :estimation="estimation"/>
 
 
-            <div class="form__error u-mt-10" v-if="$v.coinToSell.$error">{{ $td('Invalid coin to sell', 'form.swap-coin-sell-error-invalid') }}</div>
-            <div class="form__error u-mt-10" v-if="$v.coinToBuy.$error">{{ $td('Invalid coin to buy', 'form.swap-coin-buy-error-invalid') }}</div>
-            <div class="form__error u-mt-10" v-if="$v.valueToSell.$dirty && !$v.valueToSell.required">{{ $td('Enter amount', 'form.amount-error-required') }}</div>
-            <div class="form__error u-mt-10" v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</div>
-            <div class="form__error u-mt-10" v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.maxValue">{{ $td('Not enough coins', 'form.not-enough-coins') }}</div>
-            <div class="form__error u-mt-10" v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.maxValueAfterFee">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(swapFee.value) }} {{ swapFee.coinSymbol }}</div>
+            <div class="form__error u-text-medium u-mt-10" v-if="$v.$error">
+                <template v-if="$v.coinToSell.$error">{{ $td('Invalid coin to sell', 'form.swap-coin-sell-error-invalid') }}</template>
+                <template v-if="$v.coinToBuy.$error">{{ $td('Invalid coin to buy', 'form.swap-coin-buy-error-invalid') }}</template>
+                <template v-if="$v.valueToSell.$dirty && !$v.valueToSell.required">{{ $td('Enter amount', 'form.amount-error-required') }}</template>
+                <template v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</template>
+                <template v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.maxValue">{{ $td('Not enough coins', 'form.not-enough-coins') }}</template>
+                <template v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.maxValueAfterFee">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(swapFee.value) }} {{ swapFee.coinSymbol }}</template>
+            </div>
         </template>
 
         <template v-slot:submit-title>

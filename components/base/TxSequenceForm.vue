@@ -54,7 +54,7 @@ export default {
     },
     setup() {
         const {fee, setFeeProps, refineByIndex} = useFee();
-        const { txServiceState, currentLoadingStage, sendTxSequence} = useTxService();
+        const { txServiceState, currentLoadingStage, setStepList, sendTxSequence} = useTxService();
 
         return {
             fee,
@@ -63,6 +63,7 @@ export default {
 
             txServiceState,
             currentLoadingStage,
+            setStepList,
             sendTxSequence,
         };
     },
@@ -141,6 +142,7 @@ export default {
         postSequence() {
             this.isFormSending = true;
             this.serverError = '';
+            this.setStepList({});
 
             ensurePromise(this.beforePostSequence, this)
                 .then(() => {
@@ -183,6 +185,10 @@ export default {
                     this.isFormSending = false;
                     this.serverError = getErrorText(error);
                 });
+        },
+        finishSending() {
+            this.isProgressModalVisible = false;
+            this.setStepList({});
         },
         clearForm() {
             this.$v.$reset();
@@ -284,7 +290,7 @@ export default {
             />
             <div class="form-row" v-if="serverError || !$store.state.onLine">
                 <div class="u-grid u-grid--small u-grid--vertical-margin--small">
-                    <div class="u-cell form__error u-text-wrap">
+                    <div class="u-cell form__error u-text-wrap u-text-medium">
                         <template v-if="!$store.state.onLine">{{ $td('No Internet connection', 'error.no-internet-connection') }}</template>
                         <template v-else>{{ serverError }}</template>
                     </div>
@@ -294,12 +300,12 @@ export default {
                             {{ $td('Retry', 'common.retry') }}
                         </button>
                     </div>
-                    <div class="u-cell u-cell--1-2">
+                    -->
+                    <div class="u-cel">
                         <button class="button button--ghost button--full" type="button" @click="finishSending()">
                             {{ $td('Finish', 'common.finish') }}
                         </button>
                     </div>
-                    -->
                 </div>
             </div>
             <div class="form-row u-text-medium u-fw-500" v-if="currentLoadingStage !== $options.LOADING_STAGE.FINISH">

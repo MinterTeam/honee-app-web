@@ -1,3 +1,5 @@
+import Big from '~/assets/big.js';
+
 export default {
     ADD_AUTH_ADVANCED: (state, mnemonic) => {
         state.auth = mnemonic;
@@ -24,8 +26,28 @@ export default {
         state.totalBalanceSum = balanceData.totalBalanceSum;
         state.totalBalanceSumUsd = balanceData.totalBalanceSumUsd;
     },
+    SET_BALANCE_TIMESTAMP: (state, timestamp) => {
+        state.balanceTimestamp = timestamp;
+    },
     SET_BALANCE_DISPLAY_TYPE: (state, balanceDisplayType) => {
         state.balanceDisplayType = balanceDisplayType;
+    },
+    // @TODO properly update bipAmount
+    UPDATE_BALANCE: (state, changes) => {
+        let newBalance = JSON.parse(JSON.stringify(state.balance));
+        changes.deduct?.forEach((deductItem) => {
+            const balanceItem = newBalance.find((balanceItem) => Number(balanceItem.coin.id) === Number(deductItem.coin.id));
+            balanceItem.amount = new Big(balanceItem.amount).minus(deductItem.amount).toString();
+        });
+        changes.add?.forEach((addItem) => {
+            const balanceItem = newBalance.find((balanceItem) => Number(balanceItem.coin.id) === Number(addItem.coin.id));
+            if (balanceItem) {
+                balanceItem.amount = new Big(balanceItem.amount).plus(addItem.amount).toString();
+            } else {
+                newBalance.push(addItem);
+            }
+        });
+        state.balance = newBalance;
     },
     SET_STAKE_LIST: (state, stakeList) => {
         state.stakeList = Object.freeze(stakeList);

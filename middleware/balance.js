@@ -33,6 +33,7 @@ export default function({app, store, redirect}) {
                     prepareBalance(balance)
                         .then((preparedBalance) => {
                             store.commit('SET_BALANCE', preparedBalance);
+                            store.commit('SET_BALANCE_TIMESTAMP', (new Date()).toISOString());
                         });
                 })
                     .on('subscribe', (context) => {

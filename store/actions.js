@@ -34,11 +34,11 @@ export default {
         if (!getters.address) {
             return;
         }
-        // use only 1 address
         return getBalance(getters.address)
             .then((balanceResponse) => {
                 commit('SET_BALANCE', balanceResponse.data.balances);
                 commit('SET_BALANCE_TOTAL', balanceResponse.data);
+                commit('SET_BALANCE_TIMESTAMP', balanceResponse.latestBlockTime);
                 setLastUpdateTime(new Date(balanceResponse.latestBlockTime).getTime());
                 return balanceResponse.data.balances;
             });

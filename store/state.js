@@ -5,6 +5,7 @@ export default function() {
         balance: [],
         totalBalanceSum: '0',
         totalBalanceSumUsd: '0',
+        balanceTimestamp: 0,
         balanceDisplayType: 0,
         /** @type Array<StakeItem> */
         stakeList: [],
