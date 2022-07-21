@@ -19,6 +19,7 @@ addToCamelInterceptor(instance);
 const fastCache = new Cache({maxAge: 5 * 1000});
 
 /**
+ * Withdraw tx fee in dollars
  * @param {HUB_CHAIN_ID} network
  * @return {Promise<{min: string, fast: string}>}
  */
@@ -145,6 +146,7 @@ export function getVerifiedMinterCoinList() {
 }
 
 /**
+ * Prices of tokens in $
  * @return {Promise<Array<HubPriceItem>>}
  */
 export function getOraclePriceList() {

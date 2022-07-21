@@ -8,8 +8,6 @@ import withParams from 'vuelidate/lib/withParams.js';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {web3Utils, AbiEncoder, toErcDecimals} from '~/api/web3.js';
-import {getOracleCoinList, getOraclePriceList} from '~/api/hub.js';
-import {estimateCoinSell} from '~/api/gate.js';
 import Big from '~/assets/big.js';
 import initRampPurchase, {fiatRampPurchaseNetwork} from '~/assets/fiat-ramp.js';
 import {pretty, prettyPrecise, prettyRound, prettyExact, decreasePrecisionSignificant, getExplorerTxUrl, getEvmTxUrl, shortHashFilter} from '~/assets/utils.js';
@@ -22,6 +20,7 @@ import {getErrorText} from '~/assets/server-error.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import useEstimateSwap from '~/composables/use-estimate-swap.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
+import useHubTokenData from '~/composables/use-hub-token-data.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useWeb3Deposit from '~/composables/use-web3-deposit.js';
 import useTxService from '~/composables/use-tx-service.js';
@@ -54,9 +53,7 @@ const GAS_LIMIT_BRIDGE = 75000;
 
 let waitingCancel;
 
-//@TODO timer2 triggers watchEstimation
 let timer;
-let timer2;
 
 
 const DEPOSIT_COIN_DATA = {
@@ -112,12 +109,6 @@ export default {
             const newPath = this.$route.path.replace(/\/*$/, `/${this.$route.query.coin}`);
             this.$router.replace(newPath);
         }
-
-        return Promise.all([getOracleCoinList(), getOraclePriceList()])
-            .then(([coinList, priceList]) => {
-                this.hubCoinList = Object.freeze(coinList);
-                this.priceList = Object.freeze(priceList);
-            });
     },
     emits: [
         'success',
@@ -146,6 +137,7 @@ export default {
             idPreventConcurrency: 'hubBuy',
         });
         const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
+        const {hubTokenList: hubCoinList, hubPriceList: priceList} = useHubTokenData({subscribePriceList: true});
 
         const {
             tokenData: externalToken,
@@ -185,6 +177,9 @@ export default {
             discountUpsidePercent,
             setDiscountProps,
 
+            hubCoinList,
+            priceList,
+
             externalToken, coinContractAddress, coinDecimals, isEthSelected, selectedNative, selectedWrapped, selectedBalance, coinToDepositUnlocked,
             setTokenProps,
             updateTokenBalance,
@@ -206,9 +201,6 @@ export default {
                 coinToGet: this.params.coinToGet?.toUpperCase() || '',
                 amountToGet: '',
             },
-            /** @type Array<HubCoinItem> */
-            hubCoinList: [],
-            priceList: [],
             isFormSending: false,
             serverError: '',
             isConfirmModalVisible: false,
@@ -361,9 +353,11 @@ export default {
                 chainId: this.chainId,
                 amount: this.form.amountEth,
                 tokenSymbol: this.externalTokenSymbol,
+                // @TODO maybe use hub data directly from useHubTokenData composable (need handle disable polling gasPrice)
                 /** @type Array<HubCoinItem> */
                 hubCoinList: this.hubCoinList,
                 priceList: this.priceList,
+                isDisableUpdateProps: this.isFormSending,
             };
         },
         txServiceProps() {
@@ -397,6 +391,10 @@ export default {
         },
         depositProps: {
             handler(newVal) {
+                // disable updating priceList > gasPriceGwei > coinAmountAfterBridge, which will triggers watchEstimation
+                if (newVal.isDisableUpdateProps) {
+                    return;
+                }
                 this.setDepositProps(newVal);
                 this.setTokenProps(newVal);
             },
@@ -433,19 +431,9 @@ export default {
             this.updateTokenBalance();
             this.updateTokenAllowance();
         }, 60 * 1000);
-        timer2 = setInterval(() => {
-            if (this.isFormSending) {
-                return;
-            }
-            getOraclePriceList()
-                .then((priceList) => {
-                    this.priceList = Object.freeze(priceList);
-                });
-        }, 15 * 1000);
     },
     destroyed() {
         clearInterval(timer);
-        clearInterval(timer2);
     },
     methods: {
         pretty,
@@ -459,7 +447,7 @@ export default {
         /*
         ensureNetworkData() {
             if (!this.hubCoinList.length || !this.priceList.length) {
-                return this.$fetch();
+                return Promise.all([this.fetchHubTokenList(), this.fetchHubPriceList()]);
             }
 
             // const uniswapPairPromise = this.uniswapPair ? Promise.resolve() : this.fetchUniswapPair();
@@ -601,8 +589,6 @@ export default {
             }
             this.txServiceState.steps = {};
             window.localStorage.removeItem('hub-buy-recovery');
-            // reload everything, because polling was stopped during isFormSending
-            this.$fetch();
         },
         /*
         sendWrapTx({nonce, gasPrice} = {}) {
