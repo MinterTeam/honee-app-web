@@ -37,7 +37,12 @@ export default {
         let newBalance = JSON.parse(JSON.stringify(state.balance));
         changes.deduct?.forEach((deductItem) => {
             const balanceItem = newBalance.find((balanceItem) => Number(balanceItem.coin.id) === Number(deductItem.coin.id));
-            balanceItem.amount = new Big(balanceItem.amount).minus(deductItem.amount).toString();
+            if (balanceItem) {
+                balanceItem.amount = new Big(balanceItem.amount).minus(deductItem.amount).toString();
+            } else {
+                // @TODO probably caused by race between gate tx success and rtm balance update
+                console.error("Can't deduct from not existent balance item", deductItem, state.balanceTimestamp, changes.tx);
+            }
         });
         changes.add?.forEach((addItem) => {
             const balanceItem = newBalance.find((balanceItem) => Number(balanceItem.coin.id) === Number(addItem.coin.id));

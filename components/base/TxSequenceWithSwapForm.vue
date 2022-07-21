@@ -222,6 +222,7 @@ export default {
                             this.$store.commit('UPDATE_BALANCE', {
                                 deduct: deductBalanceList,
                                 add: addBalanceList,
+                                tx,
                             });
                         }
 
