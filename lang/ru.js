@@ -179,6 +179,7 @@ export default {
         'estimation-unlock-preposition': ' ',
         'estimation-buy': 'Вы купите и застейкуете примерно',
         'estimation-earn': 'Вы заработаете',
+        'confirm-lock': 'Вы стейкуете',
         'error-program-not-found': 'Не удаётся загрузить программу стейкинга',
         'error-program-disabled': 'Текущая программа стейкинга отключена',
         'error-program-timeout': 'Истекло время действия программы стейкинга',

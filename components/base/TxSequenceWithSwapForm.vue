@@ -302,7 +302,7 @@ export default {
             <slot :fee="fee" :estimation="estimation"/>
 
 
-            <div class="form__error u-text-medium u-mt-10" v-if="$v.$error">
+            <div class="form__error u-text-medium u-mt-10 u-mb-10" v-if="$v.$error">
                 <template v-if="$v.coinToSell.$error">{{ $td('Invalid coin to sell', 'form.swap-coin-sell-error-invalid') }}</template>
                 <template v-if="$v.coinToBuy.$error">{{ $td('Invalid coin to buy', 'form.swap-coin-buy-error-invalid') }}</template>
                 <template v-if="$v.valueToSell.$dirty && !$v.valueToSell.required">{{ $td('Enter amount', 'form.amount-error-required') }}</template>
