@@ -78,8 +78,10 @@ export default function useHubTokenData({
     subscribeTokenList: isSubscribeTokenList = false,
     subscribePriceList: isSubscribePriceList = false,
 } = {}) {
-    fetchTokenList();
-    fetchPriceList();
+    const promise = Promise.all([
+        fetchTokenList(),
+        fetchPriceList(),
+    ]);
 
     if (isSubscribeTokenList) {
         subscribeTokenList();
@@ -91,6 +93,8 @@ export default function useHubTokenData({
     }
 
     return {
+        initPromise: promise,
+
         hubTokenList: tokenList,
         hubPriceList: priceList,
         gasPrice,

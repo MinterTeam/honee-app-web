@@ -1,5 +1,8 @@
-export default function wait(time) {
+function wait(time) {
     return new Promise((resolve) => {
         setTimeout(resolve, time);
     });
 }
+
+export {wait};
+export default wait;

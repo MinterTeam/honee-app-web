@@ -134,6 +134,9 @@ async function sendEthTx({to, value, data, nonce, gasPrice, gasLimit}, loadingSt
 
     let signedTx;
     try {
+        if (!props.privateKey) {
+            throw new Error('Can\'t send evm tx without privateKey');
+        }
         nonce = (nonce || nonce === 0) ? nonce : await web3Eth.getTransactionCount(props.accountAddress, 'latest');
         // force estimation to prevent smart contract errors
         const forceGasLimitEstimation = loadingStage === LOADING_STAGE.SEND_BRIDGE && !isSpeedup;
@@ -294,7 +297,7 @@ function addStepData(loadingStage, data = {}, finishPrev) {
     if (finishPrev) {
         for (const step of Object.values(state.steps)) {
             if (step.loadingStage !== loadingStage && !step.finished) {
-                set(state.steps, loadingStage, Object.freeze({
+                set(state.steps, step.loadingStage, Object.freeze({
                     ...step,
                     finished: true,
                 }));

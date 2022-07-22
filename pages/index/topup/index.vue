@@ -50,11 +50,11 @@ export default {
         <p>{{ $td('Choose one of these options', 'topup.description') }}</p>
 
 
-        <nuxt-link class="button button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/bsc')" v-if="!isMainnet">
+        <nuxt-link class="button button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/bsc')">
             <img class="button__icon" src="/img/icon-topup-bnb.svg" alt="" role="presentation">
             {{ $td('Top up with BNB', 'topup.top-up-with-network', {network: 'BNB'}) }}
         </nuxt-link>
-        <nuxt-link class="button button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/ethereum')" v-if="!isMainnet">
+        <nuxt-link class="button button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/ethereum')">
             <img class="button__icon" src="/img/icon-topup-eth.svg" alt="" role="presentation">
             {{ $td('Top up with ETH', 'topup.top-up-with-network', {network: 'ETH'}) }}
         </nuxt-link>

@@ -1,6 +1,6 @@
 <script>
 import {shortHashFilter, getTime, getEvmTxUrl, getExplorerTxUrl, pretty} from '~/assets/utils.js';
-import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import Loader from '~/components/base/BaseLoader.vue';
 import TxPreview from '~/components/base/TxPreview.vue';
 
@@ -50,6 +50,9 @@ export default {
         getEvmTxUrl,
         getExplorerTxUrl,
         formatHash: (value) => shortHashFilter(value, 8),
+        getEvmNetworkName(networkSlug) {
+            return HUB_CHAIN_DATA[networkSlug].shortName || 'EVM';
+        },
     },
 };
 </script>
@@ -61,6 +64,10 @@ export default {
             <span class="hub__buy-transaction-emoji u-emoji" v-else-if="step.finished">✅</span>
             <Loader class="hub__buy-loader" v-else :is-loading="true"/>
 
+            <template v-if="loadingStage === $options.LOADING_STAGE.WAIT_ETH">
+                {{ $td(`${getEvmNetworkName(step.network)} top-up to`, 'form.stage-wait-evm', {network: getEvmNetworkName(step.network)}) }}
+                <template v-if="step.amount || step.coin">{{ step.amount }} {{ step.coin }}</template>
+            </template>
             <template v-if="loadingStage === $options.LOADING_STAGE.WRAP_ETH">
                 {{ $td('Wrap', 'form.stage-wrap') }} {{ pretty(step.amount) }} {{ nativeSymbol }}
             </template>

@@ -2,7 +2,8 @@
 import * as clipboard from 'clipbrd';
 import {BASE_COIN, HUB_CHAIN_ID} from '~/assets/variables.js';
 import QrcodeVue from 'qrcode.vue';
-import TopupWait from '~/components/TopupWait.vue';
+import TopupWaitMinter from '~/components/TopupWaitMinter.vue';
+import TopupWaitEvm from '~/components/TopupWaitEvm.vue';
 
 /**
  * @typedef {{prefix: string, name: string, coin: string}} TopUpNetwork
@@ -29,11 +30,14 @@ export const TOP_UP_NETWORK = {
 };
 
 export default {
+    HUB_CHAIN_ID,
     components: {
         QrcodeVue,
-        TopupWait,
+        TopupWaitMinter,
+        TopupWaitEvm,
     },
     props: {
+        /** @type {HUB_CHAIN_ID} */
         networkSlug: {
             type: String,
             required: true,
@@ -164,7 +168,8 @@ export default {
             background="transparent"
         />
 
-        <TopupWait
+        <component
+            :is="networkSlug === $options.HUB_CHAIN_ID.MINTER ? 'TopupWaitMinter' : 'TopupWaitEvm'"
             class="u-text-center u-mt-15 u-text-medium"
             v-show="showWaitIndicator"
             :network-slug="networkSlug"

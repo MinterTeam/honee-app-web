@@ -326,6 +326,7 @@ export default {
         'eth-waiting': 'Ожидание депозита {symbol}',
         'eth-purchase-waiting': 'Ожидание покупки {symbol}',
 
+        'stage-wait-evm': 'Пополнение {network}',
         'stage-wrap': 'Оборачивание',
         'stage-swap': 'Обмен',
         'stage-approve': 'Одобрение',

@@ -485,7 +485,11 @@ export default {
             if (new Big(this.selectedBalance).gte(targetAmount)) {
                 return Promise.resolve();
             } else {
-                this.addStepData(LOADING_STAGE.WAIT_ETH, {waitAmount: targetAmount});
+                this.addStepData(LOADING_STAGE.WAIT_ETH, {
+                    coin: this.externalTokenSymbol,
+                    amount: targetAmount,
+                    network: this.hubChainData.hubChainId,
+                });
 
                 const promise = this.waitEnoughTokenBalance(targetAmount);
                 waitingCancel = () => {
