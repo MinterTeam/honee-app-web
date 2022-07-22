@@ -65,11 +65,15 @@ export default {
     },
     methods: {
         translate(key) {
-            // fallback to en locale
-            return get(this.card?.[this.$i18n.locale], key) || get(this.card, key);
+            return translateCardField(this.card, key, this.$i18n.locale);
         },
     },
 };
+
+export function translateCardField(card, key, locale) {
+    // fallback to en locale
+    return get(card?.[locale], key) || get(card, key);
+}
 
 function poolHasCoin(pool, symbol) {
     return pool.coin0.symbol === symbol || pool.coin1.symbol === symbol;

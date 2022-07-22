@@ -3,6 +3,7 @@ import { waitUntil } from 'async-wait-until';
 import getTitle from '~/assets/get-title.js';
 import hashColor from '~/assets/hash-color.js';
 import {flatCardList} from '~/content/card-list.js';
+import {translateCardField} from '~/components/Card.vue';
 import HubBuyForm from '~/components/HubBuyForm.vue';
 import Swap from '~/components/Swap.vue';
 import TxSendForm from '~/components/TxSendForm.vue';
@@ -165,7 +166,9 @@ export default {
         this.card = Object.freeze(card);
 
         if (card) {
-            title = [card.caption, card.title].join(' ');
+            const cardCaption = translateCardField(card, 'caption', this.$i18n.locale);
+            const cardTitle = translateCardField(card, 'title', this.$i18n.locale);
+            title = [cardCaption, cardTitle].join(' ');
         }
 
         // action

@@ -108,11 +108,14 @@ const gasTotalFee = computed(() => {
     const unwrapGasLimit = isUnwrapRequired.value ? GAS_LIMIT_UNWRAP : 0;
     const unlockGasLimit = isApproveRequired.value ? GAS_LIMIT_UNLOCK : 0;
     const totalGasLimit = /*GAS_LIMIT_SWAP + */unwrapGasLimit + unlockGasLimit + GAS_LIMIT_BRIDGE;
-    // gwei to ether
-    const gasPrice = web3Utils.fromWei(web3Utils.toWei(gasPriceGwei.value.toString(), 'gwei'), 'ether');
 
-    return new Big(gasPrice).times(totalGasLimit).toString();
+    return getFee(gasPriceGwei.value, totalGasLimit);
 });
+function getFee(gasPriceGwei, gasLimit) {
+    // gwei to ether
+    const gasPrice = web3Utils.fromWei(web3Utils.toWei(gasPriceGwei.toString(), 'gwei'), 'ether');
+    return new Big(gasPrice).times(gasLimit).toString();
+}
 const depositAmountAfterGas = computed(() => {
     let amount = new Big(props.amount || 0).minus(gasTotalFee.value);
     amount = amount.gt(0) ? amount.toString() : 0;
@@ -122,6 +125,11 @@ const depositAmountAfterGas = computed(() => {
 
 
 async function depositFromEthereum() {
+    if (new Big(gasTotalFee.value).gte(props.amount)) {
+        const error = new Error('Not enough amount to pay total fee');
+        addStepData(LOADING_STAGE.SEND_BRIDGE, {error, coin: props.tokenSymbol, amount: depositAmountAfterGas.value}, true);
+        throw error;
+    }
     const web3Eth = getProviderByChain(props.chainId);
     //@TODO properly work with nonce via queue service
     let nonce = await web3Eth.getTransactionCount(props.accountAddress, 'latest');

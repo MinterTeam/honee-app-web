@@ -327,7 +327,7 @@ function yearToBlock(year) {
                         <h3 class="estimation__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
                         <BaseAmountEstimation :coin="form.coin" :amount="form.value" format="exact"/>
 
-                        <h3 class="estimation__title">{{ $td('You will buy and stake approximately', 'stake-by-lock.buy-estimation') }}</h3>
+                        <h3 class="estimation__title">{{ $td('You will buy and stake approximately', 'stake-by-lock.estimation-buy') }}</h3>
                         <BaseAmountEstimation :coin="stakingProgram.lockCoin.symbol" :amount="estimation" format="approx"/>
                     </template>
 

@@ -134,6 +134,9 @@ async function sendEthTx({to, value, data, nonce, gasPrice, gasLimit}, loadingSt
 
     let signedTx;
     try {
+        if (!props.privateKey) {
+            throw new Error('Can\'t send evm tx without privateKey');
+        }
         nonce = (nonce || nonce === 0) ? nonce : await web3Eth.getTransactionCount(props.accountAddress, 'latest');
         // force estimation to prevent smart contract errors
         const forceGasLimitEstimation = loadingStage === LOADING_STAGE.SEND_BRIDGE && !isSpeedup;
@@ -228,18 +231,23 @@ function estimateTxGas({to, value, data}) {
 async function sendTxSequence(list, options) {
     let result;
     for (const [index, {txParams, prepare, finalize}] of Object.entries(list)) {
-        // init
-        addStepData(`minter${index}`);
-        // prepare
-        const txParamsAdditionList = await awaitSeries(prepare, result);
-        const preparedTxParams = merge({}, txParams, ...txParamsAdditionList);
-        console.debug('prepare', [txParams, ...txParamsAdditionList]);
-        // execute
-        addStepData(`minter${index}`, {txParams: preparedTxParams});
-        let result = await sendMinterTx(preparedTxParams, options);
-        // finalize
-        result = await ensurePromise(finalize, result, {fallbackToArg: true});
-        addStepData(`minter${index}`, {tx: result, finished: true});
+        try {
+            // init
+            addStepData(`minter${index}`);
+            // prepare
+            const txParamsAdditionList = await awaitSeries(prepare, result);
+            const preparedTxParams = merge({}, txParams, ...txParamsAdditionList);
+            console.debug('prepare', [txParams, ...txParamsAdditionList]);
+            // execute
+            addStepData(`minter${index}`, {txParams: preparedTxParams});
+            let result = await sendMinterTx(preparedTxParams, options);
+            // finalize
+            result = await ensurePromise(finalize, result, {fallbackToArg: true});
+            addStepData(`minter${index}`, {tx: result, finished: true});
+        } catch (error) {
+            addStepData(`minter${index}`, {error});
+            return Promise.reject(error);
+        }
     }
     addStepData(LOADING_STAGE.FINISH, {finished: true}, true);
 
@@ -289,7 +297,7 @@ function addStepData(loadingStage, data = {}, finishPrev) {
     if (finishPrev) {
         for (const step of Object.values(state.steps)) {
             if (step.loadingStage !== loadingStage && !step.finished) {
-                set(state.steps, loadingStage, Object.freeze({
+                set(state.steps, step.loadingStage, Object.freeze({
                     ...step,
                     finished: true,
                 }));

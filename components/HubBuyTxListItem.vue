@@ -1,6 +1,6 @@
 <script>
 import {shortHashFilter, getTime, getEvmTxUrl, getExplorerTxUrl, pretty} from '~/assets/utils.js';
-import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import Loader from '~/components/base/BaseLoader.vue';
 import TxPreview from '~/components/base/TxPreview.vue';
 
@@ -50,15 +50,24 @@ export default {
         getEvmTxUrl,
         getExplorerTxUrl,
         formatHash: (value) => shortHashFilter(value, 8),
+        getEvmNetworkName(networkSlug) {
+            return HUB_CHAIN_DATA[networkSlug].shortName || 'EVM';
+        },
     },
 };
 </script>
 
 <template>
     <div>
-        <div class="hub__buy-transaction-row">
-            <Loader class="hub__buy-loader" :is-loading="!step.finished"/>
+        <div class="hub__buy-transaction-row" :class="{'u-hidden': loadingStage === $options.LOADING_STAGE.FINISH && (!step.amount || !step.coin)}">
+            <span class="hub__buy-transaction-emoji u-emoji" v-if="step.error || (step.tx && step.tx.error)">❌</span>
+            <span class="hub__buy-transaction-emoji u-emoji" v-else-if="step.finished">✅</span>
+            <Loader class="hub__buy-loader" v-else :is-loading="true"/>
 
+            <template v-if="loadingStage === $options.LOADING_STAGE.WAIT_ETH">
+                {{ $td(`${getEvmNetworkName(step.network)} top-up to`, 'form.stage-wait-evm', {network: getEvmNetworkName(step.network)}) }}
+                <template v-if="step.amount || step.coin">{{ step.amount }} {{ step.coin }}</template>
+            </template>
             <template v-if="loadingStage === $options.LOADING_STAGE.WRAP_ETH">
                 {{ $td('Wrap', 'form.stage-wrap') }} {{ pretty(step.amount) }} {{ nativeSymbol }}
             </template>
@@ -78,7 +87,7 @@ export default {
             <template v-if="loadingStage === $options.LOADING_STAGE.SWAP_MINTER">
                 {{ $td('Swap', 'form.stage-swap') }} {{ pretty(step.amount0) }} {{ step.coin0 }} {{ $td('for', 'form.stage-for') }} {{ step.coin1 }}
             </template>
-            <template v-if="loadingStage === $options.LOADING_STAGE.FINISH && step.amount && step.coin">
+            <template v-if="loadingStage === $options.LOADING_STAGE.FINISH">
                 {{ $td('Received', 'form.stage-received') }} {{ pretty(step.amount) }} {{ step.coin }}
             </template>
             <TxPreview

@@ -154,7 +154,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         try {
             const txParamsList = feeProps.txParamsList?.length ? feeProps.txParamsList : [feeProps.txParams];
             const promiseList = txParamsList.map((txParams,  index) => {
-                const precision = index > 1 ? FEE_PRECISION_SETTING.IMPRECISE : feeProps.precision;
+                const precision = index > 0 ? FEE_PRECISION_SETTING.IMPRECISE : feeProps.precision;
 
                 const estimatePromise = estimateFeeWithFallback(txParams, feeProps.fallbackToCoinToSpend, feeProps.baseCoinAmount, precision, idPrimary + index, idSecondary + index);
                 return ensurePropsNotChanged(estimatePromise);
@@ -351,6 +351,7 @@ async function estimateFee(txParams, precision, idDebounce) {
  * @return {Promise<FeeEstimationWithFallback>}
  */
 async function estimateFeeWithFallback(txParams, fallbackToCoinToSpend, baseCoinAmount, precision, idDebouncePrimary, idDebounceSecondary) {
+    // console.debug('estimateFeeWithFallback', JSON.parse(JSON.stringify(txParams)), {fallbackToCoinToSpend, baseCoinAmount, precision});
     const primaryCoinToCheck = getPrimaryCoinToCheck(txParams);
     const secondaryCoinToCheck = getSecondaryCoinToCheck(txParams, fallbackToCoinToSpend);
 

@@ -146,8 +146,8 @@ export default {
 
             ensurePromise(this.beforePostSequence, this)
                 .then(() => {
-                    const sequenceParams = this.sequenceParams.map((item, index) => {
-                        //@TODO pass refinedByIndex result to StakeByLock prepare (probably use useFee state)
+                    let sequenceParams= Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
+                    sequenceParams = sequenceParams.map((item, index) => {
                         // fill txParams with gasCoin
                         const prepareGasCoin = index === 0
                             ? () => ({gasCoin: this.fee.resultList[0].coin})
@@ -301,7 +301,7 @@ export default {
                         </button>
                     </div>
                     -->
-                    <div class="u-cel">
+                    <div class="u-cell">
                         <button class="button button--ghost button--full" type="button" @click="finishSending()">
                             {{ $td('Finish', 'common.finish') }}
                         </button>

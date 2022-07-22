@@ -177,7 +177,9 @@ export default {
     'stake-by-lock': {
         'estimation-unlock': 'Срок разблокировки стейка',
         'estimation-unlock-preposition': ' ',
+        'estimation-buy': 'Вы купите и застейкуете примерно',
         'estimation-earn': 'Вы заработаете',
+        'confirm-lock': 'Вы стейкуете',
         'error-program-not-found': 'Не удаётся загрузить программу стейкинга',
         'error-program-disabled': 'Текущая программа стейкинга отключена',
         'error-program-timeout': 'Истекло время действия программы стейкинга',
@@ -324,6 +326,7 @@ export default {
         'eth-waiting': 'Ожидание депозита {symbol}',
         'eth-purchase-waiting': 'Ожидание покупки {symbol}',
 
+        'stage-wait-evm': 'Пополнение {network}',
         'stage-wrap': 'Оборачивание',
         'stage-swap': 'Обмен',
         'stage-approve': 'Одобрение',
