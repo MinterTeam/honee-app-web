@@ -51,14 +51,17 @@
     &:hover, &:focus {background: fade(@c-main, 20%);}
     &:active {background: fade(@c-main, 40%);}
 }
+.button--gradient {
+    color: #fff; position: relative; z-index: 0; padding: 10px 20px; border: none;
+    &, &:hover, &:focus, &:active {background: none;}
+    &::before {content: ''; background: linear-gradient(95.27deg, #FF8A00 -10px, #FF6C63 27%, #4099DA 66%, #FFB0C8 99%); position: absolute; z-index: -1; left: -10px; top: 0; right: 0; bottom: 0; transition: 0.1s;}
+    &:hover::before, &:focus::before {transform: translate(10px, 0);}
+    &:active::before {transform: translate(6px, 0);}
+}
 //.button--black {
 //    color: #fff; background: @c-black;
 //    &:hover, &:focus {background: tint(@c-black, 15%);}
 //    &:active {background: shade(@c-black, 10%);}
-//}
-//.button--white {
-//    color: @c-main; background: #fff;
-//    &:active {background: shade(#fff, 10%);}
 //}
 .button--ghost {
     color: @c-black; background: transparent; border-color: @c-black;

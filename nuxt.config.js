@@ -173,6 +173,7 @@ module.exports = {
         { src: '~/plugins/custom-event-polyfill.js', ssr: false },
         { src: '~/plugins/persisted-state.js', ssr: false },
         { src: '~/plugins/click-blur.js', ssr: false },
+        { src: '~/plugins/referral.js', ssr: false },
     ],
     content: {
         liveEdit: false,
