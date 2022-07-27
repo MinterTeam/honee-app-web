@@ -1,24 +1,24 @@
 // common
-const gulp = require('gulp');
-const rename = require('gulp-rename');
-const plumber = require('gulp-plumber');
-const log = require('fancy-log');
-const beeper = require('beeper');
+import gulp from 'gulp';
+import rename from 'gulp-rename';
+import plumber from 'gulp-plumber';
+import log from 'fancy-log';
+import beeper from 'beeper';
 // css
-const less = require('gulp-less');
-const postcss = require('gulp-postcss');
-const postcssNormalize = require('postcss-normalize');
-const autoprefixer = require('autoprefixer');
-const postcssPresetEnv = require('postcss-preset-env');
-const postcss100vhFix = require('postcss-100vh-fix');
-const cleanCss = require('gulp-clean-css');
+import less from 'gulp-less';
+import postcss from 'gulp-postcss';
+import postcssNormalize from 'postcss-normalize';
+import autoprefixer from 'autoprefixer';
+import postcssPresetEnv from 'postcss-preset-env';
+import postcss100vhFix from 'postcss-100vh-fix';
+import cleanCss from 'gulp-clean-css';
 // images
-const del = require('del');
-const path = require('path');
-const cache = require('gulp-cache');
-const imagemin = require('gulp-imagemin');
-const mozjpeg = require('imagemin-mozjpeg');
-const jpegtran = require('imagemin-jpegtran');
+import del from 'del';
+import path from 'path';
+import cache from 'gulp-cache';
+import imagemin from 'gulp-imagemin';
+import mozjpeg from 'imagemin-mozjpeg';
+import jpegtran from 'imagemin-jpegtran';
 //const pngquant = require('imagemin-pngquant');
 
 
