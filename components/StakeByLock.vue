@@ -45,11 +45,11 @@ export default {
         return getStakingProgram(programId)
             .then((stakingProgram) => {
                 this.stakingProgram = stakingProgram;
-                const duration = stakingProgram.options[this.params.duration]
-                    ? this.params.duration
+                const duration = stakingProgram.options[this.$route.query.duration]
+                    ? this.$route.query.duration
                     : Object.keys(stakingProgram.options)[0];
                 this.form.duration = blockToYear(duration);
-                this.form.coin = stakingProgram.lockCoin.symbol;
+                this.form.coin = this.$route.query.coin || stakingProgram.lockCoin.symbol;
             })
             .catch((error) => {
                 this.$nuxt.error(error);
@@ -73,7 +73,7 @@ export default {
         return {
             form: {
                 value: '',
-                coin: '',
+                coin: this.$route.query.coin || '',
                 duration: 0,
             },
             /** @type {StakingProgram|null} */
