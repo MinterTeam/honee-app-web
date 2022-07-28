@@ -19,6 +19,7 @@ import CardHead from '~/components/CardHead.vue';
 const OMIT_PARAM_SYMBOL = '-';
 // uppercase such param values
 const COIN_PARAMS = ['coin', 'coin0', 'coin1', 'coinToSell', 'coinToBuy'];
+// @TODO uppercase coins in query
 
 const addLiquidityAction = {
     params: ['coin0', 'coin1'],
@@ -42,6 +43,7 @@ const actionList = {
         tags: [],
     },
     swap: {
+        //@TODO is coinToSell param really needed
         params: ['coinToBuy', 'coinToSell'],
         component: Swap,
         tags: ['exchange'],
@@ -175,7 +177,7 @@ export default {
         this.action = Object.freeze({
             ...action,
             title,
-            params,
+            params: pathParams,
         });
 
         // tags

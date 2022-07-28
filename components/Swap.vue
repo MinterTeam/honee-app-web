@@ -85,7 +85,7 @@ export default {
             serverError: '',
             serverSuccess: '',
             form: {
-                coinFrom: this.params.coinToSell?.toUpperCase() || firstBalanceSymbol,
+                coinFrom: this.params.coinToSell?.toUpperCase() || this.$route.query.coinToSell?.toUpperCase() || firstBalanceSymbol,
                 coinTo: this.params.coinToBuy?.toUpperCase() || '',
                 sellAmount: this.params.valueToSell || '',
                 buyAmount: this.params.valueToBuy || '',

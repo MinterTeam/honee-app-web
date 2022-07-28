@@ -11,7 +11,7 @@ const ACTION_LIST = [
 ];
 const ACTION_LIST_CONDITIONAL = {
     BIP: `/delegate/${BASE_COIN}`,
-    '*': '/swap/BTC',
+    '*': '/swap/BTC?coinToSell={coin}',
 };
 
 const MAX_PAGE = 3;
