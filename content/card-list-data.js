@@ -39,6 +39,22 @@ export default {
                 },
             },
             {
+                caption: 'Stake & Earn',
+                coin: `HUBSTAKE`,
+                description: 'Stake HUBSTAKE for 1, 2, 3, 4 or 5 years to get everyday rewards. The longer you stake, the more you earn!',
+                stats: {
+                    apr: {
+                        percent: '1-5',
+                    },
+                },
+                tags: ['Staking'],
+                action: `/stake/21`,
+                ru: {
+                    description: 'Стейкуйте HUBSTAKE на 1, 2, 3, 4 или 5 лет, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
+                    caption: 'Стейкинг',
+                },
+            },
+            {
                 caption: 'Delegate',
                 coin: BASE_COIN,
                 description: '‘Tie’ your BIP to any validator of the Minter Network and start getting rewards every hour.',
