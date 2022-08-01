@@ -66,8 +66,12 @@ export default {
             <h2 class="u-h3 u-mb-10">{{ $td('Earn with Honee', 'referral.title') }}</h2>
             <p class="u-mb-10">
                 <template v-if="!$store.state.referral.refId">
-                    <template v-if="$i18n.locale === 'en'">Invite friends and get <strong>10% of their BEE</strong> staking rewards. You just need to activate special referral link for your wallet.</template>
-                    <template v-if="$i18n.locale === 'ru'">Invite friends and get <strong>10% of their BEE</strong> staking rewards. You just need to activate special referral link for your wallet.</template>
+                    <template v-if="$i18n.locale === 'en'">
+                        Invite friends and get <strong>10% of their BEE</strong> staking rewards. You just need to activate special referral link for your wallet.
+                    </template>
+                    <template v-if="$i18n.locale === 'ru'">
+                        Приглашайте друзей и <strong>получайте 10% BEE</strong> от их стейкинг наград. Для этого просто активируйте специальные реферальные ссылки для своего кошелька.
+                    </template>
                 </template>
                 <template v-else>
                     {{ $td('Invite friends and get 10% of their BEE staking. To share just copy the link from the address bar in your browser on any page of Honee App.', 'referral.description-activated') }}
