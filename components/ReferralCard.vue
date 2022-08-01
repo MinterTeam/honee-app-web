@@ -1,5 +1,6 @@
 <script>
 import {setupReferralProgram} from '~/api/referral.js';
+import {REF_ID_QUERY} from '~/assets/variables.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 import {getErrorText} from '~/assets/server-error.js';
@@ -17,8 +18,8 @@ export default {
         };
     },
     methods: {
-        activate(enable = true) {
-            if (this.isLoading || !this.$store.state.referral.isActiveOffer) {
+        setup(enable = true) {
+            if (this.isLoading) {
                 return;
             }
             this.isLoading = true;
@@ -30,9 +31,9 @@ export default {
                     this.isSuccessModalVisible = true;
                     const query = JSON.parse(JSON.stringify(this.$route.query));
                     if (enable) {
-                        query.refId = refId;
+                        query[REF_ID_QUERY] = refId;
                     } else {
-                        delete query.refId;
+                        delete query[REF_ID_QUERY];
                     }
                     this.$router.replace({
                         path: this.$route.path,
@@ -67,7 +68,7 @@ export default {
                     isLoading ? 'is-loading' : '',
                     $store.state.referral.refId ? 'button--ghost-main' : 'button--main',
                 ]"
-                @click="activate(!$store.state.referral.refId)"
+                @click="setup(!$store.state.referral.refId)"
             >
                 <span class="button__content">
                     <template v-if="!$store.state.referral.refId">

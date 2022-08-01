@@ -1,4 +1,5 @@
 import {followReferrer} from '~/api/referral.js';
+import {REF_ID_QUERY} from '~/assets/variables.js';
 
 export default ({ app, store }) => {
     store.subscribe((mutation) => {
@@ -12,7 +13,7 @@ export default ({ app, store }) => {
     app.router.beforeEach(async (to, from, next) => {
         await store.dispatch('referral/fetchRefId');
 
-        const foreignRefId = queryHasForeignRefId(to, store) ? to.query.refId : store.state.referral.foreignRefId;
+        const foreignRefId = queryHasForeignRefId(to, store) ? to.query[REF_ID_QUERY] : store.state.referral.foreignRefId;
         if (foreignRefId) {
             if (store.getters.isAuthorized) {
                 // no need to await it, follow in the background
@@ -30,7 +31,7 @@ export default ({ app, store }) => {
         }
 
         // if user has refId, but it is not in query yet
-        if (store.state.referral.refId && to.query.refId !== store.state.referral.refId) {
+        if (store.state.referral.refId && to.query[REF_ID_QUERY] !== store.state.referral.refId) {
             return overwriteQuery(next, to, store.state.referral.refId);
         }
         next();
@@ -43,8 +44,8 @@ export default ({ app, store }) => {
  * @param {string} refId
  */
 function overwriteQuery(next, to, refId) {
-    if (to.query.refId !== refId) {
-        to.query.refId = refId;
+    if (to.query[REF_ID_QUERY] !== refId) {
+        to.query[REF_ID_QUERY] = refId;
         next({ path: to.path, query: to.query });
     } else {
         next();
@@ -53,5 +54,5 @@ function overwriteQuery(next, to, refId) {
 }
 
 function queryHasForeignRefId(route, store) {
-    return route.query.refId && route.query.refId !== store.state.referral.refId;
+    return route.query[REF_ID_QUERY] && route.query[REF_ID_QUERY] !== store.state.referral.refId;
 }

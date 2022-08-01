@@ -38,6 +38,8 @@ export const I18N_ROUTE_NAME_SEPARATOR = '___';
 export const STAKE_RECALCULATE_BLOCK_COUNT = 720;
 export const DASHBOARD_URL = '/';
 
+export const REF_ID_QUERY = 'r';
+
 export const SWAP_TYPE = {
     BANCOR: 'bancor',
     POOL: 'pool',
