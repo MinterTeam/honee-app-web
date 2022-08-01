@@ -32,7 +32,7 @@ export default {
         <AlphaBanner/>
         <TheHeader/>
 
-        <nuxt class="u-section u-container"/>
+        <nuxt class="u-section u-container u-container--large"/>
 
         <TheFooter/>
 

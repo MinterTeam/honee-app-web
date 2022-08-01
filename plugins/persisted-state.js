@@ -5,7 +5,6 @@ export default ({store}) => {
         paths: [
             'auth',
             'balanceDisplayType',
-            'referral.isActiveOffer',
             'referral.foreignRefId',
         ],
     })(store);

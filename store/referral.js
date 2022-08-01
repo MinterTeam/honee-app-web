@@ -1,18 +1,13 @@
 import {getRefId} from '~/api/referral.js';
 
 export const state = () => ({
-    isActiveOffer: true,
     refId: undefined,
     foreignRefId: undefined,
 });
 
 export const mutations = {
     reset(state) {
-        state.isActiveOffer = true;
         state.refId = undefined;
-    },
-    setIsActiveOffer(state, value) {
-        state.isActiveOffer = value;
     },
     setRefId(state, value) {
         state.refId = value;

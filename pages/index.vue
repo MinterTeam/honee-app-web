@@ -2,7 +2,6 @@
 import cardList from '~/content/card-list.js';
 import Card from '~/components/Card.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
-import ReferralCard from '~/components/ReferralCard.vue';
 
 const BASE_CARD = {
     DELEGATION: 'delegation',
@@ -17,7 +16,6 @@ export default {
     components: {
         Card,
         AddressAssets,
-        ReferralCard,
     },
     fetch() {
         return Promise.all([
@@ -62,15 +60,13 @@ export default {
     <div>
         <AddressAssets/>
 
-        <ReferralCard v-if="$store.state.referral.isActiveOffer" class="u-mt-25"/>
-
         <div class="u-mt-25" v-for="(categoryCards, categorySlug) in cardList" :key="categorySlug">
             <h2 class="dashboard__category-title u-mb-15">
                 <img class="dashboard__category-icon" :src="`/img/icon-category-${categorySlug}.svg`" alt="" role="presentation">
                 <span>{{ $td(capitalize($options.cardList[categorySlug].title || categorySlug), `action.category-${categorySlug.toLowerCase()}`) }}</span>
             </h2>
             <div class="u-grid u-grid--vertical-margin">
-                <div class="u-cell u-cell--medium--1-2 card-wrap-cell" v-for="card in categoryCards" :key="card.action || card">
+                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in categoryCards" :key="card.action || card">
                     <Card :card="card" v-if="card.action"/>
 
                     <!--<div class="card card__content--small" v-if="card === $options.BASE_CARD.DELEGATION">
@@ -118,8 +114,6 @@ export default {
                 </div>
             </div>
         </div>
-
-        <ReferralCard v-if="!$store.state.referral.isActiveOffer" class="u-mt-25"/>
 
         <nuxt-child/>
     </div>

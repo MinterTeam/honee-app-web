@@ -6,7 +6,7 @@ export default {
 
 <template>
     <footer class="footer">
-        <div class="u-container">
+        <div class="u-container u-container--large">
             <div class="footer__disclaimer">
                 <h3 class="u-h3 u-mb-05">{{ $td('Disclaimer', 'index.footer-disclaimer-title') }}</h3>
                 <p>{{ $td('Please note that you are accessing the ALPHA Version of the Honee service which is in the process of being tested before its official release. The sole purpose of this ALPHA Version is to conduct testing and obtain feedback.', 'index.footer-disclaimer-p1') }}</p>

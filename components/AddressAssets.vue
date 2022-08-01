@@ -2,6 +2,7 @@
 import {pretty, getExplorerAddressUrl} from '~/assets/utils.js';
 import AddressBalanceList from '~/components/AddressBalanceList.vue';
 import AddressStakeList from '~/components/AddressStakeList.vue';
+import ReferralCard from '~/components/ReferralCard.vue';
 
 const BALANCE_DISPLAY_BIP = 1;
 const BALANCE_DISPLAY_TOTAL = 2;
@@ -20,6 +21,7 @@ export default {
     components: {
         AddressBalanceList,
         AddressStakeList,
+        ReferralCard,
     },
     data() {
         return {
@@ -59,7 +61,7 @@ export default {
                 </nuxt-link>-->
             </div>
         </div>
-        <div class="card__content">
+        <div class="card__content wallet__controls">
             <div class="button-group button-group--center">
                 <nuxt-link class="button button--main wallet__action-button" :to="getDashboardUrl('swap')">
                     <img class="button__icon" src="/img/icon-white-swap.svg" width="24" height="24" alt="" role="presentation">
@@ -74,6 +76,9 @@ export default {
                     {{ $td('Receive', 'index.receive') }}
                 </nuxt-link>
             </div>
+
+            <hr class="card__fake-divider u-hidden-large-up">
+            <ReferralCard class="wallet__controls-fancy-button"/>
         </div>
         <section class="card__content">
             <div class="wallet__asset-list-control-group u-mb-15">
