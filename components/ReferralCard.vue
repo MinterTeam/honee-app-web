@@ -61,12 +61,13 @@ export default {
             {{ $td('Invite a friend and get rewarded', 'referral.invite-friend') }}
         </button>
 
-        <Modal class="u-text-center" :isOpen.sync="isConfirmModalVisible">
+        <Modal class="u-text-center u-text-medium" :isOpen.sync="isConfirmModalVisible">
             <img class="u-image u-mb-10" src="/img/icon-share.svg" alt="" role="presentation" width="96" height="96">
             <h2 class="u-h3 u-mb-10">{{ $td('Earn with Honee', 'referral.title') }}</h2>
             <p class="u-mb-10">
                 <template v-if="!$store.state.referral.refId">
-                    {{ $td('Invite friends and get 10% of their BEE staking rewards. You just need to activate special referral link for your wallet.', 'referral.description') }}
+                    <template v-if="$i18n.locale === 'en'">Invite friends and get <strong>10% of their BEE</strong> staking rewards. You just need to activate special referral link for your wallet.</template>
+                    <template v-if="$i18n.locale === 'ru'">Invite friends and get <strong>10% of their BEE</strong> staking rewards. You just need to activate special referral link for your wallet.</template>
                 </template>
                 <template v-else>
                     {{ $td('Invite friends and get 10% of their BEE staking. To share just copy the link from the address bar in your browser on any page of Honee App.', 'referral.description-activated') }}
@@ -77,7 +78,7 @@ export default {
 
             <button
                 type="button"
-                class="button button--full u-mt-10"
+                class="button button--full u-mt-15"
                 :class="[
                     isLoading ? 'is-loading' : '',
                     $store.state.referral.refId ? 'button--ghost-main' : 'button--main',
@@ -94,13 +95,13 @@ export default {
                 </span>
                 <BaseLoader class="button__loader" :isLoading="true"/>
             </button>
-            <button class="button button--ghost button--full u-mt-15" type="button" @click="isConfirmModalVisible = false">
+            <button class="button button--ghost button--full u-mt-10" type="button" @click="isConfirmModalVisible = false">
                 {{ $td('Close', 'form.success-close-button') }}
             </button>
         </Modal>
 
 
-        <Modal class="u-text-center" :isOpen.sync="isSuccessModalVisible">
+        <Modal class="u-text-center u-text-medium" :isOpen.sync="isSuccessModalVisible">
             <template v-if="$store.state.referral.refId">
                 <img class="u-image u-mb-10" src="/img/icon-activated.svg" alt="" role="presentation" width="96" height="96">
                 <h2 class="u-h3 u-mb-05">{{ $td('Referral link activated', 'referral.success-title') }}</h2>
@@ -108,7 +109,7 @@ export default {
             </template>
             <template v-else>
                 <h2 class="u-h3 u-mb-05">{{ $td('Referral link deactivated', 'referral.success-deactivate-title') }}</h2>
-                <p class="u-text-medium">{{ $td('Referral link removed from the address bar in your browser. You can reactivate it at any time.', 'referral.success-deactivate-description') }}</p>
+                <p class="">{{ $td('Referral link removed from the address bar in your browser. You can reactivate it at any time.', 'referral.success-deactivate-description') }}</p>
             </template>
 
             <button class="button button--ghost button--full u-mt-15" type="button" @click="isSuccessModalVisible = false">
