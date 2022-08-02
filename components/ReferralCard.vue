@@ -67,14 +67,14 @@ export default {
             <p class="u-mb-10">
                 <template v-if="!$store.state.referral.refId">
                     <template v-if="$i18n.locale === 'en'">
-                        Invite friends and get <strong>10% of their BEE</strong> staking rewards. You just need to activate special referral link for your wallet.
+                        Invite friends and get <strong>10% of their BEE</strong> staking rewards. You just need to activate a special referral link for your wallet.
                     </template>
                     <template v-if="$i18n.locale === 'ru'">
-                        Приглашайте друзей и <strong>получайте 10% BEE</strong> от их стейкинг наград. Для этого просто активируйте специальные реферальные ссылки для своего кошелька.
+                        Приглашай друзей и <strong>получай 10%</strong> от их стейкинг наград. Для этого просто активируй специальные реферальные ссылки для своего кошелька.
                     </template>
                 </template>
                 <template v-else>
-                    {{ $td('Invite friends and get 10% of their BEE staking. To share just copy the link from the address bar in your browser on any page of Honee App.', 'referral.description-activated') }}
+                    {{ $td('Invite friends and get 10% of their BEE staking rewards. To share, just copy the link from the address bar in your browser on any page of Honee App.', 'referral.description-activated') }}
                 </template>
             </p>
 
@@ -113,7 +113,7 @@ export default {
             </template>
             <template v-else>
                 <h2 class="u-h3 u-mb-05">{{ $td('Referral link deactivated', 'referral.success-deactivate-title') }}</h2>
-                <p class="">{{ $td('Referral link removed from the address bar in your browser. You can reactivate it at any time.', 'referral.success-deactivate-description') }}</p>
+                <p class="">{{ $td('The referral link has been removed from the address bar in your browser. You can reactivate it at any time.', 'referral.success-deactivate-description') }}</p>
             </template>
 
             <button class="button button--ghost button--full u-mt-15" type="button" @click="isSuccessModalVisible = false">
