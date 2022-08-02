@@ -58,7 +58,7 @@ export default {
             class="button button--gradient"
             @click="isConfirmModalVisible = true"
         >
-            {{ $td('Invite a friend and get rewarded', 'referral.invite-friend') }}
+            {{ $td('Invite friends and get rewards!', 'referral.invite-friend') }}
         </button>
 
         <Modal class="u-text-center u-text-medium" :isOpen.sync="isConfirmModalVisible">
