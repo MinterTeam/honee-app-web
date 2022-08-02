@@ -2,7 +2,7 @@ import { ref, reactive, computed, watch } from '@vue/composition-api';
 import {findTokenInfo} from '~/api/hub.js';
 import Big from '~/assets/big.js';
 import {BSC_CHAIN_ID, ETHEREUM_CHAIN_ID, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
-import wait from '~/assets/utils/wait.js';
+import {wait} from '~/assets/utils/wait.js';
 import CancelError from '~/assets/utils/error-cancel.js';
 import useWeb3Balance from '~/composables/use-web3-balance.js';
 
