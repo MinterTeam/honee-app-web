@@ -41,6 +41,7 @@ export default ({ app }) => {
                 let path = getPath();
                 path = path.replace(/^\/ru/, '');
                 path = path.replace(/\?.*/, '');
+                path = path || '/';
                 goatcounter.count({
                     path,
                     title: ' ',
