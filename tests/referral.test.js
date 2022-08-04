@@ -1,7 +1,7 @@
 import secp256k1 from 'secp256k1';
 import {toBuffer} from 'ethereumjs-util/dist/bytes.js';
-import {signRequest, hashObject, bufferToString} from '~/api/referral.js';
 import {keccakFromString} from 'ethereumjs-util/dist/hash.js';
+import {signRequest, hashObject, bufferToString} from '~/assets/axios-ecdsa-auth.js';
 
 const {ecdsaRecover, ecdsaVerify, publicKeyCreate} = secp256k1;
 
@@ -25,6 +25,12 @@ const VALID_REQUEST = {
 test('signRequest', () => {
     const signature = signRequest(VALID_REQUEST.data, PRIVATE_KEY);
     expect(signature).toEqual(VALID_REQUEST.signature.result);
+});
+
+test('signRequest without publicKey', () => {
+    const signature = signRequest(VALID_REQUEST.data, PRIVATE_KEY, false);
+    const vrsHexLength = 2 + 65 * 2; // 2 for 0x prefix, 32 + 32 for `vr`, 1 for `s` (recid), '*2' for hex symbol
+    expect(signature).toEqual(VALID_REQUEST.signature.result.slice(0, vrsHexLength));
 });
 
 test('recovery', () => {
