@@ -1,7 +1,7 @@
 <script>
-import {validationMixin} from 'vuelidate';
-import required from 'vuelidate/lib/validators/required';
-import withParams from 'vuelidate/lib/withParams';
+import {validationMixin} from 'vuelidate/src/index.js';
+import required from 'vuelidate/src/validators/required';
+import withParams from 'vuelidate/src/withParams';
 import autosize from 'v-autosize';
 import {isValidMnemonic} from 'minterjs-wallet';
 import checkEmpty from '~/assets/v-check-empty.js';
@@ -9,11 +9,11 @@ import checkEmpty from '~/assets/v-check-empty.js';
 const mnemonicValidator = withParams({type: 'mnemonic'}, isValidMnemonic);
 
 export default {
-    mixins: [validationMixin],
     directives: {
         autosize,
         checkEmpty,
     },
+    mixins: [validationMixin],
     data() {
         return {
             mnemonic: '',

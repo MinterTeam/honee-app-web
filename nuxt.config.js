@@ -248,6 +248,7 @@ module.exports = {
             'centrifuge/src',
             'autonumeric/src',
             'vue-autonumeric/src',
+            'vuelidate/src',
             'lodash-es',
             // 'nuxt-i18n/src',
             'v-file-input/src',

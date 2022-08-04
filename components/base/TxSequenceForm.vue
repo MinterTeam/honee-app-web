@@ -1,5 +1,5 @@
 <script>
-import {validationMixin} from 'vuelidate';
+import {validationMixin} from 'vuelidate/src/index.js';
 import {getErrorText} from "~/assets/server-error.js";
 import {ensurePromise} from "~/assets/utils.js";
 import {HUB_BUY_STAGE as LOADING_STAGE} from '~/assets/variables.js';

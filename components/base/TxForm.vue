@@ -1,5 +1,5 @@
 <script>
-import {validationMixin} from 'vuelidate';
+import {validationMixin} from 'vuelidate/src/index.js';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {isValidMnemonic} from 'minterjs-wallet';
