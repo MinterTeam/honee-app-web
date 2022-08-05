@@ -166,23 +166,26 @@ function isSelectedCoinSameAsFeeCoin(selectedCoinItem, feeCoinIdOrSymbol) {
 <template>
     <div class="h-field__aside" :class="{'is-error': $value.$error}">
         <div class="h-field__aside-caption">
-            <Loader
-                class="h-field__aside-loader"
-                v-if="isLoading"
-                :isLoading="true"
-            />
-            <button
-                class="h-field__aside-max link--main link--opacity u-semantic-button" type="button"
-                v-else-if="isMaxValueDefined && !isUseMax"
-                @click="useMax()"
-            >
-                {{ $td('Use max', 'index.use-max') }}. {{ isMaxValueRounded ? '≈' : '' }}{{ pretty(maxValueComputed) }}
-            </button>
-            <!--            <template v-else>&nbsp;</template>-->
+            <slot name="aside-caption">
+                <Loader
+                    class="h-field__aside-loader"
+                    v-if="isLoading"
+                    :isLoading="true"
+                />
+                <button
+                    class="h-field__aside-max link--main link--opacity u-semantic-button" type="button"
+                    v-else-if="isMaxValueDefined && !isUseMax"
+                    @click="useMax()"
+                >
+                    {{ $td('Use max', 'index.use-max') }}. {{ isMaxValueRounded ? '≈' : '' }}{{ pretty(maxValueComputed) }}
+                </button>
+                <!--<template v-else>&nbsp;</template>-->
+            </slot>
         </div>
         <InputMaskedAmount
             v-if="!isEstimation"
-            class="h-field__input h-field__aside-input" type="text" inputmode="decimal" placeholder="0.00"
+            class="h-field__input h-field__aside-input"
+            :placeholder="$attrs.placeholder || '0.00'"
             v-bind="$attrs"
             :value="value"
             @input="$emit('input', $event)"

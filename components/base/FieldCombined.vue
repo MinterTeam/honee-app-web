@@ -2,7 +2,7 @@
 import checkEmpty from '~/assets/v-check-empty.js';
 import {COIN_TYPE} from '~/assets/variables.js';
 import FieldCombinedBaseAmount from '~/components/base/FieldCombinedBaseAmount.vue';
-import FieldCombinedCoinDropdown from '@/components/base/FieldCombinedCoinDropdown.vue';
+import FieldCombinedCoinDropdown from '~/components/base/FieldCombinedCoinDropdown.vue';
 
 export default {
     components: {
@@ -88,6 +88,22 @@ export default {
         };
     },
     computed: {
+        // input attrs will go to input and other attrs will go to root
+        attrs() {
+            const {
+                // FieldCombinedBaseAmount > InputMaskedAmount
+                isPercent, ['is-percent']: isPercentSnake, scale,
+                // FieldCombinedBaseAmount > InputMaskedAmount > input
+                placeholder, type, inputmode,
+                // FieldCombined
+                ...other
+            } = this.$attrs;
+
+            return {
+                input: {isPercent: isPercent || isPercentSnake, scale, placeholder, type, inputmode},
+                other,
+            };
+        },
         isSelectDisabled() {
             // 0 is disabled only if no fallback
             if (!this.fallbackToFullList && this.coinList.length === 0) {
@@ -126,7 +142,7 @@ export default {
 </script>
 
 <template>
-    <div class="h-field" :class="{'h-field--is-dashed': isEstimation}">
+    <div class="h-field" :class="{'h-field--is-dashed': isEstimation}" v-bind="attrs.other">
         <!-- @TODO handle blur (amount blur fires and coin blur not) (maybe not fire blur at all?)-->
         <div class="h-field__content">
             <div class="h-field__title">{{ label }}</div>
@@ -138,6 +154,7 @@ export default {
         </div>
         <FieldCombinedBaseAmount
             v-if="amount !== false"
+            v-bind="attrs.input"
             :value="amount"
             :$value="$amount"
             :address-balance="useBalanceForMaxValue ? $store.state.balance : undefined"
@@ -149,7 +166,11 @@ export default {
             @input="$emit('update:amount', $event)"
             @input-native="$emit('input-native', $event)"
             @update:is-use-max="handleUseMax($event)"
-        />
+        >
+            <template v-slot:aside-caption>
+                <slot name="aside-caption"></slot>
+            </template>
+        </FieldCombinedBaseAmount>
 
         <FieldCombinedCoinDropdown
             :is-open.sync="isSelectVisible"
