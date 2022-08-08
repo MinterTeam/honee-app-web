@@ -55,12 +55,12 @@ export default {
 </script>
 
 <template>
-    <component :is="tag" class="estimation__item">
-        <div class="estimation__coin">
-            <img class="estimation__coin-icon" :src="$store.getters['explorer/getCoinIcon'](coin)" width="20" height="20" alt="" role="presentation">
-            <div class="estimation__coin-symbol">{{ coin }}</div>
+    <component :is="tag" class="information__item">
+        <div class="information__coin">
+            <img class="information__coin-icon" :src="$store.getters['explorer/getCoinIcon'](coin)" width="20" height="20" alt="" role="presentation">
+            <div class="information__coin-symbol">{{ coin }}</div>
         </div>
-        <div class="estimation__value">
+        <div class="information__value">
             <span class="u-text-muted" v-if="amountUsd">(${{ pretty(amountUsd) }})</span>
             <span v-if="format === $options.FORMAT_TYPE.EXACT">{{ prettyExact(amount) }}</span>
             <span v-else :title="prettyExact(amount)">

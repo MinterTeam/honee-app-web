@@ -222,12 +222,12 @@ export default {
             </template>
 
             <template v-slot:confirm-modal-body>
-                <div class="estimation form-row">
-                    <h3 class="estimation__title">{{ $td('You unbond', 'form.delegation-unbond-confirm-amount') }}</h3>
+                <div class="information form-row">
+                    <h3 class="information__title">{{ $td('You unbond', 'form.delegation-unbond-confirm-amount') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="form.stake" format="exact"/>
 
-                    <h3 class="estimation__title">{{ $td('From the masternode', 'form.delegation-unbond-confirm-address') }}</h3>
-                    <div class="estimation__item estimation__item--content u-text-wrap">
+                    <h3 class="information__title">{{ $td('From the masternode', 'form.delegation-unbond-confirm-address') }}</h3>
+                    <div class="information__item information__item--content u-text-wrap">
                         {{ validatorFullName }}
                     </div>
                 </div>

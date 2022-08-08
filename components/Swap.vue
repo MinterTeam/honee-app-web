@@ -449,7 +449,7 @@ export function getTxType({isPool, isSelling, isSellAll}) {
                 <span class="form-field__error" v-else-if="$v.form.buyAmount.$dirty && !$v.form.buyAmount.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
             </div>
 
-            <div class="estimation form-row form__error u-hidden-empty" v-if="isEstimationErrorVisible">
+            <div class="information form-row form__error u-hidden-empty" v-if="isEstimationErrorVisible">
                 <template v-if="($v.minimumValueToBuy.$dirty && !$v.minimumValueToBuy.required) || ($v.maximumValueToSell.$dirty && !$v.maximumValueToSell.required)">
                     {{ $td('Estimation error', 'form.estimation-error') }}: {{ $td('Can’t calculate swap limits', 'form.estimation-error-limit-required') }}
                 </template>
@@ -461,25 +461,25 @@ export function getTxType({isPool, isSelling, isSellAll}) {
                 </template>
             </div>
 
-            <div class="estimation form-row" v-else-if="params.coinToSell || params.coinToBuy">
+            <div class="information form-row" v-else-if="params.coinToSell || params.coinToBuy">
                 <template v-if="params.coinToSell">
-                    <h3 class="estimation__title">{{ $td('You spend approximately', 'form.swap-confirm-spend-estimation') }}</h3>
-                    <div class="estimation__item">
-                        <div class="estimation__coin">
-                            <img class="estimation__coin-icon" :src="$store.getters['explorer/getCoinIcon'](form.coinFrom)" width="20" height="20" alt="" role="presentation">
-                            <div class="estimation__coin-symbol">{{ form.coinFrom }}</div>
+                    <h3 class="information__title">{{ $td('You spend approximately', 'form.swap-confirm-spend-estimation') }}</h3>
+                    <div class="information__item">
+                        <div class="information__coin">
+                            <img class="information__coin-icon" :src="$store.getters['explorer/getCoinIcon'](form.coinFrom)" width="20" height="20" alt="" role="presentation">
+                            <div class="information__coin-symbol">{{ form.coinFrom }}</div>
                         </div>
-                        <div class="estimation__value">≈{{ pretty(form.sellAmount || 0) }}</div>
+                        <div class="information__value">≈{{ pretty(form.sellAmount || 0) }}</div>
                     </div>
                 </template>
                 <template v-if="params.coinToBuy">
-                    <h3 class="estimation__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
-                    <div class="estimation__item">
-                        <div class="estimation__coin">
-                            <img class="estimation__coin-icon" :src="$store.getters['explorer/getCoinIcon'](form.coinTo)" width="20" height="20" alt="" role="presentation">
-                            <div class="estimation__coin-symbol">{{ form.coinTo }}</div>
+                    <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
+                    <div class="information__item">
+                        <div class="information__coin">
+                            <img class="information__coin-icon" :src="$store.getters['explorer/getCoinIcon'](form.coinTo)" width="20" height="20" alt="" role="presentation">
+                            <div class="information__coin-symbol">{{ form.coinTo }}</div>
                         </div>
-                        <div class="estimation__value">≈{{ pretty(form.buyAmount || 0) }}</div>
+                        <div class="information__value">≈{{ pretty(form.buyAmount || 0) }}</div>
                     </div>
                 </template>
             </div>
@@ -502,37 +502,37 @@ export function getTxType({isPool, isSelling, isSellAll}) {
             <h2 class="u-h3 u-mb-10">
                 {{ $td('Confirm swap', 'form.swap-confirm') }}
             </h2>
-            <div class="estimation form-row">
+            <div class="information form-row">
                 <template v-if="isSelling">
-                    <h3 class="estimation__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
+                    <h3 class="information__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
                     <BaseAmountEstimation :coin="form.coinFrom" :amount="form.sellAmount" format="exact"/>
 
-                    <h3 class="estimation__title">{{ $td('You will get approximately', 'form.swap-confirm-receive-estimation') }} *</h3>
+                    <h3 class="information__title">{{ $td('You will get approximately', 'form.swap-confirm-receive-estimation') }} *</h3>
                     <BaseAmountEstimation :coin="form.coinTo" :amount="form.buyAmount" format="approx"/>
                     <!--
                     <span class="u-text-muted u-display-ib">(min: {{ prettyExact(txData.minimumValueToBuy) }})</span>
                     -->
                 </template>
                 <template v-else>
-                    <h3 class="estimation__title">{{ $td('You will pay approximately', 'form.swap-confirm-pay-estimation') }} *</h3>
+                    <h3 class="information__title">{{ $td('You will pay approximately', 'form.swap-confirm-pay-estimation') }} *</h3>
                     <BaseAmountEstimation :coin="form.coinFrom" :amount="form.sellAmount" format="approx"/>
                     <!--
                     <span class="u-text-muted u-display-ib">(max: {{ prettyExact(txData.maximumValueToSell) }})</span>
                     -->
 
-                    <h3 class="estimation__title">{{ $td('You will get', 'form.you-will-get') }}</h3>
+                    <h3 class="information__title">{{ $td('You will get', 'form.you-will-get') }}</h3>
                     <BaseAmountEstimation :coin="form.coinTo" :amount="form.buyAmount" format="exact"/>
                 </template>
 
                 <!--
-                <h3 class="estimation__title">{{ $td('Rate of', 'form.rate') }} {{ form.coinFrom }}</h3>
+                <h3 class="information__title">{{ $td('Rate of', 'form.rate') }} {{ form.coinFrom }}</h3>
                 <BaseAmountEstimation :coin="form.coinTo" :amount="form.buyAmount / form.sellAmount"/>
 
-                <h3 class="estimation__title">{{ $td('Rate of', 'form.rate') }} {{ form.coinTo }}</h3>
+                <h3 class="information__title">{{ $td('Rate of', 'form.rate') }} {{ form.coinTo }}</h3>
                 <BaseAmountEstimation :coin="form.coinFrom" :amount="form.sellAmount / form.buyAmount"/>
 
-                <h3 class="estimation__title">{{ $td('Swap type', 'form.swap-type') }}</h3>
-                <div class="estimation__item">
+                <h3 class="information__title">{{ $td('Swap type', 'form.swap-type') }}</h3>
+                <div class="information__item">
                     <template v-if="isPool">
                         Pools:
                         {{ estimationRoute ? estimationRoute.map((coin) => coin.symbol).join(' > ') : form.coinFrom + ' > ' + form.coinTo }}
@@ -540,7 +540,7 @@ export function getTxType({isPool, isSelling, isSellAll}) {
                     <template v-else>{{ $td('Reserves', 'form.reserves') }}</template>
                 </div>
 
-                <h3 class="estimation__title">{{ $td('Transaction fee', 'form.tx-fee') }}</h3>
+                <h3 class="information__title">{{ $td('Transaction fee', 'form.tx-fee') }}</h3>
                 <BaseAmountEstimation :coin="fee.coinSymbol" :amount="fee.value" :exact="true"/>
 
                 <div class="u-mt-10 u-fw-700" v-if="fee.isHighFee"><span class="u-emoji">⚠️</span> {{ $td('Transaction requires high fee.', 'form.tx-fee-high') }}</div>

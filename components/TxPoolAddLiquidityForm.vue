@@ -292,11 +292,11 @@ export default {
         </template>
 
         <template v-slot:confirm-modal-body>
-            <div class="estimation form-row">
-                <h3 class="estimation__title">{{ $td('First coin', 'form.pool-coin0') }}</h3>
+            <div class="information form-row">
+                <h3 class="information__title">{{ $td('First coin', 'form.pool-coin0') }}</h3>
                 <BaseAmountEstimation :coin="form.coin0" :amount="form.volume0" format="exact"/>
 
-                <h3 class="estimation__title">{{ $td('Second coin', 'form.pool-coin1') }}</h3>
+                <h3 class="information__title">{{ $td('Second coin', 'form.pool-coin1') }}</h3>
                 <BaseAmountEstimation :coin="form.coin1" :amount="formAmount1" format="approx"/>
                 <!--
                 <span class="u-text-muted">({{ maximumVolume1 }} maximum)</span>

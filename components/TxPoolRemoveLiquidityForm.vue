@@ -337,17 +337,17 @@ export default {
             </div>
             <div class="form-row" v-if="form.coin0 && form.coin1">
                 <span class="form__error" v-if="$v.isPoolLoaded.$dirty && !$v.isPoolLoaded.success">{{ $td('Provider’s liquidity not found for selected pair', 'form.pool-remove-liquidity-error-pool') }}</span>
-                <div class="estimation u-mt-10">
-                    <h3 class="estimation__title">{{ $td('You return', 'form.you-return') }}</h3>
-                    <div class="estimation__item">
-                        <div class="estimation__coin">
-                            <img class="estimation__coin-icon" src="/img/icon-coin-lp.svg" width="20" height="20" alt="" role="presentation">
-                            <div class="estimation__coin-symbol">{{ $td('LP tokens', 'form.lp-tokens') }}</div>
+                <div class="information u-mt-10">
+                    <h3 class="information__title">{{ $td('You return', 'form.you-return') }}</h3>
+                    <div class="information__item">
+                        <div class="information__coin">
+                            <img class="information__coin-icon" src="/img/icon-coin-lp.svg" width="20" height="20" alt="" role="presentation">
+                            <div class="information__coin-symbol">{{ $td('LP tokens', 'form.lp-tokens') }}</div>
                         </div>
-                        <div class="estimation__value">{{ pretty(form.liquidity || 0) }}</div>
+                        <div class="information__value">{{ pretty(form.liquidity || 0) }}</div>
                     </div>
 
-                    <h3 class="estimation__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
+                    <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                     <BaseAmountEstimation :coin="form.coin0" :amount="formAmount0" format="approx"/>
                     <BaseAmountEstimation :coin="form.coin1" :amount="formAmount1" format="approx"/>
                 </div>
@@ -366,17 +366,17 @@ export default {
         </template>
 
         <template v-slot:confirm-modal-body>
-            <div class="estimation form-row">
-                <h3 class="estimation__title">{{ $td('You return', 'form.you-return') }}</h3>
-                <div class="estimation__item">
-                    <div class="estimation__coin">
-                        <img class="estimation__coin-icon" src="/img/icon-coin-lp.svg" width="20" height="20" alt="" role="presentation">
-                        <div class="estimation__coin-symbol">{{ $td('LP tokens', 'form.lp-tokens') }}</div>
+            <div class="information form-row">
+                <h3 class="information__title">{{ $td('You return', 'form.you-return') }}</h3>
+                <div class="information__item">
+                    <div class="information__coin">
+                        <img class="information__coin-icon" src="/img/icon-coin-lp.svg" width="20" height="20" alt="" role="presentation">
+                        <div class="information__coin-symbol">{{ $td('LP tokens', 'form.lp-tokens') }}</div>
                     </div>
-                    <div class="estimation__value">{{ prettyExact(form.liquidity || 0) }}</div>
+                    <div class="information__value">{{ prettyExact(form.liquidity || 0) }}</div>
                 </div>
 
-                <h3 class="estimation__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
+                <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                 <BaseAmountEstimation :coin="form.coin0" :amount="formAmount0" format="approx"/>
                 <BaseAmountEstimation :coin="form.coin1" :amount="formAmount1" format="approx"/>
             </div>
