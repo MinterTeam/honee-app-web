@@ -17,6 +17,7 @@
     "lint:fix": "eslint --ext .js,.vue --ignore-path .gitignore . --fix",
     "lint:staged": "eslint $(git diff --name-only HEAD --diff-filter=d | grep -E '\\.(js|vue)$' | xargs) --ignore-path .gitignore",
     "lint:staged-fix": "eslint $(git diff --name-only HEAD --diff-filter=d | grep -E '\\.(js|vue)$' | xargs) --ignore-path .gitignore --fix",
+    "swagger:portfolio": "curl 'https://api.swaggerhub.com/apis/KLIM0VSERGEY/honee_portfolio' |  ./node_modules/node-jq/bin/jq '.apis|last|.properties[0].url' | xargs -I {} ./node_modules/.bin/swagger-typescript-api -p '{}' --no-client -o api -n portfolio-models.d.ts",
     "precommit": "echo 'Pre-commit checks...' && npm run lint:staged",
     "test": "node --experimental-vm-modules -r dotenv/config node_modules/.bin/jest"
   },
@@ -105,9 +106,11 @@
     "jest": "^28.1.3",
     "less-loader": "^7",
     "minter-js-hub": "^0.0.6",
+    "node-jq": "^2.3.3",
     "postcss-normalize": "^10.0.1",
     "postcss-preset-env": "^7.7.2",
-    "pre-commit": "^1.2.2"
+    "pre-commit": "^1.2.2",
+    "swagger-typescript-api": "^9.3.1"
   },
   "browserslist": [
     "> 0.5%",
