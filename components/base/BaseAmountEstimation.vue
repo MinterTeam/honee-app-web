@@ -31,12 +31,21 @@ export default {
             type: Boolean,
             default: false,
         },
+        // amount unit, e.g. '%'
+        unit: {
+            type: String,
+            default: '',
+        },
         // baseCoinAmount: {
         //     type: [String, Number],
         // },
     },
     computed: {
         amountUsd() {
+            // don't calculate usd price for units other than coin itself
+            if (this.unit) {
+                return 0;
+            }
             let baseCoinAmount;
             if (this.coin === this.$store.getters.BASE_COIN && this.amount > 0) {
                 baseCoinAmount = this.amount;
@@ -66,7 +75,8 @@ export default {
             <span v-else :title="prettyExact(amount)">
                 <template v-if="format === $options.FORMAT_TYPE.APPROX">≈</template>
                 {{ pretty(amount) }}
-            </span>
+            </span><!--
+         -->{{ unit }}
             <!--
             <span class="u-display-ib" v-if="baseCoinAmount && coin !== $store.getters.BASE_COIN">({{ pretty(baseCoinAmount) }} {{ $store.getters.BASE_COIN }})</span>
             -->

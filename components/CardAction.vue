@@ -267,7 +267,7 @@ export function clearActionQuery(url) {
                 :override-value="overriddenStatsValue"
             />
             <component
-                class="card card--light-grey card__content card__content--pop"
+                class="card card--pop card--light-grey card__content"
                 :is="action.component"
                 :action="action"
                 :params="action.params"
