@@ -85,7 +85,10 @@ export default {
             if (!this.$refs.input.maskRef) {
                 return;
             }
-            this.$refs.input.maskRef.typedValue = value;
+            // updating typed value not work anymore for some reason
+            // this.$refs.input.maskRef.typedValue = value;
+            this.$refs.input.value = value;
+            this.$refs.input.maskRef._onChange();
             const maskedValue = this.$refs.input.maskRef._value;
             const cursorPos = maskedValue.length;
             this.$refs.input.maskRef._selection = {start: cursorPos, end: cursorPos};

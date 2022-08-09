@@ -57,7 +57,7 @@ export default {
 
 
 <template>
-    <div>
+    <div class="u-container--large">
         <AddressAssets/>
 
         <div class="u-mt-25" v-for="(categoryCards, categorySlug) in cardList" :key="categorySlug">

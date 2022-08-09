@@ -238,7 +238,7 @@ export default {
         'submit-confirm-button': 'Подтвердить',
         'submit-cancel-button': 'Отменить',
         'success-title': 'Успех',
-        'success-desc': 'Монеты были успешно обменяны',
+        'swap-success-desc': 'Монеты были успешно обменяны',
         'success-view-button': 'Смотреть транзакцию',
         'success-close-button': 'Закрыть',
 

@@ -29,7 +29,7 @@ export default {
     <div>
         <TheHeader/>
 
-        <nuxt class="u-section u-container u-container--large"/>
+        <nuxt class="u-section u-container"/>
 
         <TheFooter/>
 

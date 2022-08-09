@@ -14,9 +14,9 @@ import {pretty, prettyExact, prettyPrecise, decreasePrecisionSignificant, getExp
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import useFee from '~/composables/use-fee.js';
 import useEstimateSwap from '~/composables/use-estimate-swap.js';
-import BaseAmountEstimation from '@/components/base/BaseAmountEstimation.vue';
-import BaseLoader from '@/components/base/BaseLoader.vue';
-import Modal from '@/components/base/Modal.vue';
+import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
+import BaseLoader from '~/components/base/BaseLoader.vue';
+import Modal from '~/components/base/Modal.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 
 const isValidAmount = withParams({type: 'validAmount'}, (value) => {
@@ -418,6 +418,7 @@ export function getTxType({isPool, isSelling, isSellAll}) {
                     @blur="handleInputBlur()"
                 />
                 <span class="form-field__error" v-if="$v.form.coinFrom.$dirty && !$v.form.coinFrom.required">{{ $td('Enter coin', 'form.coin-error-required') }}</span>
+                <span class="form-field__error" v-else-if="$v.form.coinFrom.$dirty && !$v.form.coinFrom.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
                 <span class="form-field__error" v-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
                 <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
                 <span class="form-field__error" v-else-if="$v.form.sellAmount.$dirty && !$v.form.sellAmount.maxValue">{{ $td('Not enough coins', 'form.not-enough-coins') }}</span>
@@ -567,7 +568,7 @@ export function getTxType({isPool, isSelling, isSellAll}) {
         <!-- success modal -->
         <Modal :isOpen.sync="isSuccessModalVisible" @modal-close="$emit('success-modal-close')">
             <h2 class="u-h3 u-mb-10">{{ $td('Success', 'form.success-title') }}</h2>
-            <p class="u-mb-10">{{ $td('Coins successfully exchanged!', 'form.success-desc') }}</p>
+            <p class="u-mb-10">{{ $td('Coins successfully exchanged!', 'form.swap-success-desc') }}</p>
 
             <a class="button button--main button--full" :href="getExplorerTxUrl(serverSuccess.hash)" target="_blank" v-if="serverSuccess">
                 {{ $td('View transaction', 'form.success-view-button') }}
