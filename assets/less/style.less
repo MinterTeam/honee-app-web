@@ -132,8 +132,15 @@
 }
 .card--pop {
     margin-top: 12px;
-    & > .card__content:first-child, &&.card__content {padding-top: 0;}
-    & .form-row:first-child .h-field {margin-top: -12px;}
+    & > .card__content:first-child, &&.card__content {
+        padding-top: 0;
+        & .h-field:first-child,
+        & .information:first-child,
+        & .form-row:first-child .h-field,
+        & .form-row:first-child .information {
+            margin-top: -12px;
+        }
+    }
 }
 .card--invert {background: @c-black; color: #fff;}
 .card--light-grey {
@@ -200,7 +207,7 @@
 }
 .header__container {display: flex; align-items: center; justify-content: space-between; top: 0; height: 100%;}
 .header__logo {margin-right: 24px; display: flex; align-items: center; width: 40%; flex-grow: 2;}
-.header__image-logo {line-height: 0;}
+.header__image-logo {vertical-align: top;}
 .header__image-back {margin-right: 24px;}
 .header__icon {vertical-align: top;}
 .header__logo-text {font-size: 26px; font-weight: 700; font-family: @heading-font-family; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
@@ -374,8 +381,9 @@
 
 
 
-.information {padding: 12px 16px; background: #d7def6; border: 1px dashed #707ba3; border-radius: 12px; font-size: 16px; line-height: 20px; font-weight: 500;}
+.information {padding: (@h-field-vertical-padding - 1px) (@h-field-horizontal-padding - 1px); background: #d7def6; border: 1px dashed #707ba3; border-radius: 12px; font-size: 16px; line-height: 20px; font-weight: 500;}
 .information--warning {background: @c-yellow-light; border-color: @c-yolk;}
+.information--field {background: #fff; border-color: transparent;}
 .information__title {
     font-weight: 700;font-size: 10px;line-height: 12px;letter-spacing: 1px;text-transform: uppercase; color: @c-black-light;
     &:not(:first-child) {margin-top: 16px;}

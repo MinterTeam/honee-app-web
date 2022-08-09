@@ -41,9 +41,8 @@ export default {
     },
     data() {
         const initialCoins = this.portfolio?.coins.map((item) => {
-            const symbol = this.$store.state.explorer.coinList.find((coin) => coin.id === item.id)?.symbol;
             return {
-                symbol,
+                symbol: this.$store.state.explorer.coinMapId[item.id]?.symbol,
                 allocation: item.allocation,
             };
         });

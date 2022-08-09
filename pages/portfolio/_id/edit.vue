@@ -6,13 +6,17 @@ export default {
     components: {
         PortfolioManageForm,
     },
-    asyncData({route}) {
+    asyncData({route, error}) {
+        if (!route.params.id) {
+            return error({status: 404, message: 'Page not found'});
+        }
         return getPortfolio(route.params.id)
             .then((portfolio) => {
                 return {
                     portfolio,
                 };
-            });
+            })
+            .catch((resError) => error(resError));
     },
     data() {
         return {
