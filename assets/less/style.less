@@ -134,8 +134,8 @@
     margin-top: 12px;
     & > .card__content:first-child, &&.card__content {
         padding-top: 0;
-        & .h-field:first-child,
-        & .information:first-child,
+        & > .h-field:first-child,
+        & > .information:first-child,
         & .form-row:first-child .h-field,
         & .form-row:first-child .information {
             margin-top: -12px;
@@ -180,6 +180,12 @@
 .card__action-description {.u-text-medium(); margin-top: 16px; margin-bottom: auto;}
 .card__action-tag-list {display: flex; margin-top: (24px - 8px); margin-left: -8px; flex-wrap: wrap;}
 .card__action-tag {margin-left: 8px; margin-top: 8px; padding: 2px 8px; line-height: 20px; background: rgba(255,255,255, 0.3); border-radius: 6px; font-weight: 700;}
+
+.card__token-list {display: flex;}
+.card__token-logo {
+    border-radius: 50%; border: 1px solid @c-white-light; width: 30px; height: 30px;
+    &+& {margin-left: -6px;}
+}
 
 @media (min-width: @breakpoint-medium-up) {
     .card__content {

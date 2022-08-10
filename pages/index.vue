@@ -2,6 +2,7 @@
 import cardList from '~/content/card-list.js';
 import Card from '~/components/Card.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
+import PortfolioList from '~/components/PortfolioList.vue';
 
 const BASE_CARD = {
     DELEGATION: 'delegation',
@@ -16,6 +17,7 @@ export default {
     components: {
         Card,
         AddressAssets,
+        PortfolioList,
     },
     fetch() {
         return Promise.all([
@@ -59,6 +61,8 @@ export default {
 <template>
     <div class="u-container--large">
         <AddressAssets/>
+
+        <PortfolioList class="u-mt-25"/>
 
         <div class="u-mt-25" v-for="(categoryCards, categorySlug) in cardList" :key="categorySlug">
             <h2 class="dashboard__category-title u-mb-15">

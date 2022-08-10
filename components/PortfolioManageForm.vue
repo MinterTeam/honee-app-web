@@ -281,6 +281,9 @@ function getEmptyCoin() {
             <div class="form-row form-field__error u-text-center" v-if="$v.allocationSum.$error">
                 Allocation sum must be 100%
             </div>
+            <div class="form-row form-field__error u-text-center" v-else-if="serverError">
+                {{serverError }}
+            </div>
             <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the disclaimer in the footer.', 'form.read-understood') }}</p>
         </form>
 

@@ -22,6 +22,7 @@ export const getters = {
     },
     getCoinIcon(state, getters, rootState, rootGetters) {
         return function(coinSymbol) {
+            coinSymbol = getters.getCoinSymbol(coinSymbol);
             // BIP
             if (coinSymbol.toUpperCase() === 'BIP') {
                 return `${BASE_URL_PREFIX}/img/icon-coin-bip.svg`;
@@ -65,9 +66,8 @@ export const getters = {
     getCoinSymbol(state) {
         return function(coinId) {
             if (isCoinId(coinId)) {
-                coinId = Number(coinId);
-                const coin = state.coinList.find((coin) => Number(coin.id) === coinId);
-                return coin.symbol;
+                const coin = state.coinMapId[coinId];
+                return coin?.symbol;
             } else {
                 return coinId;
             }

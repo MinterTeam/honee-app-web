@@ -55,3 +55,20 @@ export function getPortfolio(id) {
     return instance.get(`portfolio/${id}`)
         .then((response) => response.data);
 }
+
+/**
+ * @param {PaginationParams} [params]
+ * @return {Promise<PortfolioList>}
+ */
+export function getPortfolioList(params) {
+    return instance.get(`portfolio`, {
+            params,
+        })
+        .then((response) => response.data);
+}
+
+/**
+ * @typedef {object} PaginationParams
+ * @property {number} [page]
+ * @property {number} [limit]
+ */
