@@ -12,6 +12,9 @@ const AUTH_HEADER_SCHEMA = 'secp256k1-signature';
 export default function addEcdsaAuthInterceptor(instance) {
     instance.interceptors.request.use(function(request) {
         if (request.ecdsaAuth?.privateKey) {
+            // timestamp used as nonce to prevent replay attack
+            request.data.timestamp = (new Date()).toISOString();
+
             const {privateKey, includePublicKey} = request.ecdsaAuth;
             request.headers ||= {};
             request.headers.Authorization = `${AUTH_HEADER_SCHEMA} ${signRequest(request.data, privateKey, includePublicKey)}`;
