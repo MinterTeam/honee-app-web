@@ -128,6 +128,7 @@ export default {
         const {
             estimation,
             estimationRoute,
+            estimationTxDataCoinsRoute,
             estimationError,
             isEstimationWaiting,
             handleInputBlur,
@@ -168,6 +169,7 @@ export default {
         return {
             estimation,
             estimationRoute,
+            estimationTxDataCoinsRoute,
             estimationError,
             isEstimationWaiting,
             handleInputBlur,
@@ -676,9 +678,7 @@ export default {
                     return {
                         type: isSellAll ? TX_TYPE.SELL_ALL_SWAP_POOL : TX_TYPE.SELL_SWAP_POOL,
                         data: {
-                            coins: this.estimationRoute
-                                ? this.estimationRoute.map((coin) => coin.id)
-                                : [this.externalTokenSymbol, this.form.coinToGet],
+                            coins: this.estimationTxDataCoinsRoute,
                             valueToSell: amount,
                             minimumValueToBuy: 0,
                         },

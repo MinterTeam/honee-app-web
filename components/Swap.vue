@@ -7,7 +7,6 @@ import maxValue from 'vuelidate/src/validators/maxValue';
 import minValue from 'vuelidate/src/validators/minValue';
 import withParams from 'vuelidate/src/withParams';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import {ESTIMATE_SWAP_TYPE} from 'minter-js-sdk/src/variables.js';
 import {postTx} from '~/api/gate.js';
 import {getErrorText} from "~/assets/server-error";
 import {pretty, prettyExact, prettyPrecise, decreasePrecisionSignificant, getExplorerTxUrl} from '~/assets/utils.js';
@@ -24,7 +23,6 @@ const isValidAmount = withParams({type: 'validAmount'}, (value) => {
 });
 
 export default {
-    ESTIMATE_SWAP_TYPE,
     components: {
         BaseAmountEstimation,
         BaseLoader,
@@ -49,8 +47,9 @@ export default {
         const {fee, feeProps} = useFee();
         const {
             estimation,
-            estimationType,
-            estimationRoute,
+            isEstimationTypePool,
+            estimationTxDataCoinsRoute,
+            estimationTxDataPartial,
             estimationError,
             isEstimationWaiting,
             handleInputBlur,
@@ -65,8 +64,9 @@ export default {
             feeProps,
 
             estimation,
-            estimationType,
-            estimationRoute,
+            isEstimationTypePool,
+            estimationTxDataCoinsRoute,
+            estimationTxDataPartial,
             estimationError,
             isEstimationWaiting,
             handleInputBlur,
@@ -130,9 +130,6 @@ export default {
         };
     },
     computed: {
-        isPool() {
-            return this.estimationType === ESTIMATE_SWAP_TYPE.POOL;
-        },
         isSellAll() {
             if (!this.isSelling) {
                 return false;
@@ -154,19 +151,10 @@ export default {
                 return false;
             }
         },
-        txDataCoins() {
-            return this.estimationRoute
-                ? this.estimationRoute.map((coin) => coin.id)
-                : [this.form.coinFrom, this.form.coinTo];
-        },
         txData() {
             return {
-                ...(!this.isPool ? {
-                    coinToSell: this.form.coinFrom,
-                    coinToBuy: this.form.coinTo,
-                } : {
-                    coins: this.txDataCoins,
-                }),
+                // `coins` or `coinToSell` + `coinToBuy`
+                ...this.estimationTxDataPartial,
                 // sell
                 valueToSell: this.form.sellAmount,
                 minimumValueToBuy: this.minimumValueToBuy,
@@ -209,11 +197,11 @@ export default {
                 txParams: {
                     // don't use `this.txType`, it may lead to infinite loop
                     // ignore `isSellAll` to get `sell` fee (assume sell and sell-all txs consume equal fees)
-                    type: getTxType({isPool: this.isPool, isSelling: this.isSelling, isSellAll: false}),
+                    type: getTxType({isPool: this.isEstimationTypePool, isSelling: this.isSelling, isSellAll: false}),
                     data: {
                         // pass only fields that affect fee
                         coinToSell: this.form.coinFrom,
-                        coins: this.txDataCoins,
+                        coins: this.estimationTxDataCoinsRoute,
                     },
                 },
                 baseCoinAmount: this.$store.getters.baseCoin && this.$store.getters.baseCoin.amount,
@@ -334,7 +322,7 @@ export default {
             this.serverError = '';
             this.serverSuccess = '';
             postTx({
-                type: getTxType({isPool: this.isPool, isSelling: this.isSelling, isSellAll: this.isSellAll}),
+                type: getTxType({isPool: this.isEstimationTypePool, isSelling: this.isSelling, isSellAll: this.isSellAll}),
                 data: this.txData,
                 gasCoin: this.fee.coin,
             }, {privateKey: this.$store.getters.privateKey})

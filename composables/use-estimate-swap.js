@@ -1,4 +1,5 @@
 import {reactive, computed, toRefs} from '@vue/composition-api';
+import {ESTIMATE_SWAP_TYPE} from 'minter-js-sdk/src/variables.js';
 import {estimateCoinBuy, estimateCoinSell} from '~/api/gate.js';
 import debounce from '~/assets/debounce-promise.js';
 import {getErrorText} from '~/assets/server-error.js';
@@ -11,7 +12,11 @@ export default function useEstimateSwap({idPreventConcurrency, $td} = {}) {
     const state = reactive({
         estimation: null,
         estimationType: null,
+        isEstimationTypePool: false,
+        isEstimationTypeBancor: false,
         estimationRoute: null,
+        estimationTxDataCoinsRoute: [],
+        estimationTxDataPartial: {},
         isEstimationLoading: false,
         estimationError: '',
         isEstimationPending: false,
@@ -70,7 +75,18 @@ export default function useEstimateSwap({idPreventConcurrency, $td} = {}) {
                     state.estimation = result.will_pay;
                 }
                 state.estimationType = result.swap_from;
+                state.isEstimationTypePool = result.swap_from === ESTIMATE_SWAP_TYPE.POOL;
+                state.isEstimationTypeBancor = result.swap_from === ESTIMATE_SWAP_TYPE.BANCOR;
                 state.estimationRoute = result.route;
+                state.estimationTxDataCoinsRoute = result.route
+                    ? result.route.map((coin) => coin.id)
+                    : [coinToSell, coinToBuy];
+                state.estimationTxDataPartial = state.isEstimationTypePool ? {
+                    coins: state.estimationTxDataCoinsRoute,
+                } : {
+                    coinToSell,
+                    coinToBuy,
+                };
                 state.isEstimationLoading = false;
 
                 return result;

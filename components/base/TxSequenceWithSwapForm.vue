@@ -2,7 +2,6 @@
 import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required.js';
 import minLength from 'vuelidate/src/validators/minLength.js';
-import {ESTIMATE_SWAP_TYPE} from 'minter-js-sdk/src/variables.js';
 import {convertFromPip} from 'minterjs-util/src/converter.js';
 import useEstimateSwap from '~/composables/use-estimate-swap.js';
 import Big from '~/assets/big.js';
@@ -66,8 +65,8 @@ export default {
     setup(props, context) {
         const {
             estimation,
-            estimationType,
-            estimationRoute,
+            isEstimationTypePool,
+            estimationTxDataPartial,
             estimationError,
             isEstimationWaiting,
             handleInputBlur,
@@ -82,8 +81,8 @@ export default {
             // feeProps,
 
             estimation,
-            estimationType,
-            estimationRoute,
+            isEstimationTypePool,
+            estimationTxDataPartial,
             estimationError,
             isEstimationWaiting,
             handleInputBlur,
@@ -119,9 +118,6 @@ export default {
         };
     },
     computed: {
-        isPool() {
-            return this.estimationType === ESTIMATE_SWAP_TYPE.POOL;
-        },
         isSellAll() {
             // not use max
             if (!this.isUseMax) {
@@ -140,19 +136,9 @@ export default {
                 return false;
             }
         },
-        txDataCoins() {
-            return this.estimationRoute
-                ? this.estimationRoute.map((coin) => coin.id)
-                : [this.coinToSell, this.coinToBuy];
-        },
         txData() {
             return {
-                ...(!this.isPool ? {
-                    coinToSell: this.coinToSell,
-                    coinToBuy: this.coinToBuy,
-                } : {
-                    coins: this.txDataCoins,
-                }),
+                ...this.estimationTxDataPartial,
                 valueToSell: this.valueToSell,
                 minimumValueToBuy: this.minimumValueToBuy,
             };
@@ -193,7 +179,7 @@ export default {
             return [
                 {
                     txParams: {
-                        type: getTxType({isSelling: true, isPool: this.isPool, isSellAll: this.isSellAll}),
+                        type: getTxType({isSelling: true, isPool: this.isEstimationTypePool, isSellAll: this.isSellAll}),
                         data: this.txData,
                     },
                     /**
