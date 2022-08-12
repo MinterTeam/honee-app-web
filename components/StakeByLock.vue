@@ -76,6 +76,7 @@ export default {
                 coin: this.$route.query.coin || '',
                 duration: 0,
             },
+            isUseMax: false,
             /** @type {StakingProgram|null} */
             stakingProgram: null,
             latestBlockHeight: 0,
@@ -233,6 +234,7 @@ function yearToBlock(year) {
             :coin-to-sell="form.coin"
             :coin-to-buy="stakingProgram.lockCoin.symbol"
             :value-to-sell="form.value"
+            :is-use-max="isUseMax"
             :sequence-params="sequenceParams"
             :v$sequence-params="$v.form"
             :before-post-sequence="fetchLatestBlock"
@@ -252,6 +254,7 @@ function yearToBlock(year) {
                         :useBalanceForMaxValue="true"
                         :fee="fee.resultList[0]"
                         :label="$td('Amount', 'form.wallet-send-amount')"
+                        @update:is-use-max="isUseMax = $event"
                     />
                     <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.coin.$dirty && !$v.form.coin.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
