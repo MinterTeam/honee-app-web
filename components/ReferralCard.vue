@@ -18,7 +18,7 @@ export default {
             isLoading: false,
             isConfirmModalVisible: false,
             isSuccessModalVisible: false,
-            referralList: [],
+            referralList: null,
         };
     },
     computed: {
@@ -110,7 +110,7 @@ export default {
                 </div>
             </div>
 
-            <p class="u-text-medium u-mt-10">
+            <p class="u-text-medium u-mt-10" v-if="$store.state.referral.refId && referralList">
                 {{ $td(`You currently invited ${referralList.length} friends`, 'referral.invited-list') }}
             </p>
 
