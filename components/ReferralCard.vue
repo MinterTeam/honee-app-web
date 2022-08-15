@@ -1,13 +1,15 @@
 <script>
-import {setupReferralProgram} from '~/api/referral.js';
+import {setupReferralProgram, getReferralList} from '~/api/referral.js';
 import {REF_ID_QUERY} from '~/assets/variables.js';
-import BaseLoader from '~/components/base/BaseLoader.vue';
-import Modal from '~/components/base/Modal.vue';
 import {getErrorText} from '~/assets/server-error.js';
+import BaseLoader from '~/components/base/BaseLoader.vue';
+import BaseButtonCopyIcon from '~/components/base/BaseButtonCopyIcon.vue';
+import Modal from '~/components/base/Modal.vue';
 
 export default {
     components: {
         BaseLoader,
+        BaseButtonCopyIcon,
         Modal,
     },
     data() {
@@ -16,7 +18,22 @@ export default {
             isLoading: false,
             isConfirmModalVisible: false,
             isSuccessModalVisible: false,
+            referralList: [],
         };
+    },
+    computed: {
+        refUrl() {
+            return window.location.origin + this.$route.fullPath;
+        },
+    },
+    watch: {
+        isConfirmModalVisible: {
+            handler(newVal) {
+                if (newVal) {
+                    this.fetchReferralList();
+                }
+            },
+        },
     },
     methods: {
         setup(enable = true) {
@@ -45,6 +62,12 @@ export default {
                 .catch((error) => {
                     this.serverError = getErrorText(error);
                     this.isLoading = false;
+                });
+        },
+        fetchReferralList() {
+            getReferralList(this.$store.getters.address)
+                .then((list) => {
+                    this.referralList = list;
                 });
         },
     },
@@ -78,14 +101,28 @@ export default {
                 </template>
             </p>
 
-            <div class="form__error" v-if="serverError">{{ serverError }}</div>
+            <div class="h-field u-mt-15" v-if="$store.state.referral.refId">
+                <div class="h-field__content">
+                    <div class="h-field__input h-field__input--medium is-not-empty">{{ refUrl }}</div>
+                </div>
+                <div class="h-field__aside h-field__aside--with-icon">
+                    <BaseButtonCopyIcon class="" :copy-text="refUrl"/>
+                </div>
+            </div>
+
+            <p class="u-text-medium u-mt-10">
+                {{ $td(`You currently invited ${referralList.length} friends`, 'referral.invited-list') }}
+            </p>
+
+            <div class="form__error u-mt-15" v-if="serverError">{{ serverError }}</div>
 
             <button
                 type="button"
-                class="button button--full u-mt-15"
+                class="button button--full"
                 :class="[
                     isLoading ? 'is-loading' : '',
                     $store.state.referral.refId ? 'button--ghost-main' : 'button--main',
+                    serverError ? 'u-mt-10' : 'u-mt-15',
                 ]"
                 @click="setup(!$store.state.referral.refId)"
             >
@@ -109,14 +146,23 @@ export default {
             <template v-if="$store.state.referral.refId">
                 <img class="u-image u-mb-10" src="/img/icon-activated.svg" alt="" role="presentation" width="96" height="96">
                 <h2 class="u-h3 u-mb-05">{{ $td('Referral link activated', 'referral.success-title') }}</h2>
-                <p class="u-text-medium">{{ $td('To share, just copy the link from the address bar in your browser on any page of Honee App.', 'referral.success-description') }}</p>
+                <p class="u-mb-15">{{ $td('To share, just copy the link from the address bar in your browser on any page of Honee App.', 'referral.success-description') }}</p>
             </template>
             <template v-else>
                 <h2 class="u-h3 u-mb-05">{{ $td('Referral link deactivated', 'referral.success-deactivate-title') }}</h2>
-                <p class="">{{ $td('The referral link has been removed from the address bar in your browser. You can reactivate it at any time.', 'referral.success-deactivate-description') }}</p>
+                <p class="u-mb-15">{{ $td('The referral link has been removed from the address bar in your browser. You can reactivate it at any time.', 'referral.success-deactivate-description') }}</p>
             </template>
 
-            <button class="button button--ghost button--full u-mt-15" type="button" @click="isSuccessModalVisible = false">
+            <div class="h-field u-mb-10" v-if="$store.state.referral.refId">
+                <div class="h-field__content">
+                    <div class="h-field__input h-field__input--medium is-not-empty">{{ refUrl }}</div>
+                </div>
+                <div class="h-field__aside h-field__aside--with-icon">
+                    <BaseButtonCopyIcon class="" :copy-text="refUrl"/>
+                </div>
+            </div>
+
+            <button class="button button--ghost button--full" type="button" @click="isSuccessModalVisible = false">
                 {{ $td('Close', 'form.success-close-button') }}
             </button>
         </Modal>

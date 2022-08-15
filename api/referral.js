@@ -49,6 +49,18 @@ export function getRefId(address) {
 }
 
 /**
+ * @param {string} address
+ * @return {Promise<Array<string>>}
+ */
+export function getReferralList(address) {
+    if (!address) {
+        throw new Error('Address needed to get referral list');
+    }
+    return instance.get(`list/${address}/referrals`)
+        .then((response) => response.data.data);
+}
+
+/**
  * @param {string} refId
  * @param {string} privateKey
  * @return {Promise}
