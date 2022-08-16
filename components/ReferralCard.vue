@@ -97,7 +97,7 @@ export default {
                     </template>
                 </template>
                 <template v-else>
-                    {{ $td('Invite friends and get 10% of their BEE staking rewards. To share, just copy the link from the address bar in your browser on any page of Honee App.', 'referral.description-activated') }}
+                    {{ $td('Invite friends and get 10% of their BEE staking. To share, just copy the link below or from the address bar in your browser on any page of Honee App.', 'referral.description-activated') }}
                 </template>
             </p>
 
