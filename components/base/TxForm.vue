@@ -134,7 +134,7 @@ export default {
                     type: this.txType,
                     data: this.txData,
                 },
-                baseCoinAmount: this.$store.getters.baseCoin?.amount,
+                baseCoinAmount: this.$store.getters.baseCoinAamount,
                 fallbackToCoinToSpend: true,
             };
         },

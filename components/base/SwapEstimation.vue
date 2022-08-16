@@ -174,14 +174,7 @@ export default {
             return decreasePrecisionSignificant(this.estimation * slippage);
         },
         maxAmount() {
-            const selectedCoin = this.$store.state.balance.find((coin) => {
-                return coin.coin.symbol === this.coinToSell;
-            });
-            // coin not selected
-            if (!selectedCoin) {
-                return 0;
-            }
-            return selectedCoin.amount;
+            return this.$store.getters.getBalanceAmount(this.coinToSell);
         },
         maxAmountAfterFee() {
             const selectedCoin = this.$store.state.balance.find((coin) => {

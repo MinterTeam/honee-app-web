@@ -667,8 +667,7 @@ export default {
             return this.sendEthTx(txParams, loadingStage, true);
         },
         prepareMinterSwapParams(amount) {
-            const coinBalanceItem = this.$store.state.balance.find((item) => item.coin.symbol === this.externalTokenSymbol);
-            const balanceAmount = coinBalanceItem?.amount || 0;
+            const balanceAmount = this.$store.getters.getBalanceAmount(this.externalTokenSymbol);
             const smallAmount = DEPOSIT_COIN_DATA[this.externalTokenMainnetSymbol].smallAmount;
             // sell all externalTokenSymbol if user has no or very small amount of it
             const isSellAll = balanceAmount - amount < smallAmount;

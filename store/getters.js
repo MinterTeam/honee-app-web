@@ -49,11 +49,20 @@ export default {
         // stored avatar first, bc. it can be changed manually after uploading new
         return avatarByAddress;
     },
-    /** @type {BalanceItem} */
-    baseCoin(state) {
-        return state.balance.find((coinItem) => {
-            return coinItem.coin.symbol === COIN_NAME;
-        });
+    getBalanceAmount(state) {
+        return function(coinSymbol) {
+            const selectedBalanceItem = state.balance.find((balanceItem) => {
+                return balanceItem.coin.symbol === coinSymbol;
+            });
+            // coin not selected
+            if (!selectedBalanceItem) {
+                return 0;
+            }
+            return selectedBalanceItem.amount;
+        };
+    },
+    baseCoinAmount(state, getters) {
+        return getters.getBalanceAmount(COIN_NAME);
     },
     /**
      * @return {string}

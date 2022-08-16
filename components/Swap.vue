@@ -82,7 +82,7 @@ export default {
                         coins: this.txData.coins,
                     },
                 },
-                baseCoinAmount: this.$store.getters.baseCoin && this.$store.getters.baseCoin.amount,
+                baseCoinAmount: this.$store.getters.baseCoinAmount,
                 fallbackToCoinToSpend: true,
             };
         },

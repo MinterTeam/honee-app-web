@@ -89,7 +89,7 @@ export default {
                 txParamsList: Array.isArray(this.sequenceParams)
                     ? this.sequenceParams.map((item) => item.txParams)
                     : [this.sequenceParams.txParams],
-                baseCoinAmount: this.$store.getters.baseCoin?.amount,
+                baseCoinAmount: this.$store.getters.baseCoinAmount,
                 fallbackToCoinToSpend: true,
                 isLocked: this.isFormSending,
             };
