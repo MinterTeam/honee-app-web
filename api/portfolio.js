@@ -57,7 +57,7 @@ export function getPortfolio(id) {
 }
 
 /**
- * @param {PaginationParams} [params]
+ * @param {PaginationParams&{owner?: string}} [params]
  * @return {Promise<PortfolioList>}
  */
 export function getPortfolioList(params) {

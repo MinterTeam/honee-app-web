@@ -9,7 +9,7 @@ export default {
         };
     },
     fetch() {
-        return getPortfolioList()
+        return getPortfolioList({owner: this.$store.getters.address})
             .then((portfolioInfo) => {
                 this.portfolioList = portfolioInfo.list;
             });
@@ -21,11 +21,11 @@ export default {
 </script>
 
 <template>
-    <div v-if="portfolioList.length">
+    <div>
         <h2 class="dashboard__category-title u-mb-15">
-            {{ $td('Portfolios', `portfolio.list-title`) }}
+            {{ $td('My portfolios', `portfolio.my-list-title`) }}
         </h2>
-        <div class="u-grid u-grid--vertical-margin">
+        <div class="u-grid u-grid--vertical-margin" v-if="portfolioList.length && !$fetchState.pending">
             <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="portfolio in portfolioList" :key="portfolio.id">
                 <div class="card card--action card__content--small">
                     <div class="card__action-head">
