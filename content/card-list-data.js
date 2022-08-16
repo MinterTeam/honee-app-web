@@ -171,6 +171,20 @@ export default {
             },
             {
                 caption: 'Buy',
+                coin: 'CAWETH',
+                description: 'A Hunters Dream is a decentralized financial payment network that rebuilds the traditional payment stack on the blockchain.',
+                icon: 'CAWETH',
+                stats: {
+                },
+                tags: ['Exchange'],
+                action: '/swap/CAWETH',
+                ru: {
+                    description: 'A Hunters Dream — это децентрализованная финансовая платежная сеть, которая перестраивает традиционный платежный стек на блокчейне.',
+                    caption: 'Купить',
+                },
+            },
+            {
+                caption: 'Buy',
                 coin: 'SQD',
                 description: 'Buy a Minter-powered meme token brought to you by fans of a popular series Squid Game.',
                 icon: 'SQD',
