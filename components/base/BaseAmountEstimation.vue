@@ -1,5 +1,6 @@
 <script>
 import {pretty, prettyExact} from '~/assets/utils.js';
+import BaseLoader from '~/components/base/BaseLoader.vue';
 
 const FORMAT_TYPE = {
     PRETTY: 'pretty',
@@ -8,6 +9,7 @@ const FORMAT_TYPE = {
 };
 
 export default {
+    components: {BaseLoader},
     FORMAT_TYPE,
     props: {
         amount: {
@@ -39,6 +41,10 @@ export default {
         // baseCoinAmount: {
         //     type: [String, Number],
         // },
+        isLoading: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         amountUsd() {
@@ -70,16 +76,19 @@ export default {
             <div class="information__coin-symbol">{{ coin }}</div>
         </div>
         <div class="information__value">
-            <span class="u-text-muted" v-if="amountUsd">(${{ pretty(amountUsd) }})</span>
-            <span v-if="format === $options.FORMAT_TYPE.EXACT">{{ prettyExact(amount) }}</span>
-            <span v-else :title="prettyExact(amount)">
-                <template v-if="format === $options.FORMAT_TYPE.APPROX">≈</template>
-                {{ pretty(amount) }}
-            </span><!--
-         -->{{ unit }}
-            <!--
-            <span class="u-display-ib" v-if="baseCoinAmount && coin !== $store.getters.BASE_COIN">({{ pretty(baseCoinAmount) }} {{ $store.getters.BASE_COIN }})</span>
-            -->
+            <BaseLoader class="information__loader" :is-loading="isLoading"/>
+            <template v-if="!isLoading">
+                <span class="u-text-muted" v-if="amountUsd">(${{ pretty(amountUsd) }})</span>
+                <span v-if="format === $options.FORMAT_TYPE.EXACT">{{ prettyExact(amount) }}</span>
+                <span v-else :title="prettyExact(amount)">
+                    <template v-if="format === $options.FORMAT_TYPE.APPROX">≈</template>
+                    {{ pretty(amount) }}
+                </span><!--
+             -->{{ unit }}
+                <!--
+                <span class="u-display-ib" v-if="baseCoinAmount && coin !== $store.getters.BASE_COIN">({{ pretty(baseCoinAmount) }} {{ $store.getters.BASE_COIN }})</span>
+                -->
+            </template>
         </div>
     </component>
 </template>

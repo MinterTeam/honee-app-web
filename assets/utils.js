@@ -351,7 +351,7 @@ export function ensurePromise(fn, args, {fallbackToArg} = {}) {
     if (typeof fn === 'function') {
         fnPromise = fn(...args);
         // promisify returned value
-        if (typeof fnPromise.then !== 'function') {
+        if (typeof fnPromise?.then !== 'function') {
             fnPromise = Promise.resolve(fnPromise);
         }
     } else {

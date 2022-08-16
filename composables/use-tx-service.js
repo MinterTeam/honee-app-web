@@ -222,6 +222,7 @@ function estimateTxGas({to, value, data}) {
  * @property {TxParams} txParams
  * @property {Array<PrepareTxParams> | PrepareTxParams} [prepare] - functions to prepare txParams, executes in series, as se
  * @property {FinalizePostTx} [finalize]
+ * @property {boolean} [skip]
  */
 /**
  * @param {Array<SendSequenceItem>} list
@@ -230,7 +231,10 @@ function estimateTxGas({to, value, data}) {
  */
 async function sendTxSequence(list, options) {
     let result;
-    for (const [index, {txParams, prepare, finalize}] of Object.entries(list)) {
+    for (const [index, {txParams, prepare, finalize, skip}] of Object.entries(list)) {
+        if (skip) {
+            continue;
+        }
         try {
             // init
             addStepData(`minter${index}`);

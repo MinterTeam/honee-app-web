@@ -85,13 +85,15 @@ export default {
     },
     computed: {
         feeBusParams() {
+            const txParamsList = Array.isArray(this.sequenceParams)
+                ? this.sequenceParams.map((item) => item.txParams)
+                : [this.sequenceParams.txParams];
+
             return {
-                txParamsList: Array.isArray(this.sequenceParams)
-                    ? this.sequenceParams.map((item) => item.txParams)
-                    : [this.sequenceParams.txParams],
+                txParamsList,
                 baseCoinAmount: this.$store.getters.baseCoinAmount,
                 fallbackToCoinToSpend: true,
-                isLocked: this.isFormSending,
+                isLocked: this.isFormSending || txParamsList.length === 0,
             };
         },
     },
@@ -148,6 +150,10 @@ export default {
                 .then(() => {
                     let sequenceParams= Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
                     sequenceParams = sequenceParams.map((item, index) => {
+                        if (item.skip) {
+                            return item;
+                        }
+
                         // fill txParams with gasCoin
                         const prepareGasCoin = index === 0
                             ? () => ({gasCoin: this.fee.resultList[0].coin})

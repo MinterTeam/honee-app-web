@@ -178,7 +178,7 @@ export default {
                 ref="estimation"
                 idPreventConcurrency="swapForm"
                 :coin-to-sell="coinToSell"
-                :coin-to-buy="needSwap ? coinToBuy : undefined"
+                :coin-to-buy="needSwap ? coinToBuy : ''"
                 :value-to-sell="valueToSell"
                 :is-use-max="isUseMax"
                 :fee="swapFee"

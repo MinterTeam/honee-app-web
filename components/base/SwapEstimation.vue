@@ -15,6 +15,7 @@ export default {
         'update:v$estimation',
         'update:estimation',
         'update:tx-data',
+        'update:fetch-state',
     ],
     props: {
         coinToSell: {
@@ -89,8 +90,8 @@ export default {
             valueToSell: {
                 required: this.isTypeSell ? required : () => true,
                 validAmount: (value) => this.isTypeSell ? value > 0 : true,
-                maxValueAfterFee: (value) => this.isTypeSell ? new Big(value || 0).lte(this.maxAmountAfterFee || 0) : true,
-                maxValue: (value) => this.isTypeSell ? new Big(value || 0).lte(this.maxAmount || 0) : true,
+                maxValueAfterFee: (value) => this.isTypeSell ? new Big(value || 0).lte(this.maxAmountAfterFee) : true,
+                maxValue: (value) => this.isTypeSell ? new Big(value || 0).lte(this.maxAmount) : true,
             },
             valueToBuy: {
                 required: !this.isTypeSell ? required : () => true,
@@ -190,6 +191,12 @@ export default {
             // estimation is not ready until swap props are valid
             return this.isEstimationWaiting || this.$v.propsGroup.$invalid;
         },
+        fetchState() {
+            return {
+                loading: this.isEstimationWaiting,
+                error: this.estimationError,
+            };
+        },
     },
     watch: {
         coinToSell: function(newVal, oldVal) {
@@ -216,6 +223,12 @@ export default {
             handler(newVal) {
                 this.$emit('update:tx-data', newVal);
             },
+        },
+        fetchState: {
+            handler(newVal) {
+                this.$emit('update:fetch-state', newVal);
+            },
+            immediate: true,
         },
     },
     methods: {
