@@ -12,9 +12,18 @@ import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
+import {getOracleCoinList} from '~/api/hub.js';
 
 const MIN_COUNT = 2;
 const MAX_COUNT = 10;
+
+const disabledTokens = [
+    'COFOUNDER',
+    'BEE',
+    'HUBABUBA',
+    'SQD',
+];
+const disabledTokenMap = Object.fromEntries(disabledTokens.map((coinSymbol) => [coinSymbol, true]));
 
 export default {
     MIN_COUNT,
@@ -35,9 +44,6 @@ export default {
             type: Object,
             default: null,
         },
-    },
-    asyncData() {
-
     },
     data() {
         const initialCoins = this.portfolio?.coins.map((item) => {
@@ -61,6 +67,8 @@ export default {
                     getEmptyCoin(),
                 ],
             },
+            // tokens available to use in portfolio
+            tokenList: [],
         };
     },
     validations() {
@@ -102,6 +110,15 @@ export default {
         allocationSum() {
             return this.form.coinList.reduce((accumulator, item) => accumulator + Number(item.allocation), 0);
         },
+    },
+    fetch() {
+        return getOracleCoinList()
+            .then((tokenList) => {
+                tokenList = tokenList
+                    .map((item) => item.symbol)
+                    .filter((coinSymbol) => !disabledTokenMap[coinSymbol]);
+                this.tokenList = Object.freeze(tokenList);
+            });
     },
     methods: {
         /**
@@ -202,6 +219,7 @@ function getEmptyCoin() {
                     scale="2"
                     :coin.sync="v$coin.symbol.$model"
                     :$coin="v$coin.symbol"
+                    :coin-list="tokenList"
                     :amount.sync="v$coin.allocation.$model"
                     :$amount="v$coin.allocation"
                     :label="$td(`Token #${Number(index) + 1}`, 'portfolio.manage-coin-label', {index: Number(index) + 1})"
@@ -282,7 +300,7 @@ function getEmptyCoin() {
                 Allocation sum must be 100%
             </div>
             <div class="form-row form-field__error u-text-center" v-else-if="serverError">
-                {{serverError }}
+                {{ serverError }}
             </div>
             <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the disclaimer in the footer.', 'form.read-understood') }}</p>
         </form>
@@ -332,7 +350,10 @@ function getEmptyCoin() {
         </Modal>
 
         <!-- success modal -->
-        <Modal :isOpen.sync="isSuccessModalVisible">
+        <Modal
+            :isOpen.sync="isSuccessModalVisible"
+            @modal-close="$router.push(getDashboardUrl())"
+        >
             <h2 class="u-h3 u-mb-10">{{ $td('Success', 'form.success-title') }}</h2>
             <p class="u-mb-10">
                 <template v-if="isNew">
