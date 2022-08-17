@@ -11,7 +11,7 @@ export default {
     fetch() {
         return getPortfolioList({owner: this.$store.getters.address})
             .then((portfolioInfo) => {
-                this.portfolioList = portfolioInfo.list;
+                this.portfolioList ??= portfolioInfo.list;
             });
     },
     methods: {
@@ -58,7 +58,7 @@ export default {
                 </div>
             </div>
         </div>
-        <div v-else>{{ $td('You don\'t have any portfolios yet', 'portfolio.my-list-empty') }}</div>
+        <div class="u-text-center" v-else>{{ $td('You don\'t have any portfolios yet', 'portfolio.my-list-empty') }}</div>
 
         <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">+ {{ $td('Create you own portfolio', 'portfolio.create-new-link') }}</nuxt-link>
     </div>

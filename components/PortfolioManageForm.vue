@@ -297,7 +297,7 @@ function getEmptyCoin() {
                 </button>
             </div>
             <div class="form-row form-field__error u-text-center" v-if="$v.allocationSum.$error">
-                Allocation sum must be 100%
+                {{ $td('Allocation sum must be 100%', 'portfolio.allocation-sum-error') }}
             </div>
             <div class="form-row form-field__error u-text-center" v-else-if="serverError">
                 {{ serverError }}
