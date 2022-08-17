@@ -297,17 +297,18 @@ export function getTxType({isPool, isSelling, isSellAll}) {
         v-show="
             ($v.propsGroup.$error && !hidePropsValidationError)
             || (($v.limitValueGroup.$error || estimationError) && !isEstimationErrorHidden)
-        ">
+        "
+    >
         <template v-if="!hidePropsValidationError">
             <template v-if="$v.coinToSell.$error">{{ $td('Invalid coin to sell', 'form.swap-coin-sell-error-invalid') }}</template>
-            <template v-if="$v.coinToBuy.$error">{{ $td('Invalid coin to buy', 'form.swap-coin-buy-error-invalid') }}</template>
-            <template v-if="isTypeSell">
+            <template v-else-if="$v.coinToBuy.$error">{{ $td('Invalid coin to buy', 'form.swap-coin-buy-error-invalid') }}</template>
+            <template v-else-if="isTypeSell">
                 <template v-if="$v.valueToSell.$dirty && !$v.valueToSell.required">{{ $td('Enter amount', 'form.amount-error-required') }}</template>
                 <template v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</template>
                 <template v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.maxValue">{{ $td('Not enough coins', 'form.not-enough-coins') }}</template>
                 <template v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.maxValueAfterFee">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol }}</template>
             </template>
-            <template v-if="isTypeBuy">
+            <template v-else-if="isTypeBuy">
                 <template v-if="$v.valueToBuy.$dirty && !$v.valueToBuy.required">{{ $td('Enter amount', 'form.amount-error-required') }}</template>
                 <template v-else-if="$v.valueToBuy.$dirty && !$v.valueToBuy.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</template>
             </template>

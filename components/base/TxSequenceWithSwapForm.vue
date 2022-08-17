@@ -74,7 +74,7 @@ export default {
     validations() {
         return {
             estimation: {
-                valid: () => !this.v$estimation.$invalid,
+                valid: () => this.needSwap ? !this.v$estimation.$invalid : true,
             },
             sequenceParams: {
                 valid: () => !this.v$sequenceParams.$invalid,
@@ -177,6 +177,7 @@ export default {
                 class="u-text-medium form-row"
                 ref="estimation"
                 idPreventConcurrency="swapForm"
+                v-show="needSwap"
                 :coin-to-sell="coinToSell"
                 :coin-to-buy="needSwap ? coinToBuy : ''"
                 :value-to-sell="valueToSell"
