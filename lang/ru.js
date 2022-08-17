@@ -392,7 +392,7 @@ export default {
         'pool-add-button': 'Добавить',
 
         'select-validator': 'Выберите валидатора',
-        'select-coin': 'Выберите монету',
+        'select-coin': 'Выбор монеты',
         'select-value': 'Выберите значение',
         'select-network': 'Выберите сеть',
 
