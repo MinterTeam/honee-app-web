@@ -744,14 +744,12 @@ export default {
                         v-model="form.selectedHubNetwork"
                         :label="$td('Select network', 'form.select-network')"
                         :suggestion-list="[
-                            /*
                             {
                                 value: $options.FIAT_RAMP_NETWORK,
                                 name: 'Bank card',
                                 shortName: 'Bank card',
                                 icon: `/img/icon-network-fiat.svg`,
                             },
-                            */
                             {
                                 value: $options.HUB_CHAIN_ID.ETHEREUM,
                                 name: $options.HUB_CHAIN_DATA[$options.HUB_CHAIN_ID.ETHEREUM].name,
