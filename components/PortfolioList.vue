@@ -11,7 +11,7 @@ export default {
     fetch() {
         return getPortfolioList({owner: this.$store.getters.address})
             .then((portfolioInfo) => {
-                this.portfolioList ??= portfolioInfo.list;
+                this.portfolioList = portfolioInfo.list || [];
             });
     },
     methods: {
