@@ -174,7 +174,7 @@ export default {
 
 
             <SwapEstimation
-                class="u-text-medium u-mt-10 u-mb-10"
+                class="u-text-medium form-row"
                 ref="estimation"
                 idPreventConcurrency="swapForm"
                 :coin-to-sell="coinToSell"

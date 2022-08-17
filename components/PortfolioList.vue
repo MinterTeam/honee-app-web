@@ -23,7 +23,8 @@ export default {
 <template>
     <div>
         <h2 class="dashboard__category-title u-mb-15">
-            {{ $td('My portfolios', `portfolio.my-list-title`) }}
+            <img class="dashboard__category-icon" src="/img/icon-category-portfolio.svg" alt="" role="presentation">
+            <span>{{ $td('My portfolios', `portfolio.my-list-title`) }}</span>
         </h2>
         <div class="u-grid u-grid--vertical-margin" v-if="portfolioList.length && !$fetchState.pending">
             <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="portfolio in portfolioList" :key="portfolio.id">
@@ -57,6 +58,7 @@ export default {
                 </div>
             </div>
         </div>
+        <div v-else>{{ $td('You don\'t have any portfolios yet', 'portfolio.my-list-empty') }}</div>
 
         <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">+ {{ $td('Create you own portfolio', 'portfolio.create-new-link') }}</nuxt-link>
     </div>

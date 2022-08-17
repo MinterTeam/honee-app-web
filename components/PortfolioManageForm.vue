@@ -19,7 +19,7 @@ const MAX_COUNT = 10;
 
 const disabledTokens = [
     'COFOUNDER',
-    'BEE',
+    // 'BEE',
     'HUBABUBA',
     'SQD',
 ];
