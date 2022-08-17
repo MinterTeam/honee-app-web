@@ -2,6 +2,7 @@
 import cardList from '~/content/card-list.js';
 import Card from '~/components/Card.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
+import PortfolioList from '~/components/PortfolioList.vue';
 
 const BASE_CARD = {
     DELEGATION: 'delegation',
@@ -16,6 +17,7 @@ export default {
     components: {
         Card,
         AddressAssets,
+        PortfolioList,
     },
     fetch() {
         return Promise.all([
@@ -39,8 +41,8 @@ export default {
                 result[categorySlug] = this.$options.cardList[categorySlug].cards;
             }
             // add base cards
-            result.earn.push(BASE_CARD.DELEGATION);
-            result.earn.push(BASE_CARD.LIQUIDITY);
+            // result.earn.push(BASE_CARD.DELEGATION);
+            // result.earn.push(BASE_CARD.LIQUIDITY);
             // result.earn.push(BASE_CARD.FARM);
             // result.win.push(BASE_CARD.LOTTERY);
 
@@ -57,7 +59,7 @@ export default {
 
 
 <template>
-    <div>
+    <div class="u-container--large">
         <AddressAssets/>
 
         <div class="u-mt-25" v-for="(categoryCards, categorySlug) in cardList" :key="categorySlug">
@@ -66,7 +68,7 @@ export default {
                 <span>{{ $td(capitalize($options.cardList[categorySlug].title || categorySlug), `action.category-${categorySlug.toLowerCase()}`) }}</span>
             </h2>
             <div class="u-grid u-grid--vertical-margin">
-                <div class="u-cell u-cell--medium--1-2 card-wrap-cell" v-for="card in categoryCards" :key="card.action || card">
+                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in categoryCards" :key="card.action || card">
                     <Card :card="card" v-if="card.action"/>
 
                     <!--<div class="card card__content--small" v-if="card === $options.BASE_CARD.DELEGATION">
@@ -114,6 +116,8 @@ export default {
                 </div>
             </div>
         </div>
+
+        <PortfolioList class="u-mt-25"/>
 
         <nuxt-child/>
     </div>

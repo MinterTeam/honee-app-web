@@ -3,10 +3,10 @@ import Big from '~/assets/big.js';
 import {AsyncComputedMixin} from 'vue-async-computed/src/index.js';
 import debounce from 'debounce-promise';
 import stripZeros from 'pretty-num/src/pretty-num.js';
-import {validationMixin} from 'vuelidate';
-import required from 'vuelidate/lib/validators/required.js';
-import minLength from 'vuelidate/lib/validators/minLength.js';
-import maxValue from 'vuelidate/lib/validators/maxValue.js';
+import {validationMixin} from 'vuelidate/src/index.js';
+import required from 'vuelidate/src/validators/required.js';
+import minLength from 'vuelidate/src/validators/minLength.js';
+import maxValue from 'vuelidate/src/validators/maxValue.js';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import eventBus from '~/assets/event-bus.js';
 import focusElement from '~/assets/focus-element.js';
@@ -292,11 +292,11 @@ export default {
         </template>
 
         <template v-slot:confirm-modal-body>
-            <div class="estimation form-row">
-                <h3 class="estimation__title">{{ $td('First coin', 'form.pool-coin0') }}</h3>
+            <div class="information form-row">
+                <h3 class="information__title">{{ $td('First coin', 'form.pool-coin0') }}</h3>
                 <BaseAmountEstimation :coin="form.coin0" :amount="form.volume0" format="exact"/>
 
-                <h3 class="estimation__title">{{ $td('Second coin', 'form.pool-coin1') }}</h3>
+                <h3 class="information__title">{{ $td('Second coin', 'form.pool-coin1') }}</h3>
                 <BaseAmountEstimation :coin="form.coin1" :amount="formAmount1" format="approx"/>
                 <!--
                 <span class="u-text-muted">({{ maximumVolume1 }} maximum)</span>

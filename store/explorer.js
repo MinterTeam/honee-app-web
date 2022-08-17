@@ -12,6 +12,8 @@ export const state = () => ({
     coinList: [],
     /** @type {Object.<string, CoinInfo>} */
     coinMap: {},
+    /** @type {Object.<number, CoinInfo>} */
+    coinMapId: {},
 });
 
 export const getters = {
@@ -20,6 +22,7 @@ export const getters = {
     },
     getCoinIcon(state, getters, rootState, rootGetters) {
         return function(coinSymbol) {
+            coinSymbol = getters.getCoinSymbol(coinSymbol);
             // BIP
             if (coinSymbol.toUpperCase() === 'BIP') {
                 return `${BASE_URL_PREFIX}/img/icon-coin-bip.svg`;
@@ -63,9 +66,8 @@ export const getters = {
     getCoinSymbol(state) {
         return function(coinId) {
             if (isCoinId(coinId)) {
-                coinId = Number(coinId);
-                const coin = state.coinList.find((coin) => Number(coin.id) === coinId);
-                return coin.symbol;
+                const coin = state.coinMapId[coinId];
+                return coin?.symbol;
             } else {
                 return coinId;
             }
@@ -80,6 +82,7 @@ export const mutations = {
     SET_COIN_LIST(state, data) {
         state.coinList = Object.freeze(data);
         state.coinMap = Object.freeze(arrayToMap(data, 'symbol'));
+        state.coinMapId = Object.freeze(arrayToMap(data, 'id'));
     },
 };
 

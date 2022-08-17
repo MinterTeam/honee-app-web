@@ -1,8 +1,8 @@
 <script>
-import {validationMixin} from 'vuelidate';
-import required from 'vuelidate/lib/validators/required.js';
-import minLength from 'vuelidate/lib/validators/minLength.js';
-import maxLength from 'vuelidate/lib/validators/maxLength.js';
+import {validationMixin} from 'vuelidate/src/index.js';
+import required from 'vuelidate/src/validators/required.js';
+import minLength from 'vuelidate/src/validators/minLength.js';
+import maxLength from 'vuelidate/src/validators/maxLength.js';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {isValidAddress} from "minterjs-util/src/prefix.js";
@@ -121,12 +121,12 @@ export default {
         </template>
 
         <template v-slot:confirm-modal-body>
-            <div class="estimation form-row">
-                <h3 class="estimation__title">{{ $td('You send', 'form.wallet-send-confirm-amount') }}</h3>
+            <div class="information form-row">
+                <h3 class="information__title">{{ $td('You send', 'form.wallet-send-confirm-amount') }}</h3>
                 <BaseAmountEstimation :coin="form.coinSymbol" :amount="form.amount" format="exact"/>
 
-                <h3 class="estimation__title">{{ $td('To the address', 'form.wallet-send-confirm-address') }}</h3>
-                <div class="estimation__item estimation__item--content u-text-wrap">
+                <h3 class="information__title">{{ $td('To the address', 'form.wallet-send-confirm-address') }}</h3>
+                <div class="information__item information__item--content u-text-wrap">
                     {{ form.address }}
                 </div>
             </div>

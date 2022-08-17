@@ -7,8 +7,8 @@ Vue.mixin({
             const path = this.localePath(route, locale);
             return path.length > 1 ? path.replace(/\/$/, '') : path;
         },
-        getDashboardUrl(page = '/') {
-            return this.$i18nGetPreferredPath((DASHBOARD_URL + page).replace('//', '/'));
+        getDashboardUrl(page = '/', baseUrl = DASHBOARD_URL) {
+            return this.$i18nGetPreferredPath((baseUrl + page).replace('//', '/'));
         },
     },
 });

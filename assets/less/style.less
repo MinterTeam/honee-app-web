@@ -128,17 +128,35 @@
 .card {
     background: #fff; color: @c-black; box-shadow: 0 4px 4px rgba(0,0,0,0.05); position: relative; border-radius: 16px; /*overflow: hidden;*/ display: block;
     &::before {content: ''; display: table;} // fix firefox incorrect collapsing negative margin
+    .card {box-shadow: none;}
+}
+.card--pop {
+    margin-top: 12px;
+    & > .card__content:first-child, &&.card__content {
+        padding-top: 0;
+        & > .h-field:first-child,
+        & > .information:first-child,
+        & .form-row:first-child .h-field,
+        & .form-row:first-child .information {
+            margin-top: -12px;
+        }
+    }
 }
 .card--invert {background: @c-black; color: #fff;}
 .card--light-grey {
     background: @c-white-light;
 }
 .card--action {display: flex; flex-direction: column; flex-grow: 2;}
-.card__content {
+.card-content-base-padding() {
     padding: 16px;
     &:first-child {padding-top: 24px;}
     &:last-child {padding-bottom: 24px;}
+}
+.card__content {
+    .card-content-base-padding();
     &+& {border-top: 1px solid #0001;}
+
+    .card__fake-divider {margin: 16px -16px; border-top: 1px solid #0001; align-self: stretch;}
 }
 //.card__content--block-small {
 //    padding-block: 16px;
@@ -146,38 +164,43 @@
 //}
 .card__content--small {padding: 16px;}
 .card__content--mini {padding-block: 10px;}
-.card__content--pop {
-    && {padding-top: 0; margin-top: 12px;}
-    & .form-row:first-child .h-field {margin-top: -12px;}
-}
 
 .card__action-head {display: flex; align-items: center;}
 .card__action-logo {
     border-radius: 50%; box-shadow: 0 8px 20px rgba(0,0,0,0.2); width: 40px; height: 40px;
+    &:last-of-type {margin-right: 8px;}
     &+& {margin-left: -8px;}
 }
-
+.card__action-title {text-align: left;}
+.card__action-title-type {text-transform: uppercase; font-size: 12px; font-weight: 700; opacity: 0.5; line-height: 15px; margin-bottom: 1px;}
+.card__action-title-value {font-size: 20px; font-weight: 700; line-height: 24px;}
 .card__action-stats {margin-left: auto; text-align: right;}
 .card__action-stats-caption {/*text-transform: uppercase;*/ font-size: 12px; font-weight: 700; opacity: 0.5; line-height: 15px; margin-bottom: 1px;}
 .card__action-stats-value {font-size: 20px; font-weight: 700; line-height: 24px;}
-.card__action-title {margin-left: 8px; text-align: left;}
-.card__action-title-type {text-transform: uppercase; font-size: 12px; font-weight: 700; opacity: 0.5; line-height: 15px; margin-bottom: 1px;}
-.card__action-title-value {font-size: 20px; font-weight: 700; line-height: 24px;}
 .card__action-description {.u-text-medium(); margin-top: 16px; margin-bottom: auto;}
 .card__action-tag-list {display: flex; margin-top: (24px - 8px); margin-left: -8px; flex-wrap: wrap;}
 .card__action-tag {margin-left: 8px; margin-top: 8px; padding: 2px 8px; line-height: 20px; background: rgba(255,255,255, 0.3); border-radius: 6px; font-weight: 700;}
+
+.card__token-list {display: flex;}
+.card__token-logo {
+    border-radius: 50%; border: 1px solid @c-white-light; width: 30px; height: 30px;
+    &+& {margin-left: -6px;}
+}
 
 @media (min-width: @breakpoint-medium-up) {
     .card__content {
         padding: 24px @card-padding-large;
         &:first-child {padding-top: @card-padding-large;}
         &:last-child {padding-bottom: @card-padding-large;}
+
+        .card__fake-divider {margin: 24px -@card-padding-large;}
     }
-    //.card__content--medium {padding: 32px;}
+    .card__content--medium {
+        .card-content-base-padding();
+
+        .card__fake-divider {margin: 16px -16px;}
+    }
     .card__content--small {padding: 16px;}
-    //.card__content--pop {
-    //    && {padding-top: 0;}
-    //}
 }
 
 
@@ -190,7 +213,7 @@
 }
 .header__container {display: flex; align-items: center; justify-content: space-between; top: 0; height: 100%;}
 .header__logo {margin-right: 24px; display: flex; align-items: center; width: 40%; flex-grow: 2;}
-.header__image-logo {line-height: 0;}
+.header__image-logo {vertical-align: top;}
 .header__image-back {margin-right: 24px;}
 .header__icon {vertical-align: top;}
 .header__logo-text {font-size: 26px; font-weight: 700; font-family: @heading-font-family; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
@@ -275,6 +298,8 @@
 .wallet__balance-value {font-size: 30px; line-height: 36px; font-weight: 700; font-feature-settings: "zero" on;}
 .wallet__balance-buy-link {}
 .wallet__action-button {}
+.wallet__controls {display: flex; flex-direction: column; align-items: center;}
+.wallet__controls-fancy-button {}
 @media (max-width: @breakpoint-medium-down) {
     .wallet__action-button {
         padding: 48px 0 0; min-width: 72px; position: relative;
@@ -287,6 +312,10 @@
     .wallet__balance-wrap {}
     .wallet__balance-value {font-size: 40px; line-height: 48px;}
     .wallet__action-button {min-width: 128px;}
+}
+@media (min-width: @breakpoint-large-up) {
+    .wallet__controls {flex-direction: row; justify-content: space-between;}
+    .wallet__controls-fancy-button {}
 }
 
 .wallet__asset-list-control-group {display: flex; align-items: flex-start;}
@@ -358,17 +387,27 @@
 
 
 
-.estimation {padding: 12px 16px; background: #d7def6; border: 1px dashed #707ba3; border-radius: 12px;}
-.estimation__title {
+.information {padding: (@h-field-vertical-padding - 1px) (@h-field-horizontal-padding - 1px); background: #d7def6; border: 1px dashed #707ba3; border-radius: 12px; font-size: 16px; line-height: 20px; font-weight: 500;}
+.information--warning {background: @c-yellow-light; border-color: @c-yolk;}
+.information--field {background: #fff; border-color: transparent;}
+.information__title {
     font-weight: 700;font-size: 10px;line-height: 12px;letter-spacing: 1px;text-transform: uppercase; color: @c-black-light;
     &:not(:first-child) {margin-top: 16px;}
 }
-.estimation__item {display: flex; justify-content: space-between; align-items: flex-start; margin-top: 8px; font-size: 16px; line-height: 20px; font-weight: 500;}
-.estimation__item--content {display: block;}
-.estimation__coin {display: flex; align-items: center; margin-right: 16px;}
-.estimation__coin-icon {margin-right: 8px; border-radius: 50%; width: 18px; height: 18px;}
-.estimation__coin-symbol {}
-.estimation__value { .u-text-number(); min-width: 0; text-align: right; font-weight: 500; overflow-wrap: break-word;}
+.information__item {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    &:not(:first-child) {margin-top: 8px;}
+}
+.information__item--content {display: block;}
+.information__coin {display: flex; align-items: center; margin-right: 16px;}
+.information__coin-icon {margin-right: 8px; border-radius: 50%; width: 18px; height: 18px;}
+.information__coin-symbol {}
+.information__value { .u-text-number(); min-width: 0; text-align: right; font-weight: 500; overflow-wrap: break-word;}
+.information__muted {opacity: 0.5;}
+.information__loader {
+    vertical-align: top; width: 20px; height: 20px;
+    .loader__path {stroke-width: 3px;}
+}
 
 
 

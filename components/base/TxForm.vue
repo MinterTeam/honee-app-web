@@ -1,5 +1,5 @@
 <script>
-import {validationMixin} from 'vuelidate';
+import {validationMixin} from 'vuelidate/src/index.js';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {isValidMnemonic} from 'minterjs-wallet';
@@ -134,7 +134,7 @@ export default {
                     type: this.txType,
                     data: this.txData,
                 },
-                baseCoinAmount: this.$store.getters.baseCoin?.amount,
+                baseCoinAmount: this.$store.getters.baseCoinAamount,
                 fallbackToCoinToSpend: true,
             };
         },
@@ -323,7 +323,7 @@ export default {
             <slot name="confirm-modal-body"></slot>
             <!--
             <div class="form-row">
-                <h3 class="estimation__title">{{ $td('Transaction fee', 'form.tx-fee') }}</h3>
+                <h3 class="information__title">{{ $td('Transaction fee', 'form.tx-fee') }}</h3>
                 <BaseAmountEstimation :coin="fee.coinSymbol" :amount="fee.value" :exact="true"/>
 
                 <div class="u-mt-10 u-fw-700" v-if="fee.isHighFee"><span class="u-emoji">⚠️</span> {{ $td('Transaction requires high fee.', 'form.tx-fee-high') }}</div>

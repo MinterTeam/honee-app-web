@@ -1,20 +1,15 @@
 <script>
-import {validationMixin} from 'vuelidate';
-import required from 'vuelidate/lib/validators/required.js';
-import minLength from 'vuelidate/lib/validators/minLength.js';
-import {ESTIMATE_SWAP_TYPE} from 'minter-js-sdk/src/variables.js';
+import {validationMixin} from 'vuelidate/src/index.js';
 import {convertFromPip} from 'minterjs-util/src/converter.js';
-import useEstimateSwap from '~/composables/use-estimate-swap.js';
-import Big from '~/assets/big.js';
-import {pretty, decreasePrecisionSignificant} from '~/assets/utils.js';
-import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
+import {pretty} from '~/assets/utils.js';
 import TxSequenceForm from '~/components/base/TxSequenceForm.vue';
-import {getTxType} from '~/components/Swap.vue';
+import SwapEstimation from '~/components/base/SwapEstimation.vue';
 
 
 export default {
     components: {
         TxSequenceForm,
+        SwapEstimation,
     },
     mixins: [validationMixin],
     emits: [
@@ -36,6 +31,10 @@ export default {
         valueToSell: {
             type: [Number, String],
             required: true,
+        },
+        isUseMax: {
+            type: Boolean,
+            default: false,
         },
         /** @type {SendSequenceItem|Array<SendSequenceItem>} */
         sequenceParams: {
@@ -63,55 +62,19 @@ export default {
             default: null,
         },
     },
-    setup(props, context) {
-        const {
-            estimation,
-            estimationType,
-            estimationRoute,
-            estimationError,
-            isEstimationWaiting,
-            handleInputBlur,
-            estimateSwap,
-        } = useEstimateSwap({
-            $td: context.root.$td,
-            idPreventConcurrency: 'swapForm',
-        });
-
-        return {
-            // fee,
-            // feeProps,
-
-            estimation,
-            estimationType,
-            estimationRoute,
-            estimationError,
-            isEstimationWaiting,
-            handleInputBlur,
-            estimateSwap,
-        };
-    },
     data() {
         return {
             /** @type {FeeData|null}*/
             fee: null,
+            v$estimation: {},
+            estimation: 0,
+            txData: {},
         };
     },
     validations() {
         return {
-            coinToSell: {
-                required,
-                minLength: minLength(3),
-            },
-            coinToBuy: {
-                required,
-                minLength: minLength(3),
-                // maxLength: maxLength(10),
-            },
-            valueToSell: {
-                required: required,
-                validAmount: (value) => value > 0,
-                maxValueAfterFee: (value) => new Big(value || 0).lte(this.maxAmountAfterFee || 0),
-                maxValue: (value) => new Big(value || 0).lte(this.maxAmount || 0),
+            estimation: {
+                valid: () => this.needSwap ? !this.v$estimation.$invalid : true,
             },
             sequenceParams: {
                 valid: () => !this.v$sequenceParams.$invalid,
@@ -119,81 +82,22 @@ export default {
         };
     },
     computed: {
-        isPool() {
-            return this.estimationType === ESTIMATE_SWAP_TYPE.POOL;
-        },
-        isSellAll() {
-            // not use max
-            if (!this.isUseMax) {
-                return false;
-            }
-            // use max
-            // selling base coin (no matter if it is not enough to pay fee)
-            if (this.coinToSell === this.$store.getters.BASE_COIN) {
-                return true;
-            }
-            // selling custom coin
-            // base coin is not enough try use selected coin to pay fee
-            if (!this.swapFee?.isBaseCoinEnough) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        txDataCoins() {
-            return this.estimationRoute
-                ? this.estimationRoute.map((coin) => coin.id)
-                : [this.coinToSell, this.coinToBuy];
-        },
-        txData() {
-            return {
-                ...(!this.isPool ? {
-                    coinToSell: this.coinToSell,
-                    coinToBuy: this.coinToBuy,
-                } : {
-                    coins: this.txDataCoins,
-                }),
-                valueToSell: this.valueToSell,
-                minimumValueToBuy: this.minimumValueToBuy,
-            };
-        },
-        minimumValueToBuy() {
-            let slippage = 1 - 5 / 100; // 5%
-            slippage = Math.max(slippage, 0);
-            return decreasePrecisionSignificant(this.estimation * slippage);
-        },
-        maxAmount() {
-            const selectedCoin = this.$store.state.balance.find((coin) => {
-                return coin.coin.symbol === this.coinToSell;
-            });
-            // coin not selected
-            if (!selectedCoin) {
-                return 0;
-            }
-            return selectedCoin.amount;
-        },
-        maxAmountAfterFee() {
-            const selectedCoin = this.$store.state.balance.find((coin) => {
-                return coin.coin.symbol === this.coinToSell;
-            });
-            // coin not selected
-            if (!selectedCoin) {
-                return 0;
-            }
-            return getAvailableSelectedBalance(selectedCoin, this.swapFee);
+        needSwap() {
+            return this.coinToSell !== this.coinToBuy;
         },
         swapFee() {
-            return this.fee.resultList?.[0] || this.fee;
+            return this.fee?.resultList?.[0] || this.fee;
         },
         sequenceParamsFinal() {
-            if (this.coinToSell === this.coinToBuy) {
+            if (!this.needSwap) {
                 return this.sequenceParams;
             }
+
             const baseSequenceParamsArray = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
             return [
                 {
                     txParams: {
-                        type: getTxType({isSelling: true, isPool: this.isPool, isSellAll: this.isSellAll}),
+                        type: this.$refs.estimation.getTxType(),
                         data: this.txData,
                     },
                     /**
@@ -235,20 +139,8 @@ export default {
                 ...baseSequenceParamsArray,
             ];
         },
-        v$SwapInvalid() {
-            return this.$v.coinToSell.$invalid || this.$v.coinToBuy.$invalid || this.$v.valueToSell.$invalid;
-        },
     },
     watch: {
-        coinToSell: function(newVal, oldVal) {
-            this.watchForm();
-        },
-        coinToBuy: function(newVal, oldVal) {
-            this.watchForm();
-        },
-        valueToSell: function(newVal, oldVal) {
-            this.watchForm();
-        },
         estimation: {
             handler(newVal) {
                 this.$emit('update:estimation', newVal);
@@ -257,30 +149,8 @@ export default {
     },
     methods: {
         pretty,
-        watchForm() {
-            if (this.coinToSell === this.coinToBuy) {
-                return;
-            }
-            if (this.v$SwapInvalid) {
-                return;
-            }
-            this.getEstimation();
-        },
-        getEstimation(force) {
-            if (this.v$SwapInvalid) {
-                return;
-            }
-
-            return this.estimateSwap({
-                coinToSell: this.coinToSell,
-                valueToSell: this.valueToSell,
-                coinToBuy: this.coinToBuy,
-                isSelling: true,
-                force,
-                throwOnError: false,
-            });
-        },
         clearForm() {
+            //@TODO reset all vuelidate
             this.$emit('clear-form');
         },
     },
@@ -294,7 +164,7 @@ export default {
         :before-post-sequence="beforePostSequence"
         :before-confirm-modal-show="beforeConfirmModalShow"
         @update:fee="fee = $event"
-        @validation-touch="$emit('validation-touch'); $v.$touch(); v$sequenceParams.$touch()"
+        @validation-touch="$emit('validation-touch'); $v.$touch(); v$estimation.$touch(); v$sequenceParams.$touch()"
         @clear-form="clearForm()"
         @success="$emit('success')"
         @success-modal-close="$emit('success-modal-close')"
@@ -303,14 +173,20 @@ export default {
             <slot :fee="fee" :estimation="estimation"/>
 
 
-            <div class="form__error u-text-medium u-mt-10 u-mb-10" v-if="$v.$error">
-                <template v-if="$v.coinToSell.$error">{{ $td('Invalid coin to sell', 'form.swap-coin-sell-error-invalid') }}</template>
-                <template v-if="$v.coinToBuy.$error">{{ $td('Invalid coin to buy', 'form.swap-coin-buy-error-invalid') }}</template>
-                <template v-if="$v.valueToSell.$dirty && !$v.valueToSell.required">{{ $td('Enter amount', 'form.amount-error-required') }}</template>
-                <template v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</template>
-                <template v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.maxValue">{{ $td('Not enough coins', 'form.not-enough-coins') }}</template>
-                <template v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.maxValueAfterFee">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(swapFee.value) }} {{ swapFee.coinSymbol }}</template>
-            </div>
+            <SwapEstimation
+                class="u-text-medium form-row"
+                ref="estimation"
+                idPreventConcurrency="swapForm"
+                v-show="needSwap"
+                :coin-to-sell="coinToSell"
+                :coin-to-buy="needSwap ? coinToBuy : ''"
+                :value-to-sell="valueToSell"
+                :is-use-max="isUseMax"
+                :fee="swapFee"
+                @update:estimation="estimation = $event"
+                @update:tx-data="txData = $event"
+                @update:v$estimation="v$estimation = $event"
+            />
         </template>
 
         <template v-slot:submit-title>

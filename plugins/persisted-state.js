@@ -2,6 +2,10 @@ import createPersistedState from 'vuex-persistedstate';
 
 export default ({store}) => {
     createPersistedState({
-        paths: ['auth', 'balanceDisplayType'],
+        paths: [
+            'auth',
+            'balanceDisplayType',
+            'referral.foreignRefId',
+        ],
     })(store);
 };

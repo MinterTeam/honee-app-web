@@ -37,7 +37,9 @@ export default {
     <header class="header header--white">
         <div class="header__container u-container u-container--2k">
             <div class="header__logo">
-                <img class="header__image-logo" src="/img/logo-honee.svg" alt="Honne" width="122" height="24">
+                <nuxt-link :to="$i18nGetPreferredPath('/')">
+                    <img class="header__image-logo" src="/img/logo-honee.svg" alt="Honne" width="122" height="24">
+                </nuxt-link>
             </div>
 
             <div class="header__controls">

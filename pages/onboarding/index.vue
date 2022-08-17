@@ -2,15 +2,16 @@
 import {flatCardList} from '~/content/card-list.js';
 import {pretty} from '~/assets/utils.js';
 import {BASE_COIN} from '~/assets/variables.js';
+import {clearActionQuery} from '~/components/CardAction.vue';
 import Card from '~/components/Card.vue';
 
 const ACTION_LIST = [
-    '/stake/19',
-    '/stake/2',
+    '/stake/19?coin={coin}',
+    '/stake/2?coin={coin}',
 ];
 const ACTION_LIST_CONDITIONAL = {
     BIP: `/delegate/${BASE_COIN}`,
-    '*': '/swap/BTC',
+    '*': '/swap/BTC?coinToSell={coin}',
 };
 
 const MAX_PAGE = 3;
@@ -50,7 +51,18 @@ export default {
         cardList() {
             const actionList = ACTION_LIST;
             const conditionalAction = ACTION_LIST_CONDITIONAL[this.topupCoin] || ACTION_LIST_CONDITIONAL['*'];
-            return flatCardList.filter((item) => [...actionList, conditionalAction].includes(item.action));
+            const finalActionList = [...actionList, conditionalAction].map((actionUrl) => actionUrl.replace('{coin}', this.topupCoin));
+            const clearActionList = finalActionList.map((actionUrl) => clearActionQuery(actionUrl));
+
+            return flatCardList
+                .filter((item) => clearActionList.includes(item.action))
+                .map((item) => {
+                    const index = clearActionList.indexOf(item.action);
+                    return {
+                        ...item,
+                        action: finalActionList[index],
+                    };
+                });
         },
     },
     methods: {
@@ -79,7 +91,7 @@ export default {
             <div class="u-container u-container--large">
                 <div class="u-grid u-grid--vertical-margin u-grid--justify-center">
                     <div class="u-cell u-cell--large--1-3 u-cell--medium--1-2 card-wrap-cell" v-for="card in cardList" :key="card.action">
-                        <Card :card="card"/>
+                        <Card :card="card" action-base-url="/onboarding"/>
                     </div>
                 </div>
             </div>

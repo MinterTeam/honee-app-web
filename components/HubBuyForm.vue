@@ -1,10 +1,10 @@
 <script>
 import QrcodeVue from 'qrcode.vue';
-import {validationMixin} from 'vuelidate';
-import required from 'vuelidate/lib/validators/required.js';
-import maxValue from 'vuelidate/lib/validators/maxValue.js';
-import minLength from 'vuelidate/lib/validators/minLength.js';
-import withParams from 'vuelidate/lib/withParams.js';
+import {validationMixin} from 'vuelidate/src/index.js';
+import required from 'vuelidate/src/validators/required.js';
+import maxValue from 'vuelidate/src/validators/maxValue.js';
+import minLength from 'vuelidate/src/validators/minLength.js';
+import withParams from 'vuelidate/src/withParams.js';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {web3Utils, AbiEncoder, toErcDecimals} from '~/api/web3.js';
@@ -128,6 +128,7 @@ export default {
         const {
             estimation,
             estimationRoute,
+            estimationTxDataCoinsRoute,
             estimationError,
             isEstimationWaiting,
             handleInputBlur,
@@ -168,6 +169,7 @@ export default {
         return {
             estimation,
             estimationRoute,
+            estimationTxDataCoinsRoute,
             estimationError,
             isEstimationWaiting,
             handleInputBlur,
@@ -665,8 +667,7 @@ export default {
             return this.sendEthTx(txParams, loadingStage, true);
         },
         prepareMinterSwapParams(amount) {
-            const coinBalanceItem = this.$store.state.balance.find((item) => item.coin.symbol === this.externalTokenSymbol);
-            const balanceAmount = coinBalanceItem?.amount || 0;
+            const balanceAmount = this.$store.getters.getBalanceAmount(this.externalTokenSymbol);
             const smallAmount = DEPOSIT_COIN_DATA[this.externalTokenMainnetSymbol].smallAmount;
             // sell all externalTokenSymbol if user has no or very small amount of it
             const isSellAll = balanceAmount - amount < smallAmount;
@@ -676,9 +677,7 @@ export default {
                     return {
                         type: isSellAll ? TX_TYPE.SELL_ALL_SWAP_POOL : TX_TYPE.SELL_SWAP_POOL,
                         data: {
-                            coins: this.estimationRoute
-                                ? this.estimationRoute.map((coin) => coin.id)
-                                : [this.externalTokenSymbol, this.form.coinToGet],
+                            coins: this.estimationTxDataCoinsRoute,
                             valueToSell: amount,
                             minimumValueToBuy: 0,
                         },
@@ -806,20 +805,20 @@ export default {
                     <span class="form-field__error u-text-center u-mt-10" v-else>{{ estimationError }}</span>
                 </div>
 
-                <div class="estimation form-row form__error" v-if="serverError">
+                <div class="information form-row form__error" v-if="serverError">
                     {{ serverError }}
                 </div>
-                <div class="estimation form-row" v-else>
-                    <h3 class="estimation__title">{{ $td('Estimated price', 'form.swap-confirm-price-estimation') }}</h3>
-                    <div class="estimation__item">
-                        <div class="estimation__coin">
-                            <div class="estimation__coin-symbol">
+                <div class="information form-row" v-else>
+                    <h3 class="information__title">{{ $td('Estimated price', 'form.swap-confirm-price-estimation') }}</h3>
+                    <div class="information__item">
+                        <div class="information__coin">
+                            <div class="information__coin-symbol">
                                 <template v-if="form.coinToGet">{{ form.coinToGet }}</template>
                                 <template v-else>Coin</template>
                                 rate
                             </div>
                         </div>
-                        <div class="estimation__value">≈ ${{ pretty(currentPrice) }}</div>
+                        <div class="information__value">≈ ${{ pretty(currentPrice) }}</div>
                     </div>
                 </div>
 
@@ -900,19 +899,19 @@ export default {
                 {{ $td('Buy', 'form.buy-button') }} {{ form.coinToGet }}
             </h2>
 
-            <div class="estimation form-row">
-                <h3 class="estimation__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
+            <div class="information form-row">
+                <h3 class="information__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
                 <BaseAmountEstimation :coin="externalTokenSymbol" :amount="form.amountEth" format="exact"/>
 
-                <h3 class="estimation__title">{{ $td('You will get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
+                <h3 class="information__title">{{ $td('You will get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                 <BaseAmountEstimation :coin="form.coinToGet" :amount="estimation" format="approx"/>
 
-                <h3 class="estimation__title">{{ $td('Estimated price', 'form.swap-confirm-price-estimation') }}</h3>
-                <div class="estimation__item">
-                    <div class="estimation__coin">
-                        <div class="estimation__coin-symbol">{{ form.coinToGet }} rate</div>
+                <h3 class="information__title">{{ $td('Estimated price', 'form.swap-confirm-price-estimation') }}</h3>
+                <div class="information__item">
+                    <div class="information__coin">
+                        <div class="information__coin-symbol">{{ form.coinToGet }} rate</div>
                     </div>
-                    <div class="estimation__value">≈ ${{ pretty(currentPrice) }}</div>
+                    <div class="information__value">≈ ${{ pretty(currentPrice) }}</div>
                 </div>
             </div>
 

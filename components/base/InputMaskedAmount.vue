@@ -3,7 +3,6 @@ import 'core-js/features/global-this.js';
 import {IMaskDirective} from 'vue-imask';
 
 export default {
-    ideFix: null,
     imaskAmount: {
         mask: Number,
         scale: 18, // digits after point, 0 for integers
@@ -22,6 +21,13 @@ export default {
             type: [String, Number],
             default: '',
         },
+        scale: {
+            type: [String, Number],
+        },
+        isPercent: {
+            type: Boolean,
+            default: false,
+        },
     },
     emits: [
         'input',
@@ -35,8 +41,32 @@ export default {
     computed: {
         // all parent listeners except `input`
         listeners() {
-            const { input, ...listeners } = this.$listeners;
+            const {input, ...listeners} = this.$listeners;
             return listeners;
+        },
+        imaskOptions() {
+            const amountOptions = {
+                ...this.$options.imaskAmount,
+                scale: this.scale ?? this.$options.imaskAmount.scale,
+            };
+
+            if (this.isPercent) {
+                return {
+                    mask: [
+                        // make lazy: falsy only for not empty inputs
+                        {mask: ''},
+                        {
+                            mask: 'num`%',
+                            lazy: false,
+                            blocks: {
+                                num: amountOptions,
+                            },
+                        },
+                    ],
+                };
+            } else {
+                return amountOptions;
+            }
         },
     },
     watch: {
@@ -52,7 +82,13 @@ export default {
     },
     methods: {
         updateMaskState(value) {
-            this.$refs.input.maskRef.typedValue = value;
+            if (!this.$refs.input.maskRef) {
+                return;
+            }
+            // updating typed value not work anymore for some reason
+            // this.$refs.input.maskRef.typedValue = value;
+            this.$refs.input.value = value;
+            this.$refs.input.maskRef._onChange();
             const maskedValue = this.$refs.input.maskRef._value;
             const cursorPos = maskedValue.length;
             this.$refs.input.maskRef._selection = {start: cursorPos, end: cursorPos};
@@ -66,5 +102,5 @@ export default {
 </script>
 
 <template>
-    <input type="text" autocapitalize="off" inputmode="decimal" v-imask="$options.imaskAmount" v-on="listeners" @accept="onAcceptInput($event)" ref="input"/>
+    <input type="text" autocapitalize="off" inputmode="decimal" v-imask="imaskOptions" v-on="listeners" @accept="onAcceptInput($event)" ref="input"/>
 </template>

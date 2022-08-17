@@ -19,6 +19,7 @@ import CardHead from '~/components/CardHead.vue';
 const OMIT_PARAM_SYMBOL = '-';
 // uppercase such param values
 const COIN_PARAMS = ['coin', 'coin0', 'coin1', 'coinToSell', 'coinToBuy'];
+// @TODO uppercase coins in query
 
 const addLiquidityAction = {
     params: ['coin0', 'coin1'],
@@ -42,6 +43,7 @@ const actionList = {
         tags: [],
     },
     swap: {
+        //@TODO is coinToSell param really needed
         params: ['coinToBuy', 'coinToSell'],
         component: Swap,
         tags: ['exchange'],
@@ -73,7 +75,7 @@ const actionList = {
         component: TxStakeUnbondForm,
     },
     stake: {
-        params: ['id', 'duration'],
+        params: ['id'],
         component: StakeByLock,
     },
 };
@@ -106,7 +108,7 @@ export default {
             }
             return;
         }
-        const [actionType, ...actionQueryParams] = this.$route.params.pathMatch.split('/').filter((item) => !!item);
+        const [actionType, ...actionPathParts] = this.$route.params.pathMatch.split('/').filter((item) => !!item);
         const action = actionList[actionType];
         if (!action) {
             this.$nuxt.error({
@@ -118,23 +120,23 @@ export default {
         // action params
         let pathParams = {};
         let shouldRedirect = false;
-        //@TODO split into two different cycles (redirecting actionQueryParams and collecting pathParams)
+        //@TODO split into two different cycles (redirecting actionPathParts and collecting pathParams)
         action.params.forEach((paramKey, paramIndex) => {
-            const value = actionQueryParams[paramIndex];
+            const value = actionPathParts[paramIndex];
             if (!value) {
                 return;
             }
             const isCoinParam = COIN_PARAMS.includes(paramKey);
             if (isCoinParam && value.toUpperCase() !== value) {
                 shouldRedirect = true;
-                actionQueryParams[paramIndex] = value.toUpperCase();
+                actionPathParts[paramIndex] = value.toUpperCase();
             }
             if (value !== OMIT_PARAM_SYMBOL) {
                 pathParams[paramKey] = value;
             }
         });
         if (shouldRedirect) {
-            let newPathMatch = [actionType, ...actionQueryParams].join('/');
+            let newPathMatch = [actionType, ...actionPathParts].join('/');
             this.$router.replace({
                 ...this.$route,
                 params: {pathMatch: newPathMatch},
@@ -175,7 +177,7 @@ export default {
         this.action = Object.freeze({
             ...action,
             title,
-            params,
+            params: pathParams,
         });
 
         // tags
@@ -229,7 +231,8 @@ export default {
     },
     computed: {
         color() {
-            return hashColor(this.card?.action || this.$route.params.pathMatch.replace(/\/$/, ''));
+            const actionUrl = this.card?.action || this.$route.params.pathMatch.replace(/\/$/, '');
+            return hashColor(clearActionQuery(actionUrl));
         },
     },
     watch: {
@@ -248,6 +251,10 @@ export default {
         },
     },
 };
+
+export function clearActionQuery(url) {
+    return url.replace(/\?.*/, '');
+}
 </script>
 
 <template>
@@ -260,7 +267,7 @@ export default {
                 :override-value="overriddenStatsValue"
             />
             <component
-                class="card card--light-grey card__content card__content--pop"
+                class="card card--pop card--light-grey card__content"
                 :is="action.component"
                 :action="action"
                 :params="action.params"

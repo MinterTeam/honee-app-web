@@ -1,5 +1,6 @@
 <script>
 import {pretty, prettyExact} from '~/assets/utils.js';
+import BaseLoader from '~/components/base/BaseLoader.vue';
 
 const FORMAT_TYPE = {
     PRETTY: 'pretty',
@@ -8,6 +9,7 @@ const FORMAT_TYPE = {
 };
 
 export default {
+    components: {BaseLoader},
     FORMAT_TYPE,
     props: {
         amount: {
@@ -31,12 +33,25 @@ export default {
             type: Boolean,
             default: false,
         },
+        // amount unit, e.g. '%'
+        unit: {
+            type: String,
+            default: '',
+        },
         // baseCoinAmount: {
         //     type: [String, Number],
         // },
+        isLoading: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         amountUsd() {
+            // don't calculate usd price for units other than coin itself
+            if (this.unit) {
+                return 0;
+            }
             let baseCoinAmount;
             if (this.coin === this.$store.getters.BASE_COIN && this.amount > 0) {
                 baseCoinAmount = this.amount;
@@ -55,21 +70,25 @@ export default {
 </script>
 
 <template>
-    <component :is="tag" class="estimation__item">
-        <div class="estimation__coin">
-            <img class="estimation__coin-icon" :src="$store.getters['explorer/getCoinIcon'](coin)" width="20" height="20" alt="" role="presentation">
-            <div class="estimation__coin-symbol">{{ coin }}</div>
+    <component :is="tag" class="information__item">
+        <div class="information__coin">
+            <img class="information__coin-icon" :src="$store.getters['explorer/getCoinIcon'](coin)" width="20" height="20" alt="" role="presentation">
+            <div class="information__coin-symbol">{{ coin }}</div>
         </div>
-        <div class="estimation__value">
-            <span class="u-text-muted" v-if="amountUsd">(${{ pretty(amountUsd) }})</span>
-            <span v-if="format === $options.FORMAT_TYPE.EXACT">{{ prettyExact(amount) }}</span>
-            <span v-else :title="prettyExact(amount)">
-                <template v-if="format === $options.FORMAT_TYPE.APPROX">≈</template>
-                {{ pretty(amount) }}
-            </span>
-            <!--
-            <span class="u-display-ib" v-if="baseCoinAmount && coin !== $store.getters.BASE_COIN">({{ pretty(baseCoinAmount) }} {{ $store.getters.BASE_COIN }})</span>
-            -->
+        <div class="information__value">
+            <BaseLoader class="information__loader" :is-loading="isLoading"/>
+            <template v-if="!isLoading">
+                <span class="u-text-muted" v-if="amountUsd">(${{ pretty(amountUsd) }})</span>
+                <span v-if="format === $options.FORMAT_TYPE.EXACT">{{ prettyExact(amount) }}</span>
+                <span v-else :title="prettyExact(amount)">
+                    <template v-if="format === $options.FORMAT_TYPE.APPROX">≈</template>
+                    {{ pretty(amount) }}
+                </span><!--
+             -->{{ unit }}
+                <!--
+                <span class="u-display-ib" v-if="baseCoinAmount && coin !== $store.getters.BASE_COIN">({{ pretty(baseCoinAmount) }} {{ $store.getters.BASE_COIN }})</span>
+                -->
+            </template>
         </div>
     </component>
 </template>

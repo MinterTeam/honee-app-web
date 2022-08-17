@@ -1,7 +1,7 @@
 <script>
-import {validationMixin} from 'vuelidate';
-import withParams from 'vuelidate/lib/withParams';
-import {req} from 'vuelidate/lib/validators/common';
+import {validationMixin} from 'vuelidate/src/index.js';
+import withParams from 'vuelidate/src/withParams';
+import {req} from 'vuelidate/src/validators/common';
 import {generateMnemonic} from 'minterjs-wallet';
 import getTitle from '~/assets/get-title.js';
 import {DASHBOARD_URL} from '~/assets/variables.js';

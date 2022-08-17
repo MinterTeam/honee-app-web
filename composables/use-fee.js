@@ -27,7 +27,7 @@ import CancelError from '~/assets/utils/error-cancel.js';
  */
 /**
  * @typedef {FeeItemData} FeeData
- * @property {Array<FeeItemData>} resultList
+ * @property {Array<FeeItemData|null>} resultList
  * @property {string} error
  * @property {boolean} isLoading
  */
@@ -111,7 +111,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
 
     const fee = computed(() => {
         return {
-            resultList: state.resultList.map(mapFeeFields),
+            resultList: state.resultList.map((item) => item ? mapFeeFields(item) : item),
             ...mapFeeFields(state),
             error: state.feeError,
             isLoading: state.isLoading,
@@ -156,11 +156,18 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
             const promiseList = txParamsList.map((txParams,  index) => {
                 const precision = index > 0 ? FEE_PRECISION_SETTING.IMPRECISE : feeProps.precision;
 
-                const estimatePromise = estimateFeeWithFallback(txParams, feeProps.fallbackToCoinToSpend, feeProps.baseCoinAmount, precision, idPrimary + index, idSecondary + index);
+                const estimatePromise = txParams?.type
+                    ? estimateFeeWithFallback(txParams, feeProps.fallbackToCoinToSpend, feeProps.baseCoinAmount, precision, idPrimary + index, idSecondary + index)
+                    : Promise.resolve(null);
                 return ensurePropsNotChanged(estimatePromise);
             });
-            const resultList = await Promise.all(promiseList);
-            state.resultList = resultList;
+            // some result item may be null if sequence item is skipped
+            state.resultList = await Promise.all(promiseList);
+            const resultList = state.resultList.filter((item) => !!item);
+            if (resultList.length === 0) {
+                state.isLoading = false;
+                return;
+            }
             state.priceCoinCommission = sumBy(resultList, 'priceCoinCommission');
             state.baseCoinCommission = sumBy(resultList, 'baseCoinCommission');
             const isBaseCoinNotEnough = resultList.some(({isBaseCoinEnough}) => !isBaseCoinEnough);
@@ -200,6 +207,11 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         console.debug(error);
     }
 
+    /**
+     * Fetch new fee item in fee.resultList. Useful to update required fee before new tx in sequence
+     * @param {number} index
+     * @return {Promise<{FeeDataItem}|null>}
+     */
     async function refineByIndex(index) {
         const txParams = feeProps.txParamsList?.[index];
         if (!txParams) {

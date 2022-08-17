@@ -39,6 +39,22 @@ export default {
                 },
             },
             {
+                caption: 'Stake & Earn',
+                coin: `HUBSTAKE`,
+                description: 'Stake HUBSTAKE for 1, 2, 3, 4 or 5 years to get everyday rewards. The longer you stake, the more you earn!',
+                stats: {
+                    apr: {
+                        percent: '1-5',
+                    },
+                },
+                tags: ['Staking'],
+                action: `/stake/21`,
+                ru: {
+                    description: 'Стейкуйте HUBSTAKE на 1, 2, 3, 4 или 5 лет, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
+                    caption: 'Стейкинг',
+                },
+            },
+            {
                 caption: 'Delegate',
                 coin: BASE_COIN,
                 description: '‘Tie’ your BIP to any validator of the Minter Network and start getting rewards every hour.',
@@ -150,6 +166,20 @@ export default {
                 action: `/swap/${BASE_COIN}`,
                 ru: {
                     description: 'Приобретите основную монету Minter — единой децентрализованной сети с поддержкой многих цифровых активов.',
+                    caption: 'Купить',
+                },
+            },
+            {
+                caption: 'Buy',
+                coin: 'CAWETH',
+                description: 'A Hunters Dream is a decentralized financial payment network that rebuilds the traditional payment stack on the blockchain.',
+                icon: 'CAWETH',
+                stats: {
+                },
+                tags: ['Exchange'],
+                action: '/swap/CAWETH',
+                ru: {
+                    description: 'A Hunters Dream — это децентрализованная финансовая платежная сеть, которая перестраивает традиционный платежный стек на блокчейне.',
                     caption: 'Купить',
                 },
             },

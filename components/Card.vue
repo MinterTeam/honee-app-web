@@ -1,6 +1,7 @@
 <script>
 import get from 'lodash-es/get.js';
 import hashColor from '~/assets/hash-color.js';
+import {clearActionQuery} from '~/components/CardAction.vue';
 import CardHead from '~/components/CardHead.vue';
 
 const ACTION_TYPE = {
@@ -25,10 +26,13 @@ export default {
             type: Object,
             required: true,
         },
+        actionBaseUrl: {
+            type: String,
+        },
     },
     computed: {
         color() {
-            return hashColor(this.card.action);
+            return hashColor(clearActionQuery(this.card.action));
         },
         undoActionType() {
             switch (this.card.actionType) {
@@ -43,10 +47,10 @@ export default {
         },
         undoActionUrl() {
             if (this.undoActionType === ACTION_TYPE.REMOVE_LIQUIDITY) {
-                return this.card.action.replace(/^\/(\w+)/, '/remove-liquidity');
+                return clearActionQuery(this.card.action.replace(/^\/(\w+)/, '/remove-liquidity'));
             }
             if (this.undoActionType === ACTION_TYPE.UNBOND) {
-                return this.card.action.replace(/^\/(\w+)/, '/unbond');
+                return clearActionQuery(this.card.action.replace(/^\/(\w+)/, '/unbond'));
             }
             return undefined;
         },
@@ -92,7 +96,7 @@ function poolHasCoin(pool, symbol) {
         <div class="u-mt-10">
             <div class="u-grid">
                 <div class="u-cell" :class="isUndoAvailable ? 'u-cell--6-10': ''">
-                    <nuxt-link class="button button--full " :to="getDashboardUrl(card.action)">
+                    <nuxt-link class="button button--full " :to="getDashboardUrl(card.action, actionBaseUrl)">
                         <template v-if="card.actionType === $options.ACTION_TYPE.DEPOSIT">{{ $td('Buy with BNB & ETH', 'index.card-button-deposit') }}</template>
                         <template v-if="card.actionType === $options.ACTION_TYPE.SWAP">{{ $td('Buy', 'index.swap') }}</template>
                         <template v-if="card.actionType === $options.ACTION_TYPE.FARM">{{ $td('Add liquidity', 'index.add-liquidity') }}</template>
@@ -102,7 +106,7 @@ function poolHasCoin(pool, symbol) {
                     </nuxt-link>
                 </div>
                 <div class="u-cell u-cell--4-10" v-if="isUndoAvailable">
-                    <nuxt-link class="button button--full button--ghost-white" :to="getDashboardUrl(undoActionUrl)">
+                    <nuxt-link class="button button--full button--ghost-white" :to="getDashboardUrl(undoActionUrl, actionBaseUrl)">
                         <template v-if="undoActionType === $options.ACTION_TYPE.REMOVE_LIQUIDITY">{{ $td('Withdraw', 'index.withdraw-unbond') }}</template>
                         <template v-if="undoActionType === $options.ACTION_TYPE.UNBOND">{{ $td('Unbond', 'index.withdraw-unbond') }}</template>
                     </nuxt-link>

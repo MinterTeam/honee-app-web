@@ -1,10 +1,10 @@
 <script>
-import {validationMixin} from 'vuelidate';
-import required from 'vuelidate/lib/validators/required';
-import minLength from 'vuelidate/lib/validators/minLength';
-import maxLength from 'vuelidate/lib/validators/maxLength';
-import minValue from 'vuelidate/lib/validators/minValue.js';
-import maxValue from 'vuelidate/lib/validators/maxValue.js';
+import {validationMixin} from 'vuelidate/src/index.js';
+import required from 'vuelidate/src/validators/required';
+import minLength from 'vuelidate/src/validators/minLength';
+import maxLength from 'vuelidate/src/validators/maxLength';
+import minValue from 'vuelidate/src/validators/minValue.js';
+import maxValue from 'vuelidate/src/validators/maxValue.js';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import checkEmpty from '~/assets/v-check-empty.js';
@@ -45,11 +45,11 @@ export default {
         return getStakingProgram(programId)
             .then((stakingProgram) => {
                 this.stakingProgram = stakingProgram;
-                const duration = stakingProgram.options[this.params.duration]
-                    ? this.params.duration
+                const duration = stakingProgram.options[this.$route.query.duration]
+                    ? this.$route.query.duration
                     : Object.keys(stakingProgram.options)[0];
                 this.form.duration = blockToYear(duration);
-                this.form.coin = stakingProgram.lockCoin.symbol;
+                this.form.coin = this.$route.query.coin || stakingProgram.lockCoin.symbol;
             })
             .catch((error) => {
                 this.$nuxt.error(error);
@@ -73,9 +73,10 @@ export default {
         return {
             form: {
                 value: '',
-                coin: '',
+                coin: this.$route.query.coin || '',
                 duration: 0,
             },
+            isUseMax: false,
             /** @type {StakingProgram|null} */
             stakingProgram: null,
             latestBlockHeight: 0,
@@ -233,6 +234,7 @@ function yearToBlock(year) {
             :coin-to-sell="form.coin"
             :coin-to-buy="stakingProgram.lockCoin.symbol"
             :value-to-sell="form.value"
+            :is-use-max="isUseMax"
             :sequence-params="sequenceParams"
             :v$sequence-params="$v.form"
             :before-post-sequence="fetchLatestBlock"
@@ -252,6 +254,7 @@ function yearToBlock(year) {
                         :useBalanceForMaxValue="true"
                         :fee="fee.resultList[0]"
                         :label="$td('Amount', 'form.wallet-send-amount')"
+                        @update:is-use-max="isUseMax = $event"
                     />
                     <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.coin.$dirty && !$v.form.coin.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
@@ -275,30 +278,30 @@ function yearToBlock(year) {
                     <span class="form-field__error" v-else-if="$v.form.duration.$dirty && !$v.form.duration.maxValue">{{ $td('Maximum', 'form.range-error-max') }} 100%</span>
                 </div>
 
-                <div class="estimation form-row">
+                <div class="information form-row">
                     <template v-if="!isSelectedLockCoin">
-                        <h3 class="estimation__title">{{ $td('You will buy and stake approximately', 'stake-by-lock.estimation-buy') }}</h3>
+                        <h3 class="information__title">{{ $td('You will buy and stake approximately', 'stake-by-lock.estimation-buy') }}</h3>
                         <BaseAmountEstimation :coin="stakingProgram.lockCoin.symbol" :amount="estimation || 0" format="approx"/>
                     </template>
 
-                    <h3 class="estimation__title">{{ $td('You will earn', 'stake-by-lock.estimation-earn') }}</h3>
-                    <div class="estimation__item">
-                        <div class="estimation__coin">
-                            <img class="estimation__coin-icon" :src="$store.getters['explorer/getCoinIcon'](stakingProgram.rewardCoin.symbol)" width="20" height="20" alt="" role="presentation">
-                            <div class="estimation__coin-symbol">{{ stakingProgram.rewardCoin.symbol }}</div>
+                    <h3 class="information__title">{{ $td('You will earn', 'stake-by-lock.estimation-earn') }}</h3>
+                    <div class="information__item">
+                        <div class="information__coin">
+                            <img class="information__coin-icon" :src="$store.getters['explorer/getCoinIcon'](stakingProgram.rewardCoin.symbol)" width="20" height="20" alt="" role="presentation">
+                            <div class="information__coin-symbol">{{ stakingProgram.rewardCoin.symbol }}</div>
                         </div>
-                        <div class="estimation__value">
+                        <div class="information__value">
                             ≈{{ totalYieldAmount ? pretty(totalYieldAmount) : '' }}
                             (+{{ pretty(totalYieldPercent) }}%)
                         </div>
                     </div>
 
-                    <h3 class="estimation__title">{{ $td('Your stake will unlock in', 'stake-by-lock.estimation-unlock') }}</h3>
-                    <div class="estimation__item">
+                    <h3 class="information__title">{{ $td('Your stake will unlock in', 'stake-by-lock.estimation-unlock') }}</h3>
+                    <div class="information__item">
                         <div>
                             {{ getTimeDistance(unlockTime) }}
                         </div>
-                        <div class="estimation__value">
+                        <div class="information__value">
                             ≈ {{ $td('On', 'stake-by-lock.estimation-unlock-preposition') }}
                             {{ getDate(unlockTime) }}
                         </div>
@@ -318,37 +321,37 @@ function yearToBlock(year) {
             </template>
 
             <template v-slot:confirm-modal-body>
-                <div class="estimation form-row">
+                <div class="information form-row">
                     <template v-if="isSelectedLockCoin">
-                        <h3 class="estimation__title">{{ $td('You will stake', 'stake-by-lock.confirm-lock') }}</h3>
+                        <h3 class="information__title">{{ $td('You will stake', 'stake-by-lock.confirm-lock') }}</h3>
                         <BaseAmountEstimation :coin="form.coin" :amount="form.value" format="exact"/>
                     </template>
                     <template v-else>
-                        <h3 class="estimation__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
+                        <h3 class="information__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
                         <BaseAmountEstimation :coin="form.coin" :amount="form.value" format="exact"/>
 
-                        <h3 class="estimation__title">{{ $td('You will buy and stake approximately', 'stake-by-lock.estimation-buy') }}</h3>
+                        <h3 class="information__title">{{ $td('You will buy and stake approximately', 'stake-by-lock.estimation-buy') }}</h3>
                         <BaseAmountEstimation :coin="stakingProgram.lockCoin.symbol" :amount="estimation" format="approx"/>
                     </template>
 
-                    <h3 class="estimation__title">{{ $td('You will earn', 'stake-by-lock.estimation-earn') }}</h3>
-                    <div class="estimation__item">
-                        <div class="estimation__coin">
-                            <img class="estimation__coin-icon" :src="$store.getters['explorer/getCoinIcon'](stakingProgram.rewardCoin.symbol)" width="20" height="20" alt="" role="presentation">
-                            <div class="estimation__coin-symbol">{{ stakingProgram.rewardCoin.symbol }}</div>
+                    <h3 class="information__title">{{ $td('You will earn', 'stake-by-lock.estimation-earn') }}</h3>
+                    <div class="information__item">
+                        <div class="information__coin">
+                            <img class="information__coin-icon" :src="$store.getters['explorer/getCoinIcon'](stakingProgram.rewardCoin.symbol)" width="20" height="20" alt="" role="presentation">
+                            <div class="information__coin-symbol">{{ stakingProgram.rewardCoin.symbol }}</div>
                         </div>
-                        <div class="estimation__value">
+                        <div class="information__value">
                             ≈{{ totalYieldAmount ? pretty(totalYieldAmount) : '' }}
                             (+{{ pretty(totalYieldPercent) }}%)
                         </div>
                     </div>
 
-                    <h3 class="estimation__title">{{ $td('Your stake will unlock in', 'stake-by-lock.estimation-unlock') }}</h3>
-                    <div class="estimation__item">
+                    <h3 class="information__title">{{ $td('Your stake will unlock in', 'stake-by-lock.estimation-unlock') }}</h3>
+                    <div class="information__item">
                         <div>
                             {{ getTimeDistance(unlockTime) }}
                         </div>
-                        <div class="estimation__value">
+                        <div class="information__value">
                             ≈ {{ $td('On', 'stake-by-lock.estimation-unlock-preposition') }}
                             {{ getDate(unlockTime) }}
                         </div>

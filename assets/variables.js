@@ -13,6 +13,8 @@ export const CHAINIK_API_URL = 'https://chainik.io/json/';
 export const CARD_TO_MINTER_HOST = process.env.APP_CARD_TO_MINTER_HOST;
 export const CARD_TO_MINTER_API_URL = 'https://card-api.minter.trade/v1/';
 export const STAKING_API_URL = process.env.APP_STAKING_API_URL;
+export const REFERRAL_API_URL = process.env.APP_REFERRAL_API_URL;
+export const PORTFOLIO_API_URL = process.env.APP_PORTFOLIO_API_URL;
 export const HUB_ETHEREUM_CONTRACT_ADDRESS = process.env.APP_HUB_ETHEREUM_CONTRACT_ADDRESS;
 export const HUB_BSC_CONTRACT_ADDRESS = process.env.APP_HUB_BSC_CONTRACT_ADDRESS;
 export const HUB_MINTER_MULTISIG_ADDRESS = process.env.APP_HUB_MINTER_MULTISIG_ADDRESS;
@@ -36,6 +38,8 @@ export const I18N_ROUTE_NAME_SEPARATOR = '___';
 
 export const STAKE_RECALCULATE_BLOCK_COUNT = 720;
 export const DASHBOARD_URL = '/';
+
+export const REF_ID_QUERY = 'r';
 
 export const SWAP_TYPE = {
     BANCOR: 'bancor',

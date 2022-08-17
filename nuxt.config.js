@@ -173,6 +173,8 @@ module.exports = {
         { src: '~/plugins/custom-event-polyfill.js', ssr: false },
         { src: '~/plugins/persisted-state.js', ssr: false },
         { src: '~/plugins/click-blur.js', ssr: false },
+        { src: '~/plugins/referral.js', ssr: false },
+        { src: '~/plugins/goatcounter.js', ssr: false },
     ],
     content: {
         liveEdit: false,
@@ -246,6 +248,7 @@ module.exports = {
             'centrifuge/src',
             'autonumeric/src',
             'vue-autonumeric/src',
+            'vuelidate/src',
             'lodash-es',
             // 'nuxt-i18n/src',
             'v-file-input/src',
