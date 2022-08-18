@@ -185,20 +185,6 @@ export default {
             },
             {
                 caption: 'Buy',
-                coin: 'SQD',
-                description: 'Buy a Minter-powered meme token brought to you by fans of a popular series Squid Game.',
-                icon: 'SQD',
-                stats: {
-                },
-                tags: ['Exchange'],
-                action: '/swap/SQD',
-                ru: {
-                    description: 'Приобретите мем-коин фан-клуба популярного сериала «Игра в кальмара», выпущенный на блокчейне Minter.',
-                    caption: 'Купить',
-                },
-            },
-            {
-                caption: 'Buy',
                 coin: 'ARCONA',
                 description: 'Get a native token of ARCONA metaverse  that allows you to purchase digital lands and place any models.',
                 stats: {
