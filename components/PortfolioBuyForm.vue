@@ -2,10 +2,8 @@
 import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required';
 import minLength from 'vuelidate/src/validators/minLength';
-import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import Big, {BIG_ROUND_DOWN} from '~/assets/big.js';
-import checkEmpty from '~/assets/v-check-empty.js';
 import {pretty} from '~/assets/utils.js';
 import SwapEstimation from '~/components/base/SwapEstimation.vue';
 import TxSequenceForm from '~/components/base/TxSequenceForm.vue';
@@ -21,10 +19,6 @@ export default {
         TxSequenceForm,
         BaseAmountEstimation,
         FieldCombined,
-    },
-    directives: {
-        checkEmpty,
-        autosize,
     },
     mixins: [validationMixin],
     emits: [
@@ -90,19 +84,31 @@ export default {
         },
         estimationView() {
             return this.coinList.map((item, index) => {
-                if (!this.v$estimationList[index] || this.v$estimationList[index].propsGroup.$invalid) {
+                let result = {
+                    coin: item.symbol,
+                    hideUsd: true,
+                };
+                const needSwap = this.checkNeedSwap(item.symbol);
+                if (!needSwap && this.valueDistribution[index] > 0) {
                     return {
-                        symbol: item.symbol,
-                        value: item.allocation,
+                        ...result,
+                        amount: this.valueDistribution[index],
+                    };
+                }
+                const validFormInput = this.v$estimationList[index] && !this.v$estimationList[index].propsGroup.$invalid;
+                if (!validFormInput) {
+                    return {
+                        ...result,
+                        amount: item.allocation,
                         unit: '%',
+                        format: 'exact',
                     };
                 }
 
-                const needSwap = this.checkNeedSwap(item.symbol);
                 return {
-                    symbol: item.symbol,
-                    value: needSwap ? this.estimationList[index] : this.valueDistribution[index],
-                    loading: this.estimationFetchStateList[index]?.loading,
+                    ...result,
+                    amount: this.estimationList[index],
+                    isLoading: this.estimationFetchStateList[index]?.loading,
                     error: this.estimationFetchStateList[index]?.error,
                 };
             });
@@ -188,7 +194,7 @@ export default {
                         :amount.sync="form.value"
                         :$amount="$v.form.value"
                         :useBalanceForMaxValue="true"
-                        :fee="fee.resultList[0]"
+                        :fee="fee"
                         :label="$td('Amount', 'form.wallet-send-amount')"
                     />
                     <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
@@ -203,12 +209,8 @@ export default {
                     <h3 class="information__title">{{ $td('Tokens', 'portfolio.manage-token-list-title') }}</h3>
                     <BaseAmountEstimation
                         v-for="item in estimationView"
-                        :key="item.symbol"
-                        :coin="item.symbol"
-                        :amount="item.value"
-                        :unit="item.unit"
-                        :format="item.unit ? 'exact' : undefined"
-                        :is-loading="item.loading"
+                        :key="item.coin"
+                        v-bind="item"
                     />
                 </div>
 
@@ -245,13 +247,12 @@ export default {
                     <h3 class="information__title">{{ $td('Tokens', 'portfolio.manage-token-list-title') }}</h3>
                     <BaseAmountEstimation
                         v-for="item in estimationView"
-                        :key="item.symbol"
-                        :coin="item.symbol"
-                        :amount="item.value"
-                        :unit="item.unit"
-                        :format="item.unit ? 'exact' : undefined"
-                        :is-loading="item.loading"
+                        :key="item.coin"
+                        v-bind="item"
                     />
+
+                    <h3 class="information__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
+                    <BaseAmountEstimation :coin="form.coin" :amount="form.value" format="exact"/>
                 </div>
             </template>
         </TxSequenceForm>
