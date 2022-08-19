@@ -113,26 +113,21 @@ export default {
                 return {
                     // pass null to txParams to not perform fee calculation
                     txParams: needSwap ? {
-                        // $refs item in v-for is an array
-                        type: this.$refs['estimation' + index][0].getTxType(),
+                        type: this.getEstimationRef(index).getTxType(),
                         data: txData,
                     } : null,
                     // pass skip to not send tx in sequence
                     skip: !needSwap,
-                    // prepare: this.isSelectedLockCoin ? undefined : (swapTx, prevPrepare) => {
-                    //     const coinToBuy = swapTx.data.coin_to_buy || swapTx.data.coins.find((item) => item.id === swapTx.tags['tx.coin_to_buy']);
-                    //     // @TODO if user had some coinToBuy on balance, it's better to deduct fee from old balance, than from swapTx.returnAmount
-                    //     const value = getAvailableSelectedBalance({
-                    //         coin: coinToBuy,
-                    //         amount: swapTx.returnAmount,
-                    //     }, prevPrepare.extra.fee);
-                    //
-                    //     return {
-                    //         data: {
-                    //             value,
-                    //         },
-                    //     };
-                    // },
+                    prepareGasCoinPosition: 'end',
+                    prepare: needSwap ? (swapTx) => {
+                        return this.getEstimationRef(index).getEstimation(true, true)
+                            .then(() => {
+                                return {
+                                    type: this.getEstimationRef(index).getTxType(),
+                                    data: this.estimationTxDataList[index],
+                                };
+                            });
+                    } : undefined,
                 };
             });
         },
@@ -141,6 +136,10 @@ export default {
     },
     methods: {
         pretty,
+        getEstimationRef(index) {
+            // $refs item in v-for is an array
+            return this.$refs['estimation' + index][0];
+        },
         checkNeedSwap(coinSymbol) {
             return this.form.coin !== coinSymbol;
         },
