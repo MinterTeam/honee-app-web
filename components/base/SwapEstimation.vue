@@ -36,7 +36,12 @@ export default {
             type: Object,
             default: null,
         },
+        // user pressed 'Use max' button
         isUseMax: {
+            type: Boolean,
+            default: false,
+        },
+        forceSellAll: {
             type: Boolean,
             default: false,
         },
@@ -97,7 +102,7 @@ export default {
                 required: !this.isTypeSell ? required : () => true,
                 validAmount: (value) => !this.isTypeSell ? value > 0 : true,
             },
-            propsGroup: ['coinToSell', 'coinToBuy', 'valueToSell', 'valueToBuy'],
+            propsGroup: ['coinToSell', 'coinToBuy', 'valueToSell.required', 'valueToSell.validAmount', 'valueToBuy'],
 
             minimumValueToBuy: {
                 required: (value) => this.isTypeSell ? value >= 0 : true,
@@ -129,6 +134,9 @@ export default {
         isSellAll() {
             if (!this.isTypeSell) {
                 return false;
+            }
+            if (this.forceSellAll) {
+                return true;
             }
             // not use max
             if (!this.isUseMax) {
