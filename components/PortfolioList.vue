@@ -3,13 +3,21 @@ import {shortHashFilter} from '~/assets/utils.js';
 import {getPortfolioList} from '~/api/portfolio.js';
 
 export default {
+    props: {
+        owner: {
+            type: String,
+        },
+    },
     data() {
         return {
             portfolioList: [],
         };
     },
     fetch() {
-        return getPortfolioList({owner: this.$store.getters.address})
+        return getPortfolioList({
+            owner: this.owner,
+            limit: 15,
+        })
             .then((portfolioInfo) => {
                 this.portfolioList = portfolioInfo.list || [];
             });
@@ -24,7 +32,8 @@ export default {
     <div>
         <h2 class="dashboard__category-title u-mb-15">
             <img class="dashboard__category-icon" src="/img/icon-category-portfolio.svg" alt="" role="presentation">
-            <span>{{ $td('My portfolios', `portfolio.my-list-title`) }}</span>
+            <span v-if="owner === $store.getters.address">{{ $td('My portfolios', `portfolio.my-list-title`) }}</span>
+            <span v-else>{{ $td('Portfolios', `portfolio.list-title`) }}</span>
         </h2>
         <div class="u-grid u-grid--vertical-margin" v-if="portfolioList.length && !$fetchState.pending">
             <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="portfolio in portfolioList" :key="portfolio.id">

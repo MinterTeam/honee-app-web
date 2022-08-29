@@ -62,7 +62,10 @@ export function getPortfolio(id) {
  */
 export function getPortfolioList(params) {
     return instance.get(`portfolio`, {
-            params,
+            params: {
+                profit_period: 'daily7',
+                ...params,
+            },
         })
         .then((response) => response.data);
 }
