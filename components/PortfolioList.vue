@@ -1,5 +1,5 @@
 <script>
-import {shortHashFilter} from '~/assets/utils.js';
+import {pretty, shortHashFilter} from '~/assets/utils.js';
 import {getPortfolioList} from '~/api/portfolio.js';
 
 export default {
@@ -10,6 +10,7 @@ export default {
     },
     data() {
         return {
+            /** @type {Array<Portfolio>} */
             portfolioList: [],
         };
     },
@@ -23,6 +24,7 @@ export default {
             });
     },
     methods: {
+        pretty,
         shortHashFilter,
     },
 };
@@ -43,10 +45,17 @@ export default {
                             <div class="card__action-title-type">#{{ portfolio.id }}</div>
                             <div class="card__action-title-value">{{ portfolio.title }}</div>
                         </div>
-<!--                        <div class="card__action-stats">
-                            <div class="card__action-stats-caption">{{ statsCaption }}</div>
-                            <div class="card__action-stats-value">{{ statsValue }}</div>
-                        </div>-->
+                        <div class="card__action-stats">
+                            <div class="card__action-stats-caption">
+                                7 days
+                            </div>
+                            <div
+                                class="card__action-stats-value"
+                                :class="portfolio.profit.daily7 >= 0 ? 'u-text-green' : 'u-text-red'"
+                            >
+                                {{ pretty(portfolio.profit.daily7) }}%
+                            </div>
+                        </div>
                     </div>
                     <div class="card__action-description u-mt-05 u-text-muted">By {{ shortHashFilter(portfolio.owner) }}</div>
                     <p class="card__action-description">{{ portfolio.description }}</p>
