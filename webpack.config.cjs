@@ -1,3 +1,5 @@
+// for JetBrains IDE
+
 module.exports = {
     resolve: {
         // for WebStorm
