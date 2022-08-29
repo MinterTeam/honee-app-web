@@ -91,7 +91,7 @@ export default {
                 {{ $td('Received', 'form.stage-received') }} {{ pretty(step.amount) }} {{ step.coin }}
             </template>
             <TxPreview
-                class="u-display-ib"
+                class="u-display-inline"
                 v-if="step.txParams && /^minter\d+$/.test(loadingStage)"
                 :tx="step.txParams"
             />
