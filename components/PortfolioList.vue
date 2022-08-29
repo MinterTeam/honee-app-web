@@ -60,6 +60,6 @@ export default {
         </div>
         <div class="u-text-center" v-else>{{ $td('You don\'t have any portfolios yet', 'portfolio.my-list-empty') }}</div>
 
-        <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">+ {{ $td('Create you own portfolio', 'portfolio.create-new-link') }}</nuxt-link>
+        <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">+ {{ $td('Create portfolio', 'portfolio.create-new-link') }}</nuxt-link>
     </div>
 </template>
