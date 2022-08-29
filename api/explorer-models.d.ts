@@ -785,6 +785,7 @@ export interface AggregatedRewardPaginatedCollectionResponse {
 export interface AggregatedRewardResponse {
   /**
    * Time id
+   * @deprecated
    * @example 2019-11-19T00:00:00Z
    */
   timeId?: string;
