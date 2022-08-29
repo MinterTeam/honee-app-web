@@ -148,7 +148,7 @@ export default {
 
             ensurePromise(this.beforePostSequence, this)
                 .then(() => {
-                    let sequenceParams= Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
+                    let sequenceParams = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
                     sequenceParams = sequenceParams.map((item, index) => {
                         if (item.skip) {
                             return item;
@@ -165,13 +165,11 @@ export default {
                         const itemPrepare = Array.isArray(item.prepare)
                             ? item.prepare
                             : (item.prepare ? [item.prepare] : []);
+                        const prepareGasCoinPosition = item.prepareGasCoinPosition || 'start';
 
                         return {
                             ...item,
-                            prepare: [
-                                prepareGasCoin,
-                                ...itemPrepare,
-                            ],
+                            prepare: arrayInsertAtPosition(itemPrepare, prepareGasCoin, prepareGasCoinPosition),
                         };
                     });
                     return this.sendTxSequence(sequenceParams, {
@@ -203,6 +201,22 @@ export default {
         },
     },
 };
+
+/**
+ * @param {Array<function>} target
+ * @param {function} item
+ * @param {'start'|'end'} position
+ * @return {Array<function>}
+ */
+function arrayInsertAtPosition(target, item, position) {
+    target = target.slice();
+    if (position === 'start') {
+        target.unshift(item);
+    } else {
+        target.push(item);
+    }
+    return target;
+}
 </script>
 
 <template>

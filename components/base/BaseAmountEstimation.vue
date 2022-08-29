@@ -38,6 +38,10 @@ export default {
             type: String,
             default: '',
         },
+        hideUsd: {
+            type: Boolean,
+            default: false,
+        },
         // baseCoinAmount: {
         //     type: [String, Number],
         // },
@@ -49,7 +53,7 @@ export default {
     computed: {
         amountUsd() {
             // don't calculate usd price for units other than coin itself
-            if (this.unit) {
+            if (this.hideUsd || this.unit) {
                 return 0;
             }
             let baseCoinAmount;

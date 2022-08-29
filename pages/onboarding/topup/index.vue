@@ -45,7 +45,10 @@ export default {
             </h1>
             <p>{{ $td('Choose one of these options', 'topup.description') }}</p>
 
-
+            <a class="button button--main button--full u-mt-10" :href="card2MinterUrl" v-if="isMainnet">
+                <InlineSvg class="button__icon" src="/img/icon-topup-card.svg" alt="" role="presentation"/>
+                {{ $td('Card to card', 'topup.top-up-with-card2card') }}
+            </a>
             <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath('/onboarding/topup/bsc')">
                 <InlineSvg class="button__icon" src="/img/icon-topup-bnb.svg" alt="" role="presentation"/>
                 {{ $td('Top up with BNB', 'topup.top-up-with-network', {network: 'BNB'}) }}
@@ -54,10 +57,6 @@ export default {
                 <InlineSvg class="button__icon" src="/img/icon-topup-eth.svg" alt="" role="presentation"/>
                 {{ $td('Top up with ETH', 'topup.top-up-with-network', {network: 'ETH'}) }}
             </nuxt-link>
-            <a class="button button--main button--full u-mt-10" :href="card2MinterUrl" v-if="isMainnet">
-                <InlineSvg class="button__icon" src="/img/icon-topup-card.svg" alt="" role="presentation"/>
-                {{ $td('Card to card', 'topup.top-up-with-card2card') }}
-            </a>
             <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath('/onboarding/topup/minter')">
                 <InlineSvg class="button__icon" src="/img/icon-topup-minter.svg" alt="" role="presentation"/>
                 {{ $td('Top up with Minter', 'topup.top-up-with-network', {network: 'Minter'}) }}
