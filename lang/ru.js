@@ -96,6 +96,7 @@ export default {
         'receive': 'Получить',
 
         'assets-coins': 'Монеты',
+        'assets-coins-sell-all': 'Продать все монеты',
         'assets-coins-view-all': 'Показать все монеты',
         'assets-coins-view-less': 'Показать меньше монет',
         'assets-stakes': 'Стейки',
@@ -226,8 +227,12 @@ export default {
         'manage-success-view': 'Смотреть портфель',
         'buy-title': 'Купить портфель',
         'buy-button': 'Купить',
-        'my-list-title': 'Мои портфели',
-        'my-list-empty': 'У вас пока нет созданных портфелей',
+        'list-title': 'Портфели',
+        'list-managed-title': 'Управление портфелями',
+        'list-managed-empty': 'У вас пока нет созданных портфелей',
+        'list-my-title': 'Мои портфели',
+
+        'view-all': 'Смотреть все портфели',
         'create-new-link': 'Создать свой портфель',
     },
     action: {

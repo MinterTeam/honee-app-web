@@ -124,7 +124,8 @@
 /* CARDS */
 @card-padding-large: 32px;
 @card-chevron-width: 8px;
-.card-wrap-cell {display: flex; }
+/* stretch card vertically to fit siblings */
+.card-wrap-cell {display: flex;}
 .card {
     background: #fff; color: @c-black; box-shadow: 0 4px 4px rgba(0,0,0,0.05); position: relative; border-radius: 16px; /*overflow: hidden;*/ display: block;
     &::before {content: ''; display: table;} // fix firefox incorrect collapsing negative margin
@@ -146,7 +147,7 @@
 .card--light-grey {
     background: @c-white-light;
 }
-.card--action {display: flex; flex-direction: column; flex-grow: 2;}
+.card--action {display: flex; flex-direction: column; flex-grow: 2; min-width: 0; /* prevent flex item to overflow parent */}
 .card-content-base-padding() {
     padding: 16px;
     &:first-child {padding-top: 24px;}
@@ -307,6 +308,7 @@
         &:before {content: ''; background: @c-main; width: 40px; height: 40px; border-radius: 50%; position: absolute; left: 50%; top: 0; margin-left: -20px;}
         .button__icon {margin: 0; position: absolute; left: 50%; top: ((40px - 24px) / 2); margin-left: -12px;}
     }
+    .wallet__controls-fancy-button {width: 100%; text-align: center;}
 }
 @media (min-width: @breakpoint-medium-up) {
     .wallet__balance-wrap {}
@@ -347,6 +349,9 @@
 .wallet__coin-verified {vertical-align: middle; margin-left: 4px;}
 .wallet__coin-balance {font-weight: 600; text-align: right;}
 .wallet__coin-balance-usd {font-size: 12px; color: @c-black-light; text-align: right;}
+.wallet__coin-control {
+    &+& {margin-top: 8px;}
+}
 
 .wallet__stake-item {
     &+& {margin-top: 40px;}

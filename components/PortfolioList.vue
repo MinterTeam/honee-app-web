@@ -1,11 +1,19 @@
 <script>
 import {pretty, shortHashFilter} from '~/assets/utils.js';
 import {getPortfolioList} from '~/api/portfolio.js';
+import BaseLoader from '~/components/base/BaseLoader.vue';
 
 export default {
+    components: {
+        BaseLoader,
+    },
     props: {
         owner: {
             type: String,
+        },
+        limit: {
+            type: [Number, String],
+            default: 12,
         },
     },
     data() {
@@ -17,7 +25,7 @@ export default {
     fetch() {
         return getPortfolioList({
             owner: this.owner,
-            limit: 15,
+            limit: this.limit,
         })
             .then((portfolioInfo) => {
                 this.portfolioList = portfolioInfo.list || [];
@@ -34,10 +42,15 @@ export default {
     <div>
         <h2 class="dashboard__category-title u-mb-15">
             <img class="dashboard__category-icon" src="/img/icon-category-portfolio.svg" alt="" role="presentation">
-            <span v-if="owner === $store.getters.address">{{ $td('My portfolios', `portfolio.my-list-title`) }}</span>
+            <span v-if="owner === $store.getters.address">{{ $td('Manage portfolios', `portfolio.list-managed-title`) }}</span>
             <span v-else>{{ $td('Portfolios', `portfolio.list-title`) }}</span>
         </h2>
-        <div class="u-grid u-grid--vertical-margin" v-if="portfolioList.length && !$fetchState.pending">
+        <div v-if="$fetchState.pending" class="u-text-center">
+            <BaseLoader class="" :is-loading="true"/>
+        </div>
+        <div v-else-if="$fetchState.error" class="u-text-center">Can't get portfolio list</div>
+        <div v-else-if="portfolioList.length === 0" class="u-text-center">{{ $td('You don\'t have any portfolios yet', 'portfolio.list-managed-empty') }}</div>
+        <div class="u-grid u-grid--vertical-margin" v-else-if="portfolioList.length">
             <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="portfolio in portfolioList" :key="portfolio.id">
                 <div class="card card--action card__content--small">
                     <div class="card__action-head">
@@ -58,7 +71,7 @@ export default {
                         </div>
                     </div>
                     <div class="card__action-description u-mt-05 u-text-muted">By {{ shortHashFilter(portfolio.owner) }}</div>
-                    <p class="card__action-description">{{ portfolio.description }}</p>
+                    <p class="card__action-description u-text-break">{{ portfolio.description }}</p>
 
                     <div class="card__token-list u-mt-10">
                         <img
@@ -76,8 +89,5 @@ export default {
                 </div>
             </div>
         </div>
-        <div class="u-text-center" v-else>{{ $td('You don\'t have any portfolios yet', 'portfolio.my-list-empty') }}</div>
-
-        <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">+ {{ $td('Create portfolio', 'portfolio.create-new-link') }}</nuxt-link>
     </div>
 </template>

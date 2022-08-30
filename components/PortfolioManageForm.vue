@@ -322,7 +322,7 @@ function getEmptyCoin() {
 
                 <template v-if="form.description">
                     <h3 class="information__title">{{ $td('Short description', 'portfolio.manage-confirm-description') }}</h3>
-                    <div class="information__item information__item--content u-text-medium">{{ form.description }}</div>
+                    <div class="information__item information__item--content u-text-medium u-text-break">{{ form.description }}</div>
                 </template>
 
                 <h3 class="information__title">{{ $td('Tokens', 'portfolio.manage-token-list-title') }}</h3>

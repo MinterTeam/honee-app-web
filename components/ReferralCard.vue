@@ -78,7 +78,7 @@ export default {
     <div>
         <button
             type="button"
-            class="button button--gradient"
+            class="button button--full-mobile button--gradient"
             @click="isConfirmModalVisible = true"
         >
             {{ $td('Invite friends and get rewards!', 'referral.invite-friend') }}
