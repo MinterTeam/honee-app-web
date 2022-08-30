@@ -63,6 +63,9 @@ export default {
             valueDistribution: {
                 valid: (value) => value.reduce((accumulator, item) => accumulator.plus(item), new Big(0)).lte(this.form.value || 0),
             },
+            sequenceParams: {
+                valid: (value) => value.some((item) => !item.skip),
+            },
         };
     },
     computed: {
@@ -79,6 +82,9 @@ export default {
                 if (this.$v.form.value.$invalid) {
                     return 0;
                 }
+                console.log(new Big(this.form.value || 0).times(item.allocation).div(100).toString(30, BIG_ROUND_DOWN));
+                console.log(new Big(this.form.value || 0).times(item.allocation).div(100).toString(undefined, BIG_ROUND_DOWN));
+                console.log(new Big(this.form.value || 0).times(item.allocation).div(100).toString(6, BIG_ROUND_DOWN));
                 return new Big(this.form.value || 0).times(item.allocation).div(100).toString(undefined, BIG_ROUND_DOWN);
             });
         },
@@ -88,7 +94,7 @@ export default {
                     coin: item.symbol,
                     hideUsd: true,
                 };
-                const needSwap = this.checkNeedSwap(item.symbol);
+                const needSwap = this.checkNeedSwapEqual(item.symbol);
                 if (!needSwap && this.valueDistribution[index] > 0) {
                     return {
                         ...result,
@@ -96,6 +102,7 @@ export default {
                     };
                 }
                 const validFormInput = this.v$estimationList[index] && !this.v$estimationList[index].propsGroup.$invalid;
+
                 if (!validFormInput) {
                     return {
                         ...result,
@@ -105,17 +112,30 @@ export default {
                     };
                 }
 
+                const isLoading = this.estimationFetchStateList[index]?.loading;
+                const error = this.estimationFetchStateList[index]?.error;
+
                 return {
                     ...result,
                     amount: this.estimationList[index],
-                    isLoading: this.estimationFetchStateList[index]?.loading,
-                    error: this.estimationFetchStateList[index]?.error,
+                    isLoading,
+                    error,
+                    disabled: !!error,
                 };
             });
         },
+        estimationViewCategorised() {
+            return {
+                enabled: this.estimationView.filter((item) => !item.disabled),
+                disabled: this.estimationView.filter((item) => item.disabled),
+            };
+        },
         sequenceParams() {
             return this.estimationTxDataList.map((txData, index) => {
-                const needSwap = this.checkNeedSwap(this.coinList[index].symbol);
+                const coinSymbol = this.coinList[index].symbol;
+                const needSwap = this.checkNeedSwapEqual(coinSymbol);
+                const isDisabled = this.estimationView.find((item) => item.coin === coinSymbol)?.disabled;
+                const skip = !needSwap || isDisabled;
                 return {
                     // pass null to txParams to not perform fee calculation
                     txParams: needSwap ? {
@@ -123,9 +143,9 @@ export default {
                         data: txData,
                     } : null,
                     // pass skip to not send tx in sequence
-                    skip: !needSwap,
+                    skip,
                     prepareGasCoinPosition: 'end',
-                    prepare: needSwap ? (swapTx) => {
+                    prepare: skip ? undefined : (swapTx) => {
                         return this.getEstimationRef(index).getEstimation(true, true)
                             .then(() => {
                                 return {
@@ -133,7 +153,7 @@ export default {
                                     data: this.estimationTxDataList[index],
                                 };
                             });
-                    } : undefined,
+                    },
                 };
             });
         },
@@ -146,7 +166,7 @@ export default {
             // $refs item in v-for is an array
             return this.$refs['estimation' + index][0];
         },
-        checkNeedSwap(coinSymbol) {
+        checkNeedSwapEqual(coinSymbol) {
             return this.form.coin !== coinSymbol;
         },
         clearForm() {
@@ -179,7 +199,7 @@ export default {
     <div>
         <TxSequenceForm
             :sequence-params="sequenceParams"
-            :v$sequence-params="$v.form"
+            :v$sequence-params="$v"
             :before-post-sequence="beforeConfirmModalShow"
             @clear-form="clearForm()"
             @success="$emit('success')"
@@ -200,28 +220,41 @@ export default {
                     <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.coin.$dirty && !$v.form.coin.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
                     <span class="form-field__error" v-if="$v.form.value.$dirty && !$v.form.value.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
-                    <template v-else-if="$v.form.value.$dirty && !$v.form.value.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</template>
-                    <template v-else-if="$v.form.value.$dirty && !$v.form.value.maxValue">{{ $td('Not enough coins', 'form.not-enough-coins') }}</template>
-                    <template v-else-if="$v.valueDistribution.$dirty && !$v.valueDistribution.valid">Value distribution is calculated incorrectly</template>
+                    <span class="form-field__error" v-else-if="$v.form.value.$dirty && !$v.form.value.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
+                    <span class="form-field__error" v-else-if="$v.form.value.$dirty && !$v.form.value.maxValue">{{ $td('Not enough coins', 'form.not-enough-coins') }}</span>
+                    <span  class="form-field__error" v-else-if="$v.valueDistribution.$dirty && !$v.valueDistribution.valid">Value distribution is calculated incorrectly</span>
                 </div>
 
                 <div class="information form-row">
-                    <h3 class="information__title">{{ $td('Tokens', 'portfolio.manage-token-list-title') }}</h3>
-                    <BaseAmountEstimation
-                        v-for="item in estimationView"
-                        :key="item.coin"
-                        v-bind="item"
-                    />
+                    <template v-if="estimationViewCategorised.enabled.length > 0">
+                        <h3 class="information__title">{{ $td('Tokens to buy', 'portfolio.tokens-buy-label') }}</h3>
+                        <BaseAmountEstimation
+                            v-for="item in estimationViewCategorised.enabled"
+                            :key="item.coin"
+                            v-bind="item"
+                        />
+                    </template>
+
+                    <template v-if="estimationViewCategorised.disabled.length > 0">
+                        <h3 class="information__title">{{ $td('Unable to buy', 'portfolio.tokens-buy-disabled-label') }}</h3>
+                        <BaseAmountEstimation
+                            v-for="item in estimationViewCategorised.disabled"
+                            :key="item.coin"
+                            v-bind="item"
+                            :is-loading="false"
+                            amount="—"
+                        />
+                    </template>
                 </div>
 
                 <SwapEstimation
-                    class="u-text-medium form-row"
+                    class="u-text-medium form-row u-hidden"
                     v-for="(coin, index) in coinList"
                     :key="coin.id"
                     :ref="'estimation' + index"
                     :idPreventConcurrency="'swapForm' + index"
                     :coin-to-sell="form.coin"
-                    :coin-to-buy="checkNeedSwap(coin.symbol) ? coin.symbol : ''"
+                    :coin-to-buy="checkNeedSwapEqual(coin.symbol) ? coin.symbol : ''"
                     :value-to-sell="valueDistribution[index]"
                     :is-use-max="false"
                     :fee="fee.resultList && fee.resultList[index]"
@@ -244,12 +277,14 @@ export default {
 
             <template v-slot:confirm-modal-body>
                 <div class="information form-row">
-                    <h3 class="information__title">{{ $td('Tokens', 'portfolio.manage-token-list-title') }}</h3>
-                    <BaseAmountEstimation
-                        v-for="item in estimationView"
-                        :key="item.coin"
-                        v-bind="item"
-                    />
+                    <template v-if="estimationViewCategorised.enabled.length > 0">
+                        <h3 class="information__title">{{ $td('Tokens to buy', 'portfolio.tokens-buy-label') }}</h3>
+                        <BaseAmountEstimation
+                            v-for="item in estimationViewCategorised.enabled"
+                            :key="item.coin"
+                            v-bind="item"
+                        />
+                    </template>
 
                     <h3 class="information__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="form.value" format="exact"/>
