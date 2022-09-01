@@ -224,6 +224,7 @@ export default {
         'manage-description-label': 'Короткое описание (не обязательно)',
         'manage-create-button': 'Создать',
         'manage-edit-button': 'Редактировать',
+        'manage-save-button': 'Сохранить',
         'manage-confirm-create-title': 'Подтверждение создания портфеля',
         'manage-confirm-edit-title': 'Подтверждение редактирования портфеля',
         'manage-confirm-description': 'Короткое описание',

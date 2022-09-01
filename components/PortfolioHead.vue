@@ -28,7 +28,9 @@ export default {
                 <div class="card__action-stats-caption">
                     7 days
                 </div>
+                <div class="card__action-stats-value" v-if="portfolio.profit.daily7 === -101">—</div>
                 <div
+                    v-else
                     class="card__action-stats-value"
                     :class="portfolio.profit.daily7 >= 0 ? 'u-text-green' : 'u-text-red'"
                 >

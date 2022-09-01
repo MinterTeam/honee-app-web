@@ -292,7 +292,7 @@ function getEmptyCoin() {
                     :class="{'is-loading': isFormSending}"
                 >
                     <span v-if="isNew" class="button__content">{{ $td('Create', 'portfolio.manage-create-button') }}</span>
-                    <span v-else class="button__content">{{ $td('Edit', 'portfolio.manage-edit-button') }}</span>
+                    <span v-else class="button__content">{{ $td('Save', 'portfolio.manage-save-button') }}</span>
                     <BaseLoader class="button__loader" :isLoading="true"/>
                 </button>
             </div>
