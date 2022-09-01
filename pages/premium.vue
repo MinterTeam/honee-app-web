@@ -18,7 +18,7 @@ export default {
     <div class="u-section u-container u-container--small">
         <div class="card card--invert">
             <div class="card__content card__content--medium">
-                <h1 class="card__action-title-value">{{ $td('Become a Premium user', 'premium.activate-title') }}</h1>
+                <h1 class="card__action-title-value">🌟 {{ $t('premium.activate-title') }}</h1>
                 <p class="card__action-description u-mt-05">
                     {{ $td('To activate a premium account, lock at least 1,000 BEE. The lockup period is 5 years. Once over, you will be able to use your coins again.', 'premium.activate-description') }}
                 </p>
@@ -28,7 +28,7 @@ export default {
                 <StakeByLock
                     class="card__content card__content--medium"
                     :params="{id: 23}"
-                    :action="{title: $td('Become a Premium user', 'premium.activate-title')}"
+                    :action="{title: $t('premium.activate-title')}"
                     @success-modal-close="$router.push(getDashboardUrl())"
                 />
 

@@ -20,6 +20,9 @@ export default {
                 return undefined;
             }
         },
+        isPremiumPage() {
+            return this.$route.path === this.$i18nGetPreferredPath('/premium');
+        },
     },
     methods: {
         goBack() {
@@ -34,7 +37,7 @@ export default {
 </script>
 
 <template>
-    <header class="header header--white">
+    <header class="header">
         <div class="header__container u-container u-container--2k">
             <div class="header__logo">
                 <nuxt-link :to="$i18nGetPreferredPath('/')">
@@ -43,6 +46,14 @@ export default {
             </div>
 
             <div class="header__controls">
+                <template v-if="!isPremiumPage">
+                    <nuxt-link class="header__controls-link header__controls-premium u-hidden-medium-down" :to="$i18nGetPreferredPath('/premium')">
+                        <img class="header__controls-premium-icon" src="/img/icon-premium-fancy.svg" alt="" role="presentation" width="64" height="42">
+                        {{ $t('premium.activate-title') }}
+                    </nuxt-link>
+                    <hr class="header__controls-link header__controls-divider u-hidden-large-down"/>
+                </template>
+
                 <nuxt-link :to="$i18nGetPreferredPath('/receive')" class="header__controls-link header__controls-user">
                     <div class="header__controls-user-avatar u-hidden-mini-down" :style="`background-image: url(${$store.getters.avatar});`" v-if="$store.getters.avatar"></div>
                     <div class="header__controls-user-name">{{ $store.getters.username }}</div>
@@ -53,6 +64,14 @@ export default {
                 <div class="header__controls-language header__controls-link">
                     <Language/>
                 </div>
+            </div>
+        </div>
+        <div class="header__container--premium header__container u-container u-hidden-medium-up" v-if="!isPremiumPage">
+            <div class="header__controls">
+                <nuxt-link class="header__controls-link header__controls-premium" :to="$i18nGetPreferredPath('/premium')">
+                    <img class="header__controls-premium-icon" src="/img/icon-premium.svg" alt="" role="presentation" width="24" height="24">
+                    {{ $t('premium.activate-title') }}
+                </nuxt-link>
             </div>
         </div>
     </header>
