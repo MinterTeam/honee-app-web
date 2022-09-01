@@ -32,14 +32,9 @@ export function getStakingProgram(id) {
     }
     id = Number(id);
 
-    return getStakingList()
-        .then((stakingList) => {
-            const program = stakingList.find((item) => item.id === id);
-            if (program) {
-                return program;
-            } else {
-                return Promise.reject(new NotFoundError('Staking program not found'));
-            }
+    return instance.get(`locks/${id}`)
+        .then((response) => {
+            return response.data.data;
         });
 }
 

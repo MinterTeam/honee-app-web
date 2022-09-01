@@ -275,7 +275,7 @@ function yearToBlock(year) {
                     <span class="form-field__error" v-if="$v.form.value.$dirty && !$v.lockValue.maxValue">{{ $td(`Program limit exceeded (max: ${maxValueToLock} ${stakingProgram.lockCoin.symbol})`, 'stake-by-lock.form-amount-error-limit', {max: maxValueToLock, coin: stakingProgram.lockCoin.symbol}) }}</span>
                 </div>
 
-                <div class="form-row" v-if="rangeList">
+                <div class="form-row" v-if="rangeList && rangeList.length > 1">
                     <FieldRange
                         v-model="form.duration"
                         :list="rangeList"
@@ -298,17 +298,19 @@ function yearToBlock(year) {
                         <BaseAmountEstimation :coin="stakingProgram.lockCoin.symbol" :amount="estimation || 0" format="approx"/>
                     </template>
 
-                    <h3 class="information__title">{{ $td('You will earn', 'stake-by-lock.estimation-earn') }}</h3>
-                    <div class="information__item">
-                        <div class="information__coin">
-                            <img class="information__coin-icon" :src="$store.getters['explorer/getCoinIcon'](stakingProgram.rewardCoin.symbol)" width="20" height="20" alt="" role="presentation">
-                            <div class="information__coin-symbol">{{ stakingProgram.rewardCoin.symbol }}</div>
+                    <template v-if="dailyYieldPercent > 0">
+                        <h3 class="information__title">{{ $td('You will earn', 'stake-by-lock.estimation-earn') }}</h3>
+                        <div class="information__item">
+                            <div class="information__coin">
+                                <img class="information__coin-icon" :src="$store.getters['explorer/getCoinIcon'](stakingProgram.rewardCoin.symbol)" width="20" height="20" alt="" role="presentation">
+                                <div class="information__coin-symbol">{{ stakingProgram.rewardCoin.symbol }}</div>
+                            </div>
+                            <div class="information__value">
+                                ≈{{ totalYieldAmount ? pretty(totalYieldAmount) : '' }}
+                                (+{{ pretty(totalYieldPercent) }}%)
+                            </div>
                         </div>
-                        <div class="information__value">
-                            ≈{{ totalYieldAmount ? pretty(totalYieldAmount) : '' }}
-                            (+{{ pretty(totalYieldPercent) }}%)
-                        </div>
-                    </div>
+                    </template>
 
                     <h3 class="information__title">{{ $td('Your stake will unlock in', 'stake-by-lock.estimation-unlock') }}</h3>
                     <div class="information__item">
@@ -348,17 +350,19 @@ function yearToBlock(year) {
                         <BaseAmountEstimation :coin="stakingProgram.lockCoin.symbol" :amount="estimation" format="approx"/>
                     </template>
 
-                    <h3 class="information__title">{{ $td('You will earn', 'stake-by-lock.estimation-earn') }}</h3>
-                    <div class="information__item">
-                        <div class="information__coin">
-                            <img class="information__coin-icon" :src="$store.getters['explorer/getCoinIcon'](stakingProgram.rewardCoin.symbol)" width="20" height="20" alt="" role="presentation">
-                            <div class="information__coin-symbol">{{ stakingProgram.rewardCoin.symbol }}</div>
+                    <template v-if="dailyYieldPercent > 0">
+                        <h3 class="information__title">{{ $td('You will earn', 'stake-by-lock.estimation-earn') }}</h3>
+                        <div class="information__item">
+                            <div class="information__coin">
+                                <img class="information__coin-icon" :src="$store.getters['explorer/getCoinIcon'](stakingProgram.rewardCoin.symbol)" width="20" height="20" alt="" role="presentation">
+                                <div class="information__coin-symbol">{{ stakingProgram.rewardCoin.symbol }}</div>
+                            </div>
+                            <div class="information__value">
+                                ≈{{ totalYieldAmount ? pretty(totalYieldAmount) : '' }}
+                                (+{{ pretty(totalYieldPercent) }}%)
+                            </div>
                         </div>
-                        <div class="information__value">
-                            ≈{{ totalYieldAmount ? pretty(totalYieldAmount) : '' }}
-                            (+{{ pretty(totalYieldPercent) }}%)
-                        </div>
-                    </div>
+                    </template>
 
                     <h3 class="information__title">{{ $td('Your stake will unlock in', 'stake-by-lock.estimation-unlock') }}</h3>
                     <div class="information__item">
