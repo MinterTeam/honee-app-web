@@ -100,7 +100,12 @@ export default {
             },
         };
 
-        return {form};
+        return {
+            form,
+            lockValue: {
+                maxValue: maxValue(this.maxValueToLock),
+            },
+        };
     },
     computed: {
         isProgramTimedOut() {
@@ -108,6 +113,12 @@ export default {
                 return false;
             }
             return this.stakingProgram.joinEndAtBlock - this.$store.state.explorer.status.latestBlockHeight <= BLOCKS_IN_DAY;
+        },
+        maxValueToLock() {
+            if (!this.stakingProgram?.limit) {
+                return Infinity;
+            }
+            return this.stakingProgram.limit - this.stakingProgram.totalLocked;
         },
         rangeList() {
             if (!this.stakingProgram) {
@@ -230,6 +241,7 @@ function yearToBlock(year) {
         <div class="u-mt-15" v-else-if="!stakingProgram && !$fetchState.pending">{{ $td('Can\'t load staking program', 'stake-by-lock.error-program-not-found') }}</div>
         <div class="u-mt-15" v-else-if="!stakingProgram.isEnabled">{{ $td('Staking program disabled', 'stake-by-lock.error-program-disabled') }}</div>
         <div class="u-mt-15" v-else-if="isProgramTimedOut">{{ $td('Staking program timed out', 'stake-by-lock.error-program-timeout') }}</div>
+        <div class="u-mt-15" v-else-if="maxValueToLock <= 0">{{ $td('Staking program exceed the limit', 'stake-by-lock.error-program-limit') }}</div>
         <TxSequenceWithSwapForm
             v-else-if="stakingProgram"
             :coin-to-sell="form.coin"
@@ -237,7 +249,7 @@ function yearToBlock(year) {
             :value-to-sell="form.value"
             :is-use-max="isUseMax"
             :sequence-params="sequenceParams"
-            :v$sequence-params="$v.form"
+            :v$sequence-params="$v"
             :before-post-sequence="fetchLatestBlock"
             @update:estimation="estimation = $event"
             @clear-form="clearForm()"
@@ -260,6 +272,7 @@ function yearToBlock(year) {
                     <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.coin.$dirty && !$v.form.coin.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
                     <span class="form-field__error" v-if="$v.form.value.$dirty && !$v.form.value.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
+                    <span class="form-field__error" v-if="$v.form.value.$dirty && !$v.lockValue.maxValue">{{ $td(`Program limit exceeded (max: ${maxValueToLock} ${stakingProgram.lockCoin.symbol})`, 'stake-by-lock.form-amount-error-limit', {max: maxValueToLock, coin: stakingProgram.lockCoin.symbol}) }}</span>
                 </div>
 
                 <div class="form-row" v-if="rangeList">

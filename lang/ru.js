@@ -187,6 +187,7 @@ export default {
         'title': 'Адрес вашего кошелька',
     },
     'stake-by-lock': {
+        'form-amount-error-limit': 'Превышен лимит программы (макс: {max} {coin})',
         'estimation-unlock': 'Срок разблокировки стейка',
         'estimation-unlock-preposition': ' ',
         'estimation-buy': 'Вы купите и застейкуете примерно',

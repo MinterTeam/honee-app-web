@@ -78,6 +78,8 @@ class NotFoundError extends Error {
  * @property {number} joinEndAtBlock
  * @property {number} paymentStartAtBlock
  * @property {number} paymentEndAtBlock
+ * @property {number} limit - max amount to lock
+ * @property {string} totalLocked
  * @property {string} ownerAddress
  * @property {string} address
  * @property {Coin} rewardCoin

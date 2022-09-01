@@ -310,6 +310,7 @@ export function getTxType({isPool, isSelling, isSellAll}) {
         v-show="
             ($v.propsGroup.$error && !hidePropsValidationError)
             || (($v.limitValueGroup.$error || estimationError) && !isEstimationErrorHidden)
+            || $v.maxAmount.$error || $v.maxAmountAfterFee.$error
         "
     >
         <template v-if="!hidePropsValidationError">
