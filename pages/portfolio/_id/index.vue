@@ -2,10 +2,12 @@
 import {getPortfolio} from '~/api/portfolio.js';
 import {shortHashFilter} from '~/assets/utils.js';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
+import PortfolioHead from '~/components/PortfolioHead.vue';
 
 export default {
     components: {
         BaseAmountEstimation,
+        PortfolioHead,
     },
     asyncData({route, error}) {
         if (!route.params.id) {
@@ -47,10 +49,7 @@ export default {
     <div class="u-section u-container u-container--small">
         <div class="card card--invert">
             <div class="card__content card__content--medium">
-                <div class="card__action-title-type">#{{ portfolio.id }}</div>
-                <h1 class="card__action-title-value">{{ portfolio.title }}</h1>
-                <p class="card__action-description u-text-muted u-mt-05">By {{ shortHashFilter(portfolio.owner) }}</p>
-                <p class="card__action-description u-text-break" v-if="portfolio.description">{{ portfolio.description }}</p>
+                <PortfolioHead :portfolio="portfolio"/>
             </div>
 
             <div class="card card--pop card--light-grey">

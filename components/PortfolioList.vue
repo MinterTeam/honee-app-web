@@ -2,9 +2,11 @@
 import {pretty, shortHashFilter} from '~/assets/utils.js';
 import {getPortfolioList} from '~/api/portfolio.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
+import PortfolioHead from '~/components/PortfolioHead.vue';
 
 export default {
     components: {
+        PortfolioHead,
         BaseLoader,
     },
     props: {
@@ -53,25 +55,7 @@ export default {
         <div class="u-grid u-grid--vertical-margin" v-else-if="portfolioList.length">
             <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="portfolio in portfolioList" :key="portfolio.id">
                 <div class="card card--action card__content--small">
-                    <div class="card__action-head">
-                        <div class="card__action-title">
-                            <div class="card__action-title-type">#{{ portfolio.id }}</div>
-                            <div class="card__action-title-value">{{ portfolio.title }}</div>
-                        </div>
-                        <div class="card__action-stats">
-                            <div class="card__action-stats-caption">
-                                7 days
-                            </div>
-                            <div
-                                class="card__action-stats-value"
-                                :class="portfolio.profit.daily7 >= 0 ? 'u-text-green' : 'u-text-red'"
-                            >
-                                {{ pretty(portfolio.profit.daily7) }}%
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card__action-description u-mt-05 u-text-muted">By {{ shortHashFilter(portfolio.owner) }}</div>
-                    <p class="card__action-description u-text-break">{{ portfolio.description }}</p>
+                    <PortfolioHead :portfolio="portfolio"/>
 
                     <div class="card__token-list u-mt-10">
                         <img

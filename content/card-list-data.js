@@ -22,6 +22,7 @@ export default {
                     caption: 'Стейкинг',
                 },
             },
+            /*
             {
                 caption: 'Stake & Earn',
                 coin: `MUSD`,
@@ -38,6 +39,7 @@ export default {
                     caption: 'Стейкинг',
                 },
             },
+            */
             {
                 caption: 'Stake & Earn',
                 coin: `HUBSTAKE`,
