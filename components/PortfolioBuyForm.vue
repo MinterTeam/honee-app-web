@@ -38,6 +38,7 @@ export default {
                 value: '',
                 coin: this.$route.query.coin || '',
             },
+            fee: {},
             estimationList: [],
             estimationTxDataList: [],
             v$estimationList: [],
@@ -86,6 +87,14 @@ export default {
                 console.log(new Big(this.form.value || 0).times(item.allocation).div(100).toString(undefined, BIG_ROUND_DOWN));
                 console.log(new Big(this.form.value || 0).times(item.allocation).div(100).toString(6, BIG_ROUND_DOWN));
                 return new Big(this.form.value || 0).times(item.allocation).div(100).toString(undefined, BIG_ROUND_DOWN);
+            });
+        },
+        valueDistributionToSpend() {
+            return this.valueDistribution.map((value, index) => {
+                const feeItem = this.fee.resultList?.[index];
+                const feeValue = feeItem?.coinSymbol === this.form.coin ? feeItem.value : 0;
+                value = new Big(value).minus(feeValue).toString();
+                return value < 0 ? 0 : value;
             });
         },
         estimationView() {
@@ -144,7 +153,7 @@ export default {
                     } : null,
                     // pass skip to not send tx in sequence
                     skip,
-                    prepareGasCoinPosition: 'end',
+                    prepareGasCoinPosition: 'start',
                     prepare: skip ? undefined : (swapTx) => {
                         return this.getEstimationRef(index).getEstimation(true, true)
                             .then(() => {
@@ -155,6 +164,18 @@ export default {
                             });
                     },
                 };
+            });
+        },
+        feeTxParams() {
+            return this.coinList.map((item) => {
+                return this.checkNeedSwapEqual(item.symbol) ? {
+                    type: TX_TYPE.SELL_SWAP_POOL,
+                    data: {
+                        coins: [0, 1, 2, 3, 4],
+                        valueToSell: 1,
+                    },
+                    gasCoin: this.form.coin,
+                } : null;
             });
         },
     },
@@ -200,7 +221,9 @@ export default {
         <TxSequenceForm
             :sequence-params="sequenceParams"
             :v$sequence-params="$v"
+            :fee-tx-params="feeTxParams"
             :before-post-sequence="beforeConfirmModalShow"
+            @update:fee="fee = $event"
             @clear-form="clearForm()"
             @success="$emit('success')"
             @success-modal-close="$emit('success-modal-close')"
@@ -255,7 +278,8 @@ export default {
                     :idPreventConcurrency="'swapForm' + index"
                     :coin-to-sell="form.coin"
                     :coin-to-buy="checkNeedSwapEqual(coin.symbol) ? coin.symbol : ''"
-                    :value-to-sell="valueDistribution[index]"
+                    :value-to-sell="valueDistributionToSpend[index]"
+                    :max-amount-to-spend="valueDistribution[index]"
                     :is-use-max="false"
                     :fee="fee.resultList && fee.resultList[index]"
                     @update:estimation="handleEstimation(index, $event)"
