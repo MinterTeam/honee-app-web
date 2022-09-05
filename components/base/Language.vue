@@ -45,14 +45,14 @@ export default {
 <template>
     <div class="mdc-menu-surface--anchor">
         <button class="header__language-button u-semantic-button" type="button" @click="mdcMenu.open = true">
-            <img :src="`${BASE_URL_PREFIX}/img/icon-flag-${currentLocale.code}.png`" :srcset="`/img/icon-flag-${currentLocale.code}@2x.png 2x`" :alt="currentLocale.name" width="24" height="24">
+            <img class="header__language-icon" :src="`${BASE_URL_PREFIX}/img/icon-flag-${currentLocale.code}.png`" :srcset="`/img/icon-flag-${currentLocale.code}@2x.png 2x`" :alt="currentLocale.name" width="24" height="24">
         </button>
         <div class="mdc-menu mdc-menu-surface" tabindex="-1">
             <div class="mdc-menu__items mdc-list" role="menu" aria-hidden="true">
                 <!-- current locale -->
                 <nuxt-link class="mdc-list-item mdc-list-item--with-one-line" :to="switchLocalePath(currentLocale.code)">
                     <span class="mdc-list-item__text header__language-text">{{ currentLocale.name }}</span>
-                    <img class="mdc-list-item__meta" :src="`${BASE_URL_PREFIX}/img/icon-flag-${currentLocale.code}.png`" :srcset="`/img/icon-flag-${currentLocale.code}@2x.png 2x`" alt="" width="24" height="24" role="presentation">
+                    <img class="mdc-list-item__meta header__language-icon" :src="`${BASE_URL_PREFIX}/img/icon-flag-${currentLocale.code}.png`" :srcset="`/img/icon-flag-${currentLocale.code}@2x.png 2x`" alt="" width="24" height="24" role="presentation">
                 </nuxt-link>
                 <!--list of other locales -->
                 <nuxt-link
@@ -63,7 +63,7 @@ export default {
                     @click.native="switchLocaleCookie(locale.code); mdcMenu.open = false"
                 >
                     <span class="mdc-list-item__text header__language-text">{{ locale.name }}</span>
-                    <img class="mdc-list-item__meta" :src="`${BASE_URL_PREFIX}/img/icon-flag-${locale.code}.png`" :srcset="`/img/icon-flag-${locale.code}@2x.png 2x`" alt="" width="24" height="24" role="presentation">
+                    <img class="mdc-list-item__meta header__language-icon" :src="`${BASE_URL_PREFIX}/img/icon-flag-${locale.code}.png`" :srcset="`/img/icon-flag-${locale.code}@2x.png 2x`" alt="" width="24" height="24" role="presentation">
                 </nuxt-link>
             </div>
         </div>

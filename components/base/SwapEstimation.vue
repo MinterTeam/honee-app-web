@@ -95,8 +95,6 @@ export default {
             valueToSell: {
                 required: this.isTypeSell ? required : () => true,
                 validAmount: (value) => this.isTypeSell ? value > 0 : true,
-                maxValueAfterFee: (value) => this.isTypeSell ? new Big(value || 0).lte(this.maxAmountAfterFee) : true,
-                maxValue: (value) => this.isTypeSell ? new Big(value || 0).lte(this.maxAmount) : true,
             },
             valueToBuy: {
                 required: !this.isTypeSell ? required : () => true,
@@ -104,6 +102,13 @@ export default {
             },
             propsGroup: ['coinToSell', 'coinToBuy', 'valueToSell.required', 'valueToSell.validAmount', 'valueToBuy'],
 
+            // maxAmount and maxAmountAfterFee extracted from valueToSell validation to make propsGroup validate only user input
+            maxAmount: {
+                valid: (value) => this.isTypeSell ? new Big(this.valueToSell || 0).lte(value) : true,
+            },
+            maxAmountAfterFee: {
+                valid: (value) => this.isTypeSell ? new Big(this.valueToSell || 0).lte(value) : true,
+            },
             minimumValueToBuy: {
                 required: (value) => this.isTypeSell ? value >= 0 : true,
                 maxValue: (value) => this.isTypeSell ? Number(value) <= Number(this.estimation) : true,
@@ -305,6 +310,7 @@ export function getTxType({isPool, isSelling, isSellAll}) {
         v-show="
             ($v.propsGroup.$error && !hidePropsValidationError)
             || (($v.limitValueGroup.$error || estimationError) && !isEstimationErrorHidden)
+            || $v.maxAmount.$error || $v.maxAmountAfterFee.$error
         "
     >
         <template v-if="!hidePropsValidationError">
@@ -313,8 +319,8 @@ export function getTxType({isPool, isSelling, isSellAll}) {
             <template v-else-if="isTypeSell">
                 <template v-if="$v.valueToSell.$dirty && !$v.valueToSell.required">{{ $td('Enter amount', 'form.amount-error-required') }}</template>
                 <template v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</template>
-                <template v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.maxValue">{{ $td('Not enough coins', 'form.not-enough-coins') }}</template>
-                <template v-else-if="$v.valueToSell.$dirty && !$v.valueToSell.maxValueAfterFee">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol }}</template>
+                <template v-else-if="$v.valueToSell.$dirty && $v.maxAmount.$invalid">{{ $td('Not enough coins', 'form.not-enough-coins') }}</template>
+                <template v-else-if="$v.valueToSell.$dirty && $v.maxAmountAfterFee.$invalid">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol }}</template>
             </template>
             <template v-else-if="isTypeBuy">
                 <template v-if="$v.valueToBuy.$dirty && !$v.valueToBuy.required">{{ $td('Enter amount', 'form.amount-error-required') }}</template>

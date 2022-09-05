@@ -49,6 +49,9 @@ export default {
 
         return {
             form,
+            sequenceParams: {
+                valid: (value) => value.some((item) => !item.skip),
+            },
         };
     },
     computed: {
@@ -69,16 +72,16 @@ export default {
             }, new Big(0)).toString();
         },
         estimationView() {
-            return this.coinList.map((coin, index) => {
+            return this.coinList.map((item, index) => {
                 let result = {
-                    coin: coin.symbol,
+                    coin: item.symbol,
                     hideUsd: true,
                 };
-                const needSwap = this.checkNeedSwapEqual(coin.symbol);
+                const needSwap = this.checkNeedSwapEqual(item.symbol);
                 if (!needSwap) {
                     return {
                         ...result,
-                        amount: coin.amount,
+                        amount: item.amount,
                     };
                 }
                 const validFormInput = this.v$estimationList[index] && !this.v$estimationList[index].propsGroup.$invalid;
@@ -91,15 +94,15 @@ export default {
                 }
 
                 const isLoading = this.estimationFetchStateList[index]?.loading || this.fee.isLoading;
-                const enoughToPayFee = Number(this.coinList[index].amount) > Number(this.fee.resultList?.[index]?.value);
-
+                const error = this.estimationFetchStateList[index]?.error;
+                const enoughToPayFee = Number(item.amount) > Number(this.fee.resultList?.[index]?.value);
 
                 return {
                     ...result,
                     amount: this.estimationList[index],
                     isLoading,
-                    error: this.estimationFetchStateList[index]?.error,
-                    disabled: !!this.estimationFetchStateList[index]?.error || (!isLoading && !enoughToPayFee),
+                    error,
+                    disabled: !!error || (!isLoading && !enoughToPayFee),
                 };
             });
         },
@@ -180,7 +183,7 @@ export default {
     <div>
         <TxSequenceForm
             :sequence-params="sequenceParams"
-            :v$sequence-params="$v.form"
+            :v$sequence-params="$v"
             :before-post-sequence="beforeConfirmModalShow"
             @update:fee="fee = $event"
             @clear-form="clearForm()"
@@ -201,7 +204,7 @@ export default {
 
                 <div class="information form-row">
                     <template v-if="estimationViewCategorised.enabled.length > 0">
-                        <h3 class="information__title">{{ $td('Tokens to sell', 'portfolio.sell-all-tokens-label') }}</h3>
+                        <h3 class="information__title">{{ $td('Tokens to sell', 'portfolio.tokens-sell-label') }}</h3>
                         <BaseAmountEstimation
                             v-for="item in estimationViewCategorised.enabled"
                             :key="item.coin"
@@ -210,7 +213,7 @@ export default {
                     </template>
 
                     <template v-if="estimationViewCategorised.disabled.length > 0">
-                        <h3 class="information__title">{{ $td('Unable to sell', 'portfolio.sell-all-disabled-tokens-label') }}</h3>
+                        <h3 class="information__title">{{ $td('Unable to sell', 'portfolio.tokens-sell-disabled-label') }}</h3>
                         <BaseAmountEstimation
                             v-for="item in estimationViewCategorised.disabled"
                             :key="item.coin"
@@ -225,7 +228,7 @@ export default {
                 </div>
 
                 <SwapEstimation
-                    class="u-text-medium form-row"
+                    class="u-text-medium form-row u-hidden"
                     v-for="(coin, index) in coinList"
                     :key="coin.id"
                     :ref="'estimation' + index"
@@ -256,7 +259,7 @@ export default {
             <template v-slot:confirm-modal-body>
                 <div class="information form-row">
                     <template v-if="estimationViewCategorised.enabled.length > 0">
-                        <h3 class="information__title">{{ $td('Tokens to sell', 'portfolio.sell-all-tokens-label') }}</h3>
+                        <h3 class="information__title">{{ $td('Tokens to sell', 'portfolio.tokens-sell-label') }}</h3>
                         <BaseAmountEstimation
                             v-for="item in estimationViewCategorised.enabled"
                             :key="item.coin"
@@ -264,16 +267,6 @@ export default {
                         />
                     </template>
 
-                    <template v-if="estimationViewCategorised.disabled.length > 0">
-                        <h3 class="information__title">{{ $td('Unable to sell', 'portfolio.sell-all-disabled-tokens-label') }}</h3>
-                        <BaseAmountEstimation
-                            v-for="item in estimationViewCategorised.disabled"
-                            :key="item.coin"
-                            v-bind="item"
-                            :is-loading="false"
-                            amount="—"
-                        />
-                    </template>
 
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="estimationSum" format="approx"/>

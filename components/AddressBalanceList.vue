@@ -48,23 +48,26 @@ export default {
                 </div>
             </div>
         </div>
-        <div class="u-text-right u-mt-15" v-if="$options.SHORT_COUNT < $store.state.balance.length">
-            <button
-                type="button"
-                class="link--default u-semantic-button"
-                v-if="!isFullListActive"
-                @click="isFullListActive = true"
-            >
-                {{ $td('View all coins', 'index.assets-coins-view-all') }}
-            </button>
-            <button
-                type="button"
-                class="link--default u-semantic-button"
-                v-else
-                @click="isFullListActive = false"
-            >
-                {{ $td('View less coins', 'index.assets-coins-view-less') }}
-            </button>
+        <div class="u-text-right u-mt-15">
+            <div class="wallet__coin-control" v-if="$store.state.balance.length <= $options.SHORT_COUNT || isFullListActive">
+                <nuxt-link class="link--default" :to="$i18nGetPreferredPath('/portfolio/sell')">
+                    {{ $td('Sell all coins', 'index.assets-coins-sell-all') }}
+                </nuxt-link>
+            </div>
+            <div class="wallet__coin-control" v-if="$store.state.balance.length > $options.SHORT_COUNT">
+                <button
+                    type="button"
+                    class="link--default u-semantic-button"
+                    @click="isFullListActive = !isFullListActive"
+                >
+                    <template v-if="!isFullListActive">
+                        {{ $td('View all coins', 'index.assets-coins-view-all') }}
+                    </template>
+                    <template v-else>
+                        {{ $td('View less coins', 'index.assets-coins-view-less') }}
+                    </template>
+                </button>
+            </div>
         </div>
     </div>
 </template>

@@ -1,20 +1,40 @@
 <script>
-import {shortHashFilter} from '~/assets/utils.js';
+import {pretty, shortHashFilter} from '~/assets/utils.js';
 import {getPortfolioList} from '~/api/portfolio.js';
+import BaseLoader from '~/components/base/BaseLoader.vue';
+import PortfolioHead from '~/components/PortfolioHead.vue';
 
 export default {
+    components: {
+        PortfolioHead,
+        BaseLoader,
+    },
+    props: {
+        owner: {
+            type: String,
+        },
+        limit: {
+            type: [Number, String],
+            default: 12,
+        },
+    },
     data() {
         return {
+            /** @type {Array<Portfolio>} */
             portfolioList: [],
         };
     },
     fetch() {
-        return getPortfolioList({owner: this.$store.getters.address})
+        return getPortfolioList({
+            owner: this.owner,
+            limit: this.limit,
+        })
             .then((portfolioInfo) => {
                 this.portfolioList = portfolioInfo.list || [];
             });
     },
     methods: {
+        pretty,
         shortHashFilter,
     },
 };
@@ -24,23 +44,18 @@ export default {
     <div>
         <h2 class="dashboard__category-title u-mb-15">
             <img class="dashboard__category-icon" src="/img/icon-category-portfolio.svg" alt="" role="presentation">
-            <span>{{ $td('My portfolios', `portfolio.my-list-title`) }}</span>
+            <span v-if="owner === $store.getters.address">{{ $td('Manage portfolios', `portfolio.list-managed-title`) }}</span>
+            <span v-else>{{ $td('Portfolios', `portfolio.list-title`) }}</span>
         </h2>
-        <div class="u-grid u-grid--vertical-margin" v-if="portfolioList.length && !$fetchState.pending">
+        <div v-if="$fetchState.pending" class="u-text-center">
+            <BaseLoader class="" :is-loading="true"/>
+        </div>
+        <div v-else-if="$fetchState.error" class="u-text-center">Can't get portfolio list</div>
+        <div v-else-if="portfolioList.length === 0" class="u-text-center">{{ $td('You don\'t have any portfolios yet', 'portfolio.list-managed-empty') }}</div>
+        <div class="u-grid u-grid--vertical-margin" v-else-if="portfolioList.length">
             <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="portfolio in portfolioList" :key="portfolio.id">
                 <div class="card card--action card__content--small">
-                    <div class="card__action-head">
-                        <div class="card__action-title">
-                            <div class="card__action-title-type">#{{ portfolio.id }}</div>
-                            <div class="card__action-title-value">{{ portfolio.title }}</div>
-                        </div>
-<!--                        <div class="card__action-stats">
-                            <div class="card__action-stats-caption">{{ statsCaption }}</div>
-                            <div class="card__action-stats-value">{{ statsValue }}</div>
-                        </div>-->
-                    </div>
-                    <div class="card__action-description u-mt-05 u-text-muted">By {{ shortHashFilter(portfolio.owner) }}</div>
-                    <p class="card__action-description">{{ portfolio.description }}</p>
+                    <PortfolioHead :portfolio="portfolio"/>
 
                     <div class="card__token-list u-mt-10">
                         <img
@@ -58,8 +73,5 @@ export default {
                 </div>
             </div>
         </div>
-        <div class="u-text-center" v-else>{{ $td('You don\'t have any portfolios yet', 'portfolio.my-list-empty') }}</div>
-
-        <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">+ {{ $td('Create portfolio', 'portfolio.create-new-link') }}</nuxt-link>
     </div>
 </template>

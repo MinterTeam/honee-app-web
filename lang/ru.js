@@ -96,6 +96,7 @@ export default {
         'receive': 'Получить',
 
         'assets-coins': 'Монеты',
+        'assets-coins-sell-all': 'Продать все монеты',
         'assets-coins-view-all': 'Показать все монеты',
         'assets-coins-view-less': 'Показать меньше монет',
         'assets-stakes': 'Стейки',
@@ -186,6 +187,7 @@ export default {
         'title': 'Адрес вашего кошелька',
     },
     'stake-by-lock': {
+        'form-amount-error-limit': 'Превышен лимит программы (макс: {max} {coin})',
         'estimation-unlock': 'Срок разблокировки стейка',
         'estimation-unlock-preposition': ' ',
         'estimation-buy': 'Вы купите и застейкуете примерно',
@@ -201,6 +203,10 @@ export default {
         'text-added': 'Вы пополнили свой баланс на',
         'text-earning': '. Начните зарабатывать всего в пару кликов!',
         'text-choose': 'Для этого выберите одну из наших программ:',
+    },
+    premium: {
+        'activate-title': 'Стань премиум пользователем',
+        'activate-description': 'Для активации премиум аккаунта отправьте в блокировку от 1000 BEE. Срок блокировки 5 лет. После окончания этого срока ваши монеты будут снова доступны для использования.',
     },
     portfolio: {
         'manage-create-title': 'Создание портфеля',
@@ -218,6 +224,7 @@ export default {
         'manage-description-label': 'Короткое описание (не обязательно)',
         'manage-create-button': 'Создать',
         'manage-edit-button': 'Редактировать',
+        'manage-save-button': 'Сохранить',
         'manage-confirm-create-title': 'Подтверждение создания портфеля',
         'manage-confirm-edit-title': 'Подтверждение редактирования портфеля',
         'manage-confirm-description': 'Короткое описание',
@@ -226,8 +233,12 @@ export default {
         'manage-success-view': 'Смотреть портфель',
         'buy-title': 'Купить портфель',
         'buy-button': 'Купить',
-        'my-list-title': 'Мои портфели',
-        'my-list-empty': 'У вас пока нет созданных портфелей',
+        'list-title': 'Портфели',
+        'list-managed-title': 'Управление портфелями',
+        'list-managed-empty': 'У вас пока нет созданных портфелей',
+        'list-my-title': 'Мои портфели',
+
+        'view-all': 'Смотреть все портфели',
         'create-new-link': 'Создать свой портфель',
     },
     action: {

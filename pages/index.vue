@@ -62,6 +62,11 @@ export default {
     <div class="u-container--large">
         <AddressAssets/>
 
+        <PortfolioList class="u-mt-25" limit="3"/>
+        <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio')">
+            {{ $td('View all portfolios', 'portfolio.view-all') }}
+        </nuxt-link>
+
         <div class="u-mt-25" v-for="(categoryCards, categorySlug) in cardList" :key="categorySlug">
             <h2 class="dashboard__category-title u-mb-15">
                 <img class="dashboard__category-icon" :src="`/img/icon-category-${categorySlug}.svg`" alt="" role="presentation">
@@ -117,7 +122,10 @@ export default {
             </div>
         </div>
 
-        <PortfolioList class="u-mt-25"/>
+        <PortfolioList class="u-mt-25" :owner="$store.getters.address"/>
+        <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">
+            + {{ $td('Create portfolio', 'portfolio.create-new-link') }}
+        </nuxt-link>
 
         <nuxt-child/>
     </div>

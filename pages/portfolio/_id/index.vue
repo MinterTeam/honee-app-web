@@ -2,10 +2,12 @@
 import {getPortfolio} from '~/api/portfolio.js';
 import {shortHashFilter} from '~/assets/utils.js';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
+import PortfolioHead from '~/components/PortfolioHead.vue';
 
 export default {
     components: {
         BaseAmountEstimation,
+        PortfolioHead,
     },
     asyncData({route, error}) {
         if (!route.params.id) {
@@ -47,10 +49,7 @@ export default {
     <div class="u-section u-container u-container--small">
         <div class="card card--invert">
             <div class="card__content card__content--medium">
-                <div class="card__action-title-type">#{{ portfolio.id }}</div>
-                <h1 class="card__action-title-value">{{ portfolio.title }}</h1>
-                <p class="card__action-description u-text-muted u-mt-05">By {{ shortHashFilter(portfolio.owner) }}</p>
-                <p class="card__action-description" v-if="portfolio.description">{{ portfolio.description }}</p>
+                <PortfolioHead :portfolio="portfolio"/>
             </div>
 
             <div class="card card--pop card--light-grey">
@@ -86,10 +85,12 @@ export default {
                 </div>
 
 
-<!--                <div class="card__content card__content&#45;&#45;medium u-text-medium">
+                <!--
+                <div class="card__content card__content&#45;&#45;medium u-text-medium">
                     <h3 class="u-h5 u-mb-05">Terms & Conditions</h3>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Massa pellentesque donec in mus mi massa fusce netus. Nec gravida faucibus pellentesque aliquam consequat sed. Dignissim suspendisse blandit lacinia amet. Cras tincidunt nec maecenas eleifend nisl tristique volutpat enim habitant.</p>
-                </div>-->
+                </div>
+                -->
             </div>
         </div>
     </div>

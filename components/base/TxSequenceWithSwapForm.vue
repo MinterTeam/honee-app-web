@@ -175,9 +175,9 @@ export default {
 
             <SwapEstimation
                 class="u-text-medium form-row"
+                :class="needSwap ? '': 'u-hidden'"
                 ref="estimation"
                 idPreventConcurrency="swapForm"
-                v-show="needSwap"
                 :coin-to-sell="coinToSell"
                 :coin-to-buy="needSwap ? coinToBuy : ''"
                 :value-to-sell="valueToSell"
