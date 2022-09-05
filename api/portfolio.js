@@ -75,3 +75,23 @@ export function getPortfolioList(params) {
  * @property {number} [page]
  * @property {number} [limit]
  */
+
+
+/**
+ * @param {'init'|'buy'|'sell'} type
+ * @param {number} id - portfolio id
+ * @param {string} address - isolated account
+ * @param {string} privateKey - private key of the main account
+ * @return {Promise<void>}
+ */
+export function postConsumerPortfolio(type, id, address, privateKey) {
+    return instance.post(`consumer/portfolio/${type}`, {
+        id,
+        isolatedAddress: address,
+    }, {
+        ecdsaAuth: {
+            privateKey,
+        },
+    })
+        .then((response) => response.data);
+}

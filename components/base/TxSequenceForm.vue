@@ -54,6 +54,10 @@ export default {
             type: [Function, null],
             default: null,
         },
+        beforeSuccessSequence: {
+            type: [Function, null],
+            default: null,
+        },
     },
     setup() {
         const {fee, setFeeProps, refineByIndex} = useFee();
@@ -154,7 +158,7 @@ export default {
             this.serverError = '';
             this.setStepList({});
 
-            ensurePromise(this.beforePostSequence, this)
+            ensurePromise(this.beforePostSequence)
                 .then(() => {
                     let sequenceParams = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
                     sequenceParams = sequenceParams.map((item, index) => {
@@ -188,6 +192,9 @@ export default {
                     });
                 })
                 .then((tx) => {
+                    return ensurePromise(this.beforeSuccessSequence);
+                })
+                .then(() => {
                     this.isFormSending = false;
                     this.$emit('success');
                     this.clearForm();

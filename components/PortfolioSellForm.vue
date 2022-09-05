@@ -207,9 +207,6 @@ export default {
         handleFetchState(index, v$) {
             this.$set(this.estimationFetchStateList, index, v$);
         },
-        beforeConfirmModalShow() {
-
-        },
     },
 };
 

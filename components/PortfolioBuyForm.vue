@@ -5,6 +5,8 @@ import minLength from 'vuelidate/src/validators/minLength';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import Big, {BIG_ROUND_DOWN} from '~/assets/big.js';
 import {pretty} from '~/assets/utils.js';
+import {postConsumerPortfolio} from '~/api/portfolio.js';
+import usePortfolioWallet from '~/composables/use-portfolio-wallet.js';
 import SwapEstimation from '~/components/base/SwapEstimation.vue';
 import TxSequenceForm from '~/components/base/TxSequenceForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
@@ -31,6 +33,13 @@ export default {
             type: Object,
             required: true,
         },
+    },
+    setup(props, context) {
+        const {getWallet} = usePortfolioWallet(context.root.$store.state.auth);
+
+        return {
+            portfolioWallet: getWallet(props.portfolio.id),
+        };
     },
     data() {
         return {
@@ -77,7 +86,7 @@ export default {
             return this.portfolio.coins.map((item) => {
                 return {
                     ...item,
-                    symbol: this.$store.state.explorer.coinMapId[item.id]?.symbol,
+                    symbol: this.$store.state.explorer.coinMapId[item.id]?.symbol || '',
                 };
             });
         },
@@ -86,9 +95,6 @@ export default {
                 if (this.$v.form.value.$invalid) {
                     return 0;
                 }
-                console.log(new Big(this.form.value || 0).times(item.allocation).div(100).toString(30, BIG_ROUND_DOWN));
-                console.log(new Big(this.form.value || 0).times(item.allocation).div(100).toString(undefined, BIG_ROUND_DOWN));
-                console.log(new Big(this.form.value || 0).times(item.allocation).div(100).toString(6, BIG_ROUND_DOWN));
                 return new Big(this.form.value || 0).times(item.allocation).div(100).toString(undefined, BIG_ROUND_DOWN);
             });
         },
@@ -132,7 +138,7 @@ export default {
 
                 return {
                     ...result,
-                    amount: this.estimationList[index],
+                    amount: this.estimationList[index] ?? '',
                     isLoading,
                     error,
                     disabled: !!error || (!isLoading && !enoughToPayFee),
@@ -146,7 +152,7 @@ export default {
             };
         },
         sequenceParams() {
-            return this.estimationTxDataList.map((txData, index) => {
+            const swapSequence = this.estimationTxDataList.map((txData, index) => {
                 const coinSymbol = this.coinList[index].symbol;
                 const needSwap = this.checkNeedSwapEqual(coinSymbol);
                 const isDisabled = this.estimationView.find((item) => item.coin === coinSymbol)?.disabled;
@@ -158,6 +164,7 @@ export default {
                         data: txData,
                         gasCoin: this.form.coin,
                     } : null,
+                    privateKey: this.portfolioWallet.privateKey,
                     // pass skip to not send tx in sequence
                     skip,
                     prepareGasCoinPosition: 'start',
@@ -172,9 +179,22 @@ export default {
                     },
                 };
             });
+
+            const send = {
+                txParams: {
+                    type: TX_TYPE.SEND,
+                    data: {
+                        to: this.portfolioWallet.address,
+                        value: this.form.value,
+                        coin: this.form.coin,
+                    },
+                },
+            };
+
+            return [send].concat(swapSequence);
         },
         feeTxParams() {
-            return this.coinList.map((item) => {
+            const swapFeeTxParams = this.coinList.map((item) => {
                 return this.checkNeedSwapEqual(item.symbol) ? {
                     type: TX_TYPE.SELL_SWAP_POOL,
                     data: {
@@ -184,6 +204,7 @@ export default {
                     gasCoin: this.form.coin,
                 } : null;
             });
+            return [this.sequenceParams[0].txParams].concat(swapFeeTxParams);
         },
     },
     watch: {
@@ -214,8 +235,11 @@ export default {
         handleFetchState(index, v$) {
             this.$set(this.estimationFetchStateList, index, v$);
         },
-        beforeConfirmModalShow() {
-
+        beforePostSequence() {
+            return postConsumerPortfolio('init', this.portfolio.id, this.portfolioWallet.address, this.$store.getters.privateKey);
+        },
+        beforeSuccessSequence() {
+            return postConsumerPortfolio('buy', this.portfolio.id, this.portfolioWallet.address, this.$store.getters.privateKey);
         },
     },
 };
@@ -229,7 +253,8 @@ export default {
             :sequence-params="sequenceParams"
             :v$sequence-params="$v"
             :fee-tx-params="feeTxParams"
-            :before-post-sequence="beforeConfirmModalShow"
+            :before-post-sequence="beforePostSequence"
+            :before-success-sequence="beforeSuccessSequence"
             @update:fee="fee = $event"
             @clear-form="clearForm()"
             @success="$emit('success')"
@@ -252,7 +277,7 @@ export default {
                     <span class="form-field__error" v-if="$v.form.value.$dirty && !$v.form.value.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.value.$dirty && !$v.form.value.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.value.$dirty && !$v.form.value.maxValue">{{ $td('Not enough coins', 'form.not-enough-coins') }}</span>
-                    <span  class="form-field__error" v-else-if="$v.valueDistribution.$dirty && !$v.valueDistribution.valid">Value distribution is calculated incorrectly</span>
+                    <span class="form-field__error" v-else-if="$v.valueDistribution.$dirty && !$v.valueDistribution.valid">Value distribution is calculated incorrectly</span>
                 </div>
 
                 <div class="information form-row">

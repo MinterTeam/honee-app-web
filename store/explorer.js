@@ -70,7 +70,7 @@ export const getters = {
         return function(coinId) {
             if (isCoinId(coinId)) {
                 const coin = state.coinMapId[coinId];
-                return coin?.symbol;
+                return coin?.symbol || '';
             } else {
                 return coinId;
             }
