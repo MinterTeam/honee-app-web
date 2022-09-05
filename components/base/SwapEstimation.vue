@@ -36,6 +36,10 @@ export default {
             type: Object,
             default: null,
         },
+        maxAmountToSpend: {
+            type: [Number, String],
+            default: undefined,
+        },
         // user pressed 'Use max' button
         isUseMax: {
             type: Boolean,
@@ -188,7 +192,7 @@ export default {
             return decreasePrecisionSignificant(this.estimation * slippage);
         },
         maxAmount() {
-            return this.$store.getters.getBalanceAmount(this.coinToSell);
+            return this.maxAmountToSpend || this.$store.getters.getBalanceAmount(this.coinToSell);
         },
         maxAmountAfterFee() {
             const selectedCoin = this.$store.state.balance.find((coin) => {
