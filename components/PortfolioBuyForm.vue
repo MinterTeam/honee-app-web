@@ -43,6 +43,8 @@ export default {
     },
     data() {
         return {
+            // use balance in 'data' instead of store.getters to not update it after 'send' tx
+            coinBalance: 0,
             form: {
                 value: '',
                 coin: this.$route.query.coin || '',
@@ -60,7 +62,7 @@ export default {
                 required,
                 validAmount: (value) => value > 0,
                 // maxValueAfterFee: (value) => new Big(value || 0).lte(this.maxAmountAfterFee),
-                maxValue: (value) => new Big(value || 0).lte(this.$store.getters.getBalanceAmount(this.form.coin)),
+                maxValue: (value) => new Big(value || 0).lte(this.coinBalance),
             },
             coin: {
                 required,
@@ -100,7 +102,7 @@ export default {
         },
         valueDistributionToSpend() {
             return this.valueDistribution.map((value, index) => {
-                const feeItem = this.fee.resultList?.[index];
+                const feeItem = this.swapFeeDataList[index];
                 const feeValue = feeItem?.coinSymbol === this.form.coin ? feeItem.value : 0;
                 value = new Big(value).minus(feeValue).toString();
                 return value < 0 ? 0 : value;
@@ -206,8 +208,21 @@ export default {
             });
             return [this.sequenceParams[0].txParams].concat(swapFeeTxParams);
         },
+        sendFeeData() {
+            const feeItem = this.fee?.resultList?.[0];
+
+            return feeItem?.coinSymbol === this.form.coin ? feeItem : null;
+        },
+        swapFeeDataList() {
+            return this.fee?.resultList?.slice(1) || [];
+        },
     },
     watch: {
+        'form.coin': {
+            handler() {
+                this.coinBalance = this.$store.getters.getBalanceAmount(this.form.coin);
+            },
+        },
     },
     methods: {
         pretty,
@@ -260,7 +275,7 @@ export default {
             @success="$emit('success')"
             @success-modal-close="$emit('success-modal-close')"
         >
-            <template v-slot:default="{fee}">
+            <template v-slot:default>
                 <div class="form-row">
                     <FieldCombined
                         :coin.sync="form.coin"
@@ -269,7 +284,7 @@ export default {
                         :amount.sync="form.value"
                         :$amount="$v.form.value"
                         :useBalanceForMaxValue="true"
-                        :fee="fee"
+                        :fee="sendFeeData"
                         :label="$td('Amount', 'form.wallet-send-amount')"
                     />
                     <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
@@ -313,7 +328,7 @@ export default {
                     :value-to-sell="valueDistributionToSpend[index]"
                     :max-amount-to-spend="valueDistribution[index]"
                     :is-use-max="false"
-                    :fee="fee.resultList && fee.resultList[index]"
+                    :fee="swapFeeDataList[index]"
                     @update:estimation="handleEstimation(index, $event)"
                     @update:tx-data="handleEstimationTxData(index, $event)"
                     @update:v$estimation="handleV$estimation(index, $event)"
