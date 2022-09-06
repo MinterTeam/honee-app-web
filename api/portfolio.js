@@ -107,5 +107,13 @@ export function getConsumerPortfolioList(address, params) {
                 ...params,
             },
         })
-        .then((response) => response.data);
+        .then(async (response) => {
+            const portfolioList = await getPortfolioList({limit: 1000});
+            response.data.list = response.data.list.map((item) => {
+                const portfolio = portfolioList.list.find((portfolio) => portfolio.id === item.id);
+                return portfolio || item;
+            });
+
+            return response.data;
+        });
 }

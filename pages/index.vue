@@ -30,7 +30,7 @@ export default {
     },
     data() {
         return {
-
+            portfolioListCopied: [],
         };
     },
     computed: {
@@ -70,11 +70,12 @@ export default {
         <PortfolioList
             ref="portfolioListCopied"
             class="u-mt-25"
-            v-show="$refs.portfolioListCopied && $refs.portfolioListCopied.portfolioList.length"
+            v-show="portfolioListCopied.length"
             limit="3"
             type="copied"
+            @update:portfolio-list="portfolioListCopied = $event"
         />
-        <nuxt-link class="button button--ghost-main button--full u-mt-20" v-show="$refs.portfolioListCopied && $refs.portfolioListCopied.portfolioList.length" :to="$i18nGetPreferredPath('/portfolio/copied')">
+        <nuxt-link class="button button--ghost-main button--full u-mt-20" v-show="portfolioListCopied.length" :to="$i18nGetPreferredPath('/portfolio/copied')">
             {{ $td('View all copied portfolios', 'portfolio.view-all-copied') }}
         </nuxt-link>
 

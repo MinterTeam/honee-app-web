@@ -39,6 +39,9 @@ export default {
             default: false,
         },
     },
+    emits: [
+        'update:portfolio-list',
+    ],
     data() {
         return {
             /** @type {Array<Portfolio>} */
@@ -60,8 +63,9 @@ export default {
 
         return listPromise
             .then((portfolioInfo) => {
-                this.portfolioList = portfolioInfo.list || [];
-                this.paginationInfo = portfolioInfo.pagination || undefined;
+                this.portfolioList = Object.freeze(portfolioInfo.list) || [];
+                this.paginationInfo = Object.freeze(portfolioInfo.pagination) || undefined;
+                this.$emit('update:portfolio-list', this.portfolioList);
             });
     },
     watch: {
