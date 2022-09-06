@@ -1,4 +1,4 @@
-import { ref, reactive, computed, watch } from '@vue/composition-api';
+import { ref, reactive, computed, watch, set } from '@vue/composition-api';
 import Big from '~/assets/big.js';
 import {FeePrice} from 'minterjs-util/src/fee.js';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
@@ -60,7 +60,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     /** @type {Object.<number, string>}*/
     const coinMap = ref({});
     const state = reactive({
-        resultList: [],
+        resultListSource: [],
         priceCoinCommission: 0,
         baseCoinCommission: 0,
         isBaseCoinEnough: true,
@@ -96,7 +96,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
             }
         };
 
-        return {
+        return Object.freeze({
             priceCoinValue: item.priceCoinCommission,
             priceCoin: state.commissionPriceData?.coin || {},
             baseCoinValue: item.baseCoinCommission,
@@ -106,12 +106,12 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
             coin: item.gasCoin,
             coinSymbol: getGasCoinSymbol(item.gasCoin),
             isHighFee: getIsHighFee(item.priceCoinCommission),
-        };
+        });
     }
 
     const fee = computed(() => {
         return {
-            resultList: state.resultList.map((item) => item ? mapFeeFields(item) : item),
+            resultList: state.resultListSource.map((item) => item ? mapFeeFields(item) : item),
             ...mapFeeFields(state),
             error: state.feeError,
             isLoading: state.isLoading,
@@ -162,8 +162,8 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
                 return ensurePropsNotChanged(estimatePromise);
             });
             // some result item may be null if sequence item is skipped
-            state.resultList = await Promise.all(promiseList);
-            const resultList = state.resultList.filter((item) => !!item);
+            state.resultListSource = await Promise.all(promiseList);
+            const resultList = state.resultListSource.filter((item) => !!item);
             if (resultList.length === 0) {
                 state.isLoading = false;
                 return;
@@ -228,7 +228,8 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         try {
             const feeData = await estimateFeeWithFallback(txParams, feeProps.fallbackToCoinToSpend, feeProps.baseCoinAmount, feeProps.precision, idPrimary + index, idSecondary + index);
 
-            // state.resultList[index] = mapFeeFields(feeData);
+            // total fee not updated here yet
+            set(state.resultListSource, index, feeData);
             // state.isLoading = false;
 
             return mapFeeFields(feeData);

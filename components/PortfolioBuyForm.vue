@@ -5,6 +5,7 @@ import minLength from 'vuelidate/src/validators/minLength';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import Big, {BIG_ROUND_DOWN} from '~/assets/big.js';
 import {pretty} from '~/assets/utils.js';
+import {wait} from '~/assets/utils/wait.js';
 import {postConsumerPortfolio} from '~/api/portfolio.js';
 import usePortfolioWallet from '~/composables/use-portfolio-wallet.js';
 import SwapEstimation from '~/components/base/SwapEstimation.vue';
@@ -171,7 +172,9 @@ export default {
                     skip,
                     prepareGasCoinPosition: 'start',
                     prepare: skip ? undefined : (swapTx) => {
-                        return this.getEstimationRef(index).getEstimation(true, true)
+                        // wait for computed to recalculated (fee -> valueDistributionToSpend)
+                        return wait(100)
+                            .then(() => this.getEstimationRef(index).getEstimation(true, true))
                             .then(() => {
                                 return {
                                     type: this.getEstimationRef(index).getTxType(),
