@@ -35,7 +35,7 @@ export default {
         },
     },
     setup(props, context) {
-        const {getWallet} = usePortfolioWallet(context.root.$store.state.auth);
+        const {getWallet} = usePortfolioWallet(context.root.$store.getters.mnemonic);
 
         return {
             portfolioWallet: getWallet(props.portfolio.id),

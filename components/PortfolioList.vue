@@ -1,41 +1,78 @@
 <script>
-import {pretty, shortHashFilter} from '~/assets/utils.js';
-import {getPortfolioList} from '~/api/portfolio.js';
+import {getPortfolioList, getConsumerPortfolioList} from '~/api/portfolio.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import PortfolioHead from '~/components/PortfolioHead.vue';
+import PortfolioPagination from '~/components/PortfolioPagination.vue';
+
+/**
+ * @enum {string}
+ */
+export const PORTFOLIO_LIST_TYPE = {
+    TOP: 'top',
+    MANAGED: 'managed',
+    COPIED: 'copied',
+};
 
 export default {
+    PORTFOLIO_LIST_TYPE,
     components: {
         PortfolioHead,
+        PortfolioPagination,
         BaseLoader,
     },
     props: {
-        owner: {
+        /** @type {PORTFOLIO_LIST_TYPE}*/
+        type: {
             type: String,
+            default: PORTFOLIO_LIST_TYPE.TOP,
         },
         limit: {
             type: [Number, String],
-            default: 12,
+            default: 15,
+        },
+        page: {
+            type: [Number, String],
+            default: 1,
+        },
+        showPagination: {
+            type: Boolean,
+            default: false,
         },
     },
     data() {
         return {
             /** @type {Array<Portfolio>} */
             portfolioList: [],
+            paginationInfo: undefined,
         };
     },
     fetch() {
-        return getPortfolioList({
-            owner: this.owner,
-            limit: this.limit,
-        })
+        const address = this.$store.getters.address;
+        const page = this.page || 1;
+        const limit = this.limit;
+        const listPromise = this.type === PORTFOLIO_LIST_TYPE.COPIED
+            ? getConsumerPortfolioList(address, {limit, page})
+            : getPortfolioList({
+                owner: this.type === PORTFOLIO_LIST_TYPE.MANAGED ? address : undefined,
+                limit,
+                page,
+            });
+
+        return listPromise
             .then((portfolioInfo) => {
                 this.portfolioList = portfolioInfo.list || [];
+                this.paginationInfo = portfolioInfo.pagination || undefined;
             });
     },
+    watch: {
+        page: {
+            handler() {
+                this.$fetch();
+                window.scroll(0, 0);
+            },
+        },
+    },
     methods: {
-        pretty,
-        shortHashFilter,
     },
 };
 </script>
@@ -44,8 +81,13 @@ export default {
     <div>
         <h2 class="dashboard__category-title u-mb-15">
             <img class="dashboard__category-icon" src="/img/icon-category-portfolio.svg" alt="" role="presentation">
-            <span v-if="owner === $store.getters.address">{{ $td('Manage portfolios', `portfolio.list-managed-title`) }}</span>
-            <span v-else>{{ $td('Portfolios', `portfolio.list-title`) }}</span>
+            <span v-if="type === $options.PORTFOLIO_LIST_TYPE.MANAGED">
+                {{ $td('Managed portfolios', `portfolio.list-managed-title`) }}
+            </span>
+            <span v-else-if="type === $options.PORTFOLIO_LIST_TYPE.COPIED">
+                {{ $td('Copied portfolios', `portfolio.list-copied-title`) }}
+            </span>
+            <span v-else>{{ $td('Top portfolios', `portfolio.list-title`) }}</span>
         </h2>
         <div v-if="$fetchState.pending" class="u-text-center">
             <BaseLoader class="" :is-loading="true"/>
@@ -72,6 +114,7 @@ export default {
                     </nuxt-link>
                 </div>
             </div>
+            <PortfolioPagination v-if="showPagination" class="u-cell" :pagination-info="paginationInfo" :is-loading="$fetchState.pending"/>
         </div>
     </div>
 </template>

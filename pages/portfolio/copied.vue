@@ -10,6 +10,6 @@ export default {
 
 <template>
     <div class="u-section u-container u-container--large">
-        <PortfolioList :page="$route.query.page" :show-pagination="true"/>
+        <PortfolioList type="copied" :page="$route.query.page" :show-pagination="true"/>
     </div>
 </template>

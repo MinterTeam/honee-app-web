@@ -67,6 +67,17 @@ export default {
             {{ $td('View all portfolios', 'portfolio.view-all') }}
         </nuxt-link>
 
+        <PortfolioList
+            ref="portfolioListCopied"
+            class="u-mt-25"
+            v-show="$refs.portfolioListCopied && $refs.portfolioListCopied.portfolioList.length"
+            limit="3"
+            type="copied"
+        />
+        <nuxt-link class="button button--ghost-main button--full u-mt-20" v-show="$refs.portfolioListCopied && $refs.portfolioListCopied.portfolioList.length" :to="$i18nGetPreferredPath('/portfolio/copied')">
+            {{ $td('View all copied portfolios', 'portfolio.view-all-copied') }}
+        </nuxt-link>
+
         <div class="u-mt-25" v-for="(categoryCards, categorySlug) in cardList" :key="categorySlug">
             <h2 class="dashboard__category-title u-mb-15">
                 <img class="dashboard__category-icon" :src="`/img/icon-category-${categorySlug}.svg`" alt="" role="presentation">
@@ -122,7 +133,7 @@ export default {
             </div>
         </div>
 
-        <PortfolioList class="u-mt-25" :owner="$store.getters.address"/>
+        <PortfolioList class="u-mt-25" type="managed"/>
         <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">
             + {{ $td('Create portfolio', 'portfolio.create-new-link') }}
         </nuxt-link>

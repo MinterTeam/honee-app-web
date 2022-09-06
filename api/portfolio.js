@@ -95,3 +95,17 @@ export function postConsumerPortfolio(type, id, address, privateKey) {
     })
         .then((response) => response.data);
 }
+
+/**
+ * @param {PaginationParams} [params]
+ * @param {string} address
+ * @return {Promise<PortfolioList>}
+ */
+export function getConsumerPortfolioList(address, params) {
+    return instance.get(`consumer/portfolio/${address}`, {
+            params: {
+                ...params,
+            },
+        })
+        .then((response) => response.data);
+}
