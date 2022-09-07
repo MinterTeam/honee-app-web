@@ -66,22 +66,39 @@ export default {
                     };
                 });
         },
+
+        /* not needed for sellAll
+        // amount minus fee to properly calculate estimation and slippage
+        valueToSwapList() {
+            return this.coinList.map((item, index) => {
+                const feeItem = this.fee.resultList?.[index];
+                const feeValue = feeItem?.coinSymbol === item.symbol ? feeItem.value : 0;
+                const value = new Big(item.amount).minus(feeValue).toString();
+                return value < 0 ? 0 : value;
+            });
+        },
+        */
+        isEstimationFetchLoading() {
+            return this.estimationFetchStateList.some((item) => item.loading);
+        },
         estimationSum() {
             return this.estimationViewCategorised.enabled.reduce((accumulator, item) => {
-                return accumulator.plus(item.amount || 0);
+                return accumulator.plus(item.amountToGet || 0);
             }, new Big(0)).toString();
         },
         estimationView() {
             return this.coinList.map((item, index) => {
                 let result = {
                     coin: item.symbol,
+                    // display amount to sell
+                    amount: item.amount,
                     hideUsd: true,
                 };
                 const needSwap = this.checkNeedSwapEqual(item.symbol);
                 if (!needSwap) {
                     return {
                         ...result,
-                        amount: item.amount,
+                        amountToGet: item.amount,
                     };
                 }
                 const validFormInput = this.v$estimationList[index] && !this.v$estimationList[index].propsGroup.$invalid;
@@ -89,18 +106,23 @@ export default {
                 if (!validFormInput) {
                     return {
                         ...result,
-                        amount: 0,
+                        amountToGet: 0,
                     };
                 }
 
-                const isLoading = this.estimationFetchStateList[index]?.loading || this.fee.isLoading;
+                const isLoading = this.estimationFetchStateList[index]?.loading/* || this.fee.isLoading*/;
                 const error = this.estimationFetchStateList[index]?.error;
+                const enoughToPayFee = Number(this.estimationList[index]) > 0;
+                /* fee automatically excluded in sellAll
                 const enoughToPayFee = Number(item.amount) > Number(this.fee.resultList?.[index]?.value);
+                */
 
                 return {
                     ...result,
-                    amount: this.estimationList[index],
+                    amountToGet: this.estimationList[index] ?? '',
+                    /* loading indicator not needed for amountToSell (it's already known)
                     isLoading,
+                     */
                     error,
                     disabled: !!error || (!isLoading && !enoughToPayFee),
                 };
@@ -139,6 +161,21 @@ export default {
                     },
                 };
             });
+        },
+        feeTxParams() {
+            const swapFeeTxParams = this.coinList.map((item) => {
+                return null;
+                /* no need to calculate fee for sellAll tx
+                return this.checkNeedSwapEqual(item.symbol) ? {
+                    type: TX_TYPE.SELL_ALL_SWAP_POOL,
+                    data: {
+                        coins: [item.symbol, 1, 2, 3, 4],
+                    },
+                    gasCoin: item.symbol,
+                } : null;
+                */
+            });
+            return swapFeeTxParams;
         },
     },
     watch: {
@@ -184,7 +221,7 @@ export default {
         <TxSequenceForm
             :sequence-params="sequenceParams"
             :v$sequence-params="$v"
-            :before-post-sequence="beforeConfirmModalShow"
+            :fee-tx-params="feeTxParams"
             @update:fee="fee = $event"
             @clear-form="clearForm()"
             @success="$emit('success')"
@@ -224,7 +261,7 @@ export default {
                     </template>
 
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
-                    <BaseAmountEstimation :coin="form.coin" :amount="estimationSum" format="approx"/>
+                    <BaseAmountEstimation :coin="form.coin" :amount="estimationSum" format="approx" :is-loading="isEstimationFetchLoading"/>
                 </div>
 
                 <SwapEstimation
@@ -238,7 +275,7 @@ export default {
                     :value-to-sell="coin.amount"
                     :force-sell-all="true"
                     :is-use-max="true"
-                    :fee="fee.resultList && fee.resultList[index]"
+                    :fee="null && fee.resultList && fee.resultList[index]"
                     @update:estimation="handleEstimation(index, $event)"
                     @update:tx-data="handleEstimationTxData(index, $event)"
                     @update:v$estimation="handleV$estimation(index, $event)"
@@ -268,7 +305,7 @@ export default {
                     </template>
 
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
-                    <BaseAmountEstimation :coin="form.coin" :amount="estimationSum" format="approx"/>
+                    <BaseAmountEstimation :coin="form.coin" :amount="estimationSum" format="approx" :is-loading="isEstimationFetchLoading"/>
                 </div>
             </template>
         </TxSequenceForm>
