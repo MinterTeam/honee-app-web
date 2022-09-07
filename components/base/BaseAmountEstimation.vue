@@ -68,6 +68,9 @@ export default {
 
             return baseCoinAmount * this.$store.getters['explorer/bipPriceUsd'];
         },
+        coinIconUrl() {
+            return this.$store.getters['explorer/getCoinIcon'](this.coin);
+        },
     },
     methods: {
         pretty,
@@ -79,7 +82,7 @@ export default {
 <template>
     <component :is="tag" class="information__item">
         <div class="information__coin">
-            <img class="information__coin-icon" :src="$store.getters['explorer/getCoinIcon'](coin)" width="20" height="20" alt="" role="presentation">
+            <img class="information__coin-icon" v-if="coinIconUrl" :src="coinIconUrl" width="20" height="20" alt="" role="presentation">
             <div class="information__coin-symbol">{{ coin }}</div>
         </div>
         <div class="information__value">

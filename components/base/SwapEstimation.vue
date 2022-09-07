@@ -195,6 +195,9 @@ export default {
             return this.maxAmountToSpend || this.$store.getters.getBalanceAmount(this.coinToSell);
         },
         maxAmountAfterFee() {
+            if (this.isSellAll) {
+                return this.maxAmount;
+            }
             const selectedCoin = this.$store.state.balance.find((coin) => {
                 return coin.coin.symbol === this.coinToSell;
             });
@@ -258,7 +261,7 @@ export default {
         },
         getEstimation(force, throwOnError) {
             if (this.$v.propsGroup.$invalid) {
-                return;
+                return Promise.reject('get swap estimation: Invalid props passed');
             }
 
             return this.estimateSwap({
@@ -267,6 +270,7 @@ export default {
                 coinToBuy: this.coinToBuy,
                 valueToBuy: this.valueToBuy,
                 isSelling: this.isTypeSell,
+                sellAll: this.isSellAll,
                 force,
                 throwOnError,
             });

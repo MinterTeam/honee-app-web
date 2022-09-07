@@ -5,6 +5,9 @@ import minLength from 'vuelidate/src/validators/minLength';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import Big, {BIG_ROUND_DOWN} from '~/assets/big.js';
 import {pretty} from '~/assets/utils.js';
+import {wait} from '~/assets/utils/wait.js';
+import {postConsumerPortfolio} from '~/api/portfolio.js';
+import usePortfolioWallet from '~/composables/use-portfolio-wallet.js';
 import SwapEstimation from '~/components/base/SwapEstimation.vue';
 import TxSequenceForm from '~/components/base/TxSequenceForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
@@ -32,8 +35,17 @@ export default {
             required: true,
         },
     },
+    setup(props, context) {
+        const {getWallet} = usePortfolioWallet(context.root.$store.getters.mnemonic);
+
+        return {
+            portfolioWallet: getWallet(props.portfolio.id),
+        };
+    },
     data() {
         return {
+            // use balance in 'data' instead of store.getters to not update it after 'send' tx
+            coinBalance: 0,
             form: {
                 value: '',
                 coin: this.$route.query.coin || '',
@@ -51,7 +63,7 @@ export default {
                 required,
                 validAmount: (value) => value > 0,
                 // maxValueAfterFee: (value) => new Big(value || 0).lte(this.maxAmountAfterFee),
-                maxValue: (value) => new Big(value || 0).lte(this.$store.getters.getBalanceAmount(this.form.coin)),
+                maxValue: (value) => new Big(value || 0).lte(this.coinBalance),
             },
             coin: {
                 required,
@@ -64,6 +76,9 @@ export default {
             valueDistribution: {
                 valid: (value) => value.reduce((accumulator, item) => accumulator.plus(item), new Big(0)).lte(this.form.value || 0),
             },
+            valueDistributionToSpend: {
+                valid: (value) => value.reduce((accumulator, item) => accumulator.plus(item), new Big(0)).gt(0),
+            },
             sequenceParams: {
                 valid: (value) => value.some((item) => !item.skip),
             },
@@ -74,7 +89,7 @@ export default {
             return this.portfolio.coins.map((item) => {
                 return {
                     ...item,
-                    symbol: this.$store.state.explorer.coinMapId[item.id]?.symbol,
+                    symbol: this.$store.state.explorer.coinMapId[item.id]?.symbol || '',
                 };
             });
         },
@@ -83,15 +98,12 @@ export default {
                 if (this.$v.form.value.$invalid) {
                     return 0;
                 }
-                console.log(new Big(this.form.value || 0).times(item.allocation).div(100).toString(30, BIG_ROUND_DOWN));
-                console.log(new Big(this.form.value || 0).times(item.allocation).div(100).toString(undefined, BIG_ROUND_DOWN));
-                console.log(new Big(this.form.value || 0).times(item.allocation).div(100).toString(6, BIG_ROUND_DOWN));
                 return new Big(this.form.value || 0).times(item.allocation).div(100).toString(undefined, BIG_ROUND_DOWN);
             });
         },
         valueDistributionToSpend() {
             return this.valueDistribution.map((value, index) => {
-                const feeItem = this.fee.resultList?.[index];
+                const feeItem = this.swapFeeDataList[index];
                 const feeValue = feeItem?.coinSymbol === this.form.coin ? feeItem.value : 0;
                 value = new Big(value).minus(feeValue).toString();
                 return value < 0 ? 0 : value;
@@ -110,7 +122,9 @@ export default {
                         amount: this.valueDistribution[index],
                     };
                 }
-                const validFormInput = this.v$estimationList[index] && !this.v$estimationList[index].propsGroup.$invalid;
+                // don't check $v.form.value.maxValue here to show estimation results
+                // don't check v$estimationList valueToSell, because valueDistributionToSpend may be 0 if not enough fee
+                const validFormInput = this.v$estimationList[index] && !this.v$estimationList[index].coinToSell.$invalid && !this.v$estimationList[index].coinToBuy.$invalid && this.$v.form.value.required && this.$v.form.value.validAmount;
 
                 if (!validFormInput) {
                     return {
@@ -123,13 +137,14 @@ export default {
 
                 const isLoading = this.estimationFetchStateList[index]?.loading;
                 const error = this.estimationFetchStateList[index]?.error;
+                const enoughToPayFee = Number(this.valueDistributionToSpend[index]) > 0;
 
                 return {
                     ...result,
-                    amount: this.estimationList[index],
+                    amount: this.estimationList[index] ?? '',
                     isLoading,
                     error,
-                    disabled: !!error,
+                    disabled: !!error || (!isLoading && !enoughToPayFee),
                 };
             });
         },
@@ -140,7 +155,7 @@ export default {
             };
         },
         sequenceParams() {
-            return this.estimationTxDataList.map((txData, index) => {
+            const swapSequence = this.estimationTxDataList.map((txData, index) => {
                 const coinSymbol = this.coinList[index].symbol;
                 const needSwap = this.checkNeedSwapEqual(coinSymbol);
                 const isDisabled = this.estimationView.find((item) => item.coin === coinSymbol)?.disabled;
@@ -150,12 +165,16 @@ export default {
                     txParams: needSwap ? {
                         type: this.getEstimationRef(index).getTxType(),
                         data: txData,
+                        gasCoin: this.form.coin,
                     } : null,
+                    privateKey: this.portfolioWallet.privateKey,
                     // pass skip to not send tx in sequence
                     skip,
                     prepareGasCoinPosition: 'start',
                     prepare: skip ? undefined : (swapTx) => {
-                        return this.getEstimationRef(index).getEstimation(true, true)
+                        // wait for computed to recalculated (fee -> valueDistributionToSpend)
+                        return wait(100)
+                            .then(() => this.getEstimationRef(index).getEstimation(true, true))
                             .then(() => {
                                 return {
                                     type: this.getEstimationRef(index).getTxType(),
@@ -165,9 +184,27 @@ export default {
                     },
                 };
             });
+
+            const send = {
+                txParams: {
+                    type: TX_TYPE.SEND,
+                    data: {
+                        to: this.portfolioWallet.address,
+                        value: this.form.value,
+                        coin: this.form.coin,
+                    },
+                    payload: JSON.stringify({
+                        app: 'portfolio',
+                        type: 'buy',
+                        id: this.portfolio.id,
+                    }),
+                },
+            };
+
+            return [send].concat(swapSequence);
         },
         feeTxParams() {
-            return this.coinList.map((item) => {
+            const swapFeeTxParams = this.coinList.map((item) => {
                 return this.checkNeedSwapEqual(item.symbol) ? {
                     type: TX_TYPE.SELL_SWAP_POOL,
                     data: {
@@ -177,9 +214,23 @@ export default {
                     gasCoin: this.form.coin,
                 } : null;
             });
+            return [this.sequenceParams[0].txParams].concat(swapFeeTxParams);
+        },
+        sendFeeData() {
+            const feeItem = this.fee?.resultList?.[0];
+
+            return feeItem?.coinSymbol === this.form.coin ? feeItem : null;
+        },
+        swapFeeDataList() {
+            return this.fee?.resultList?.slice(1) || [];
         },
     },
     watch: {
+        'form.coin': {
+            handler() {
+                this.coinBalance = this.$store.getters.getBalanceAmount(this.form.coin);
+            },
+        },
     },
     methods: {
         pretty,
@@ -207,8 +258,11 @@ export default {
         handleFetchState(index, v$) {
             this.$set(this.estimationFetchStateList, index, v$);
         },
-        beforeConfirmModalShow() {
-
+        beforePostSequence() {
+            return postConsumerPortfolio('init', this.portfolio.id, this.portfolioWallet.address, this.$store.getters.privateKey);
+        },
+        beforeSuccessSequence() {
+            return postConsumerPortfolio('buy', this.portfolio.id, this.portfolioWallet.address, this.$store.getters.privateKey);
         },
     },
 };
@@ -222,13 +276,14 @@ export default {
             :sequence-params="sequenceParams"
             :v$sequence-params="$v"
             :fee-tx-params="feeTxParams"
-            :before-post-sequence="beforeConfirmModalShow"
+            :before-post-sequence="beforePostSequence"
+            :before-success-sequence="beforeSuccessSequence"
             @update:fee="fee = $event"
             @clear-form="clearForm()"
             @success="$emit('success')"
             @success-modal-close="$emit('success-modal-close')"
         >
-            <template v-slot:default="{fee}">
+            <template v-slot:default>
                 <div class="form-row">
                     <FieldCombined
                         :coin.sync="form.coin"
@@ -237,7 +292,7 @@ export default {
                         :amount.sync="form.value"
                         :$amount="$v.form.value"
                         :useBalanceForMaxValue="true"
-                        :fee="fee"
+                        :fee="sendFeeData"
                         :label="$td('Amount', 'form.wallet-send-amount')"
                     />
                     <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
@@ -245,7 +300,7 @@ export default {
                     <span class="form-field__error" v-if="$v.form.value.$dirty && !$v.form.value.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.value.$dirty && !$v.form.value.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.value.$dirty && !$v.form.value.maxValue">{{ $td('Not enough coins', 'form.not-enough-coins') }}</span>
-                    <span  class="form-field__error" v-else-if="$v.valueDistribution.$dirty && !$v.valueDistribution.valid">Value distribution is calculated incorrectly</span>
+                    <span class="form-field__error" v-else-if="$v.valueDistribution.$dirty && !$v.valueDistribution.valid">Value distribution is calculated incorrectly</span>
                 </div>
 
                 <div class="information form-row">
@@ -281,7 +336,7 @@ export default {
                     :value-to-sell="valueDistributionToSpend[index]"
                     :max-amount-to-spend="valueDistribution[index]"
                     :is-use-max="false"
-                    :fee="fee.resultList && fee.resultList[index]"
+                    :fee="swapFeeDataList[index]"
                     @update:estimation="handleEstimation(index, $event)"
                     @update:tx-data="handleEstimationTxData(index, $event)"
                     @update:v$estimation="handleV$estimation(index, $event)"

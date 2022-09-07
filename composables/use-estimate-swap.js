@@ -113,6 +113,7 @@ export default function useEstimateSwap({idPreventConcurrency, $td} = {}) {
     }
 
     function forceEstimation(options) {
+        //@TODO use loading estimation if any (instead of firing second request and cancelling first) (but check that props are identical)
         // force new estimation without delay
         debouncedGetEstimation(options);
         return debouncedGetEstimation.flush();
