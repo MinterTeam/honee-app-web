@@ -23,6 +23,9 @@ export const getters = {
     getCoinIcon(state, getters, rootState, rootGetters) {
         return function(coinSymbol) {
             coinSymbol = getters.getCoinSymbol(coinSymbol);
+            if (!coinSymbol) {
+                return '';
+            }
             // BIP
             if (coinSymbol.toUpperCase() === 'BIP') {
                 return `${BASE_URL_PREFIX}/img/icon-coin-bip.svg`;
