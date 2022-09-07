@@ -193,6 +193,11 @@ export default {
                         value: this.form.value,
                         coin: this.form.coin,
                     },
+                    payload: JSON.stringify({
+                        app: 'portfolio',
+                        type: 'buy',
+                        id: this.portfolio.id,
+                    }),
                 },
             };
 
