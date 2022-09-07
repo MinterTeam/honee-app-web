@@ -51,6 +51,9 @@ export default {
         },
     },
     computed: {
+        amountIsNotNumber() {
+            return typeof this.amount === 'string' && this.amount.length && !/^\d+\.?\d*$/.test(this.amount);
+        },
         amountUsd() {
             // don't calculate usd price for units other than coin itself
             if (this.hideUsd || this.unit) {
@@ -65,6 +68,9 @@ export default {
 
             return baseCoinAmount * this.$store.getters['explorer/bipPriceUsd'];
         },
+        coinIconUrl() {
+            return this.$store.getters['explorer/getCoinIcon'](this.coin);
+        },
     },
     methods: {
         pretty,
@@ -76,14 +82,15 @@ export default {
 <template>
     <component :is="tag" class="information__item">
         <div class="information__coin">
-            <img class="information__coin-icon" :src="$store.getters['explorer/getCoinIcon'](coin)" width="20" height="20" alt="" role="presentation">
+            <img class="information__coin-icon" v-if="coinIconUrl" :src="coinIconUrl" width="20" height="20" alt="" role="presentation">
             <div class="information__coin-symbol">{{ coin }}</div>
         </div>
         <div class="information__value">
             <BaseLoader class="information__loader" :is-loading="isLoading"/>
             <template v-if="!isLoading">
                 <span class="u-text-muted" v-if="amountUsd">(${{ pretty(amountUsd) }})</span>
-                <span v-if="format === $options.FORMAT_TYPE.EXACT">{{ prettyExact(amount) }}</span>
+                <span v-if="amountIsNotNumber">{{ amount }}</span>
+                <span v-else-if="format === $options.FORMAT_TYPE.EXACT">{{ prettyExact(amount) }}</span>
                 <span v-else :title="prettyExact(amount)">
                     <template v-if="format === $options.FORMAT_TYPE.APPROX">≈</template>
                     {{ pretty(amount) }}

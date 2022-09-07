@@ -9,6 +9,30 @@
  * ---------------------------------------------------------------
  */
 
+export interface CoinItem {
+  /**
+   * @format int64
+   * @example 9086
+   */
+  cmcId?: number;
+
+  /**
+   * @format int64
+   * @example 1902
+   */
+  minterId: number;
+
+  /**
+   * @format text
+   * @example HUB
+   */
+  name: string;
+}
+
+export interface CoinList {
+  list: CoinItem[];
+}
+
 export type OwnerAddress = string;
 
 export interface Pagination {
@@ -51,6 +75,7 @@ export interface Portfolio {
 
   /** @example Mx68f4839d7f32831b9234f9575f3b95e1afe21a56 */
   owner: string;
+  profit?: Profit;
 
   /** @example Cool portfolio */
   title: string;
@@ -71,6 +96,8 @@ export interface PortfolioError {
 export interface PortfolioItem {
   /**
    * @format float64
+   * @min 0.01
+   * @max 99.99
    * @example 44.5
    */
   allocation: number;
@@ -87,12 +114,29 @@ export interface PortfolioList {
   pagination: Pagination;
 }
 
+export interface Profit {
+  /**
+   * @format float64
+   * @example 40.25
+   */
+  daily7?: number;
+
+  /**
+   * @format float64
+   * @example 45.5
+   */
+  weekly?: number;
+}
+
 export interface UpdatePortfolio {
   coins: PortfolioItem[];
 
   /** @example my desc */
   description?: string;
 
-  /** @example Cool portfolie */
+  /** @format date-time */
+  timestamp: string;
+
+  /** @example Cool portfolio */
   title: string;
 }

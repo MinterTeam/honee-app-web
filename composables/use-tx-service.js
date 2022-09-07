@@ -220,6 +220,7 @@ function estimateTxGas({to, value, data}) {
 /**
  * @typedef {object} SendSequenceItem
  * @property {TxParams} txParams
+ * @property {string} [privateKey] - overwrite privateKey from `options` (to sign tx by isolated portfolio wallet)
  * @property {Array<PrepareTxParams> | PrepareTxParams} [prepare] - functions to prepare txParams, executes in series, as se
  * @property {FinalizePostTx} [finalize]
  * @property {boolean} [skip]
@@ -232,7 +233,7 @@ function estimateTxGas({to, value, data}) {
  */
 async function sendTxSequence(list, options) {
     let result;
-    for (const [index, {txParams, prepare, finalize, skip}] of Object.entries(list)) {
+    for (const [index, {txParams, privateKey, prepare, finalize, skip}] of Object.entries(list)) {
         if (skip) {
             continue;
         }
@@ -245,7 +246,10 @@ async function sendTxSequence(list, options) {
             console.debug('prepare', [txParams, ...txParamsAdditionList]);
             // execute
             addStepData(`minter${index}`, {txParams: preparedTxParams});
-            let result = await sendMinterTx(preparedTxParams, options);
+            let result = await sendMinterTx(preparedTxParams, {
+                ...options,
+                privateKey: privateKey || options.privateKey,
+        });
             // finalize
             result = await ensurePromise(finalize, result, {fallbackToArg: true});
             addStepData(`minter${index}`, {tx: result, finished: true});

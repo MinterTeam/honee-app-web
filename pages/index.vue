@@ -30,7 +30,7 @@ export default {
     },
     data() {
         return {
-
+            portfolioListCopied: [],
         };
     },
     computed: {
@@ -61,6 +61,23 @@ export default {
 <template>
     <div class="u-container--large">
         <AddressAssets/>
+
+        <PortfolioList class="u-mt-25" limit="3"/>
+        <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio')">
+            {{ $td('View all portfolios', 'portfolio.view-all') }}
+        </nuxt-link>
+
+        <PortfolioList
+            ref="portfolioListCopied"
+            class="u-mt-25"
+            v-show="portfolioListCopied.length"
+            limit="3"
+            type="copied"
+            @update:portfolio-list="portfolioListCopied = $event"
+        />
+        <nuxt-link class="button button--ghost-main button--full u-mt-20" v-show="portfolioListCopied.length" :to="$i18nGetPreferredPath('/portfolio/copied')">
+            {{ $td('View all copied portfolios', 'portfolio.view-all-copied') }}
+        </nuxt-link>
 
         <div class="u-mt-25" v-for="(categoryCards, categorySlug) in cardList" :key="categorySlug">
             <h2 class="dashboard__category-title u-mb-15">
@@ -117,7 +134,10 @@ export default {
             </div>
         </div>
 
-        <PortfolioList class="u-mt-25"/>
+        <PortfolioList class="u-mt-25" type="managed"/>
+        <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">
+            + {{ $td('Create portfolio', 'portfolio.create-new-link') }}
+        </nuxt-link>
 
         <nuxt-child/>
     </div>

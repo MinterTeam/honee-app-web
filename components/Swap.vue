@@ -218,8 +218,8 @@ export default {
                 <span class="form-field__error" v-else-if="v$estimation.coinToSell.$dirty && !v$estimation.coinToSell.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
                 <span class="form-field__error" v-if="v$estimation.valueToSell.$dirty && !v$estimation.valueToSell.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
                 <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && !v$estimation.valueToSell.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
-                <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && !v$estimation.valueToSell.maxValue">{{ $td('Not enough coins', 'form.not-enough-coins') }}</span>
-                <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && !v$estimation.valueToSell.maxValueAfterFee">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol }}</span>
+                <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && v$estimation.maxAmount.$invalid">{{ $td('Not enough coins', 'form.not-enough-coins') }}</span>
+                <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && v$estimation.maxAmountAfterFee.$invalid">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol }}</span>
             </div>
 
             <button

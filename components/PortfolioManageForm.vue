@@ -292,7 +292,7 @@ function getEmptyCoin() {
                     :class="{'is-loading': isFormSending}"
                 >
                     <span v-if="isNew" class="button__content">{{ $td('Create', 'portfolio.manage-create-button') }}</span>
-                    <span v-else class="button__content">{{ $td('Edit', 'portfolio.manage-edit-button') }}</span>
+                    <span v-else class="button__content">{{ $td('Save', 'portfolio.manage-save-button') }}</span>
                     <BaseLoader class="button__loader" :isLoading="true"/>
                 </button>
             </div>
@@ -322,7 +322,7 @@ function getEmptyCoin() {
 
                 <template v-if="form.description">
                     <h3 class="information__title">{{ $td('Short description', 'portfolio.manage-confirm-description') }}</h3>
-                    <div class="information__item information__item--content u-text-medium">{{ form.description }}</div>
+                    <div class="information__item information__item--content u-text-medium u-text-break">{{ form.description }}</div>
                 </template>
 
                 <h3 class="information__title">{{ $td('Tokens', 'portfolio.manage-token-list-title') }}</h3>

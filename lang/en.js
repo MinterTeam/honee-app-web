@@ -19,6 +19,9 @@ export default {
         'title-stake': 'Stake & Earn',
         'title-not-found': 'Action not found',
     },
+    premium: {
+        'activate-title': 'Become a Premium user',
+    },
     form: {
         'delegation-delegate-confirm-note': 'Note: in case of unbond, your coins will return to your address in approximately <strong>30&nbsp;days</strong> (518&#x202F;400 blocks) and will not be generating rewards during this&nbsp;period.',
         'delegation-unbond-confirm-description': 'If you unbond coins, they will return to your address in approximately <strong>30&nbsp;days</strong> (518&#x202F;400 blocks) and will not be generating rewards during this&nbsp;period.',

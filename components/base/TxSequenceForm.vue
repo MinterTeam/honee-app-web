@@ -31,6 +31,9 @@ export default {
             type: [Array, Object],
             required: true,
         },
+        feeTxParams: {
+            type: [Array, Object],
+        },
         v$sequenceParams: {
             type: Object,
             required: true,
@@ -48,6 +51,10 @@ export default {
             default: null,
         },
         beforePostSequence: {
+            type: [Function, null],
+            default: null,
+        },
+        beforeSuccessSequence: {
             type: [Function, null],
             default: null,
         },
@@ -85,9 +92,14 @@ export default {
     },
     computed: {
         feeBusParams() {
-            const txParamsList = Array.isArray(this.sequenceParams)
-                ? this.sequenceParams.map((item) => item.txParams)
-                : [this.sequenceParams.txParams];
+            let txParamsList;
+            if (this.feeTxParams) {
+                txParamsList = this.feeTxParams;
+            } else if (Array.isArray(this.sequenceParams)) {
+                txParamsList = this.sequenceParams.map((item) => item.txParams);
+            } else {
+                txParamsList = [this.sequenceParams.txParams];
+            }
 
             return {
                 txParamsList,
@@ -146,7 +158,7 @@ export default {
             this.serverError = '';
             this.setStepList({});
 
-            ensurePromise(this.beforePostSequence, this)
+            ensurePromise(this.beforePostSequence)
                 .then(() => {
                     let sequenceParams = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
                     sequenceParams = sequenceParams.map((item, index) => {
@@ -180,6 +192,9 @@ export default {
                     });
                 })
                 .then((tx) => {
+                    return ensurePromise(this.beforeSuccessSequence);
+                })
+                .then(() => {
                     this.isFormSending = false;
                     this.$emit('success');
                     this.clearForm();

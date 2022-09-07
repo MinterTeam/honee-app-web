@@ -62,7 +62,10 @@ export function getPortfolio(id) {
  */
 export function getPortfolioList(params) {
     return instance.get(`portfolio`, {
-            params,
+            params: {
+                profit_period: 'daily7',
+                ...params,
+            },
         })
         .then((response) => response.data);
 }
@@ -72,3 +75,45 @@ export function getPortfolioList(params) {
  * @property {number} [page]
  * @property {number} [limit]
  */
+
+
+/**
+ * @param {'init'|'buy'|'sell'} type
+ * @param {number} id - portfolio id
+ * @param {string} address - isolated account
+ * @param {string} privateKey - private key of the main account
+ * @return {Promise<void>}
+ */
+export function postConsumerPortfolio(type, id, address, privateKey) {
+    return instance.post(`consumer/portfolio/${type}`, {
+        id,
+        isolatedAddress: address,
+    }, {
+        ecdsaAuth: {
+            privateKey,
+        },
+    })
+        .then((response) => response.data);
+}
+
+/**
+ * @param {PaginationParams} [params]
+ * @param {string} address
+ * @return {Promise<PortfolioList>}
+ */
+export function getConsumerPortfolioList(address, params) {
+    return instance.get(`consumer/portfolio/${address}`, {
+            params: {
+                ...params,
+            },
+        })
+        .then(async (response) => {
+            const portfolioList = await getPortfolioList({limit: 1000});
+            response.data.list = response.data.list.map((item) => {
+                const portfolio = portfolioList.list.find((portfolio) => portfolio.id === item.id);
+                return portfolio || item;
+            });
+
+            return response.data;
+        });
+}

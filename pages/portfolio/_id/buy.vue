@@ -49,7 +49,11 @@ export default {
             </div>
 
             <div class="card card--pop card--light-grey">
-                <PortfolioBuyForm :portfolio="portfolio" class="card__content card__content--medium"/>
+                <PortfolioBuyForm
+                    class="card__content card__content--medium"
+                    :portfolio="portfolio"
+                    @success-modal-close="$router.push(getDashboardUrl())"
+                />
 
 
 <!--                <div class="card__content card__content&#45;&#45;medium u-text-medium">
