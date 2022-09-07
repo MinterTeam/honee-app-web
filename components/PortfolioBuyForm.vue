@@ -64,6 +64,9 @@ export default {
             valueDistribution: {
                 valid: (value) => value.reduce((accumulator, item) => accumulator.plus(item), new Big(0)).lte(this.form.value || 0),
             },
+            valueDistributionToSpend: {
+                valid: (value) => value.reduce((accumulator, item) => accumulator.plus(item), new Big(0)).gt(0),
+            },
             sequenceParams: {
                 valid: (value) => value.some((item) => !item.skip),
             },
@@ -110,7 +113,9 @@ export default {
                         amount: this.valueDistribution[index],
                     };
                 }
-                const validFormInput = this.v$estimationList[index] && !this.v$estimationList[index].propsGroup.$invalid;
+                // don't check $v.form.value.maxValue here to show estimation results
+                // don't check v$estimationList valueToSell, because valueDistributionToSpend may be 0 if not enough fee
+                const validFormInput = this.v$estimationList[index] && !this.v$estimationList[index].coinToSell.$invalid && !this.v$estimationList[index].coinToBuy.$invalid && this.$v.form.value.required && this.$v.form.value.validAmount;
 
                 if (!validFormInput) {
                     return {
@@ -123,13 +128,14 @@ export default {
 
                 const isLoading = this.estimationFetchStateList[index]?.loading;
                 const error = this.estimationFetchStateList[index]?.error;
+                const enoughToPayFee = Number(this.valueDistributionToSpend[index]) > 0;
 
                 return {
                     ...result,
                     amount: this.estimationList[index],
                     isLoading,
                     error,
-                    disabled: !!error,
+                    disabled: !!error || (!isLoading && !enoughToPayFee),
                 };
             });
         },
@@ -150,6 +156,7 @@ export default {
                     txParams: needSwap ? {
                         type: this.getEstimationRef(index).getTxType(),
                         data: txData,
+                        gasCoin: this.form.coin,
                     } : null,
                     // pass skip to not send tx in sequence
                     skip,
