@@ -10,7 +10,7 @@ export default {
         PortfolioHead,
     },
     asyncData({route, error}) {
-        if (!route.params.id) {
+        if (!route.params.id || !/^\d+$/.test(route.params.id)) {
             return error({status: 404, message: 'Page not found'});
         }
         return getPortfolio(route.params.id)
