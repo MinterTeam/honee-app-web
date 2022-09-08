@@ -1,9 +1,9 @@
 <script>
-import PortfolioSellForm from '~/components/PortfolioSellForm.vue';
+import SellBalanceForm from '~/components/SellBalanceForm.vue';
 
 export default {
     components: {
-        PortfolioSellForm,
+        SellBalanceForm,
     },
     data() {
         return {
@@ -18,11 +18,11 @@ export default {
     <div class="u-section u-container u-container--small">
         <div class="card card--invert">
             <div class="card__content card__content--medium">
-                <h1 class="card__action-title-value">{{ $td('Sell all coins', 'portfolio.sell-all-title') }}</h1>
+                <h1 class="card__action-title-value">{{ $td('Sell all balance', 'action.title-sell-balance') }}</h1>
             </div>
 
             <div class="card card--pop card--light-grey">
-                <PortfolioSellForm
+                <SellBalanceForm
                     class="card__content card__content--medium"
                     @success-modal-close="$router.push(getDashboardUrl())"
                 />

@@ -168,9 +168,9 @@ export default {
 
                         // fill txParams with gasCoin
                         const prepareGasCoin = index === 0
-                            ? () => ({gasCoin: this.fee.resultList[0].coin})
+                            ? () => ({gasCoin: this.fee.resultList?.[0]?.coin})
                             : () => this.refineByIndex(index).then((fee) => ({
-                                gasCoin: fee.coin,
+                                gasCoin: fee?.coin,
                                 // extra data to pass to next `prepare`
                                 extra: {fee},
                             }));

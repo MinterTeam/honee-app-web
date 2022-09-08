@@ -1,17 +1,16 @@
 <script>
-import {getPortfolio} from '~/api/portfolio.js';
-import {shortHashFilter} from '~/assets/utils.js';
-import PortfolioBuyForm from '~/components/PortfolioBuyForm.vue';
+import PortfolioSellForm from '~/components/PortfolioSellForm.vue';
+import {getConsumerPortfolio} from '~/api/portfolio.js';
 
 export default {
     components: {
-        PortfolioBuyForm,
+        PortfolioSellForm,
     },
-    asyncData({route, error}) {
+    asyncData({route, store, error}) {
         if (!route.params.id || !/^\d+$/.test(route.params.id)) {
             return error({status: 404, message: 'Page not found'});
         }
-        return getPortfolio(route.params.id)
+        return getConsumerPortfolio(store.getters.address, route.params.id)
             .then((portfolio) => {
                 return {
                     portfolio,
@@ -25,17 +24,6 @@ export default {
         };
     },
     computed: {
-        coinList() {
-            return this.portfolio.coins.map((item) => {
-                return {
-                    ...item,
-                    symbol: this.$store.state.explorer.coinMapId[item.id]?.symbol,
-                };
-            });
-        },
-    },
-    methods: {
-        shortHashFilter,
     },
 };
 </script>
@@ -44,12 +32,11 @@ export default {
     <div class="u-section u-container u-container--small">
         <div class="card card--invert">
             <div class="card__content card__content--medium">
-                <div class="card__action-title-type">#{{ portfolio.id }}</div>
-                <h1 class="card__action-title-value">{{ $td('Buy portfolio', 'portfolio.buy-title') }}</h1>
+                <h1 class="card__action-title-value">{{ $td('Sell portfolio', 'portfolio.sell-title') }}</h1>
             </div>
 
             <div class="card card--pop card--light-grey">
-                <PortfolioBuyForm
+                <PortfolioSellForm
                     class="card__content card__content--medium"
                     :portfolio="portfolio"
                     @success-modal-close="$router.push(getDashboardUrl())"
