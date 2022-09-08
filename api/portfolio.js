@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
 import {PORTFOLIO_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
+import NotFoundError from '~/assets/utils/error-404.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import addEcdsaAuthInterceptor from '~/assets/axios-ecdsa-auth.js';
 
@@ -97,16 +98,11 @@ export function postConsumerPortfolio(type, id, address, privateKey) {
 }
 
 /**
- * @param {PaginationParams} [params]
  * @param {string} address
  * @return {Promise<PortfolioList>}
  */
-export function getConsumerPortfolioList(address, params) {
-    return instance.get(`consumer/portfolio/${address}`, {
-            params: {
-                ...params,
-            },
-        })
+export function getConsumerPortfolioList(address) {
+    return instance.get(`consumer/portfolio/${address}`)
         .then(async (response) => {
             const portfolioList = await getPortfolioList({limit: 1000});
             response.data.list = response.data.list.map((item) => {
@@ -115,5 +111,17 @@ export function getConsumerPortfolioList(address, params) {
             });
 
             return response.data;
+        });
+}
+
+export function getConsumerPortfolio(address, id) {
+    id = Number(id);
+    return getConsumerPortfolioList(address)
+        .then((result) => {
+            const portfolio = result.list.find((item) => item.id === id);
+            if (!portfolio) {
+                return Promise.reject(new NotFoundError('Copied portfolio not found'));
+            }
+            return portfolio;
         });
 }

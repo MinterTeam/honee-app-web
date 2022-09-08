@@ -3,13 +3,16 @@ import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required';
 import minLength from 'vuelidate/src/validators/minLength';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
+import {convertFromPip} from 'minterjs-util/src/converter.js';
 import Big from '~/assets/big.js';
 import {pretty} from '~/assets/utils.js';
+import {getBalance} from '~/api/explorer.js';
+import {postConsumerPortfolio} from '~/api/portfolio.js';
+import usePortfolioWallet from '~/composables/use-portfolio-wallet.js';
 import SwapEstimation from '~/components/base/SwapEstimation.vue';
 import TxSequenceForm from '~/components/base/TxSequenceForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
-
 
 
 export default {
@@ -26,13 +29,32 @@ export default {
         'success-modal-close',
         'override-stats-value',
     ],
+    props: {
+        portfolio: {
+            type: Object,
+            required: true,
+        },
+    },
+    setup(props, context) {
+        const {getWallet} = usePortfolioWallet(context.root.$store.getters.mnemonic);
+
+        return {
+            portfolioWallet: getWallet(props.portfolio.id),
+        };
+    },
+    fetch() {
+        return getBalance(this.portfolioWallet.address)
+            .then((result) => {
+                this.balanceList = result.data.balances.filter((item) => item.amount > 0);
+            });
+    },
     data() {
         return {
-            balanceList: this.$store.state.balance,
+            balanceList: [],
             form: {
                 coin: this.$route.query.coin || '',
             },
-            fee: {},
+            // fee: {},
             estimationList: [],
             estimationTxDataList: [],
             v$estimationList: [],
@@ -57,7 +79,7 @@ export default {
     computed: {
         coinList() {
             return this.balanceList
-                .filter((item) => item.coin.symbol.indexOf('LP-') !== 0)
+                // .filter((item) => item.coin.symbol.indexOf('LP-') !== 0)
                 .map((item) => {
                     return {
                         amount: item.amount,
@@ -135,7 +157,8 @@ export default {
             };
         },
         sequenceParams() {
-            return this.estimationTxDataList.map((txData, index) => {
+            const swapReturnList = [];
+            const swapSequence = this.estimationTxDataList.map((txData, index) => {
                 const coinSymbol = this.coinList[index].symbol;
                 const needSwap = this.checkNeedSwapEqual(coinSymbol);
                 const isDisabled = this.estimationView.find((item) => item.coin === coinSymbol)?.disabled;
@@ -147,9 +170,10 @@ export default {
                         data: txData,
                         gasCoin: coinSymbol,
                     } : null,
+                    privateKey: this.portfolioWallet.privateKey,
                     // pass skip to not send tx in sequence
                     skip,
-                    prepareGasCoinPosition: 'end',
+                    prepareGasCoinPosition: 'start',
                     prepare: skip ? undefined : (swapTx) => {
                         return this.getEstimationRef(index).getEstimation(true, true)
                             .then(() => {
@@ -159,8 +183,46 @@ export default {
                                 };
                             });
                     },
+                    finalize: (tx) => {
+                        swapReturnList.push(convertFromPip(tx.tags['tx.return']));
+                        return tx;
+                    },
                 };
             });
+
+            const send = {
+                prepareGasCoinPosition: 'start',
+                prepare: this.isSelectedLockCoin ? undefined : (swapTx, prevPrepareGasCoin) => {
+                    console.log(swapReturnList);
+                    const swapTotalReturn = swapReturnList.reduce((prev, current) => new Big(prev).plus(current)).toString();
+                    console.log(swapTotalReturn, swapReturnList);
+                    const value = new Big(swapTotalReturn).minus(prevPrepareGasCoin.extra.fee.value).toString();
+
+                    return {
+                        data: {
+                            value,
+                        },
+                    };
+                },
+                txParams: {
+                    type: TX_TYPE.SEND,
+                    data: {
+                        to: this.$store.getters.address,
+                        // value from 'prepare'
+                        value: 0,
+                        coin: this.form.coin,
+                    },
+                    gasCoin: this.form.coin,
+                    payload: JSON.stringify({
+                        app: 'portfolio',
+                        type: 'sell',
+                        id: this.portfolio.id,
+                    }),
+                },
+                privateKey: this.portfolioWallet.privateKey,
+            };
+
+            return swapSequence.concat(send);
         },
         feeTxParams() {
             const swapFeeTxParams = this.coinList.map((item) => {
@@ -175,7 +237,7 @@ export default {
                 } : null;
                 */
             });
-            return swapFeeTxParams;
+            return swapFeeTxParams.concat(this.sequenceParams.at(-1).txParams);
         },
     },
     watch: {
@@ -207,6 +269,9 @@ export default {
         handleFetchState(index, v$) {
             this.$set(this.estimationFetchStateList, index, v$);
         },
+        beforeSuccessSequence() {
+            return postConsumerPortfolio('sell', this.portfolio.id, this.portfolioWallet.address, this.$store.getters.privateKey);
+        },
     },
 };
 
@@ -219,12 +284,13 @@ export default {
             :sequence-params="sequenceParams"
             :v$sequence-params="$v"
             :fee-tx-params="feeTxParams"
-            @update:fee="fee = $event"
+            :before-success-sequence="beforeSuccessSequence"
+            @update:fee="/*fee = $event*/"
             @clear-form="clearForm()"
             @success="$emit('success')"
             @success-modal-close="$emit('success-modal-close')"
         >
-            <template v-slot:default="{fee}">
+            <template v-slot:default>
                 <div class="form-row">
                     <FieldCombined
                         :coin.sync="form.coin"

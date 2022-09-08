@@ -43,6 +43,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         txParams: {},
         /** @type {Array<TxParams>} */
         txParamsList: [],
+        //@TODO invalid behavior with TxSequence with different privateKey
         baseCoinAmount: 0,
         /** @type {Boolean} - by default fallback to baseCoin, additionally it can try to fallback to coinToSpend, if baseCoin is not enough */
         fallbackToCoinToSpend: false,

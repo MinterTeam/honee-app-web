@@ -1,12 +1,26 @@
 <script>
 import PortfolioSellForm from '~/components/PortfolioSellForm.vue';
+import {getConsumerPortfolio} from '~/api/portfolio.js';
 
 export default {
     components: {
         PortfolioSellForm,
     },
+    asyncData({route, store, error}) {
+        if (!route.params.id || !/^\d+$/.test(route.params.id)) {
+            return error({status: 404, message: 'Page not found'});
+        }
+        return getConsumerPortfolio(store.getters.address, route.params.id)
+            .then((portfolio) => {
+                return {
+                    portfolio,
+                };
+            })
+            .catch((resError) => error(resError));
+    },
     data() {
         return {
+            portfolio: null,
         };
     },
     computed: {
@@ -24,6 +38,7 @@ export default {
             <div class="card card--pop card--light-grey">
                 <PortfolioSellForm
                     class="card__content card__content--medium"
+                    :portfolio="portfolio"
                     @success-modal-close="$router.push(getDashboardUrl())"
                 />
 
