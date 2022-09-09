@@ -50,7 +50,7 @@ export default {
         </div>
         <div class="u-text-right u-mt-15">
             <div class="wallet__coin-control" v-if="$store.state.balance.length <= $options.SHORT_COUNT || isFullListActive">
-                <nuxt-link class="link--default" :to="$i18nGetPreferredPath('/portfolio/sell')">
+                <nuxt-link class="link--default" :to="$i18nGetPreferredPath('/sell-all-balance')">
                     {{ $td('Sell all coins', 'index.assets-coins-sell-all') }}
                 </nuxt-link>
             </div>

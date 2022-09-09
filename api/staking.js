@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
 import {STAKING_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
+import NotFoundError from '~/assets/utils/error-404.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 
 const instance = axios.create({
@@ -55,15 +56,6 @@ export function getAddressLockList(address) {
             });
             return result;
         });
-}
-
-class NotFoundError extends Error {
-    constructor(message = 'Not found') {
-        super(message);
-        this.name = 'NotFoundError';
-        this.status = 404;
-        this.useMessage = true;
-    }
 }
 
 /**

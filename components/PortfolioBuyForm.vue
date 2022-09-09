@@ -218,7 +218,7 @@ export default {
         },
         sendFeeData() {
             const feeItem = this.fee?.resultList?.[0];
-
+            // feeItem coinSymbol can differ from form.coin, but it doesn't matter because sendFee is used only for maxValue calculation in FieldCombined
             return feeItem?.coinSymbol === this.form.coin ? feeItem : null;
         },
         swapFeeDataList() {
