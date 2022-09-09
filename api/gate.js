@@ -24,14 +24,21 @@ const minterApi = new MinterApi({
     chainId: CHAIN_ID,
     adapter,
 });
+//@TODO temp
+const tempApi = CHAIN_ID === 1 ? new MinterApi({
+    apiType: 'node',
+    baseURL: 'https://sync-test.minter.network/v2/',
+    chainId: CHAIN_ID,
+    adapter,
+}) : minterApi;
 
 export const postTx = PostTx(minterApi);
 
 const estimateCache = new Cache({maxAge: 5 * 1000});
 const _estimateCoinSell = (params, axiosOptions) => params.sellAll
-    ? EstimateCoinSellAll(minterApi, {cache: estimateCache})(params, axiosOptions)
-    : EstimateCoinSell(minterApi, {cache: estimateCache})(params, axiosOptions);
-const _estimateCoinBuy = new EstimateCoinBuy(minterApi, {cache: estimateCache});
+    ? EstimateCoinSellAll(tempApi, {cache: estimateCache})(params, axiosOptions)
+    : EstimateCoinSell(tempApi, {cache: estimateCache})(params, axiosOptions);
+const _estimateCoinBuy = new EstimateCoinBuy(tempApi, {cache: estimateCache});
 export function estimateCoinSell(params, axiosOptions) {
     // 0, '0', false, undefined
     if (!params.valueToSell || !Number(params.valueToSell)) {
