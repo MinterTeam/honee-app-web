@@ -1,4 +1,6 @@
 <script>
+import 'core-js/es/array/at.js';
+
 import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required';
 import minLength from 'vuelidate/src/validators/minLength';
