@@ -1,5 +1,5 @@
 <script>
-import {getPortfolioList, getConsumerPortfolioList} from '~/api/portfolio.js';
+import {getPortfolioList} from '~/api/portfolio.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import PortfolioHead from '~/components/PortfolioHead.vue';
 import PortfolioPagination from '~/components/PortfolioPagination.vue';
@@ -44,7 +44,7 @@ export default {
     ],
     data() {
         return {
-            /** @type {Array<Portfolio>} */
+            /** @type {Array<Portfolio|ConsumerPortfolio>} */
             portfolioList: [],
             paginationInfo: undefined,
         };
@@ -54,7 +54,7 @@ export default {
         const page = this.page || 1;
         const limit = this.limit;
         const listPromise = this.type === PORTFOLIO_LIST_TYPE.COPIED
-            ? getConsumerPortfolioList(address, {limit, page})
+            ? this.$store.dispatch('portfolio/fetchConsumerPortfolioList')
             : getPortfolioList({
                 owner: this.type === PORTFOLIO_LIST_TYPE.MANAGED ? address : undefined,
                 limit,

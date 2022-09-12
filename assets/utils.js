@@ -111,6 +111,14 @@ export function pretty(value) {
  * @param {string|number} value
  * @return {string}
  */
+export function prettyUsd(value) {
+    return prettyNumber(value, 2, PRECISION_SETTING.FIXED);
+}
+
+/**
+ * @param {string|number} value
+ * @return {string}
+ */
 export function prettyRound(value) {
     return prettyNumber(value, 0);
 }

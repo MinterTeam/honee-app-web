@@ -259,10 +259,16 @@ export default {
             this.$set(this.estimationFetchStateList, index, v$);
         },
         beforePostSequence() {
-            return postConsumerPortfolio('init', this.portfolio.id, this.portfolioWallet.address, this.$store.getters.privateKey);
+            return postConsumerPortfolio('init', this.portfolio.id, this.portfolioWallet.address, this.$store.getters.privateKey)
+                .then((portfolio) => {
+                    this.$store.commit('portfolio/addConsumerPortfolio', portfolio);
+                });
         },
         beforeSuccessSequence() {
-            return postConsumerPortfolio('buy', this.portfolio.id, this.portfolioWallet.address, this.$store.getters.privateKey);
+            return postConsumerPortfolio('buy', this.portfolio.id, this.portfolioWallet.address, this.$store.getters.privateKey)
+                .then((portfolio) => {
+                    this.$store.commit('portfolio/addConsumerPortfolio', portfolio);
+                });
         },
     },
 };
