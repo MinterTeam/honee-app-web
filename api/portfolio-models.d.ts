@@ -11,6 +11,12 @@
 
 export interface CoinItem {
   /**
+   * @format float64
+   * @example 18.6
+   */
+  percentChange24H?: number;
+
+  /**
    * @format int64
    * @example 9086
    */
@@ -27,10 +33,54 @@ export interface CoinItem {
    * @example HUB
    */
   name: string;
+
+  /**
+   * @format float64
+   * @example 24.04
+   */
+  price?: number;
 }
 
 export interface CoinList {
   list: CoinItem[];
+}
+
+export interface ConsumerPortfolio {
+  coins: PortfolioItem[];
+
+  /** @example my desc */
+  description: string;
+
+  /**
+   * @format int64
+   * @example 1
+   */
+  id: number;
+
+  /** @example Mx1234567890123456789012345678901234567890 */
+  isolatedAddress: string;
+
+  /** @example Mx68f4839d7f32831b9234f9575f3b95e1afe21a56 */
+  owner: string;
+
+  /**
+   * @format float64
+   * @example 1100.5
+   */
+  price: number;
+
+  /**
+   * @format float64
+   * @example 40.25
+   */
+  profit: number;
+
+  /** @example Cool portfolio */
+  title: string;
+}
+
+export interface ConsumerPortfolioList {
+  list: ConsumerPortfolio[];
 }
 
 export type OwnerAddress = string;
@@ -126,6 +176,20 @@ export interface Profit {
    * @example 45.5
    */
   weekly?: number;
+}
+
+export interface UpdateConsumerPortfolio {
+  /**
+   * @format int64
+   * @example 1902
+   */
+  id: number;
+
+  /** @example Mx1234567890123456789012345678901234567890 */
+  isolatedAddress: string;
+
+  /** @format date-time */
+  timestamp: string;
 }
 
 export interface UpdatePortfolio {

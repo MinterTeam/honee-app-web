@@ -67,6 +67,7 @@ const options = program
     .option("--clean-output", "clean output folder before generate api. WARNING: May cause data loss", false)
     .option("--api-class-name <string>", "name of the api class")
     .option("--patch", "fix up small errors in the swagger source definition", false)
+    .option("--sort-types", "sort types", false)
     .parse(process.argv)
     .opts();
 

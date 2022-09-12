@@ -8,7 +8,7 @@ import addEcdsaAuthInterceptor from '~/assets/axios-ecdsa-auth.js';
 
 const instance = axios.create({
     baseURL: PORTFOLIO_API_URL,
-    // adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
+    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
     // timeout: 5,
 });
 addToCamelInterceptor(instance);
@@ -16,7 +16,8 @@ addEcdsaAuthInterceptor(instance);
 
 
 /**
- * https://app.swaggerhub.com/apis/KLIM0VSERGEY/honee_portfolio
+ * https://github.com/MinterTeam/honee-portfolio/blob/master/swagger.json
+ * https://portfolio-api.honee.app/v1/docs
  */
 
 
@@ -83,7 +84,7 @@ export function getPortfolioList(params) {
  * @param {number} id - portfolio id
  * @param {string} address - isolated account
  * @param {string} privateKey - private key of the main account
- * @return {Promise<void>}
+ * @return {Promise<ConsumerPortfolio|void>}
  */
 export function postConsumerPortfolio(type, id, address, privateKey) {
     return instance.post(`consumer/portfolio/${type}`, {
@@ -97,23 +98,25 @@ export function postConsumerPortfolio(type, id, address, privateKey) {
         .then((response) => response.data);
 }
 
+// consumer portfolio list can be cached, because we will update local state on init/buy/sell change manually
+const consumerCache = new Cache({maxAge: 1 * 60 * 1000});
+
 /**
  * @param {string} address
- * @return {Promise<PortfolioList>}
+ * @return {Promise<ConsumerPortfolioList>}
  */
 export function getConsumerPortfolioList(address) {
-    return instance.get(`consumer/portfolio/${address}`)
-        .then(async (response) => {
-            const portfolioList = await getPortfolioList({limit: 1000});
-            response.data.list = response.data.list.map((item) => {
-                const portfolio = portfolioList.list.find((portfolio) => portfolio.id === item.id);
-                return portfolio || item;
-            });
-
-            return response.data;
-        });
+    return instance.get(`consumer/portfolio/${address}`, {
+        cache: consumerCache,
+    })
+        .then((response) => response.data);
 }
 
+/**
+ * @param {string} address
+ * @param {number|string} id
+ * @return {Promise<ConsumerPortfolio>}
+ */
 export function getConsumerPortfolio(address, id) {
     id = Number(id);
     return getConsumerPortfolioList(address)

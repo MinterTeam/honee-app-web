@@ -270,7 +270,10 @@ export default {
             this.$set(this.estimationFetchStateList, index, v$);
         },
         beforeSuccessSequence() {
-            return postConsumerPortfolio('sell', this.portfolio.id, this.portfolioWallet.address, this.$store.getters.privateKey);
+            return postConsumerPortfolio('sell', this.portfolio.id, this.portfolioWallet.address, this.$store.getters.privateKey)
+                .then(() => {
+                    this.$store.commit('portfolio/removeConsumerPortfolio', this.portfolio.id);
+                });
         },
     },
 };

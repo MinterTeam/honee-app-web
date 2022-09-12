@@ -1,17 +1,28 @@
 <script>
-import {pretty, shortHashFilter} from '~/assets/utils.js';
+import {prettyUsd, shortHashFilter} from '~/assets/utils.js';
 
 export default {
     name: 'PortfolioHead',
     props: {
-        /** @type {Portfolio} */
+        /** @type {Portfolio|ConsumerPortfolio} */
         portfolio: {
             type: Object,
             required: true,
         },
     },
+    computed: {
+        isConsumer() {
+            return !!this.portfolio.isolatedAddress;
+        },
+        isTemplate() {
+            return !this.isConsumer;
+        },
+        profit() {
+            return this.isConsumer ? this.portfolio.profit : this.portfolio.profit.daily7;
+        },
+    },
     methods: {
-        pretty,
+        prettyUsd,
         shortHashFilter,
     },
 };
@@ -26,15 +37,15 @@ export default {
             </div>
             <div class="card__action-stats">
                 <div class="card__action-stats-caption">
-                    7 days
+                    {{ isTemplate ? '7 days' : 'Profit' }}
                 </div>
-                <div class="card__action-stats-value" v-if="portfolio.profit.daily7 === -101">—</div>
+                <div class="card__action-stats-value" v-if="profit === -101">—</div>
                 <div
                     v-else
                     class="card__action-stats-value"
-                    :class="portfolio.profit.daily7 >= 0 ? 'u-text-green' : 'u-text-red'"
+                    :class="profit >= 0 ? 'u-text-green' : 'u-text-red'"
                 >
-                    {{ pretty(portfolio.profit.daily7) }}%
+                    {{ prettyUsd(profit) }}%
                 </div>
             </div>
         </div>

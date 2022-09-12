@@ -1,6 +1,5 @@
 <script>
 import PortfolioSellForm from '~/components/PortfolioSellForm.vue';
-import {getConsumerPortfolio} from '~/api/portfolio.js';
 
 export default {
     components: {
@@ -10,7 +9,7 @@ export default {
         if (!route.params.id || !/^\d+$/.test(route.params.id)) {
             return error({status: 404, message: 'Page not found'});
         }
-        return getConsumerPortfolio(store.getters.address, route.params.id)
+        return store.dispatch('portfolio/fetchConsumerPortfolio', route.params.id)
             .then((portfolio) => {
                 return {
                     portfolio,
