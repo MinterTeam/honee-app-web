@@ -9,10 +9,13 @@ export default {
         BaseAmountEstimation,
         PortfolioHead,
     },
-    asyncData({route, error}) {
+    asyncData({route, store, error}) {
         if (!route.params.id || !/^\d+$/.test(route.params.id)) {
             return error({status: 404, message: 'Page not found'});
         }
+
+        store.dispatch('portfolio/fetchConsumerPortfolioList');
+
         return getPortfolio(route.params.id)
             .then((portfolio) => {
                 return {
@@ -37,6 +40,9 @@ export default {
         },
         isOwn() {
             return this.portfolio.owner === this.$store.getters.address;
+        },
+        consumerPortfolio() {
+            return this.$store.getters['portfolio/consumerPortfolioMap'][this.portfolio?.id];
         },
     },
     methods: {
@@ -78,6 +84,11 @@ export default {
                             <div class="u-cell u-cell--auto-grow" v-if="isOwn">
                                 <nuxt-link class="button button--ghost-main button--full" :to="$i18nGetPreferredPath(`/portfolio/${portfolio.id}/edit`)">
                                     {{ $td('Edit', 'portfolio.manage-edit-button') }}
+                                </nuxt-link>
+                            </div>
+                            <div class="u-cell u-cell--auto-grow" v-if="consumerPortfolio">
+                                <nuxt-link class="button button--ghost-main button--full" :to="$i18nGetPreferredPath(`/portfolio/${portfolio.id}/sell`)">
+                                    {{ $td('Sell', 'portfolio.sell-button') }}
                                 </nuxt-link>
                             </div>
                         </div>

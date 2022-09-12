@@ -17,7 +17,7 @@
     "lint:fix": "eslint --ext .js,.vue --ignore-path .gitignore . --fix",
     "lint:staged": "eslint $(git diff --name-only HEAD --diff-filter=d | grep -E '\\.(js|vue)$' | xargs) --ignore-path .gitignore",
     "lint:staged-fix": "eslint $(git diff --name-only HEAD --diff-filter=d | grep -E '\\.(js|vue)$' | xargs) --ignore-path .gitignore --fix",
-    "swagger:portfolio": "node ./scripts/swagger-typescript-api/index.js -p 'https://portfolio-api.honee.app/swagger.json' --no-client -o api -n portfolio-models.d.ts",
+    "swagger:portfolio": "node ./scripts/swagger-typescript-api/index.js -p 'https://portfolio-api.honee.app/swagger.json' --no-client --sort-types -o api -n portfolio-models.d.ts",
     "swagger:explorer": "curl 'https://api.swaggerhub.com/apis/GrKamil/minter-explorer_api' |  ./node_modules/node-jq/bin/jq '.apis|last|.properties[0].url' | xargs -I {} node ./scripts/swagger-typescript-api/index.js -p '{}' --no-client -o api -n explorer-models.d.ts",
     "precommit": "echo 'Pre-commit checks...' && npm run lint:staged",
     "test": "node --experimental-vm-modules -r dotenv/config node_modules/.bin/jest"
