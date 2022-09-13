@@ -167,6 +167,14 @@ export default {
                         data: txData,
                         gasCoin: this.form.coin,
                     } : null,
+                    feeTxParams: needSwap ? {
+                        type: TX_TYPE.SELL_SWAP_POOL,
+                        data: {
+                            coins: [0, 1, 2, 3, 4],
+                            valueToSell: 1,
+                        },
+                        gasCoin: this.form.coin,
+                    } : undefined,
                     privateKey: this.portfolioWallet.privateKey,
                     // pass skip to not send tx in sequence
                     skip,
@@ -202,19 +210,6 @@ export default {
             };
 
             return [send].concat(swapSequence);
-        },
-        feeTxParams() {
-            const swapFeeTxParams = this.coinList.map((item) => {
-                return this.checkNeedSwapEqual(item.symbol) ? {
-                    type: TX_TYPE.SELL_SWAP_POOL,
-                    data: {
-                        coins: [0, 1, 2, 3, 4],
-                        valueToSell: 1,
-                    },
-                    gasCoin: this.form.coin,
-                } : null;
-            });
-            return [this.sequenceParams[0].txParams].concat(swapFeeTxParams);
         },
         sendFeeData() {
             const feeItem = this.fee?.resultList?.[0];
@@ -281,7 +276,6 @@ export default {
         <TxSequenceForm
             :sequence-params="sequenceParams"
             :v$sequence-params="$v"
-            :fee-tx-params="feeTxParams"
             :before-post-sequence="beforePostSequence"
             :before-success-sequence="beforeSuccessSequence"
             @update:fee="fee = $event"

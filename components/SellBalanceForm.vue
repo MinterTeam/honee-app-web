@@ -147,6 +147,16 @@ export default {
                         data: txData,
                         gasCoin: coinSymbol,
                     } : null,
+                    feeTxParams: false,
+                    /* no need to calculate fee for sellAll tx
+                    feeTxParams: needSwap ? {
+                        type: TX_TYPE.SELL_ALL_SWAP_POOL,
+                        data: {
+                            coins: [item.symbol, 1, 2, 3, 4],
+                        },
+                        gasCoin: item.symbol,
+                    } : undefined;
+                    */
                     // pass skip to not send tx in sequence
                     skip,
                     prepareGasCoinPosition: 'end',
@@ -161,21 +171,6 @@ export default {
                     },
                 };
             });
-        },
-        feeTxParams() {
-            const swapFeeTxParams = this.coinList.map((item) => {
-                return null;
-                /* no need to calculate fee for sellAll tx
-                return this.checkNeedSwapEqual(item.symbol) ? {
-                    type: TX_TYPE.SELL_ALL_SWAP_POOL,
-                    data: {
-                        coins: [item.symbol, 1, 2, 3, 4],
-                    },
-                    gasCoin: item.symbol,
-                } : null;
-                */
-            });
-            return swapFeeTxParams;
         },
     },
     watch: {
@@ -218,7 +213,6 @@ export default {
         <TxSequenceForm
             :sequence-params="sequenceParams"
             :v$sequence-params="$v"
-            :fee-tx-params="feeTxParams"
             @update:fee="fee = $event"
             @clear-form="clearForm()"
             @success="$emit('success')"

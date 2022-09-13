@@ -1,6 +1,4 @@
 <script>
-import 'core-js/es/array/at.js';
-
 import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required';
 import minLength from 'vuelidate/src/validators/minLength';
@@ -172,6 +170,16 @@ export default {
                         data: txData,
                         gasCoin: coinSymbol,
                     } : null,
+                    feeTxParams: false,
+                    /* no need to calculate fee for sellAll tx
+                    feeTxParams: needSwap ? {
+                        type: TX_TYPE.SELL_ALL_SWAP_POOL,
+                        data: {
+                            coins: [item.symbol, 1, 2, 3, 4],
+                        },
+                        gasCoin: item.symbol,
+                    } : undefined;
+                    */
                     privateKey: this.portfolioWallet.privateKey,
                     // pass skip to not send tx in sequence
                     skip,
@@ -224,21 +232,6 @@ export default {
 
             return swapSequence.concat(send);
         },
-        feeTxParams() {
-            const swapFeeTxParams = this.coinList.map((item) => {
-                return null;
-                /* no need to calculate fee for sellAll tx
-                return this.checkNeedSwapEqual(item.symbol) ? {
-                    type: TX_TYPE.SELL_ALL_SWAP_POOL,
-                    data: {
-                        coins: [item.symbol, 1, 2, 3, 4],
-                    },
-                    gasCoin: item.symbol,
-                } : null;
-                */
-            });
-            return swapFeeTxParams.concat(this.sequenceParams.at(-1).txParams);
-        },
     },
     watch: {
     },
@@ -286,7 +279,6 @@ export default {
         <TxSequenceForm
             :sequence-params="sequenceParams"
             :v$sequence-params="$v"
-            :fee-tx-params="feeTxParams"
             :before-success-sequence="beforeSuccessSequence"
             @update:fee="/*fee = $event*/"
             @clear-form="clearForm()"

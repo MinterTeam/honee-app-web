@@ -220,6 +220,7 @@ function estimateTxGas({to, value, data}) {
 /**
  * @typedef {object} SendSequenceItem
  * @property {TxParams} txParams
+ * @property {TxParams} [feeTxParams] - used for fee calculatio instead of txParams (used in TxSequenceForm)
  * @property {string} [privateKey] - overwrite privateKey from `options` (to sign tx by isolated portfolio wallet)
  * @property {Array<PrepareTxParams> | PrepareTxParams} [prepare] - functions to prepare txParams, executes in series, as se
  * @property {FinalizePostTx} [finalize]

@@ -203,6 +203,15 @@ export default {
                     type: TX_TYPE.LOCK,
                     payload: this.payload,
                 },
+                feeTxParams: {
+                    data: {
+                        coin: this.txData.coin,
+                        value: 0,
+                        dueBlock: 1,
+                    },
+                    type: TX_TYPE.LOCK,
+                    payload: this.payload,
+                },
             };
         },
     },
