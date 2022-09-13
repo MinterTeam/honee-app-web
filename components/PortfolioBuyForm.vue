@@ -155,16 +155,16 @@ export default {
             };
         },
         sequenceParams() {
-            const swapSequence = this.estimationTxDataList.map((txData, index) => {
-                const coinSymbol = this.coinList[index].symbol;
+            const swapSequence = this.coinList.map((coinItem, index) => {
+                const coinSymbol = coinItem.symbol;
                 const needSwap = this.checkNeedSwapEqual(coinSymbol);
                 const isDisabled = this.estimationView.find((item) => item.coin === coinSymbol)?.disabled;
                 const skip = !needSwap || isDisabled;
                 return {
                     // pass null to txParams to not perform fee calculation
                     txParams: needSwap ? {
-                        type: this.getEstimationRef(index).getTxType(),
-                        data: txData,
+                        type: this.getEstimationRef(index)?.getTxType(),
+                        data: this.estimationTxDataList[index],
                         gasCoin: this.form.coin,
                     } : null,
                     feeTxParams: needSwap ? {
@@ -182,10 +182,10 @@ export default {
                     prepare: skip ? undefined : (swapTx) => {
                         // wait for computed to recalculated (fee -> valueDistributionToSpend)
                         return wait(100)
-                            .then(() => this.getEstimationRef(index).getEstimation(true, true))
+                            .then(() => this.getEstimationRef(index)?.getEstimation(true, true))
                             .then(() => {
                                 return {
-                                    type: this.getEstimationRef(index).getTxType(),
+                                    type: this.getEstimationRef(index)?.getTxType(),
                                     data: this.estimationTxDataList[index],
                                 };
                             });
@@ -231,7 +231,7 @@ export default {
         pretty,
         getEstimationRef(index) {
             // $refs item in v-for is an array
-            return this.$refs['estimation' + index][0];
+            return this.$refs['estimation' + index]?.[0];
         },
         checkNeedSwapEqual(coinSymbol) {
             return this.form.coin !== coinSymbol;

@@ -216,10 +216,11 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     async function refineByIndex(index) {
         const txParams = feeProps.txParamsList?.[index];
         if (!txParams) {
-            return;
+            // resolve with null
+            return null;
         }
         if (feeProps.isOffline) {
-            return;
+            return Promise.reject('Can\'t calculate fee when offline');
         }
 
         // state.isLoading = true;

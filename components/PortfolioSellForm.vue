@@ -158,16 +158,16 @@ export default {
         },
         sequenceParams() {
             const swapReturnList = [];
-            const swapSequence = this.estimationTxDataList.map((txData, index) => {
-                const coinSymbol = this.coinList[index].symbol;
+            const swapSequence = this.coinList.map((coinItem, index) => {
+                const coinSymbol = coinItem.symbol;
                 const needSwap = this.checkNeedSwapEqual(coinSymbol);
                 const isDisabled = this.estimationView.find((item) => item.coin === coinSymbol)?.disabled;
                 const skip = !needSwap || isDisabled;
                 return {
                     // pass null to txParams to not perform fee calculation
                     txParams: needSwap ? {
-                        type: this.getEstimationRef(index).getTxType(),
-                        data: txData,
+                        type: this.getEstimationRef(index)?.getTxType(),
+                        data: this.estimationTxDataList[index],
                         gasCoin: coinSymbol,
                     } : null,
                     feeTxParams: false,
@@ -185,10 +185,10 @@ export default {
                     skip,
                     prepareGasCoinPosition: 'start',
                     prepare: skip ? undefined : (swapTx) => {
-                        return this.getEstimationRef(index).getEstimation(true, true)
+                        return this.getEstimationRef(index)?.getEstimation(true, true)
                             .then(() => {
                                 return {
-                                    type: this.getEstimationRef(index).getTxType(),
+                                    type: this.getEstimationRef(index)?.getTxType(),
                                     data: this.estimationTxDataList[index],
                                 };
                             });
@@ -202,7 +202,8 @@ export default {
 
             const send = {
                 prepareGasCoinPosition: 'start',
-                prepare: this.isSelectedLockCoin ? undefined : (swapTx, prevPrepareGasCoin) => {
+                prepare: (swapTx, prevPrepareGasCoin) => {
+                    // @TODO existing dust in balance not included here
                     const swapTotalReturn = swapReturnList.reduce((prev, current) => new Big(prev).plus(current)).toString();
                     const value = new Big(swapTotalReturn).minus(prevPrepareGasCoin.extra.fee.value).toString();
 
@@ -239,7 +240,7 @@ export default {
         pretty,
         getEstimationRef(index) {
             // $refs item in v-for is an array
-            return this.$refs['estimation' + index][0];
+            return this.$refs['estimation' + index]?.[0];
         },
         // if coins are equal, then no need swap
         checkNeedSwapEqual(coinSymbol) {
