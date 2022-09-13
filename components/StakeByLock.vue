@@ -169,22 +169,35 @@ export default {
             return JSON.stringify({lock_id: this.stakingProgram?.id});
         },
         sequenceParams() {
-            return {
-                prepareGasCoinPosition: 'start',
-                prepare: this.isSelectedLockCoin ? undefined : (swapTx, prevPrepareGasCoin) => {
-                    const coinToBuy = swapTx.data.coin_to_buy || swapTx.data.coins.find((item) => item.id === swapTx.tags['tx.coin_to_buy']);
-                    // @TODO if user had some coinToBuy on balance, it's better to deduct fee from old balance, than from swapTx.returnAmount
-                    const value = getAvailableSelectedBalance({
-                        coin: coinToBuy,
-                        amount: swapTx.returnAmount,
-                    }, prevPrepareGasCoin.extra.fee);
+            const prepareUseMaxLockCoin = this.isUseMax ? (dummyTx, prevPrepareGasCoin) => {
+                const selectedBalanceItem = this.$store.getters.getBalanceItem(this.stakingProgram?.lockCoin.symbol);
+                const value = getAvailableSelectedBalance(selectedBalanceItem, prevPrepareGasCoin.extra.fee);
 
-                    return {
-                        data: {
-                            value,
-                        },
-                    };
-                },
+                return {
+                    data: {
+                        value,
+                    },
+                };
+            } : undefined;
+            const prepareAfterSwap = (swapTx, prevPrepareGasCoin) => {
+                const coinToBuy = swapTx.data.coin_to_buy || swapTx.data.coins.find((item) => item.id === swapTx.tags['tx.coin_to_buy']);
+                // @TODO if user had some coinToBuy on balance, it's better to deduct fee from old balance, than from swapTx.returnAmount
+                const value = getAvailableSelectedBalance({
+                    coin: coinToBuy,
+                    amount: swapTx.returnAmount,
+                }, prevPrepareGasCoin.extra.fee);
+
+                return {
+                    data: {
+                        value,
+                    },
+                };
+            };
+            const prepare = this.isSelectedLockCoin ? prepareUseMaxLockCoin : prepareAfterSwap;
+            return {
+                // refineFee is not needed if no 'prepare'
+                prepareGasCoinPosition: prepare ? 'start' : 'skip',
+                prepare,
                 txParams: {
                     data: this.txData,
                     type: TX_TYPE.LOCK,

@@ -224,7 +224,7 @@ function estimateTxGas({to, value, data}) {
  * @property {Array<PrepareTxParams> | PrepareTxParams} [prepare] - functions to prepare txParams, executes in series, as se
  * @property {FinalizePostTx} [finalize]
  * @property {boolean} [skip]
- * @property {'start'|'end'} [prepareGasCoinPosition = 'start'] - used in TxSequenceForm
+ * @property {'start'|'end'|'skip'} [prepareGasCoinPosition = 'start'] - used in TxSequenceForm
  */
 /**
  * @param {Array<SendSequenceItem>} list
