@@ -195,9 +195,7 @@ export default {
             const send = {
                 prepareGasCoinPosition: 'start',
                 prepare: this.isSelectedLockCoin ? undefined : (swapTx, prevPrepareGasCoin) => {
-                    console.log(swapReturnList);
                     const swapTotalReturn = swapReturnList.reduce((prev, current) => new Big(prev).plus(current)).toString();
-                    console.log(swapTotalReturn, swapReturnList);
                     const value = new Big(swapTotalReturn).minus(prevPrepareGasCoin.extra.fee.value).toString();
 
                     return {

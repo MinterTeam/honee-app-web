@@ -93,7 +93,7 @@ export default {
                         Invite friends and get <strong>10% of their BEE</strong> staking rewards. You just need to activate a special referral link for your wallet.
                     </template>
                     <template v-if="$i18n.locale === 'ru'">
-                        Приглашай друзей и <strong>получай 10%</strong> от их стейкинг наград. Для этого просто активируй специальные реферальные ссылки для своего кошелька.
+                        Приглашай друзей и <strong>получай 10%</strong> от их наград за стейкинг BEE. Для этого просто активируй специальную реферальную ссылку для своего кошелька.
                     </template>
                 </template>
                 <template v-else>
