@@ -227,6 +227,7 @@ module.exports = {
                 [
                     '@nuxt/babel-preset-app',
                     {
+                        // debug: false,
                         // targets: isServer ? { node: '10' } : { ie: '11' },
                         corejs: { version: 3 },
                     },

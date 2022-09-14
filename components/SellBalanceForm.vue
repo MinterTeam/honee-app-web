@@ -135,47 +135,42 @@ export default {
             };
         },
         sequenceParams() {
-            return this.estimationTxDataList.map((txData, index) => {
-                const coinSymbol = this.coinList[index].symbol;
+            return this.coinList.map((coinItem, index) => {
+                const coinSymbol = coinItem.symbol;
                 const needSwap = this.checkNeedSwapEqual(coinSymbol);
                 const isDisabled = this.estimationView.find((item) => item.coin === coinSymbol)?.disabled;
                 const skip = !needSwap || isDisabled;
                 return {
                     // pass null to txParams to not perform fee calculation
                     txParams: needSwap ? {
-                        type: this.getEstimationRef(index).getTxType(),
-                        data: txData,
+                        type: this.getEstimationRef(index)?.getTxType(),
+                        data: this.estimationTxDataList[index],
                         gasCoin: coinSymbol,
                     } : null,
+                    feeTxParams: false,
+                    /* no need to calculate fee for sellAll tx
+                    feeTxParams: needSwap ? {
+                        type: TX_TYPE.SELL_ALL_SWAP_POOL,
+                        data: {
+                            coins: [item.symbol, 1, 2, 3, 4],
+                        },
+                        gasCoin: item.symbol,
+                    } : undefined;
+                    */
                     // pass skip to not send tx in sequence
                     skip,
                     prepareGasCoinPosition: 'end',
                     prepare: skip ? undefined : (swapTx) => {
-                        return this.getEstimationRef(index).getEstimation(true, true)
+                        return this.getEstimationRef(index)?.getEstimation(true, true)
                             .then(() => {
                                 return {
-                                    type: this.getEstimationRef(index).getTxType(),
+                                    type: this.getEstimationRef(index)?.getTxType(),
                                     data: this.estimationTxDataList[index],
                                 };
                             });
                     },
                 };
             });
-        },
-        feeTxParams() {
-            const swapFeeTxParams = this.coinList.map((item) => {
-                return null;
-                /* no need to calculate fee for sellAll tx
-                return this.checkNeedSwapEqual(item.symbol) ? {
-                    type: TX_TYPE.SELL_ALL_SWAP_POOL,
-                    data: {
-                        coins: [item.symbol, 1, 2, 3, 4],
-                    },
-                    gasCoin: item.symbol,
-                } : null;
-                */
-            });
-            return swapFeeTxParams;
         },
     },
     watch: {
@@ -184,7 +179,7 @@ export default {
         pretty,
         getEstimationRef(index) {
             // $refs item in v-for is an array
-            return this.$refs['estimation' + index][0];
+            return this.$refs['estimation' + index]?.[0];
         },
         // if coins are equal, then no need swap
         checkNeedSwapEqual(coinSymbol) {
@@ -218,7 +213,6 @@ export default {
         <TxSequenceForm
             :sequence-params="sequenceParams"
             :v$sequence-params="$v"
-            :fee-tx-params="feeTxParams"
             @update:fee="fee = $event"
             @clear-form="clearForm()"
             @success="$emit('success')"
@@ -286,7 +280,7 @@ export default {
 
             <template v-slot:confirm-modal-header>
                 <h2 class="u-h3 u-mb-10">
-                    {{ $td('Sell all coins', 'portfolio.sell-all-title') }}
+                    {{ $td('Sell all balance', 'action.title-sell-balance') }}
                 </h2>
             </template>
 

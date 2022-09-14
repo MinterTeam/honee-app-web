@@ -198,9 +198,7 @@ export default {
             if (this.isSellAll) {
                 return this.maxAmount;
             }
-            const selectedCoin = this.$store.state.balance.find((coin) => {
-                return coin.coin.symbol === this.coinToSell;
-            });
+            const selectedCoin = this.$store.getters.getBalanceItem(this.coinToSell);
             // coin not selected
             if (!selectedCoin) {
                 return 0;

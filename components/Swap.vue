@@ -146,6 +146,9 @@ export default {
                 .then(() => {
                     this.isConfirmModalVisible = true;
                     this.isFormSending = false;
+                })
+                .catch(() => {
+                    this.isFormSending = false;
                 });
         },
         submit() {
