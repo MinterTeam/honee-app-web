@@ -286,7 +286,7 @@ export default {
 
             <template v-slot:confirm-modal-header>
                 <h2 class="u-h3 u-mb-10">
-                    {{ $td('Sell all coins', 'portfolio.sell-all-title') }}
+                    {{ $td('Sell all balance', 'action.title-sell-balance') }}
                 </h2>
             </template>
 

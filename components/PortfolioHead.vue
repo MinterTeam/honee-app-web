@@ -37,7 +37,8 @@ export default {
             </div>
             <div class="card__action-stats">
                 <div class="card__action-stats-caption">
-                    {{ isTemplate ? '7 days' : 'Profit' }}
+                    <template v-if="isTemplate">{{ $td('7 days', 'portfolio.profit-7d') }}</template>
+                    <template v-if="isConsumer">{{ prettyUsd(portfolio.price) }}$</template>
                 </div>
                 <div class="card__action-stats-value" v-if="profit === -101">—</div>
                 <div
