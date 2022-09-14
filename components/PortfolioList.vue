@@ -77,6 +77,20 @@ export default {
         },
     },
     methods: {
+        getLinkUrl(portfolio) {
+            if (this.type === PORTFOLIO_LIST_TYPE.COPIED) {
+                return this.$i18nGetPreferredPath(`/portfolio/${portfolio?.id}/copied`);
+            } else {
+                return this.$i18nGetPreferredPath(`/portfolio/${portfolio?.id}`);
+            }
+        },
+        getLinkCaption() {
+            if (this.type === PORTFOLIO_LIST_TYPE.TOP) {
+                return this.$td('Buy', 'portfolio.buy-button');
+            } else {
+                return this.$td('View', 'portfolio.view-button');
+            }
+        },
     },
 };
 </script>
@@ -101,7 +115,7 @@ export default {
         <div class="u-grid u-grid--vertical-margin" v-else-if="portfolioList.length">
             <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="portfolio in portfolioList" :key="portfolio.id">
                 <div class="card card--action card__content--small">
-                    <PortfolioHead :portfolio="portfolio"/>
+                    <PortfolioHead :portfolio="portfolio" :title-link="getLinkUrl(portfolio)"/>
 
                     <div class="card__token-list u-mt-10">
                         <img
@@ -113,8 +127,8 @@ export default {
                         >
                     </div>
 
-                    <nuxt-link class="u-mt-10 button button--main button--full" :to="$i18nGetPreferredPath(`/portfolio/${portfolio.id}`)">
-                        {{ $td('Buy', 'portfolio.buy-button') }}
+                    <nuxt-link class="u-mt-10 button button--main button--full" :to="getLinkUrl(portfolio)">
+                        {{ getLinkCaption() }}
                     </nuxt-link>
                 </div>
             </div>
