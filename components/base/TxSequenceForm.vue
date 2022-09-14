@@ -31,9 +31,6 @@ export default {
             type: [Array, Object],
             required: true,
         },
-        feeTxParams: {
-            type: [Array, Object],
-        },
         v$sequenceParams: {
             type: Object,
             required: true,
@@ -92,14 +89,8 @@ export default {
     },
     computed: {
         feeBusParams() {
-            let txParamsList;
-            if (this.feeTxParams) {
-                txParamsList = this.feeTxParams;
-            } else if (Array.isArray(this.sequenceParams)) {
-                txParamsList = this.sequenceParams.map((item) => item.txParams);
-            } else {
-                txParamsList = [this.sequenceParams.txParams];
-            }
+            const sequenceParamsArray = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
+            const txParamsList = sequenceParamsArray.map((item) => item.feeTxParams ?? item.txParams);
 
             return {
                 txParamsList,
@@ -167,7 +158,7 @@ export default {
                         }
 
                         // fill txParams with gasCoin
-                        const prepareGasCoin = index === 0
+                        const prepareGasCoin = item.prepareGasCoinPosition === 'skip' && index === 0
                             ? () => ({gasCoin: this.fee.resultList?.[0]?.coin})
                             : () => this.refineByIndex(index).then((fee) => ({
                                 gasCoin: fee?.coin,

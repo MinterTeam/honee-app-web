@@ -1,7 +1,10 @@
 import {followReferrer} from '~/api/referral.js';
 import {REF_ID_QUERY} from '~/assets/variables.js';
 
-export default ({ app, store }) => {
+export default ({ app, route, store }) => {
+    // always init regardless of presence of query ref id (it will fallback to web storage)
+    store.commit('referral/initForeignRefId', route.query[REF_ID_QUERY]);
+
     store.subscribe((mutation) => {
         if (mutation.type === 'LOGOUT') {
             // remove old data on logout
@@ -13,21 +16,17 @@ export default ({ app, store }) => {
     app.router.beforeEach(async (to, from, next) => {
         await store.dispatch('referral/fetchRefId');
 
-        const foreignRefId = queryHasForeignRefId(to, store) ? to.query[REF_ID_QUERY] : store.state.referral.foreignRefId;
-        if (foreignRefId) {
-            if (store.getters.isAuthorized) {
-                // no need to await it, follow in the background
+        const foreignRefId = store.state.referral.foreignRefId;
+        if (foreignRefId && store.getters.isAuthorized) {
+            if (foreignRefId !== store.state.referral.refId) {
+                // don't return because no need to await it, follow in the background
                 followReferrer(foreignRefId, store.getters.privateKey)
-                    .then(() => {
-                        store.commit('referral/setForeignRefId', undefined);
-                    })
                     .catch((error) => {
                         console.log(error);
                     });
-            } else {
-                store.commit('referral/setForeignRefId', foreignRefId);
-                return overwriteQuery(next, to, foreignRefId);
             }
+            // always clear after first authorization
+            store.commit('referral/clearForeignRefId');
         }
 
         // if user has refId, but it is not in query yet
@@ -51,8 +50,4 @@ function overwriteQuery(next, to, refId) {
         next();
     }
 
-}
-
-function queryHasForeignRefId(route, store) {
-    return route.query[REF_ID_QUERY] && route.query[REF_ID_QUERY] !== store.state.referral.refId;
 }

@@ -1,7 +1,12 @@
+import Cookies from 'js-cookie';
 import {getRefId} from '~/api/referral.js';
 
+const FOREIGN_REF_COOKIE_KEY = 'foreignRefId';
+
 export const state = () => ({
+    // ref to share
     refId: undefined,
+    // ref to follow
     foreignRefId: undefined,
 });
 
@@ -12,8 +17,29 @@ export const mutations = {
     setRefId(state, value) {
         state.refId = value;
     },
-    setForeignRefId(state, value) {
-        state.foreignRefId = value;
+    initForeignRefId(state, value) {
+        if (value) {
+            state.foreignRefId = value;
+
+            // save to cookies
+            const getExpiry = () => {
+                const date = new Date();
+                date.setDate(date.getDate() + 30);
+                return date;
+            };
+            Cookies.set(FOREIGN_REF_COOKIE_KEY, value, {
+                expires: getExpiry(),
+                // keep last 2 domain parts (top level domain) and remove port
+                domain: window.location.host.split('.').slice(-2).join('.').replace(/:\d+$/, ''),
+                sameSite: 'Lax',
+            });
+        } else {
+            state.foreignRefId = Cookies.get(FOREIGN_REF_COOKIE_KEY);
+        }
+    },
+    clearForeignRefId(state) {
+        state.foreignRefId = undefined;
+        Cookies.remove(FOREIGN_REF_COOKIE_KEY);
     },
 };
 

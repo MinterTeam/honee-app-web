@@ -1,5 +1,5 @@
 import {reactive, computed, set} from '@vue/composition-api';
-import merge from 'lodash-es/merge';
+import {deepMerge} from '~/assets/utils/collection.js';
 import {getProviderByChain, web3Utils, subscribeTransaction, toErcDecimals} from '~/api/web3.js';
 import {postTx} from '~/api/gate.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, CHAIN_ID as MINTER_CHAIN_ID} from '~/assets/variables.js';
@@ -220,11 +220,12 @@ function estimateTxGas({to, value, data}) {
 /**
  * @typedef {object} SendSequenceItem
  * @property {TxParams} txParams
+ * @property {TxParams} [feeTxParams] - used for fee calculatio instead of txParams (used in TxSequenceForm)
  * @property {string} [privateKey] - overwrite privateKey from `options` (to sign tx by isolated portfolio wallet)
  * @property {Array<PrepareTxParams> | PrepareTxParams} [prepare] - functions to prepare txParams, executes in series, as se
  * @property {FinalizePostTx} [finalize]
  * @property {boolean} [skip]
- * @property {'start'|'end'} [prepareGasCoinPosition = 'start'] - used in TxSequenceForm
+ * @property {'start'|'end'|'skip'} [prepareGasCoinPosition = 'start'] - used in TxSequenceForm
  */
 /**
  * @param {Array<SendSequenceItem>} list
@@ -242,7 +243,7 @@ async function sendTxSequence(list, options) {
             addStepData(`minter${index}`);
             // prepare
             const txParamsAdditionList = await awaitSeries(prepare, result);
-            const preparedTxParams = merge({}, txParams, ...txParamsAdditionList);
+            const preparedTxParams = deepMerge({}, txParams, ...txParamsAdditionList);
             console.debug('prepare', [txParams, ...txParamsAdditionList]);
             // execute
             addStepData(`minter${index}`, {txParams: preparedTxParams});

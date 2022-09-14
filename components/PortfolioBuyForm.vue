@@ -155,18 +155,26 @@ export default {
             };
         },
         sequenceParams() {
-            const swapSequence = this.estimationTxDataList.map((txData, index) => {
-                const coinSymbol = this.coinList[index].symbol;
+            const swapSequence = this.coinList.map((coinItem, index) => {
+                const coinSymbol = coinItem.symbol;
                 const needSwap = this.checkNeedSwapEqual(coinSymbol);
                 const isDisabled = this.estimationView.find((item) => item.coin === coinSymbol)?.disabled;
                 const skip = !needSwap || isDisabled;
                 return {
                     // pass null to txParams to not perform fee calculation
                     txParams: needSwap ? {
-                        type: this.getEstimationRef(index).getTxType(),
-                        data: txData,
+                        type: this.getEstimationRef(index)?.getTxType(),
+                        data: this.estimationTxDataList[index],
                         gasCoin: this.form.coin,
                     } : null,
+                    feeTxParams: needSwap ? {
+                        type: TX_TYPE.SELL_SWAP_POOL,
+                        data: {
+                            coins: [0, 1, 2, 3, 4],
+                            valueToSell: 1,
+                        },
+                        gasCoin: this.form.coin,
+                    } : undefined,
                     privateKey: this.portfolioWallet.privateKey,
                     // pass skip to not send tx in sequence
                     skip,
@@ -174,10 +182,10 @@ export default {
                     prepare: skip ? undefined : (swapTx) => {
                         // wait for computed to recalculated (fee -> valueDistributionToSpend)
                         return wait(100)
-                            .then(() => this.getEstimationRef(index).getEstimation(true, true))
+                            .then(() => this.getEstimationRef(index)?.getEstimation(true, true))
                             .then(() => {
                                 return {
-                                    type: this.getEstimationRef(index).getTxType(),
+                                    type: this.getEstimationRef(index)?.getTxType(),
                                     data: this.estimationTxDataList[index],
                                 };
                             });
@@ -203,19 +211,6 @@ export default {
 
             return [send].concat(swapSequence);
         },
-        feeTxParams() {
-            const swapFeeTxParams = this.coinList.map((item) => {
-                return this.checkNeedSwapEqual(item.symbol) ? {
-                    type: TX_TYPE.SELL_SWAP_POOL,
-                    data: {
-                        coins: [0, 1, 2, 3, 4],
-                        valueToSell: 1,
-                    },
-                    gasCoin: this.form.coin,
-                } : null;
-            });
-            return [this.sequenceParams[0].txParams].concat(swapFeeTxParams);
-        },
         sendFeeData() {
             const feeItem = this.fee?.resultList?.[0];
             // feeItem coinSymbol can differ from form.coin, but it doesn't matter because sendFee is used only for maxValue calculation in FieldCombined
@@ -236,7 +231,7 @@ export default {
         pretty,
         getEstimationRef(index) {
             // $refs item in v-for is an array
-            return this.$refs['estimation' + index][0];
+            return this.$refs['estimation' + index]?.[0];
         },
         checkNeedSwapEqual(coinSymbol) {
             return this.form.coin !== coinSymbol;
@@ -281,7 +276,6 @@ export default {
         <TxSequenceForm
             :sequence-params="sequenceParams"
             :v$sequence-params="$v"
-            :fee-tx-params="feeTxParams"
             :before-post-sequence="beforePostSequence"
             :before-success-sequence="beforeSuccessSequence"
             @update:fee="fee = $event"
