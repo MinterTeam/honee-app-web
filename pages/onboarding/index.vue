@@ -7,7 +7,7 @@ import Card from '~/components/Card.vue';
 
 const ACTION_LIST = [
     '/stake/19?coin={coin}',
-    '/stake/2?coin={coin}',
+    '/stake/24?coin={coin}',
 ];
 const ACTION_LIST_CONDITIONAL = {
     BIP: `/delegate/${BASE_COIN}`,
