@@ -1,16 +1,25 @@
 import Vue from 'vue';
-import {getConsumerPortfolioList} from '~/api/portfolio.js';
+import {getConsumerPortfolioList, getCmcCoinList} from '~/api/portfolio.js';
 import NotFoundError from '~/assets/utils/error-404.js';
 import {arrayToMap} from '~/assets/utils/collection.js';
 
 export const state = () => ({
     /** @type Array<ConsumerPortfolio> */
     consumerPortfolioList: [],
+    /** @type {Array<CoinItem>}*/
+    coinList: [],
+    /** @type {Object.<string, CoinItem>} */
+    coinMap: {},
 });
 
 export const getters = {
     consumerPortfolioMap(state) {
         return arrayToMap(state.consumerPortfolioList, 'id');
+    },
+    getCoinPrice(state) {
+        return function(coinSymbol) {
+            return state.coinMap[coinSymbol]?.price || 0;
+        };
     },
 };
 
@@ -31,6 +40,10 @@ export const mutations = {
         if (index !== -1) {
             state.consumerPortfolioList.splice(index, 1);
         }
+    },
+    setCoinList(state, data) {
+        state.coinList = Object.freeze(data);
+        state.coinMap = Object.freeze(arrayToMap(data, 'symbol'));
     },
 };
 
@@ -58,6 +71,13 @@ export const actions = {
                     return Promise.reject(new NotFoundError('Copied portfolio not found'));
                 }
                 return portfolio;
+            });
+    },
+    fetchCoinList({ commit }) {
+        return getCmcCoinList()
+            .then((data) => {
+                commit('setCoinList', data);
+                return data;
             });
     },
 };

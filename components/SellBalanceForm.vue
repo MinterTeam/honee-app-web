@@ -92,7 +92,7 @@ export default {
                     coin: item.symbol,
                     // display amount to sell
                     amount: item.amount,
-                    hideUsd: true,
+                    hideUsd: false,
                 };
                 const needSwap = this.checkNeedSwapEqual(item.symbol);
                 if (!needSwap) {

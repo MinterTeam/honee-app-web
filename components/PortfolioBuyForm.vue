@@ -113,7 +113,7 @@ export default {
             return this.coinList.map((item, index) => {
                 let result = {
                     coin: item.symbol,
-                    hideUsd: true,
+                    hideUsd: false,
                 };
                 const needSwap = this.checkNeedSwapEqual(item.symbol);
                 if (!needSwap && this.valueDistribution[index] > 0) {

@@ -59,6 +59,11 @@ export default {
             if (this.hideUsd || this.unit) {
                 return 0;
             }
+            if (!this.amount || this.amountIsNotNumber) {
+                return 0;
+            }
+            return this.amount * this.$store.getters['portfolio/getCoinPrice'](this.coin);
+            /*
             let baseCoinAmount;
             if (this.coin === this.$store.getters.BASE_COIN && this.amount > 0) {
                 baseCoinAmount = this.amount;
@@ -67,6 +72,7 @@ export default {
             }
 
             return baseCoinAmount * this.$store.getters['explorer/bipPriceUsd'];
+            */
         },
         coinIconUrl() {
             return this.$store.getters['explorer/getCoinIcon'](this.coin);
