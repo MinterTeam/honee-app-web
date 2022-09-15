@@ -217,6 +217,7 @@ export default {
         'manage-coin-add': 'Добавить другой токен',
         'manage-tokens-error-min': 'Минимум {count} монет',
         'manage-tokens-error-max': 'Максимум {count} монет',
+        'warning-price-impact-description': 'Вы потеряете ≈{impact}% монет из за низколиквидных пулов участвующих в обменах',
         'allocation-sum': 'Текущая суммарная доля',
         'allocation-sum-error': 'Сумма долей активов должна быть равна 100%. Внесите дополнительные токены или измените соотношение.',
         'manage-title-label': 'Название',
