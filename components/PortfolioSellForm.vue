@@ -163,6 +163,11 @@ export default {
                 const needSwap = this.checkNeedSwapEqual(coinSymbol);
                 const isDisabled = this.estimationView.find((item) => item.coin === coinSymbol)?.disabled;
                 const skip = !needSwap || isDisabled;
+
+                if (!needSwap) {
+                    swapReturnList.push(coinItem.amount);
+                }
+
                 return {
                     // pass null to txParams to not perform fee calculation
                     txParams: needSwap ? {
@@ -184,7 +189,7 @@ export default {
                     // pass skip to not send tx in sequence
                     skip,
                     prepareGasCoinPosition: 'start',
-                    prepare: skip ? undefined : (swapTx) => {
+                    prepare: (swapTx) => {
                         return this.getEstimationRef(index)?.getEstimation(true, true)
                             .then(() => {
                                 return {
