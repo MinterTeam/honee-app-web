@@ -12,6 +12,7 @@ import SwapEstimation from '~/components/base/SwapEstimation.vue';
 import TxSequenceForm from '~/components/base/TxSequenceForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
+import PortfolioPriceImpact from '~/components/PortfolioPriceImpact.vue';
 
 
 
@@ -22,6 +23,7 @@ export default {
         TxSequenceForm,
         BaseAmountEstimation,
         FieldCombined,
+        PortfolioPriceImpact,
     },
     mixins: [validationMixin],
     emits: [
@@ -164,14 +166,8 @@ export default {
                     };
                 });
         },
-        // positive price impact means lose of value
-        priceImpact() {
-            const totalSpendUsd = this.estimationViewUsd.reduce((accumulator, item) => accumulator + item.spendUsd, 0);
-            const totalResultUsd = this.estimationViewUsd.reduce((accumulator, item) => accumulator + item.resultUsd, 0);
-            if (!totalSpendUsd || !totalResultUsd) {
-                return 0;
-            }
-            return (totalSpendUsd - totalResultUsd) / totalSpendUsd * 100;
+        priceImpactUnavailable() {
+            return this.coinBalance > 0 && this.form.value > 0 && !this.$store.getters['portfolio/getCoinPrice'](this.form.coin);
         },
         sequenceParams() {
             const swapSequence = this.coinList.map((coinItem, index) => {
@@ -343,13 +339,7 @@ export default {
                         />
                     </template>
                 </div>
-                <div class="information information--warning form-row" v-if="priceImpact > 5">
-                    <div class="information__item">
-                        ⚠️ {{ $td('High price impact!', 'portfolio.warning-price-impact') }}
-                        <div class="information__value">{{ pretty(priceImpact) }}%</div>
-                    </div>
-                    <div class="information__item information__item--content information__muted u-text-medium">{{ $t('portfolio.warning-price-impact-description', {impact: pretty(priceImpact)}) }}</div>
-                </div>
+                <PortfolioPriceImpact class="form-row" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>
 
                 <SwapEstimation
                     class="u-text-medium form-row u-hidden"
@@ -394,13 +384,7 @@ export default {
                     <h3 class="information__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="form.value" format="exact"/>
                 </div>
-                <div class="information information--warning form-row" v-if="priceImpact > 5">
-                    <div class="information__item">
-                        ⚠️ {{ $td('High price impact!', 'portfolio.warning-price-impact') }}
-                        <div class="information__value">{{ pretty(priceImpact) }}%</div>
-                    </div>
-                    <div class="information__item information__item--content information__muted u-text-medium">{{ $t('portfolio.warning-price-impact-description', {impact: pretty(priceImpact)}) }}</div>
-                </div>
+                <PortfolioPriceImpact class="form-row" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>
             </template>
         </TxSequenceForm>
     </div>
