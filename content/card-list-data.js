@@ -89,6 +89,7 @@ export default {
                     caption: 'Купить',
                 },
             },
+            /*
             {
                 caption: 'Buy',
                 coin: 'ETH',
@@ -196,6 +197,7 @@ export default {
                     caption: 'Купить',
                 },
             },
+            */
         ],
     },
 };

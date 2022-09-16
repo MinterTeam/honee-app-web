@@ -12,6 +12,7 @@ import SwapEstimation from '~/components/base/SwapEstimation.vue';
 import TxSequenceForm from '~/components/base/TxSequenceForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
+import PortfolioPriceImpact from '~/components/PortfolioPriceImpact.vue';
 
 
 
@@ -22,6 +23,7 @@ export default {
         TxSequenceForm,
         BaseAmountEstimation,
         FieldCombined,
+        PortfolioPriceImpact,
     },
     mixins: [validationMixin],
     emits: [
@@ -113,7 +115,7 @@ export default {
             return this.coinList.map((item, index) => {
                 let result = {
                     coin: item.symbol,
-                    hideUsd: true,
+                    hideUsd: false,
                 };
                 const needSwap = this.checkNeedSwapEqual(item.symbol);
                 if (!needSwap && this.valueDistribution[index] > 0) {
@@ -153,6 +155,19 @@ export default {
                 enabled: this.estimationView.filter((item) => !item.disabled),
                 disabled: this.estimationView.filter((item) => item.disabled),
             };
+        },
+        estimationViewUsd() {
+            return this.estimationView
+                .filter((item) => !item.disabled && item.amount > 0 && !item.unit)
+                .map((item, index) => {
+                    return {
+                        spendUsd: this.valueDistributionToSpend[index] * this.$store.getters['portfolio/getCoinPrice'](this.form.coin),
+                        resultUsd: item.amount * this.$store.getters['portfolio/getCoinPrice'](item.coin),
+                    };
+                });
+        },
+        priceImpactUnavailable() {
+            return this.coinBalance > 0 && this.form.value > 0 && !this.$store.getters['portfolio/getCoinPrice'](this.form.coin);
         },
         sequenceParams() {
             const swapSequence = this.coinList.map((coinItem, index) => {
@@ -324,6 +339,7 @@ export default {
                         />
                     </template>
                 </div>
+                <PortfolioPriceImpact class="form-row" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>
 
                 <SwapEstimation
                     class="u-text-medium form-row u-hidden"
@@ -368,6 +384,7 @@ export default {
                     <h3 class="information__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="form.value" format="exact"/>
                 </div>
+                <PortfolioPriceImpact class="form-row" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>
             </template>
         </TxSequenceForm>
     </div>

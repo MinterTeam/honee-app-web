@@ -22,10 +22,11 @@ for (const categorySlug in cardList) {
         };
     });
 }
+const {swap, ...cardListWithoutSwap} = cardList;
 /**
  * @type {CardCategoryMap}
  */
-export default cardList;
+export default cardListWithoutSwap;
 /**
  * @type {Array<CardListItem>}
  */

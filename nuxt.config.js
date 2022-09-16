@@ -111,6 +111,7 @@ module.exports = {
             'auth',
             'history',
             'explorer',
+            'portfolio',
             'balance',
         ],
     },
