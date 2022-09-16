@@ -275,7 +275,7 @@ export default {
                 </div>
                 <div class="information information--warning form-row" v-if="priceImpact > 5">
                     <div class="information__item">
-                        ⚠️ {{ $td('High price impact', 'portfolio.warning-price-impact') }}
+                        ⚠️ {{ $td('High price impact!', 'portfolio.warning-price-impact') }}
                         <div class="information__value">{{ pretty(priceImpact) }}%</div>
                     </div>
                     <div class="information__item information__item--content information__muted u-text-medium">{{ $t('portfolio.warning-price-impact-description', {impact: pretty(priceImpact)}) }}</div>
@@ -326,7 +326,7 @@ export default {
                 </div>
                 <div class="information information--warning form-row" v-if="priceImpact > 5">
                     <div class="information__item">
-                        ⚠️ {{ $td('High price impact', 'portfolio.warning-price-impact') }}
+                        ⚠️ {{ $td('High price impact!', 'portfolio.warning-price-impact') }}
                         <div class="information__value">{{ pretty(priceImpact) }}%</div>
                     </div>
                     <div class="information__item information__item--content information__muted u-text-medium">{{ $t('portfolio.warning-price-impact-description', {impact: pretty(priceImpact)}) }}</div>

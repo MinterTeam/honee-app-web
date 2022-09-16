@@ -23,7 +23,7 @@ export default {
         'activate-title': 'Become a Premium user',
     },
     portfolio: {
-        'warning-price-impact-description': 'You will lose ≈{impact}% of coins because of low liquidity pools involved in swaps',
+        'warning-price-impact-description': 'You will lose ≈{impact}% of coins because pools involved in swaps have low liquidity. Try to lower the spending amount.',
     },
     form: {
         'delegation-delegate-confirm-note': 'Note: in case of unbond, your coins will return to your address in approximately <strong>30&nbsp;days</strong> (518&#x202F;400 blocks) and will not be generating rewards during this&nbsp;period.',
