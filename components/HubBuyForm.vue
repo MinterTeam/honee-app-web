@@ -25,14 +25,14 @@ import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useWeb3Deposit from '~/composables/use-web3-deposit.js';
 import useTxService from '~/composables/use-tx-service.js';
 import useTxMinterPresets from '~/composables/use-tx-minter-presets.js';
-import BaseAmountEstimation from '@/components/base/BaseAmountEstimation.vue';
+import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import Loader from '~/components/base/BaseLoader.vue';
-import Modal from '@/components/base/Modal.vue';
+import Modal from '~/components/base/Modal.vue';
 import ButtonCopyIcon from '~/components/base/BaseButtonCopyIcon.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import FieldSelect from '~/components/base/FieldSelect.vue';
-import HubBuyTxListItem from '@/components/HubBuyTxListItem.vue';
-import HubBuySpeedup from '@/components/HubBuySpeedup.vue';
+import HubBuyTxListItem from '~/components/HubBuyTxListItem.vue';
+import HubBuySpeedup from '~/components/HubBuySpeedup.vue';
 
 
 const FIAT_RAMP_NETWORK = 'fiat-ramp';

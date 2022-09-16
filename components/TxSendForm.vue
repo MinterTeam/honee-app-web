@@ -107,7 +107,6 @@ export default {
                 <FieldAddress
                     v-model.trim="form.address"
                     :$value="$v.form.address"
-                    valueType="address"
                     :label="$td('To the address', 'form.wallet-send-address')"
                 />
             </div>

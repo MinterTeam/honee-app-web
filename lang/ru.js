@@ -90,6 +90,7 @@ export default {
         'balance': 'Баланс',
         'wallet-balance-links': 'Купить BIP, HUB & BEE',
         'topup': 'Пополнить',
+        'withdraw': 'Вывести',
         'swap': 'Купить',
         'swap-wallet-button': 'Обменять',
         'send': 'Отправить',
