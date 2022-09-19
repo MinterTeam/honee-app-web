@@ -16,6 +16,7 @@ import {getOracleCoinList} from '~/api/hub.js';
 
 const MIN_COUNT = 2;
 const MAX_COUNT = 10;
+const MIN_ALLOCATION = 5;
 
 const disabledTokens = [
     'COFOUNDER',
@@ -28,6 +29,7 @@ const disabledTokenMap = Object.fromEntries(disabledTokens.map((coinSymbol) => [
 export default {
     MIN_COUNT,
     MAX_COUNT,
+    MIN_ALLOCATION,
     components: {
         BaseAmountEstimation,
         BaseLoader,
@@ -89,7 +91,7 @@ export default {
                     },
                     allocation: {
                         required,
-                        minValue: minValue(1),
+                        minValue: minValue(MIN_ALLOCATION),
                         maxValue: maxValue(100),
                     },
                 },
@@ -231,6 +233,7 @@ function getEmptyCoin() {
                 <span class="form-field__error" v-if="v$coin.symbol.$dirty && !v$coin.symbol.required">{{ $td('Enter coin', 'form.coin-error-required') }}</span>
                 <span class="form-field__error" v-else-if="v$coin.symbol.$dirty && !v$coin.symbol.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
                 <span class="form-field__error" v-else-if="v$coin.allocation.$dirty && !v$coin.allocation.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
+                <span class="form-field__error" v-else-if="v$coin.allocation.$dirty && !v$coin.allocation.minValue">{{ $td('Minimum', 'form.range-error-min') }} {{ $options.MIN_ALLOCATION }}%</span>
                 <span class="form-field__error" v-else-if="v$coin.allocation.$error">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
             </div>
             <div class="form-row form-field__error u-text-center" v-if="$v.form.coinList.$dirty && !$v.form.coinList.minLength">
@@ -289,7 +292,7 @@ function getEmptyCoin() {
             <div class="form-row">
                 <button
                     class="button button--main button--full" type="submit"
-                    :class="{'is-loading': isFormSending}"
+                    :class="{'is-loading': isFormSending, 'is-disabled': $v.$invalid}"
                 >
                     <span v-if="isNew" class="button__content">{{ $td('Create', 'portfolio.manage-create-button') }}</span>
                     <span v-else class="button__content">{{ $td('Save', 'portfolio.manage-save-button') }}</span>
