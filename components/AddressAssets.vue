@@ -51,11 +51,11 @@ export default {
                         ${{ pretty($store.state.totalBalanceSumUsd) }}
                     </div>
                 </div>
-                <nuxt-link class="button button--ghost-main" :to="getDashboardUrl('topup')">
-                    <img class="button__icon u-hidden-small-down" src="/img/icon-deposit.svg" width="24" height="24" alt="" role="presentation">
+                <nuxt-link class="wallet__balance-control-item button button--ghost-main" :to="getDashboardUrl('topup')">
+                    <img class="button__icon u-hidden-medium-down" src="/img/icon-deposit.svg" width="24" height="24" alt="" role="presentation">
                     {{ $td('Top up', 'index.topup') }}
                 </nuxt-link>
-                <nuxt-link class="button button--ghost-main" :to="getDashboardUrl('withdraw')">
+                <nuxt-link class="wallet__balance-control-item button button--ghost-main" :to="getDashboardUrl('withdraw')">
                     {{ $td('Withdraw', 'index.withdraw') }}
                 </nuxt-link>
                 <!--<nuxt-link class="wallet__balance-buy-link button button--yellow-light button--full-mobile u-text-nowrap" :to="getDashboardUrl('buy')">

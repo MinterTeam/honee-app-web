@@ -107,15 +107,15 @@ export default {
 </script>
 
 <template>
-    <div class="panel" v-if="hasTx">
-        <div class="panel__header panel__header-title">{{ $td('Transactions', 'hub.txs') }}</div>
-        <div class="panel__section preview__transaction" v-for="withdraw in withdrawList" :key="withdraw.tx.hash">
+    <div class="" v-if="hasTx">
+        <div class="u-h--uppercase u-mb-05">{{ $td('Last withdraw', 'hub.last-withdraw') }}</div>
+        <div class="preview__transaction" v-for="withdraw in withdrawList" :key="withdraw.tx.hash">
             <div class="hub__preview-transaction-row u-text-overflow">
-                <div>
-                    <a class="link--main" :href="getExplorerTxUrl(withdraw.tx.hash)" target="_blank">{{ formatHash(withdraw.tx.hash) }}</a>
-                </div>
                 <div class="u-fw-700">
                     {{ pretty(getAmount(withdraw)) }} {{ withdraw.tx.data.coin.symbol }}
+                </div>
+                <div>
+                    <a class="u-text-medium link--main" :href="getExplorerTxUrl(withdraw.tx.hash)" target="_blank">{{ formatHash(withdraw.tx.hash) }}</a>
                 </div>
             </div>
 

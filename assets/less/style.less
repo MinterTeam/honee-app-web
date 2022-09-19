@@ -304,10 +304,15 @@
 }
 .wallet__balance {margin-right: auto;}
 .wallet__balance-value {font-size: 30px; line-height: 36px; font-weight: 700; font-feature-settings: "zero" on;}
+.wallet__balance-control-item {}
 .wallet__balance-buy-link {}
 .wallet__action-button {}
 .wallet__controls {display: flex; flex-direction: column; align-items: center;}
 .wallet__controls-fancy-button {}
+@media (max-width: @breakpoint-small-down) {
+    .wallet__balance {width: 100%;}
+    .wallet__balance-control-item {flex-grow: 2; flex-basis: 40%;}
+}
 @media (max-width: @breakpoint-medium-down) {
     .wallet__action-button {
         padding: 48px 0 0; min-width: 72px; position: relative;

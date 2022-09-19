@@ -5,7 +5,7 @@ import {getAddressTransactionList} from '~/api/explorer.js';
 import {HUB_MINTER_MULTISIG_ADDRESS, HUB_CHAIN_ID} from '~/assets/variables.js';
 import {fromBase64} from '~/assets/utils.js';
 
-const WITHDRAW_LIST_LENGTH = 3;
+const WITHDRAW_LIST_LENGTH = 1;
 const DEPOSIT_LIST_LENGTH = 5;
 
 export const state = () => ({

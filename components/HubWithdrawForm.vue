@@ -19,6 +19,7 @@ import useHubDiscount from '~/composables/use-hub-discount.js';
 import useHubTokenData from '~/composables/use-hub-token-data.js';
 import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
+import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import FieldAddress from '~/components/base/FieldAddress.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import FieldSelect from '~/components/base/FieldSelect.vue';
@@ -37,6 +38,7 @@ export default {
     components: {
         Loader,
         Modal,
+        BaseAmountEstimation,
         FieldAddress,
         FieldCombined,
         FieldSelect,
@@ -463,8 +465,24 @@ function getHubMinAmount(destinationNetworkFee, hubFeeRate, hubFeeBaseRate = 0.0
                 <span class="form-field__error" v-if="$v.form.address.$dirty && !$v.form.address.required">{{ $td('Enter', 'hub.withdraw-address-required') }} {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} {{ $td('address', 'hub.withdraw-address-title') }}</span>
                 <span class="form-field__error" v-else-if="$v.form.address.$dirty && !$v.form.address.validAddress">{{ $td('Invalid', 'hub.withdraw-address-invalid') }} {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} {{ $td('address', 'hub.withdraw-address-title') }}</span>
             </div>
+            <div class="information form-row" v-if="form.coin">
+                <h3 class="information__title">{{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} {{ $td('fee', 'hub.withdraw-eth-fee') }}</h3>
+                <BaseAmountEstimation :coin="form.coin" :amount="coinFee" format="pretty"/>
+
+                <h3 class="information__title">{{ $td('Bridge fee', 'hub.withdraw-hub-fee') }} ({{ hubFeeRatePercent }}%)</h3>
+                <BaseAmountEstimation :coin="form.coin" :amount="hubFee" format="pretty"/>
+                <div class="information__item information__item--content u-text-medium" v-if="discountUpsidePercent">
+                    <a href="https://www.minter.network/howto/cross-chain-discounts" class="link--hover link--main" target="_blank">
+                        {{ $td('How to reduce fee up to', 'form.hub-reduce-fee') }}
+                        {{ discountUpsidePercent }}%
+                    </a>
+                </div>
+
+                <h3 class="information__title">{{ $td('Total spend', 'hub.withdraw-estimate') }}</h3>
+                <BaseAmountEstimation :coin="form.coin" :amount="amountToSpend" format="exact"/>
+            </div>
+            <!--
             <div class="form-row">
-                <!--
                 <div class="form-check-label">Tx speed</div>
                 <label class="form-check">
                     <input type="radio" class="form-check__input" name="speed" :value="$options.SPEED_MIN" v-model="form.speed">
@@ -474,8 +492,8 @@ function getHubMinAmount(destinationNetworkFee, hubFeeRate, hubFeeBaseRate = 0.0
                     <input type="radio" class="form-check__input" name="speed" :value="$options.SPEED_FAST" v-model="form.speed">
                     <span class="form-check__label form-check__label&#45;&#45;radio">{{ $td('Fast', 'form.hub-withdraw-speed-fast') }}</span>
                 </label>
-                -->
             </div>
+            -->
             <div class="form-row">
                 <button
                     class="button button--main button--full"
@@ -488,167 +506,91 @@ function getHubMinAmount(destinationNetworkFee, hubFeeRate, hubFeeBaseRate = 0.0
                 <div class="form-field__error" v-if="serverError">{{ serverError }}</div>
                 <div class="form-field__help" v-if="serverWarning"><span class="u-emoji">⚠️</span> {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} {{ $td('fee has updated', 'hub.fee-updated') }}</div>
             </div>
-        </form>
-        <div class="panel__section panel__section--tint">
-            <div class="u-grid u-grid--small u-grid--vertical-margin--small">
-                <div class="u-cell u-cell--1-2 u-cell--large--1-4">
-                    <div class="form-field form-field--dashed">
-                        <div class="form-field__input is-not-empty">{{ prettyPrecise(amountToSpend) }} {{ form.coin }}</div>
-                        <span class="form-field__label">{{ $td('Total spend', 'hub.withdraw-estimate') }}</span>
-                    </div>
-                </div>
-                <div class="u-cell u-cell--1-2 u-cell--large--1-4">
-                    <div class="form-field form-field--dashed">
-                        <div class="form-field__input is-not-empty">{{ pretty(coinFee) }} {{ form.coin }}</div>
-                        <span class="form-field__label">{{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} {{ $td('fee', 'hub.withdraw-eth-fee') }}</span>
-                    </div>
-                </div>
-                <div class="u-cell u-cell--1-2 u-cell--large--1-4">
-                    <div class="form-field form-field--dashed">
-                        <div class="form-field__input is-not-empty">{{ pretty(hubFee) }} {{ form.coin }}</div>
-                        <span class="form-field__label">
-                            {{ $td('Bridge fee', 'hub.withdraw-hub-fee') }}
-                            ({{ hubFeeRatePercent }}%)
-                        </span>
-                    </div>
-                    <div class="form-field__help" v-if="discountUpsidePercent">
-                        <a href="https://www.minter.network/howto/cross-chain-discounts" class="link--hover link--main" target="_blank">
-                            {{ $td('How to reduce fee up to', 'form.hub-reduce-fee') }}
-                            {{ discountUpsidePercent }}%
-                        </a>
-                    </div>
-                </div>
-                <div class="u-cell u-cell--1-2 u-cell--large--1-4">
-                    <div class="form-field form-field--dashed">
-                        <div class="form-field__input is-not-empty">{{ pretty(fee.value) }} {{ fee.coinSymbol }}</div>
-                        <span class="form-field__label">{{ $td('Minter fee', 'hub.withdraw-minter-fee') }}</span>
-                    </div>
-                </div>
-                <div class="u-cell">
-                    <template v-if="$i18n.locale === 'en'">
-                        <p class="u-mb-05"><span class="u-emoji">⚠️</span> <strong>Withdrawal notice</strong></p>
-                        <ul class="list-simple">
-                            <li>Withdraw to the wallet you own first (the one you have a seed phrase to);</li>
-                            <li>Do not withdraw to an exchange because many do not accept deposits from smart contracts and your tokens will be lost;</li>
-                            <li>Pay attention to {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} and Minter Hub fees;</li>
-                            <li>
-                                {{ $td('Minter Hub is', 'hub.warning-description-2') }}
-                                <a class="link--default" href="https://github.com/MinterTeam/mhub2" target="_blank">{{ $td('open-source', 'hub.warning-description-3') }}</a>.
-                                {{ $td('If needed, you may investigate its code before making use of the features offered on this page.', 'hub.warning-description-4') }}
-                            </li>
-                        </ul>
-                    </template>
-                    <template v-if="$i18n.locale === 'ru'">
-                        <p class="u-mb-05"><span class="u-emoji">⚠️</span> <strong>Внимание</strong></p>
-                        <ul class="list-simple">
-                            <li>Вывод средств возможен только на ваш персональный адрес;</li>
-                            <li>Не допускается вывод средств на смарт-контракты, адреса бирж или адреса, к которым у вас нет прямого доступа;</li>
-                            <li>Всегда обращайте внимание на комиссии в {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} и Minter Hub;</li>
-                            <li>Minter Hub имеет открытый <a class="link--default" href="https://github.com/MinterTeam/mhub2" target="_blank">исходный код</a>, изучите его при необходимости.</li>
-                        </ul>
-                    </template>
-                </div>
+
+            <div class="form-row u-text-muted u-text-small">
+                <template v-if="$i18n.locale === 'en'">
+                    <p class="u-mb-05"><span class="u-emoji">⚠️</span> <strong class="u-fw-600">Withdrawal notice</strong></p>
+                    <ul class="list-simple list-simple--small">
+                        <li>Withdraw to the wallet you own first (the one you have a seed phrase to);</li>
+                        <li>Do not withdraw to an exchange because many do not accept deposits from smart contracts and your tokens will be lost;</li>
+                        <li>Pay attention to {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} and Minter Hub fees;</li>
+                        <li>
+                            {{ $td('Minter Hub is', 'hub.warning-description-2') }}
+                            <a class="link--default" href="https://github.com/MinterTeam/mhub2" target="_blank">{{ $td('open-source', 'hub.warning-description-3') }}</a>.
+                            {{ $td('If needed, you may investigate its code before making use of the features offered on this page.', 'hub.warning-description-4') }}
+                        </li>
+                    </ul>
+                </template>
+                <template v-if="$i18n.locale === 'ru'">
+                    <p class="u-mb-05"><span class="u-emoji">⚠️</span> <strong class="u-fw-600">Внимание</strong></p>
+                    <ul class="list-simple list-simple--small">
+                        <li>Вывод средств возможен только на ваш персональный адрес;</li>
+                        <li>Не допускается вывод средств на смарт-контракты, адреса бирж или адреса, к которым у вас нет прямого доступа;</li>
+                        <li>Всегда обращайте внимание на комиссии в {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} и Minter Hub;</li>
+                        <li>Minter Hub имеет открытый <a class="link--default" href="https://github.com/MinterTeam/mhub2" target="_blank">исходный код</a>, изучите его при необходимости.</li>
+                    </ul>
+                </template>
             </div>
-        </div>
+        </form>
 
         <!-- Confirm Modal -->
         <Modal :isOpen.sync="isConfirmModalVisible">
-            <div class="panel">
-                <div class="panel__header">
-                    <h1 class="panel__header-title">
-                        {{ $td('Withdraw', 'hub.withdraw-title') }}
-                    </h1>
+            <h2 class="u-h3 u-mb-10">{{ $td('Withdraw', 'hub.withdraw-title') }}</h2>
+
+            <div class="information form-row">
+                <h3 class="information__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
+                <BaseAmountEstimation :coin="form.coin" :amount="amountToSpend" format="exact"/>
+
+                <h3 class="information__title">{{ $td('You receive', 'form.you-will-get') }}</h3>
+                <BaseAmountEstimation :coin="form.coin" :amount="form.amount" format="exact"/>
+
+                <h3 class="information__title">{{ $td('To the address', 'form.wallet-send-confirm-address') }}</h3>
+                <div class="information__item information__item--content u-text-wrap">
+                    {{ form.address }}
                 </div>
-                <div class="panel__section u-text-left">
-                    <div class="u-grid u-grid--vertical-margin">
-                        <div class="u-cell">
-                            <div class="form-field form-field--dashed">
-                                <div class="form-field__input is-not-empty">{{ prettyPrecise(form.amount) }} {{ form.coin }}</div>
-                                <span class="form-field__label">{{ $td('You send', 'form.wallet-send-confirm-amount') }}</span>
-                            </div>
-                        </div>
-                        <div class="u-cell">
-                            <div class="form-field form-field--dashed">
-                                <div class="form-field__input is-not-empty">{{ form.address }}</div>
-                                <span class="form-field__label">{{ $td('To the address', 'form.wallet-send-confirm-address') }}</span>
-                            </div>
-                        </div>
-                        <div class="u-cell">
-                            <div class="form-field form-field--dashed">
-                                <div class="form-field__input is-not-empty">{{ pretty(coinFee) }} {{ form.coin }}</div>
-                                <span class="form-field__label">{{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} {{ $td('fee', 'hub.withdraw-eth-fee') }}</span>
-                            </div>
-                        </div>
-                        <div class="u-cell">
-                            <div class="form-field form-field--dashed">
-                                <div class="form-field__input is-not-empty">{{ pretty(hubFee) }} {{ form.coin }}</div>
-                                <span class="form-field__label">
-                                    {{ $td('Bridge fee', 'hub.withdraw-hub-fee') }}
-                                    ({{ hubFeeRatePercent }}%)
-                                </span>
-                            </div>
-                        </div>
-                        <div class="u-cell">
-                            <div class="form-field form-field--dashed">
-                                <div class="form-field__input is-not-empty">{{ pretty(fee.value) }} {{ fee.coinSymbol }}</div>
-                                <span class="form-field__label">{{ $td('Minter fee', 'hub.withdraw-minter-fee') }}</span>
-                            </div>
-                        </div>
-                        <div class="u-cell">
-                            <div class="form-field form-field--dashed">
-                                <div class="form-field__input is-not-empty">{{ prettyPrecise(amountToSpend) }} {{ form.coin }}</div>
-                                <span class="form-field__label">{{ $td('Total spend', 'hub.withdraw-estimate') }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="panel__section">
-                    <button
-                        class="button button--main button--full" type="button" data-focus-on-open
-                        :class="{'is-loading': isFormSending}"
-                        @click="submit()"
-                    >
-                        <span class="button__content">{{ $td('Confirm', 'form.submit-confirm-button') }}</span>
-                        <Loader class="button__loader" :isLoading="true"/>
-                    </button>
-                    <button class="button button--ghost-main button--full" type="button" v-if="!isFormSending" @click="isConfirmModalVisible = false">
-                        {{ $td('Cancel', 'form.submit-cancel-button') }}
-                    </button>
-                </div>
-                <div class="panel__section u-text-left">
-                    <template v-if="$i18n.locale === 'en'">
-                        <span class="u-emoji">⚠️</span> <strong>DO NOT</strong> withdraw to an exchange because many do not accept deposits from smart contracts and your tokens will be lost.
-                        Withdraw to the wallet you own first (the one you <strong>have a seed phrase</strong> to).
-                    </template>
-                    <template v-if="$i18n.locale === 'ru'">
-                        <span class="u-emoji">⚠️</span> <strong>НЕ</strong> делайте вывод на биржи, так как многие не зачисляют средства из смарт-контрактов. Вы потеряете свои токены.
-                        Выводите на кошелек, которым владеете (от которого у вас <strong>есть сид-фраза</strong>).
-                    </template>
-                </div>
+            </div>
+
+            <div class="form-row">
+                <button
+                    class="button button--main button--full" type="button" data-focus-on-open
+                    :class="{'is-loading': isFormSending}"
+                    @click="submit()"
+                >
+                    <span class="button__content">{{ $td('Confirm', 'form.submit-confirm-button') }}</span>
+                    <Loader class="button__loader" :isLoading="true"/>
+                </button>
+                <button class="button button--ghost-main button--full" type="button" v-if="!isFormSending" @click="isConfirmModalVisible = false">
+                    {{ $td('Cancel', 'form.submit-cancel-button') }}
+                </button>
+            </div>
+
+            <div class="form-row u-text-muted u-text-small">
+                <template v-if="$i18n.locale === 'en'">
+                    <span class="u-emoji">⚠️</span> <strong>DO NOT</strong> withdraw to an exchange because many do not accept deposits from smart contracts and your tokens will be lost.
+                    Withdraw to the wallet you own first (the one you <strong>have a seed phrase</strong> to).
+                </template>
+                <template v-if="$i18n.locale === 'ru'">
+                    <span class="u-emoji">⚠️</span> <strong>НЕ</strong> делайте вывод на биржи, так как многие не зачисляют средства из смарт-контрактов. Вы потеряете свои токены.
+                    Выводите на кошелек, которым владеете (от которого у вас <strong>есть сид-фраза</strong>).
+                </template>
             </div>
         </Modal>
 
         <!-- Success Modal -->
         <Modal :isOpen.sync="isSuccessModalVisible">
-            <div class="panel">
-                <div class="panel__header">
-                    <h1 class="panel__header-title">
-                        {{ $td('Success!', 'form.success-title') }}
-                    </h1>
-                </div>
-                <div class="panel__section u-text-left">
-                    <strong>{{ $td('Tx sent:', 'form.tx-sent') }}</strong>
-                    <a class="link--default u-text-break" :href="getExplorerTxUrl(serverSuccess.hash)" target="_blank" v-if="serverSuccess">{{ serverSuccess.hash }}</a>
-                </div>
-                <div class="panel__section">
-                    <a class="button button--main button--full" :href="getExplorerTxUrl(serverSuccess.hash)" target="_blank" v-if="serverSuccess">
-                        {{ $td('View transaction', 'form.success-view-button') }}
-                    </a>
-                    <button class="button button--ghost-main button--full" type="button" @click="isSuccessModalVisible = false">
-                        {{ $td('Close', 'form.success-close-button') }}
-                    </button>
-                </div>
+            <h2 class="u-h3 u-mb-10">{{ $td('Success!', 'form.success-title') }}</h2>
+
+            <div class="u-mb-10">
+                <strong>{{ $td('Tx sent:', 'form.tx-sent') }}</strong>
+                <a class="link--default u-text-break" :href="getExplorerTxUrl(serverSuccess.hash)" target="_blank" v-if="serverSuccess">{{ serverSuccess.hash }}</a>
             </div>
+
+            <a class="button button--main button--full" :href="getExplorerTxUrl(serverSuccess.hash)" target="_blank" v-if="serverSuccess">
+                {{ $td('View transaction', 'form.success-view-button') }}
+            </a>
+            <button class="button button--ghost-main button--full" type="button" @click="isSuccessModalVisible = false">
+                {{ $td('Close', 'form.success-close-button') }}
+            </button>
         </Modal>
     </div>
 </template>
