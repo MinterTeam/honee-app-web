@@ -530,5 +530,23 @@ export default {
 
         'stake-lock-duration-label': 'Период блокировки',
         'stake-lock-duration-error-required': 'Укажите период',
+
+        'hub-reduce-fee': 'Как уменьшить комиссию до',
+        'amount-error-not-enough': 'Недостаточно',
+    },
+    hub: {
+        'withdraw-title': 'Вывод',
+        'withdraw-description': 'Отправка монет из Minter в другую сеть',
+        'withdraw-address': 'Вывод на адрес',
+        'withdraw-address-required': 'Укажите',
+        'withdraw-address-title': 'адрес',
+        'withdraw-address-invalid': 'Неверный',
+        'withdraw-button-title': 'Вывести',
+        'fee-updated': 'комиссия обновлена',
+        'withdraw-estimate': 'Всего',
+        'withdraw-eth-fee': 'комиссия',
+        'withdraw-hub-fee': 'Ком. моста',
+        'withdraw-minter-fee': 'Комиссия Minter',
+        'max': 'макс.',
     },
 };
