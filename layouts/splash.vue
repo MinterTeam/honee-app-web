@@ -1,6 +1,6 @@
 <script>
-import Language from '~/components/base/Language.vue';
-import Snackbar from '~/components/base/Snackbar.vue';
+import Language from '~/components/layout/Language.vue';
+import Snackbar from '~/components/layout/Snackbar.vue';
 
 export default {
     components: {
