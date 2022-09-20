@@ -532,6 +532,7 @@ export default {
         'stake-lock-duration-error-required': 'Укажите период',
 
         'hub-reduce-fee': 'Как уменьшить комиссию до',
+        'hub-reduce-fee-url': 'https://www.minter.network/ru/howto/cross-chain-discounts',
         'amount-error-not-enough': 'Недостаточно',
     },
     hub: {
@@ -545,8 +546,9 @@ export default {
         'fee-updated': 'комиссия обновлена',
         'withdraw-estimate': 'Всего',
         'withdraw-eth-fee': 'комиссия',
-        'withdraw-hub-fee': 'Ком. моста',
+        'withdraw-hub-fee': 'Комиссия моста',
         'withdraw-minter-fee': 'Комиссия Minter',
         'max': 'макс.',
+        'last-withdraw': 'История выводов',
     },
 };

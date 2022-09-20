@@ -472,7 +472,7 @@ function getHubMinAmount(destinationNetworkFee, hubFeeRate, hubFeeBaseRate = 0.0
                 <h3 class="information__title">{{ $td('Bridge fee', 'hub.withdraw-hub-fee') }} ({{ hubFeeRatePercent }}%)</h3>
                 <BaseAmountEstimation :coin="form.coin" :amount="hubFee" format="pretty"/>
                 <div class="information__item information__item--content u-text-medium" v-if="discountUpsidePercent">
-                    <a href="https://www.minter.network/howto/cross-chain-discounts" class="link--hover link--main" target="_blank">
+                    <a :href="$td('https://www.minter.network/howto/cross-chain-discounts', 'form.hub-reduce-fee-url')" class="link--hover link--main" target="_blank">
                         {{ $td('How to reduce fee up to', 'form.hub-reduce-fee') }}
                         {{ discountUpsidePercent }}%
                     </a>
