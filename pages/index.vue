@@ -2,6 +2,7 @@
 import cardList from '~/content/card-list.js';
 import Card from '~/components/Card.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
+import InvestmentList from '~/components/InvestmentList.vue';
 import PortfolioList from '~/components/PortfolioList.vue';
 
 const BASE_CARD = {
@@ -17,6 +18,7 @@ export default {
     components: {
         Card,
         AddressAssets,
+        InvestmentList,
         PortfolioList,
     },
     fetch() {
@@ -68,13 +70,8 @@ export default {
             {{ $td('View all portfolios', 'portfolio.view-all') }}
         </nuxt-link>
 
-        <PortfolioList
-            ref="portfolioListCopied"
+        <InvestmentList
             class="u-mt-25"
-            v-show="portfolioListCopied.length"
-            limit="3"
-            type="copied"
-            @update:portfolio-list="portfolioListCopied = $event"
         />
         <!--
         <nuxt-link class="button button&#45;&#45;ghost-main button&#45;&#45;full u-mt-20" v-show="portfolioListCopied.length > 3" :to="$i18nGetPreferredPath('/portfolio/copied')">
