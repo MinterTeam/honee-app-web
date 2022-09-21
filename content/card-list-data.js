@@ -5,6 +5,7 @@ import {BASE_COIN} from '~/assets/variables.js';
  */
 export default {
     earn: {
+        title: 'Earning options',
         cards: [
             {
                 caption: 'Stake & Earn',

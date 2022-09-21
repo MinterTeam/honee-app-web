@@ -107,7 +107,7 @@ export default {
                 <PortfolioListItem :portfolio="portfolio" :type="$options.PORTFOLIO_LIST_TYPE.COPIED"/>
             </div>
             <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="coinLockItem in coinLockList" :key="coinLockItem.coin">
-                <Card :card="coinLockItem"/>
+                <Card :card="coinLockItem" :button-label="$td('Stake more', 'index.stake-more')"/>
             </div>
         </div>
     </div>
