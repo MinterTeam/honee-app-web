@@ -68,6 +68,7 @@ export default {
         <div class="card card--invert">
             <div class="card__content card__content--medium">
                 <PortfolioHead :portfolio="portfolio" :is-copy="true"/>
+                <p class="card__action-description u-text-break" v-if="portfolio.description">{{ portfolio.description }}</p>
             </div>
 
             <div class="card card--pop card--light-grey">

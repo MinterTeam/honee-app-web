@@ -56,30 +56,27 @@ export default {
 </script>
 
 <template>
-    <div>
-        <div class="card__action-head">
-            <div class="card__action-title">
-                <div class="card__action-title-type">
-                    <template v-if="isCopy">{{ $td('Copy of', 'portfolio.head-copy-of') }}</template>
-                    #{{ portfolio.id }}
-                </div>
-                <nuxt-link class="card__action-title-value" v-if="titleLink" :to="titleLink">
-                    {{ portfolio.title }}
-                </nuxt-link>
-                <div class="card__action-title-value" v-else>{{ portfolio.title }}</div>
-                <div class="card__action-meta u-text-muted">By {{ shortHashFilter(portfolio.owner) }}</div>
+    <div class="card__action-head">
+        <div class="card__action-title">
+            <div class="card__action-title-type">
+                <template v-if="isCopy">{{ $td('Copy of', 'portfolio.head-copy-of') }}</template>
+                #{{ portfolio.id }}
             </div>
-            <div class="card__action-stats">
-                <div class="card__action-stats-caption u-text-upper">
-                    <template v-if="isTemplate">{{ $td('7 days', 'portfolio.head-profit-7d') }}</template>
-                    <template v-if="isConsumer">{{ $td('Balance', 'portfolio.head-balance') }}</template>
-                </div>
-                <div class="card__action-stats-value" v-if="isConsumer">{{ prettyUsd(portfolio.price) }}$</div>
-                <div :class="[profitColorClass, isTemplate ? 'card__action-stats-value' : 'card__action-meta u-fw-700']">
-                    {{ profitText }}
-                </div>
+            <nuxt-link class="card__action-title-value" v-if="titleLink" :to="titleLink">
+                {{ portfolio.title }}
+            </nuxt-link>
+            <div class="card__action-title-value" v-else>{{ portfolio.title }}</div>
+            <div class="card__action-meta u-text-muted">By {{ shortHashFilter(portfolio.owner) }}</div>
+        </div>
+        <div class="card__action-stats">
+            <div class="card__action-stats-caption u-text-upper">
+                <template v-if="isTemplate">{{ $td('7 days', 'portfolio.head-profit-7d') }}</template>
+                <template v-if="isConsumer">{{ $td('Balance', 'portfolio.head-balance') }}</template>
+            </div>
+            <div class="card__action-stats-value" v-if="isConsumer">{{ prettyUsd(portfolio.price) }}$</div>
+            <div :class="[profitColorClass, isTemplate ? 'card__action-stats-value' : 'card__action-meta u-fw-700']">
+                {{ profitText }}
             </div>
         </div>
-        <p class="card__action-description u-text-break" v-if="portfolio.description">{{ portfolio.description }}</p>
     </div>
 </template>

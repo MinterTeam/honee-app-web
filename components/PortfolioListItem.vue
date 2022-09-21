@@ -49,19 +49,22 @@ export default {
 <template>
     <div class="card card--action card__content--small">
         <PortfolioHead :portfolio="portfolio" :title-link="getLinkUrl(portfolio)"/>
+        <p class="card__action-description u-text-break" v-if="portfolio.description">{{ portfolio.description }}</p>
 
-        <div class="card__token-list u-mt-10">
-            <img
-                class="card__token-logo"
-                v-for="coin in portfolio.coins"
-                :key="coin.id"
-                :src="$store.getters['explorer/getCoinIcon'](coin.id)"
-                :alt="$store.getters['explorer/getCoinSymbol'](coin.id)"
-            >
+        <div class="card__control-wrap">
+            <div class="card__token-list">
+                <img
+                    class="card__token-logo"
+                    v-for="coin in portfolio.coins"
+                    :key="coin.id"
+                    :src="$store.getters['explorer/getCoinIcon'](coin.id)"
+                    :alt="$store.getters['explorer/getCoinSymbol'](coin.id)"
+                >
+            </div>
+
+            <nuxt-link class="button button--main" :to="getLinkUrl(portfolio)">
+                {{ getLinkCaption() }}
+            </nuxt-link>
         </div>
-
-        <nuxt-link class="u-mt-10 button button--main button--full" :to="getLinkUrl(portfolio)">
-            {{ getLinkCaption() }}
-        </nuxt-link>
     </div>
 </template>
