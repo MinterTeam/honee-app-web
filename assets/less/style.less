@@ -216,18 +216,17 @@
     &+& {border-top: 1px solid @c-white-light;}
 }
 .header__container--premium {font-size: 16px; font-weight: 700; justify-content: center;}
-.header__logo {margin-right: 24px; display: flex; align-items: center; flex-grow: 2;}
+.header__logo {display: flex; align-items: center; flex-grow: 2;}
 .header__image-logo {vertical-align: top;}
 .header__image-back {margin-right: 24px;}
 .header__icon {vertical-align: top;}
 .header__logo-text {font-size: 26px; font-weight: 700; font-family: @heading-font-family; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 .header__controls {display: flex; height: 100%;}
 .header__controls-link {
-    display: flex; align-items: center; font-weight: 700; line-height: 20px; position: relative; transition: none;
+    display: flex; align-items: center; font-weight: 700; line-height: 20px; position: relative; transition: none; margin-left: 16px;
     &::after {content: ''; position: absolute; left: 0; bottom: 0; right: 0; height: 3px; transition: 0.1s;}
     &:hover::after, &:focus::after {background: fade(@c-main, 40%);}
     &.is-active::after {background: @c-main}
-    &+& {margin-left: 24px;}
 }
 .header__controls-divider {margin-block: 0; border: none; border-right: 1px solid @c-white-light; height: 100%;}
 .header__controls-premium {display: flex; align-items: center;}
@@ -242,6 +241,7 @@
 .header__language-icon {border: 2px solid #F5ECE9; border-radius: 50%;}
 @media (min-width: @breakpoint-small-up) {
     //.header__logo {margin-right: 70px;}
+    .header__controls-link {margin-left: 24px;}
     .header__controls-user {/*max-width: calc(100vw - 260px);*/ /*margin-right: 24px;*/}
     .header__controls-user-avatar {margin-right: 12px;}
     .header__controls-language {/*margin-left: 24px;*/}
@@ -379,7 +379,7 @@
 .wallet__stake-row-title {margin-bottom: 2px;}
 
 .dashboard__category-title {font-size: 26px; line-height: 32px; display: flex; align-items: center; text-transform: uppercase;}
-.dashboard__category-icon {margin-left: 32px; margin-right: 16px;}
+.dashboard__category-icon {margin-left: 16px; margin-right: 16px;}
 
 
 // send

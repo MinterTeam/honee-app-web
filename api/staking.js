@@ -50,11 +50,19 @@ export function getAddressLockList(address) {
                 addressLocks.forEach((lock) => {
                     result.push({
                         ...lock,
+                        key: `${lock.dueBlock}-${lock.option}-${program.id}`,
                         program,
                     });
                 });
             });
             return result;
+        })
+        .catch((error) => {
+            if (error.response?.status === 404) {
+                return [];
+            } else {
+                throw error;
+            }
         });
 }
 
@@ -80,5 +88,6 @@ export function getAddressLockList(address) {
  * @property {number|string} amount
  * @property {number} option
  * @property {number} dueBlock
+ * @property {string} key - string key generated from lock properties to be used for vue list keys
  * @property {StakingProgram} program
  */
