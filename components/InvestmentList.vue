@@ -4,13 +4,22 @@ import {fillCardWithCoin, flatCardList} from '~/content/card-list.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {pretty} from '~/assets/utils.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
+import BaseTabs from '~/components/base/BaseTabs.vue';
 import Card from '~/components/Card.vue';
 import PortfolioListItem, {PORTFOLIO_LIST_TYPE} from '~/components/PortfolioListItem.vue';
 
+const FILTERS = {
+    ALL: 0,
+    PORTFOLIO: 'portfolio',
+    STAKE: 'stake',
+};
+
 export default {
     PORTFOLIO_LIST_TYPE,
+    FILTERS,
     components: {
         BaseLoader,
+        BaseTabs,
         Card,
         PortfolioListItem,
     },
@@ -29,6 +38,7 @@ export default {
     },
     data() {
         return {
+            selectedFilter: FILTERS.ALL,
             /** @type {Array<ConsumerPortfolio>} */
             portfolioList: [],
             /** @type {Array<StakingProgramAddressLock>} */
@@ -112,6 +122,14 @@ export default {
                     return item;
                 });
         },
+        filterTabs() {
+            return Object.values(FILTERS).map((filterValue) => {
+                return {
+                    value: filterValue,
+                    label: this.$t(`index.investments-tabs-label-${filterValue}`),
+                };
+            });
+        },
     },
     watch: {
     },
@@ -134,13 +152,24 @@ export default {
             {{ getErrorText($fetchState.error) }}
         </div>
         <div v-else-if="portfolioList.length === 0 && stakeCardList.length === 0">{{ $td('You don\'t have any investments yet', 'index.investments-list-empty') }}</div>
-        <div class="u-grid u-grid--vertical-margin" v-else-if="portfolioList.length || stakeCardList.length">
-            <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="portfolio in portfolioList" :key="portfolio.id">
-                <PortfolioListItem :portfolio="portfolio" :type="$options.PORTFOLIO_LIST_TYPE.COPIED"/>
+        <template v-else>
+            <BaseTabs
+                class="u-mb-15"
+                v-model="selectedFilter"
+                :tabs="filterTabs"
+            />
+            <div class="u-grid u-grid--vertical-margin">
+                <template v-if="!selectedFilter || selectedFilter === $options.FILTERS.PORTFOLIO">
+                    <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="portfolio in portfolioList" :key="portfolio.id">
+                        <PortfolioListItem :portfolio="portfolio" :type="$options.PORTFOLIO_LIST_TYPE.COPIED"/>
+                    </div>
+                </template>
+                <template v-if="!selectedFilter || selectedFilter === $options.FILTERS.STAKE">
+                    <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="stakeCard in stakeCardList" :key="stakeCard.action">
+                        <Card :card="stakeCard" :button-label="stakeCard.buttonLabel"/>
+                    </div>
+                </template>
             </div>
-            <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="stakeCard in stakeCardList" :key="stakeCard.action">
-                <Card :card="stakeCard" :button-label="stakeCard.buttonLabel"/>
-            </div>
-        </div>
+        </template>
     </div>
 </template>

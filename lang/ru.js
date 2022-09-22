@@ -114,6 +114,11 @@ export default {
         'withdraw-unbond': 'Отозвать',
         'stake': 'Застейковать',
 
+        'investments-title': 'Инвестиции',
+        'investments-tabs-label-0': 'Всё',
+        'investments-tabs-label-portfolio': 'Портфели',
+        'investments-tabs-label-stake': 'Стейки',
+
         'sign-up-subtitle': 'Крипто-кошелек для заработка',
         'sign-up': 'Зарегистрируйтесь',
         'or': 'или',
