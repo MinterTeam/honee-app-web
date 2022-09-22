@@ -44,9 +44,10 @@ export default {
                     result[coinSymbol] = fillCardWithCoin({
                         amount: 0,
                         coin: coinSymbol,
+                        // store previous item programId to compare it later
                         programId: lockItem.program.id,
                         // dummy action to fill correct actionType
-                        action: '/stake/0',
+                        action: `/stake/${lockItem.program.id}`,
                         caption: 'Stake & Earn',
                         stats: {
                             caption: 'Total staked',
@@ -58,24 +59,55 @@ export default {
                                 caption: 'Всего',
                             },
                         },
+                        buttonLabel: this.$td('Stake more', 'index.stake-more'),
                     });
-                    // get latest actual staking program from card-data
-                    const cardData = flatCardList.find((card) => card.coin === coinSymbol && card.actionType === 'stake');
-                    if (cardData) {
-                        result[coinSymbol].action = cardData.action;
-                        result[coinSymbol].description = cardData.description;
-                        result[coinSymbol].ru = cardData.ru;
-                    }
                 }
                 result[coinSymbol].amount += Number(lockItem.amount);
                 // use latest program to ensure it is actual (it is fallback if nothing found in card-data)
                 result[coinSymbol].programId = Math.max(lockItem.program.id, result[coinSymbol].programId);
+                result[coinSymbol].action = `/stake/${result[coinSymbol].programId}`;
             });
-            return Object.values(result)
+            return Object.values(result);
+        },
+        coinDelegationList() {
+            const result = {};
+            this.$store.state.stakeList.forEach((delegationItem) => {
+                const coinSymbol = delegationItem.coin.symbol;
+                if (!result[coinSymbol]) {
+                    result[coinSymbol] = fillCardWithCoin({
+                        amount: 0,
+                        coin: coinSymbol,
+                        // dummy action to fill correct actionType
+                        action: `/delegate/${coinSymbol}`,
+                        caption: 'Delegate',
+                        stats: {
+                            caption: 'Total delegated',
+                            value: 0,
+                        },
+                        ru: {
+                            caption: 'Делегирование',
+                            stats: {
+                                caption: 'Всего',
+                            },
+                        },
+                        buttonLabel: this.$td('Delegate more', 'index.delegate-more'),
+                    });
+                }
+                result[coinSymbol].amount += Number(delegationItem.value);
+            });
+            return Object.values(result);
+        },
+        stakeCardList() {
+            return [].concat(this.coinLockList, this.coinDelegationList)
                 .map((item) => {
                     item.stats.value = pretty(item.amount);
-                    if (item.action === '/stake/0') {
-                        item.action = `/stake/${item.programId}`;
+                    // get latest actual staking program from card-data
+                    const cardData = flatCardList.find((data) => data.coin === item.coin && data.actionType === item.actionType);
+                    if (cardData) {
+                        // overwrite action to ensure latest actual
+                        item.action = cardData.action;
+                        item.description = cardData.description;
+                        item.ru = cardData.ru;
                     }
                     return item;
                 });
@@ -101,13 +133,13 @@ export default {
             Can't get investments list <br>
             {{ getErrorText($fetchState.error) }}
         </div>
-        <div v-else-if="portfolioList.length === 0 && lockList.length === 0">{{ $td('You don\'t have any investments yet', 'index.investments-list-empty') }}</div>
-        <div class="u-grid u-grid--vertical-margin" v-else-if="portfolioList.length || lockList.length">
+        <div v-else-if="portfolioList.length === 0 && stakeCardList.length === 0">{{ $td('You don\'t have any investments yet', 'index.investments-list-empty') }}</div>
+        <div class="u-grid u-grid--vertical-margin" v-else-if="portfolioList.length || stakeCardList.length">
             <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="portfolio in portfolioList" :key="portfolio.id">
                 <PortfolioListItem :portfolio="portfolio" :type="$options.PORTFOLIO_LIST_TYPE.COPIED"/>
             </div>
-            <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="coinLockItem in coinLockList" :key="coinLockItem.coin">
-                <Card :card="coinLockItem" :button-label="$td('Stake more', 'index.stake-more')"/>
+            <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="stakeCard in stakeCardList" :key="stakeCard.action">
+                <Card :card="stakeCard" :button-label="stakeCard.buttonLabel"/>
             </div>
         </div>
     </div>
