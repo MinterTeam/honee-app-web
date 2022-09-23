@@ -395,8 +395,6 @@ export default {
         'tx-fee': 'Комиссия',
         'tx-fee-high': 'Транзакция потребует высокой комиссии.',
         'read-understood': 'Нажатием этой кнопки вы подтверждаете, что прочитали положения отказа от ответственности, расположенного в футере и поняли их.',
-        'high-eth-fee': 'Высокая комиссия в сети {network}. Она поглотит',
-        'high-eth-fee-percentage': 'ваших {symbol}',
         'eth-waiting': 'Ожидание депозита {symbol}',
         'eth-purchase-waiting': 'Ожидание покупки {symbol}',
 
@@ -559,5 +557,8 @@ export default {
         'withdraw-minter-fee': 'Комиссия Minter',
         'max': 'макс.',
         'last-withdraw': 'История выводов',
+
+        'warning-fee-impact': 'Высокая комиссия в {network}',
+        'warning-fee-impact-description': 'Комиссии за перевод поглотят ≈{impact}% ваших {symbol}',
     },
 };

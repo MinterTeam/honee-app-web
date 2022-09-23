@@ -23,6 +23,7 @@ import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import FieldAddress from '~/components/base/FieldAddress.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import FieldSelect from '~/components/base/FieldSelect.vue';
+import HubFeeImpact from '~/components/HubFeeImpact.vue';
 
 
 const SPEED_MIN = 'min';
@@ -42,6 +43,7 @@ export default {
         FieldAddress,
         FieldCombined,
         FieldSelect,
+        HubFeeImpact,
     },
     directives: {
     },
@@ -141,6 +143,15 @@ export default {
             } else {
                 return this.amountToSend;
             }
+        },
+        // positive price impact means lose of value
+        totalFeeImpact() {
+            const totalSpend = this.amountToSpend;
+            const totalResult = this.form.amount;
+            if (!totalSpend || !totalResult) {
+                return 0;
+            }
+            return Math.min((totalSpend - totalResult) / totalSpend * 100, 100);
         },
         maxAmount() {
             const selectedCoin = this.$store.state.balance.find((coin) => {
@@ -481,6 +492,7 @@ function getHubMinAmount(destinationNetworkFee, hubFeeRate, hubFeeBaseRate = 0.0
                 <h3 class="information__title">{{ $td('Total spend', 'hub.withdraw-estimate') }}</h3>
                 <BaseAmountEstimation :coin="form.coin" :amount="amountToSpend" format="exact"/>
             </div>
+            <HubFeeImpact class="form-row" :coin="form.coin" :fee-impact="totalFeeImpact" :network="$options.HUB_CHAIN_DATA[form.networkTo].shortName"/>
             <!--
             <div class="form-row">
                 <div class="form-check-label">Tx speed</div>
@@ -549,6 +561,8 @@ function getHubMinAmount(destinationNetworkFee, hubFeeRate, hubFeeBaseRate = 0.0
                     {{ form.address }}
                 </div>
             </div>
+
+            <HubFeeImpact class="form-row" :coin="form.coin" :fee-impact="totalFeeImpact" :network="$options.HUB_CHAIN_DATA[form.networkTo].shortName"/>
 
             <div class="form-row">
                 <button

@@ -33,6 +33,7 @@ import FieldCombined from '~/components/base/FieldCombined.vue';
 import FieldSelect from '~/components/base/FieldSelect.vue';
 import HubBuyTxListItem from '~/components/HubBuyTxListItem.vue';
 import HubBuySpeedup from '~/components/HubBuySpeedup.vue';
+import HubFeeImpact from '~/components/HubFeeImpact.vue';
 
 
 const FIAT_RAMP_NETWORK = 'fiat-ramp';
@@ -97,6 +98,7 @@ export default {
         FieldSelect,
         HubBuyTxListItem,
         HubBuySpeedup,
+        HubFeeImpact,
     },
     directives: {
         autosize,
@@ -267,7 +269,7 @@ export default {
             if (!(this.form.amountEth > 0)) {
                 return 0;
             }
-            return new Big(this.ethTotalFee).div(this.form.amountEth).times(100);
+            return Math.min(this.ethTotalFee / this.form.amountEth * 100, 100);
         },
         // only manual deposits considered (fiat top-up not affects it)
         ethToTopUp() {
@@ -808,20 +810,23 @@ export default {
                 <div class="information form-row form__error" v-if="serverError">
                     {{ serverError }}
                 </div>
-                <div class="information form-row" v-else>
-                    <h3 class="information__title">{{ $td('Estimated price', 'form.swap-confirm-price-estimation') }}</h3>
-                    <div class="information__item">
-                        <div class="information__coin">
-                            <div class="information__coin-symbol">
-                                <template v-if="form.coinToGet">{{ form.coinToGet }}</template>
-                                <template v-else>Coin</template>
-                                rate
+                <template v-else>
+                    <div class="information form-row">
+                        <h3 class="information__title">{{ $td('Estimated price', 'form.swap-confirm-price-estimation') }}</h3>
+                        <div class="information__item">
+                            <div class="information__coin">
+                                <div class="information__coin-symbol">
+                                    <template v-if="form.coinToGet">{{ form.coinToGet }}</template>
+                                    <template v-else>Coin</template>
+                                    rate
+                                </div>
                             </div>
+                            <div class="information__value">≈ ${{ pretty(currentPrice) }}</div>
                         </div>
-                        <div class="information__value">≈ ${{ pretty(currentPrice) }}</div>
                     </div>
-                </div>
 
+                    <HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="ethFeeImpact" :network="hubChainData.shortName"/>
+                </template>
 
                 <button
                     type="submit"
@@ -924,12 +929,7 @@ export default {
             </div>
             -->
 
-            <div class="form-row u-fw-700" v-if="ethFeeImpact > 10">
-                <span class="u-emoji">⚠️</span>
-                {{ $td(`High ${hubChainData.shortName} fee, it will consume`, 'form.high-eth-fee', {network: hubChainData.shortName}) }}
-                {{ prettyRound(ethFeeImpact) }}%
-                {{ $td(`of your ${externalTokenSymbol}`, 'form.high-eth-fee-percentage', {symbol: externalTokenSymbol}) }}
-            </div>
+            <HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="ethFeeImpact" :network="hubChainData.shortName"/>
 
             <div class="form-row">
                 <button
@@ -978,14 +978,9 @@ export default {
                             <ButtonCopyIcon class="form-field__icon form-field__icon--copy" :copy-text="ethAddress"/>
                         </div>
                     </div>
-                    <div class="form-row u-fw-700" v-if="ethFeeImpact > 10">
-                        <span class="u-emoji">⚠️</span>
-                        {{ $td(`High ${hubChainData.shortName} fee, it will consume`, 'form.high-eth-fee', {network: hubChainData.shortName}) }}
-                        {{ prettyRound(ethFeeImpact) }}%
-                        {{ $td(`of your ${externalTokenSymbol}`, 'form.high-eth-fee-percentage', {symbol: externalTokenSymbol}) }}
-                    </div>
-                    <div class="form-row">
-                        <QrcodeVue class="u-mb-10 u-text-center" :value="deepLink" :size="160" level="L"/>
+
+                    <div class="form-row u-text-center">
+                        <QrcodeVue class="u-mb-10" :value="deepLink" :size="160" level="L"/>
                         <a class="link--default u-text-wrap" :href="deepLink" target="_blank">Open in external wallet</a>
                     </div>
                     <!--                    <div class="" v-if="ethBalance > 0">

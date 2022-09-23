@@ -36,13 +36,17 @@ export default {
                 ⚠️ {{ $td('High price impact!', 'portfolio.warning-price-impact') }}
                 <div class="information__value">{{ prettyRound(priceImpact) }}%</div>
             </div>
-            <div class="information__item information__item--content information__muted u-text-medium">{{ $t('portfolio.warning-price-impact-description', {impact: prettyRound(priceImpact)}) }}</div>
+            <div class="information__item information__item--content information__muted u-text-medium">
+                {{ $t('portfolio.warning-price-impact-description', {impact: prettyRound(priceImpact)}) }}
+            </div>
         </template>
         <template v-else-if="priceUnavailable">
             <div class="information__item">
                 ⚠️ {{ $td('Can\'t calculate price impact', 'portfolio.warning-price-impact-unavailable') }}
             </div>
-            <div class="information__item information__item--content information__muted u-text-medium">{{ $td('Please double check resulting amounts. You may lose part of coins because of low liquidity pools involved in swaps', 'portfolio.warning-price-impact-unavailable-description') }}</div>
+            <div class="information__item information__item--content information__muted u-text-medium">
+                {{ $td('Please double check resulting amounts. You may lose part of coins because of low liquidity pools involved in swaps', 'portfolio.warning-price-impact-unavailable-description') }}
+            </div>
         </template>
     </div>
 </template>
