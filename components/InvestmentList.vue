@@ -60,13 +60,13 @@ export default {
                         action: `/stake/${lockItem.program.id}`,
                         caption: 'Stake & Earn',
                         stats: {
-                            caption: this.$td('Total staked', 'index.total-staked'),
+                            caption: 'Total staked',
                             value: 0,
                         },
                         ru: {
                             caption: 'Стейкинг',
                             stats: {
-                                caption: 'Всего',
+                                caption: 'Общий стейк',
                             },
                         },
                         buttonLabel: this.$td('Stake more', 'index.stake-more'),

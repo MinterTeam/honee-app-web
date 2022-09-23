@@ -118,7 +118,6 @@ export default {
         'investments-tabs-label-0': 'Всё',
         'investments-tabs-label-portfolio': 'Портфели',
         'investments-tabs-label-stake': 'Стейки',
-        'total-staked': 'Общий стейк',
         'stake-more': 'Застейковать еще',
         'total-delegated': 'Делегировано',
         'delegate-more': 'Делегировать',
