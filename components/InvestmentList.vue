@@ -60,7 +60,7 @@ export default {
                         action: `/stake/${lockItem.program.id}`,
                         caption: 'Stake & Earn',
                         stats: {
-                            caption: 'Total staked',
+                            caption: this.$td('Total staked', 'index.total-staked'),
                             value: 0,
                         },
                         ru: {
@@ -91,7 +91,7 @@ export default {
                         action: `/delegate/${coinSymbol}`,
                         caption: 'Delegate',
                         stats: {
-                            caption: 'Total delegated',
+                            caption: this.$td('Total delegated', 'index.total-delegated'),
                             value: 0,
                         },
                         ru: {
