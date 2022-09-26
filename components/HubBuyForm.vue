@@ -163,7 +163,7 @@ export default {
             isUnwrapRequired,
             gasPriceGwei: ethGasPriceGwei,
             gasTotalFee: ethTotalFee,
-            depositAmountAfterGas: formAmountAfterGas,
+            depositAmountAfterGas,
         } = useWeb3Deposit();
         const {txServiceState, currentLoadingStage, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData} = useTxService();
         const {sendMinterSwapTx} = useTxMinterPresets();
@@ -190,7 +190,7 @@ export default {
             updateTokenAllowance,
             waitEnoughTokenBalance,
 
-            setDepositProps, depositFromEthereum, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, formAmountAfterGas,
+            setDepositProps, depositFromEthereum, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, depositAmountAfterGas,
 
             txServiceState, currentLoadingStage, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData,
 
@@ -265,11 +265,13 @@ export default {
         externalTokenSymbol() {
             return NETWORK === MAINNET ? this.externalTokenMainnetSymbol : DEPOSIT_COIN_DATA[this.externalTokenMainnetSymbol].testnetSymbol;
         },
-        ethFeeImpact() {
-            if (!(this.form.amountEth > 0)) {
+        totalFeeImpact() {
+            const totalSpend = this.form.amountEth;
+            const totalResult = this.coinAmountAfterBridge;
+            if (!totalSpend || !totalResult) {
                 return 0;
             }
-            return Math.min(this.ethTotalFee / this.form.amountEth * 100, 100);
+            return Math.min((totalSpend - totalResult) / totalSpend * 100, 100);
         },
         // only manual deposits considered (fiat top-up not affects it)
         ethToTopUp() {
@@ -287,11 +289,11 @@ export default {
         },
         // fee to HUB bridge calculated in COIN
         hubFee() {
-            const input = this.formAmountAfterGas;
+            const input = this.depositAmountAfterGas;
             return new Big(input || 0).times(this.hubFeeRate).toString();
         },
         coinAmountAfterBridge() {
-            const input = this.formAmountAfterGas;
+            const input = this.depositAmountAfterGas;
             return new Big(input || 0).minus(this.hubFee).toString();
         },
         maxAmount() {
@@ -414,7 +416,10 @@ export default {
         },
     },
     mounted() {
-        this.setDiscountProps({minterAddress: this.$store.getters.address});
+        this.setDiscountProps({
+            minterAddress: this.$store.getters.address,
+            ethAddress: this.$store.getters.evmAddress,
+        });
 
         const recoveryJson = window.localStorage.getItem('hub-buy-recovery');
         if (recoveryJson) {
@@ -602,7 +607,7 @@ export default {
         sendWrapTx({nonce, gasPrice} = {}) {
             return this.sendEthTx({
                 to: WETH_CONTRACT_ADDRESS,
-                value: this.formAmountAfterGas,
+                value: this.depositAmountAfterGas,
                 data: wethDepositAbiData,
                 nonce,
                 gasPrice,
@@ -638,7 +643,7 @@ export default {
             let txParams;
             if (this.isEthSelected) {
                 txParams = {
-                    value: this.formAmountAfterGas,
+                    value: this.depositAmountAfterGas,
                     data: AbiEncoder(hubABI)(
                         'transferETHToChain',
                         destinationChain,
@@ -652,7 +657,7 @@ export default {
                         'transferToChain',
                         destinationChain,
                         address,
-                        toErcDecimals(this.formAmountAfterGas, this.coinDecimals),
+                        toErcDecimals(this.depositAmountAfterGas, this.coinDecimals),
                         0,
                     ),
                 };
@@ -825,7 +830,7 @@ export default {
                         </div>
                     </div>
 
-                    <HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="ethFeeImpact" :network="hubChainData.shortName"/>
+                    <HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
                 </template>
 
                 <button
@@ -929,7 +934,7 @@ export default {
             </div>
             -->
 
-            <HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="ethFeeImpact" :network="hubChainData.shortName"/>
+            <HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
 
             <div class="form-row">
                 <button
