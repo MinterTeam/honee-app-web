@@ -171,7 +171,7 @@ export default {
         <component
             :is="networkSlug === $options.HUB_CHAIN_ID.MINTER ? 'TopupWaitMinter' : 'TopupWaitEvm'"
             class="u-text-center u-mt-15 u-text-medium"
-            v-show="showWaitIndicator"
+            :showWaitIndicator="showWaitIndicator"
             :network-slug="networkSlug"
             @topup="$emit('topup', $event)"
         />

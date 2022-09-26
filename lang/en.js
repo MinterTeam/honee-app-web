@@ -2,6 +2,9 @@ export default {
     index: {
         'features-description': 'Find out why Honee is {0} crypto wallet',
 
+        'investments-tabs-label-0': 'Everything',
+        'investments-tabs-label-portfolio': 'Portfolios',
+        'investments-tabs-label-stake': 'Stakes',
     },
     action: {
         'title-buy': 'Buy BIP, HUB, & BEE',

@@ -1,13 +1,17 @@
 <script>
+import {ref} from '@vue/composition-api';
+import { useIntervalFn } from '@vueuse/core';
 import TheHeader from '~/layouts/_header.vue';
 import TheFooter from '~/layouts/_footer.vue';
-import ConnectionNotice from '~/components/ConnectionNotice.vue';
-import Snackbar from '~/components/base/Snackbar.vue';
+import BackButton from '~/components/layout/BackButton.vue';
+import ConnectionNotice from '~/components/layout/ConnectionNotice.vue';
+import Snackbar from '~/components/layout/Snackbar.vue';
 
 export default {
     components: {
         TheHeader,
         TheFooter,
+        BackButton,
         ConnectionNotice,
         Snackbar,
     },
@@ -15,6 +19,21 @@ export default {
         bodyAttrs: {
             class: 'default-layout',
         },
+    },
+    setup(props, context) {
+        const pageContainerClass = ref('');
+        useIntervalFn(() => {
+            const pageEl = context.refs.nuxtPage?.$el;
+            if (!pageEl || !pageEl.classList) {
+                return;
+            }
+            const containerClassList = Array.from(pageEl.classList).filter((item) => item.indexOf('u-container--') === 0);
+            pageContainerClass.value = containerClassList.join(' ');
+        }, 100);
+
+        return {
+            pageContainerClass,
+        };
     },
     methods: {
         logout() {
@@ -29,7 +48,9 @@ export default {
     <div>
         <TheHeader/>
 
-        <nuxt class="u-section u-container"/>
+        <BackButton class="u-section--top u-container" :class="pageContainerClass"/>
+
+        <nuxt class="u-section u-container" ref="nuxtPage"/>
 
         <TheFooter/>
 

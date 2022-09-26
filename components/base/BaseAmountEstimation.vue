@@ -1,5 +1,5 @@
 <script>
-import {pretty, prettyExact} from '~/assets/utils.js';
+import {pretty, prettyExact, prettyPrecise} from '~/assets/utils.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 
 const FORMAT_TYPE = {
@@ -81,6 +81,7 @@ export default {
     methods: {
         pretty,
         prettyExact,
+        prettyPrecise,
     },
 };
 </script>
@@ -96,10 +97,10 @@ export default {
             <template v-if="!isLoading">
                 <span class="u-text-muted" v-if="amountUsd">(${{ pretty(amountUsd) }})</span>
                 <span v-if="amountIsNotNumber">{{ amount }}</span>
-                <span v-else-if="format === $options.FORMAT_TYPE.EXACT">{{ prettyExact(amount) }}</span>
                 <span v-else :title="prettyExact(amount)">
                     <template v-if="format === $options.FORMAT_TYPE.APPROX">≈</template>
-                    {{ pretty(amount) }}
+                    <template v-if="format === $options.FORMAT_TYPE.EXACT">{{ prettyPrecise(amount) }}</template>
+                    <template v-else>{{ pretty(amount) }}</template>
                 </span><!--
              -->{{ unit }}
                 <!--

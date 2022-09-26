@@ -29,6 +29,9 @@ export default {
         actionBaseUrl: {
             type: String,
         },
+        buttonLabel: {
+            type: String,
+        },
     },
     computed: {
         color() {
@@ -97,12 +100,13 @@ function poolHasCoin(pool, symbol) {
             <div class="u-grid">
                 <div class="u-cell" :class="isUndoAvailable ? 'u-cell--6-10': ''">
                     <nuxt-link class="button button--full " :to="getDashboardUrl(card.action, actionBaseUrl)">
-                        <template v-if="card.actionType === $options.ACTION_TYPE.DEPOSIT">{{ $td('Buy with BNB & ETH', 'index.card-button-deposit') }}</template>
-                        <template v-if="card.actionType === $options.ACTION_TYPE.SWAP">{{ $td('Buy', 'index.swap') }}</template>
-                        <template v-if="card.actionType === $options.ACTION_TYPE.FARM">{{ $td('Add liquidity', 'index.add-liquidity') }}</template>
-                        <template v-if="card.actionType === $options.ACTION_TYPE.DELEGATE">{{ $td('Delegate', 'index.delegate') }}</template>
-                        <template v-if="card.actionType === $options.ACTION_TYPE.WIN">{{ $td('Participate', 'index.participate') }}</template>
-                        <template v-if="card.actionType === $options.ACTION_TYPE.STAKE">{{ $td('Stake', 'index.stake') }}</template>
+                        <template v-if="buttonLabel">{{ buttonLabel }}</template>
+                        <template v-else-if="card.actionType === $options.ACTION_TYPE.DEPOSIT">{{ $td('Buy with BNB & ETH', 'index.card-button-deposit') }}</template>
+                        <template v-else-if="card.actionType === $options.ACTION_TYPE.SWAP">{{ $td('Buy', 'index.swap') }}</template>
+                        <template v-else-if="card.actionType === $options.ACTION_TYPE.FARM">{{ $td('Add liquidity', 'index.add-liquidity') }}</template>
+                        <template v-else-if="card.actionType === $options.ACTION_TYPE.DELEGATE">{{ $td('Delegate', 'index.delegate') }}</template>
+                        <template v-else-if="card.actionType === $options.ACTION_TYPE.WIN">{{ $td('Participate', 'index.participate') }}</template>
+                        <template v-else-if="card.actionType === $options.ACTION_TYPE.STAKE">{{ $td('Stake', 'index.stake') }}</template>
                     </nuxt-link>
                 </div>
                 <div class="u-cell u-cell--4-10" v-if="isUndoAvailable">

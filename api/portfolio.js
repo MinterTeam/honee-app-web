@@ -109,7 +109,15 @@ export function getConsumerPortfolioList(address) {
     return instance.get(`consumer/portfolio/${address}`, {
         cache: consumerCache,
     })
-        .then((response) => response.data);
+        .then((response) => response.data)
+        .catch((error) => {
+            if (error.response?.status === 404) {
+                return {list: []};
+            } else {
+                throw error;
+            }
+        });
+
 }
 
 /**

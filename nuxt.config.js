@@ -216,7 +216,15 @@ module.exports = {
             if (!config.resolve) {
                 config.resolve = {};
             }
+            // use module over the browser for better bundle size
             config.resolve.mainFields =  ['module', 'browser', 'main'];
+
+            // fix @vueuse/core https://github.com/vueuse/vueuse/issues/718#issuecomment-913319680
+            config.module.rules.push({
+                test: /\.mjs$/,
+                include: /node_modules/,
+                type: "javascript/auto",
+            });
         },
         plugins: [
             new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),

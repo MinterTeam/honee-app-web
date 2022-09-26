@@ -95,6 +95,10 @@ sub, sup { font-size: 75%;}
     }
     li + li {margin-top: 10px;}
 }
+.list-simple--small {
+    li {padding-left: 20px;}
+    li + li {margin-top: 8px;}
+}
 :-moz-focusring {outline: none;}
 input, textarea, select {
     font: inherit; color: @c-black; outline: none; caret-color: @c-main;
@@ -114,7 +118,7 @@ h1, h2, h3, h4, h5, h6 {.u-h();}
 .u-h--uppercase-solid {.u-h--uppercase(); color: inherit;}
 @media (min-width: @breakpoint-small-up) {
     //html {font-size: 20px; line-height: 1.4;}
-    .u-h1 {font-size: 42px; line-height: 1.2;}
+    .u-h1 {font-size: 40px; line-height: 1.2;}
     .u-h2 {font-size: 29px;}
     .u-h3 {font-size: 20px;}
 }

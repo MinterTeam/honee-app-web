@@ -24,6 +24,10 @@ export default {
             type: String,
             default: 'Address',
         },
+        placeholder: {
+            type: String,
+            default: 'Mx…',
+        },
     },
     emits: [
         'input',
@@ -48,10 +52,10 @@ export default {
         <div class="h-field__content">
             <div class="h-field__title">{{ label }}</div>
             <textarea
-                class="h-field__input" rows="1" spellcheck="false" placeholder="Mx…"
+                class="h-field__input" rows="1" spellcheck="false" :placeholder="placeholder"
                 v-autosize
                 :value="value"
-                @input="$emit('input', $event.target.value)"
+                @input="$emit('input', $event.target.value); $value.$touch()"
             ></textarea>
         </div>
         <QrScan class="h-field__aside" @qr-scanned="$emit('input', $event);"/>
