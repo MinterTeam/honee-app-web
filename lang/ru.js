@@ -172,6 +172,9 @@ export default {
         'waiting-topup': 'Ожидаем транзакцию пополнения',
         'cancel': 'Отмена',
         'back': 'Назад',
+        'confirm-deposit-title': 'Депозит',
+        'deposit-evm-balance-description': 'На вашем {network}-адресе {amount} {coin}. Хотите зачислить?',
+        'deposit-evm-balance-button': 'Зачислить {amount} {coin}',
     },
     'topup-network': {
         'title': 'Пополнить через',
