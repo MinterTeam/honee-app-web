@@ -209,6 +209,7 @@ export default {
         'error-program-not-found': 'Не удаётся загрузить программу стейкинга',
         'error-program-disabled': 'Текущая программа стейкинга отключена',
         'error-program-timeout': 'Истекло время действия программы стейкинга',
+        'submit-button': 'Застейковать',
     },
     onboarding: {
         'skip': 'Пропустить',
