@@ -1,5 +1,5 @@
 <script>
-import {pretty, prettyExact} from '~/assets/utils.js';
+import {pretty, prettyExact, prettyPrecise} from '~/assets/utils.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 
 const FORMAT_TYPE = {
@@ -59,6 +59,11 @@ export default {
             if (this.hideUsd || this.unit) {
                 return 0;
             }
+            if (!this.amount || this.amountIsNotNumber) {
+                return 0;
+            }
+            return this.amount * this.$store.getters['portfolio/getCoinPrice'](this.coin);
+            /*
             let baseCoinAmount;
             if (this.coin === this.$store.getters.BASE_COIN && this.amount > 0) {
                 baseCoinAmount = this.amount;
@@ -67,6 +72,7 @@ export default {
             }
 
             return baseCoinAmount * this.$store.getters['explorer/bipPriceUsd'];
+            */
         },
         coinIconUrl() {
             return this.$store.getters['explorer/getCoinIcon'](this.coin);
@@ -75,6 +81,7 @@ export default {
     methods: {
         pretty,
         prettyExact,
+        prettyPrecise,
     },
 };
 </script>
@@ -90,10 +97,10 @@ export default {
             <template v-if="!isLoading">
                 <span class="u-text-muted" v-if="amountUsd">(${{ pretty(amountUsd) }})</span>
                 <span v-if="amountIsNotNumber">{{ amount }}</span>
-                <span v-else-if="format === $options.FORMAT_TYPE.EXACT">{{ prettyExact(amount) }}</span>
                 <span v-else :title="prettyExact(amount)">
                     <template v-if="format === $options.FORMAT_TYPE.APPROX">≈</template>
-                    {{ pretty(amount) }}
+                    <template v-if="format === $options.FORMAT_TYPE.EXACT">{{ prettyPrecise(amount) }}</template>
+                    <template v-else>{{ pretty(amount) }}</template>
                 </span><!--
              -->{{ unit }}
                 <!--

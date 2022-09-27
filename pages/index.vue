@@ -2,6 +2,7 @@
 import cardList from '~/content/card-list.js';
 import Card from '~/components/Card.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
+import InvestmentList from '~/components/InvestmentList.vue';
 import PortfolioList from '~/components/PortfolioList.vue';
 
 const BASE_CARD = {
@@ -17,6 +18,7 @@ export default {
     components: {
         Card,
         AddressAssets,
+        InvestmentList,
         PortfolioList,
     },
     fetch() {
@@ -31,6 +33,7 @@ export default {
     data() {
         return {
             portfolioListCopied: [],
+            portfolioListManaged: [],
         };
     },
     computed: {
@@ -67,22 +70,18 @@ export default {
             {{ $td('View all portfolios', 'portfolio.view-all') }}
         </nuxt-link>
 
-        <PortfolioList
-            ref="portfolioListCopied"
+        <InvestmentList
             class="u-mt-25"
-            v-show="portfolioListCopied.length"
-            limit="3"
-            type="copied"
-            @update:portfolio-list="portfolioListCopied = $event"
         />
-        <nuxt-link class="button button--ghost-main button--full u-mt-20" v-show="portfolioListCopied.length" :to="$i18nGetPreferredPath('/portfolio/copied')">
+        <!--
+        <nuxt-link class="button button&#45;&#45;ghost-main button&#45;&#45;full u-mt-20" v-show="portfolioListCopied.length > 3" :to="$i18nGetPreferredPath('/portfolio/copied')">
             {{ $td('View all copied portfolios', 'portfolio.view-all-copied') }}
         </nuxt-link>
+        -->
 
         <div class="u-mt-25" v-for="(categoryCards, categorySlug) in cardList" :key="categorySlug">
-            <h2 class="dashboard__category-title u-mb-15">
-                <img class="dashboard__category-icon" :src="`/img/icon-category-${categorySlug}.svg`" alt="" role="presentation">
-                <span>{{ $td(capitalize($options.cardList[categorySlug].title || categorySlug), `action.category-${categorySlug.toLowerCase()}`) }}</span>
+            <h2 class="u-h1 u-mb-15">
+                {{ $td(capitalize($options.cardList[categorySlug].title || categorySlug), `action.category-${categorySlug.toLowerCase()}`) }}
             </h2>
             <div class="u-grid u-grid--vertical-margin">
                 <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in categoryCards" :key="card.action || card">
@@ -134,8 +133,8 @@ export default {
             </div>
         </div>
 
-        <PortfolioList class="u-mt-25" type="managed"/>
-        <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">
+        <PortfolioList class="u-mt-25" type="managed" @update:portfolio-list="portfolioListManaged = $event"/>
+        <nuxt-link v-if="portfolioListManaged.length === 0" class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">
             + {{ $td('Create portfolio', 'portfolio.create-new-link') }}
         </nuxt-link>
 

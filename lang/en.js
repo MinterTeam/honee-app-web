@@ -2,6 +2,9 @@ export default {
     index: {
         'features-description': 'Find out why Honee is {0} crypto wallet',
 
+        'investments-tabs-label-0': 'Everything',
+        'investments-tabs-label-portfolio': 'Portfolios',
+        'investments-tabs-label-stake': 'Stakes',
     },
     action: {
         'title-buy': 'Buy BIP, HUB, & BEE',
@@ -21,6 +24,9 @@ export default {
     },
     premium: {
         'activate-title': 'Become a Premium user',
+    },
+    portfolio: {
+        'warning-price-impact-description': 'You will lose ≈{impact}% of coins because pools involved in swaps have low liquidity. Try to lower the spending amount.',
     },
     form: {
         'delegation-delegate-confirm-note': 'Note: in case of unbond, your coins will return to your address in approximately <strong>30&nbsp;days</strong> (518&#x202F;400 blocks) and will not be generating rewards during this&nbsp;period.',

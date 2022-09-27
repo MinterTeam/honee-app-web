@@ -59,7 +59,7 @@ export function getValidationError(error, startErrorText = 'Error: ') {
 
 /**
  * Получает ошибку из ответа сервера
- * @param {AxiosError} error - axios error
+ * @param {AxiosError|Error} error - axios error
  * @param {string} startErrorText
  * @returns {String}
  */

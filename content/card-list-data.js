@@ -5,6 +5,7 @@ import {BASE_COIN} from '~/assets/variables.js';
  */
 export default {
     earn: {
+        title: 'Earning options',
         cards: [
             {
                 caption: 'Stake & Earn',
@@ -89,6 +90,7 @@ export default {
                     caption: 'Купить',
                 },
             },
+            /*
             {
                 caption: 'Buy',
                 coin: 'ETH',
@@ -196,13 +198,20 @@ export default {
                     caption: 'Купить',
                 },
             },
+            */
         ],
     },
 };
 
+/**
+ * @typedef {CardListItemRaw} CardListItem
+ * @property {string} actionType
+ * @property {string} category
+ */
+
 
 /**
- * @typedef {CardDataText} CardListItem
+ * @typedef {CardDataText} CardListItemRaw
  * @property {string} action - url to action
  * @property {string|Array<string>} [coin] - coin symbol or list of coin symbols (used for `title`, `icon`, and `tags`)
  * @property {string|Array<string>} [icon]
@@ -234,5 +243,5 @@ export default {
  */
 
 /**
- * @typedef {Object.<string, {title?: string, cards: Array<CardListItem>}>} CardCategoryMap
+ * @typedef {Object.<string, {title?: string, cards: Array<CardListItemRaw|CardListItem>}>} CardCategoryMap
  */

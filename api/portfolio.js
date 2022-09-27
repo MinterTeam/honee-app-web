@@ -109,7 +109,15 @@ export function getConsumerPortfolioList(address) {
     return instance.get(`consumer/portfolio/${address}`, {
         cache: consumerCache,
     })
-        .then((response) => response.data);
+        .then((response) => response.data)
+        .catch((error) => {
+            if (error.response?.status === 404) {
+                return {list: []};
+            } else {
+                throw error;
+            }
+        });
+
 }
 
 /**
@@ -127,4 +135,19 @@ export function getConsumerPortfolio(address, id) {
             }
             return portfolio;
         });
+}
+
+const coinsCache = new Cache({maxAge: 5 * 60 * 1000});
+
+/**
+ * @return {Promise<Array<CoinItem>>}
+ */
+export function getCmcCoinList() {
+    return instance.get('coins', {
+            cache: coinsCache,
+        })
+        .then((response) => response.data.list.map((item) => {
+            item.symbol = item.name;
+            return item;
+        }));
 }

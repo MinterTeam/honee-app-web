@@ -2,6 +2,7 @@
 import { waitUntil } from 'async-wait-until';
 import getTitle from '~/assets/get-title.js';
 import hashColor from '~/assets/hash-color.js';
+import {isCoinId as isId} from 'minter-js-sdk/src/utils.js';
 import {flatCardList} from '~/content/card-list.js';
 import {translateCardField} from '~/components/Card.vue';
 import HubBuyForm from '~/components/HubBuyForm.vue';
@@ -12,6 +13,7 @@ import TxPoolRemoveLiquidityForm from '~/components/TxPoolRemoveLiquidityForm.vu
 import TxStakeDelegateForm from '~/components/TxStakeDelegateForm.vue';
 import TxStakeUnbondForm from '~/components/TxStakeUnbondForm.vue';
 import StakeByLock from '~/components/StakeByLock.vue';
+import ActionFarmWithLock from '~/components/ActionFarmWithLock.vue';
 import Modal from '~/components/base/Modal.vue';
 import CardHead from '~/components/CardHead.vue';
 
@@ -57,9 +59,20 @@ const actionList = {
         ...addLiquidityAction,
         tags: ['lottery'],
     },
-    farm: {
-        ...addLiquidityAction,
-        tags: ['farming'],
+    farm: (actionPathParts) => {
+        if (isId(actionPathParts[0])) {
+            return {
+                params: ['id'],
+                component: ActionFarmWithLock,
+                tags: ['farming'],
+            };
+        } else {
+            return {
+                ...addLiquidityAction,
+                tags: ['farming'],
+            };
+        }
+
     },
     'remove-liquidity': {
         params: ['coin0', 'coin1'],
@@ -109,7 +122,8 @@ export default {
             return;
         }
         const [actionType, ...actionPathParts] = this.$route.params.pathMatch.split('/').filter((item) => !!item);
-        const action = actionList[actionType];
+        const actionListItem = actionList[actionType];
+        const action = typeof actionListItem === 'function' ? actionListItem(actionPathParts) : actionListItem;
         if (!action) {
             this.$nuxt.error({
                 status: 404,

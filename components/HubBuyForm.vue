@@ -25,14 +25,15 @@ import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useWeb3Deposit from '~/composables/use-web3-deposit.js';
 import useTxService from '~/composables/use-tx-service.js';
 import useTxMinterPresets from '~/composables/use-tx-minter-presets.js';
-import BaseAmountEstimation from '@/components/base/BaseAmountEstimation.vue';
+import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import Loader from '~/components/base/BaseLoader.vue';
-import Modal from '@/components/base/Modal.vue';
+import Modal from '~/components/base/Modal.vue';
 import ButtonCopyIcon from '~/components/base/BaseButtonCopyIcon.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import FieldSelect from '~/components/base/FieldSelect.vue';
-import HubBuyTxListItem from '@/components/HubBuyTxListItem.vue';
-import HubBuySpeedup from '@/components/HubBuySpeedup.vue';
+import HubBuyTxListItem from '~/components/HubBuyTxListItem.vue';
+import HubBuySpeedup from '~/components/HubBuySpeedup.vue';
+import HubFeeImpact from '~/components/HubFeeImpact.vue';
 
 
 const FIAT_RAMP_NETWORK = 'fiat-ramp';
@@ -97,6 +98,7 @@ export default {
         FieldSelect,
         HubBuyTxListItem,
         HubBuySpeedup,
+        HubFeeImpact,
     },
     directives: {
         autosize,
@@ -161,7 +163,7 @@ export default {
             isUnwrapRequired,
             gasPriceGwei: ethGasPriceGwei,
             gasTotalFee: ethTotalFee,
-            depositAmountAfterGas: formAmountAfterGas,
+            depositAmountAfterGas,
         } = useWeb3Deposit();
         const {txServiceState, currentLoadingStage, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData} = useTxService();
         const {sendMinterSwapTx} = useTxMinterPresets();
@@ -188,7 +190,7 @@ export default {
             updateTokenAllowance,
             waitEnoughTokenBalance,
 
-            setDepositProps, depositFromEthereum, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, formAmountAfterGas,
+            setDepositProps, depositFromEthereum, amountToUnwrap, isUnwrapRequired, ethGasPriceGwei, ethTotalFee, depositAmountAfterGas,
 
             txServiceState, currentLoadingStage, setTxServiceProps, sendEthTx, estimateTxGas, waitPendingStep, addStepData,
 
@@ -263,11 +265,13 @@ export default {
         externalTokenSymbol() {
             return NETWORK === MAINNET ? this.externalTokenMainnetSymbol : DEPOSIT_COIN_DATA[this.externalTokenMainnetSymbol].testnetSymbol;
         },
-        ethFeeImpact() {
-            if (!(this.form.amountEth > 0)) {
+        totalFeeImpact() {
+            const totalSpend = this.form.amountEth;
+            const totalResult = this.coinAmountAfterBridge;
+            if (!totalSpend || !totalResult) {
                 return 0;
             }
-            return new Big(this.ethTotalFee).div(this.form.amountEth).times(100);
+            return Math.min((totalSpend - totalResult) / totalSpend * 100, 100);
         },
         // only manual deposits considered (fiat top-up not affects it)
         ethToTopUp() {
@@ -285,11 +289,11 @@ export default {
         },
         // fee to HUB bridge calculated in COIN
         hubFee() {
-            const input = this.formAmountAfterGas;
+            const input = this.depositAmountAfterGas;
             return new Big(input || 0).times(this.hubFeeRate).toString();
         },
         coinAmountAfterBridge() {
-            const input = this.formAmountAfterGas;
+            const input = this.depositAmountAfterGas;
             return new Big(input || 0).minus(this.hubFee).toString();
         },
         maxAmount() {
@@ -412,7 +416,10 @@ export default {
         },
     },
     mounted() {
-        this.setDiscountProps({minterAddress: this.$store.getters.address});
+        this.setDiscountProps({
+            minterAddress: this.$store.getters.address,
+            ethAddress: this.$store.getters.evmAddress,
+        });
 
         const recoveryJson = window.localStorage.getItem('hub-buy-recovery');
         if (recoveryJson) {
@@ -600,7 +607,7 @@ export default {
         sendWrapTx({nonce, gasPrice} = {}) {
             return this.sendEthTx({
                 to: WETH_CONTRACT_ADDRESS,
-                value: this.formAmountAfterGas,
+                value: this.depositAmountAfterGas,
                 data: wethDepositAbiData,
                 nonce,
                 gasPrice,
@@ -636,7 +643,7 @@ export default {
             let txParams;
             if (this.isEthSelected) {
                 txParams = {
-                    value: this.formAmountAfterGas,
+                    value: this.depositAmountAfterGas,
                     data: AbiEncoder(hubABI)(
                         'transferETHToChain',
                         destinationChain,
@@ -650,7 +657,7 @@ export default {
                         'transferToChain',
                         destinationChain,
                         address,
-                        toErcDecimals(this.formAmountAfterGas, this.coinDecimals),
+                        toErcDecimals(this.depositAmountAfterGas, this.coinDecimals),
                         0,
                     ),
                 };
@@ -806,20 +813,23 @@ export default {
                 <div class="information form-row form__error" v-if="serverError">
                     {{ serverError }}
                 </div>
-                <div class="information form-row" v-else>
-                    <h3 class="information__title">{{ $td('Estimated price', 'form.swap-confirm-price-estimation') }}</h3>
-                    <div class="information__item">
-                        <div class="information__coin">
-                            <div class="information__coin-symbol">
-                                <template v-if="form.coinToGet">{{ form.coinToGet }}</template>
-                                <template v-else>Coin</template>
-                                rate
+                <template v-else>
+                    <div class="information form-row">
+                        <h3 class="information__title">{{ $td('Estimated price', 'form.swap-confirm-price-estimation') }}</h3>
+                        <div class="information__item">
+                            <div class="information__coin">
+                                <div class="information__coin-symbol">
+                                    <template v-if="form.coinToGet">{{ form.coinToGet }}</template>
+                                    <template v-else>Coin</template>
+                                    rate
+                                </div>
                             </div>
+                            <div class="information__value">≈ ${{ pretty(currentPrice) }}</div>
                         </div>
-                        <div class="information__value">≈ ${{ pretty(currentPrice) }}</div>
                     </div>
-                </div>
 
+                    <HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
+                </template>
 
                 <button
                     type="submit"
@@ -922,12 +932,7 @@ export default {
             </div>
             -->
 
-            <div class="form-row u-fw-700" v-if="ethFeeImpact > 10">
-                <span class="u-emoji">⚠️</span>
-                {{ $td(`High ${hubChainData.shortName} fee, it will consume`, 'form.high-eth-fee', {network: hubChainData.shortName}) }}
-                {{ prettyRound(ethFeeImpact) }}%
-                {{ $td(`of your ${externalTokenSymbol}`, 'form.high-eth-fee-percentage', {symbol: externalTokenSymbol}) }}
-            </div>
+            <HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
 
             <div class="form-row">
                 <button
@@ -976,14 +981,9 @@ export default {
                             <ButtonCopyIcon class="form-field__icon form-field__icon--copy" :copy-text="ethAddress"/>
                         </div>
                     </div>
-                    <div class="form-row u-fw-700" v-if="ethFeeImpact > 10">
-                        <span class="u-emoji">⚠️</span>
-                        {{ $td(`High ${hubChainData.shortName} fee, it will consume`, 'form.high-eth-fee', {network: hubChainData.shortName}) }}
-                        {{ prettyRound(ethFeeImpact) }}%
-                        {{ $td(`of your ${externalTokenSymbol}`, 'form.high-eth-fee-percentage', {symbol: externalTokenSymbol}) }}
-                    </div>
-                    <div class="form-row">
-                        <QrcodeVue class="u-mb-10 u-text-center" :value="deepLink" :size="160" level="L"/>
+
+                    <div class="form-row u-text-center">
+                        <QrcodeVue class="u-mb-10" :value="deepLink" :size="160" level="L"/>
                         <a class="link--default u-text-wrap" :href="deepLink" target="_blank">Open in external wallet</a>
                     </div>
                     <!--                    <div class="" v-if="ethBalance > 0">

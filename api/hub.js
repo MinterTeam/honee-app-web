@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
 import {TinyEmitter as Emitter} from 'tiny-emitter';
 import stripZeros from 'pretty-num/src/strip-zeros.js';
 import {isValidAddress as isValidMinterAddress} from 'minterjs-util';
 import {isValidAddress as isValidEthAddress} from 'ethereumjs-util';
-import {getCoinList} from '@/api/explorer.js';
+import {getCoinList} from '~/api/explorer.js';
 import Big from '~/assets/big.js';
 import {HUB_API_URL, HUB_TRANSFER_STATUS, HUB_CHAIN_ID, NETWORK, MAINNET, BASE_COIN, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
@@ -205,6 +205,23 @@ export function getTransferFee(inputTxHash) {
             cache: persistentCache,
         })
         .then((response) => {
+            if (!response.data.record) {
+                response.status = 404;
+                response.statusText = 'Not found';
+                response.request = {
+                    ...response.request,
+                    status: 404,
+                    statusText: 'Not found',
+                };
+                throw new AxiosError(
+                    'Request failed with status code ' + response.status,
+                    AxiosError.ERR_BAD_REQUEST,
+                    response.config,
+                    response.request,
+                    response,
+                );
+            }
+
             return {
                 valCommission: new Big(response.data.record.valCommission).div(1e18).toString(),
                 externalFee: new Big(response.data.record.externalFee).div(1e18).toString(),

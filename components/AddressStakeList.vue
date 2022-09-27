@@ -1,5 +1,6 @@
 <script>
 import {getDateAmerican, getTimeDistance, pretty, prettyRound} from '~/assets/utils.js';
+import {getErrorText} from '~/assets/server-error.js';
 import {getAddressLockList} from '~/api/staking.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 
@@ -24,6 +25,7 @@ export default {
     methods: {
         pretty,
         prettyRound,
+        getErrorText,
         getDate(value) {
             return getDateAmerican(value, {locale: this.$i18n.locale});
         },
@@ -68,7 +70,10 @@ export default {
         <div v-if="$fetchState.pending" class="u-text-center">
             <BaseLoader class="" :is-loading="true"/>
         </div>
-        <div v-else-if="$fetchState.error">Can't get stake list</div>
+        <div v-else-if="$fetchState.error">
+            Can't get stake list <br>
+            {{ getErrorText($fetchState.error) }}
+        </div>
         <div v-else-if="lockList.length === 0">No stakes yet</div>
         <div class="table-wrap" v-else-if="lockList.length">
             <table class="u-hidden-medium-down">
@@ -81,7 +86,7 @@ export default {
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="lockItem in lockList" :key="`${lockItem.dueBlock}-${lockItem.option}-${lockItem.program.id}`">
+                <tr v-for="lockItem in lockList" :key="lockItem.key">
                     <td>
                         <img class="wallet__coin-icon" :src="getCoinIconUrl(lockItem.program.lockCoin.symbol)" width="24" height="24" alt="" role="presentation">
                         <span class="wallet__coin-name">{{ lockItem.program.lockCoin.symbol }}</span>

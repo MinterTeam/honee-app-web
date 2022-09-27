@@ -1,5 +1,5 @@
 <script>
-import Language from '~/components/base/Language.vue';
+import Language from '~/components/layout/Language.vue';
 
 export default {
     components: {

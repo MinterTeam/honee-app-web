@@ -1,5 +1,6 @@
 <script>
 import {pretty, getExplorerAddressUrl} from '~/assets/utils.js';
+import BaseTabs from '~/components/base/BaseTabs.vue';
 import AddressBalanceList from '~/components/AddressBalanceList.vue';
 import AddressStakeList from '~/components/AddressStakeList.vue';
 import ReferralCard from '~/components/ReferralCard.vue';
@@ -19,6 +20,7 @@ export default {
     BALANCE_DISPLAY_TOTAL_USD,
     ASSET_TYPE,
     components: {
+        BaseTabs,
         AddressBalanceList,
         AddressStakeList,
         ReferralCard,
@@ -51,9 +53,12 @@ export default {
                         ${{ pretty($store.state.totalBalanceSumUsd) }}
                     </div>
                 </div>
-                <nuxt-link class="button button--ghost-main" :to="getDashboardUrl('topup')">
-                    <img class="button__icon u-hidden-small-down" src="/img/icon-deposit.svg" width="24" height="24" alt="" role="presentation">
+                <nuxt-link class="wallet__balance-control-item button button--ghost-main" :to="getDashboardUrl('topup')">
+                    <img class="button__icon u-hidden-medium-down" src="/img/icon-deposit.svg" width="24" height="24" alt="" role="presentation">
                     {{ $td('Top up', 'index.topup') }}
+                </nuxt-link>
+                <nuxt-link class="wallet__balance-control-item button button--ghost-main" :to="getDashboardUrl('withdraw')">
+                    {{ $td('Withdraw', 'index.withdraw') }}
                 </nuxt-link>
                 <!--<nuxt-link class="wallet__balance-buy-link button button--yellow-light button--full-mobile u-text-nowrap" :to="getDashboardUrl('buy')">
                     <img class="button__icon" src="/img/icon-category-buy.svg" width="24" height="24" alt="" role="presentation">
@@ -81,21 +86,14 @@ export default {
             <ReferralCard class="wallet__controls-fancy-button"/>
         </div>
         <section class="card__content">
-            <div class="wallet__asset-list-control-group u-mb-15">
-                <button
-                    class="wallet__asset-list-control-item u-h u-h3 u-semantic-button" type="button"
-                    :class="{'is-active': selectedAssetType === $options.ASSET_TYPE.BALANCE}"
-                    @click="selectedAssetType = $options.ASSET_TYPE.BALANCE"
-                >
-                    {{ $td('Coins', 'index.assets-coins') }}
-                </button>
-                <button
-                    class="wallet__asset-list-control-item u-h u-h3 u-semantic-button" type="button"
-                    :class="{'is-active': selectedAssetType === $options.ASSET_TYPE.STAKE_BY_LOCK}"
-                    @click="selectedAssetType = $options.ASSET_TYPE.STAKE_BY_LOCK"
-                >
-                    {{ $td('Stakes', 'index.assets-stakes') }}
-                </button>
+            <div class="u-flex u-flex--align-start u-mb-15">
+                <BaseTabs
+                    v-model="selectedAssetType"
+                    :tabs="[
+                        {value: $options.ASSET_TYPE.BALANCE, label: $td('Coins', 'index.assets-coins')},
+                        {value: $options.ASSET_TYPE.STAKE_BY_LOCK, label: $td('Stakes', 'index.assets-stakes')},
+                    ]"
+                />
 
                 <a class="wallet__asset-list-tx-link link--default" :href="getExplorerAddressUrl($store.getters.address) + '?active_tab=tx#explorer-tabs'" target="_blank">{{ $td('Transactions', 'index.assets-transactions') }}</a>
             </div>

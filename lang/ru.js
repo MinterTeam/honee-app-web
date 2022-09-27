@@ -90,6 +90,7 @@ export default {
         'balance': 'Баланс',
         'wallet-balance-links': 'Купить BIP, HUB & BEE',
         'topup': 'Пополнить',
+        'withdraw': 'Вывести',
         'swap': 'Купить',
         'swap-wallet-button': 'Обменять',
         'send': 'Отправить',
@@ -113,6 +114,14 @@ export default {
         'withdraw-unbond': 'Отозвать',
         'stake': 'Застейковать',
 
+        'investments-title': 'Инвестиции',
+        'investments-tabs-label-0': 'Всё',
+        'investments-tabs-label-portfolio': 'Портфели',
+        'investments-tabs-label-stake': 'Стейки',
+        'stake-more': 'Застейковать еще',
+        'total-delegated': 'Делегировано',
+        'delegate-more': 'Делегировать',
+
         'sign-up-subtitle': 'Крипто-кошелек для заработка',
         'sign-up': 'Зарегистрируйтесь',
         'or': 'или',
@@ -123,6 +132,7 @@ export default {
         'launch-honee': 'Запустить Honee',
         'save-phrase-error': 'Сперва нужно подтвердить, что вы сохранили фразу',
         'back': 'Назад',
+        'back-index': 'Назад в кошелек',
         'create-wallet-disclaimer': 'Мы не предоставляем услуги по хранению виртуальных активов. Вы несете единоличную ответственность за хранение сид-фразы в безопасном месте. Вы должны сделать резервную копию сид-фразы сразу после ее создания. Если вы потеряете сид-фразу, то не сможете ее восстановить и потеряете все свои средства, хранящиеся в соответствующем кошельке.',
 
         'enter-seed': 'Введите свою сид-фразу',
@@ -162,6 +172,9 @@ export default {
         'waiting-topup': 'Ожидаем транзакцию пополнения',
         'cancel': 'Отмена',
         'back': 'Назад',
+        'confirm-deposit-title': 'Депозит',
+        'deposit-evm-balance-description': 'На вашем {network}-адресе {amount} {coin}. Хотите зачислить?',
+        'deposit-evm-balance-button': 'Зачислить {amount} {coin}',
     },
     'topup-network': {
         'title': 'Пополнить через',
@@ -196,6 +209,7 @@ export default {
         'error-program-not-found': 'Не удаётся загрузить программу стейкинга',
         'error-program-disabled': 'Текущая программа стейкинга отключена',
         'error-program-timeout': 'Истекло время действия программы стейкинга',
+        'submit-button': 'Застейковать',
     },
     onboarding: {
         'skip': 'Пропустить',
@@ -217,6 +231,9 @@ export default {
         'manage-coin-add': 'Добавить другой токен',
         'manage-tokens-error-min': 'Минимум {count} монет',
         'manage-tokens-error-max': 'Максимум {count} монет',
+        'warning-price-impact': 'Высокое влияние на цену!',
+        'warning-price-impact-description': 'Вы потеряете ≈{impact}% монет из-за низколиквидных пулов, участвующих в обменах. Попробуйте уменьшить сумму.',
+        'warning-price-impact-unavailable-description': 'Пожалуйста перепроверьте количество получаемых монет. Возможна потеря части монет из за низколиквидных пулов участвующих в обменах.',
         'allocation-sum': 'Текущая суммарная доля',
         'allocation-sum-error': 'Сумма долей активов должна быть равна 100%. Внесите дополнительные токены или измените соотношение.',
         'manage-title-label': 'Название',
@@ -382,8 +399,6 @@ export default {
         'tx-fee': 'Комиссия',
         'tx-fee-high': 'Транзакция потребует высокой комиссии.',
         'read-understood': 'Нажатием этой кнопки вы подтверждаете, что прочитали положения отказа от ответственности, расположенного в футере и поняли их.',
-        'high-eth-fee': 'Высокая комиссия в сети {network}. Она поглотит',
-        'high-eth-fee-percentage': 'ваших {symbol}',
         'eth-waiting': 'Ожидание депозита {symbol}',
         'eth-purchase-waiting': 'Ожидание покупки {symbol}',
 
@@ -526,5 +541,28 @@ export default {
 
         'stake-lock-duration-label': 'Период блокировки',
         'stake-lock-duration-error-required': 'Укажите период',
+
+        'hub-reduce-fee': 'Как уменьшить комиссию до',
+        'hub-reduce-fee-url': 'https://www.minter.network/ru/howto/cross-chain-discounts',
+        'amount-error-not-enough': 'Недостаточно',
+    },
+    hub: {
+        'withdraw-title': 'Вывод',
+        'withdraw-description': 'Отправка монет из Minter в другую сеть',
+        'withdraw-address': 'Вывод на адрес',
+        'withdraw-address-required': 'Укажите',
+        'withdraw-address-title': 'адрес',
+        'withdraw-address-invalid': 'Неверный',
+        'withdraw-button-title': 'Вывести',
+        'fee-updated': 'комиссия обновлена',
+        'withdraw-estimate': 'Всего',
+        'withdraw-eth-fee': 'комиссия',
+        'withdraw-hub-fee': 'Комиссия моста',
+        'withdraw-minter-fee': 'Комиссия Minter',
+        'max': 'макс.',
+        'last-withdraw': 'История выводов',
+
+        'warning-fee-impact': 'Высокая комиссия в {network}',
+        'warning-fee-impact-description': 'Комиссии за перевод поглотят ≈{impact}% ваших {symbol}',
     },
 };

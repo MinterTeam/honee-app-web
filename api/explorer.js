@@ -406,6 +406,17 @@ export function getPool(coin0, coin1) {
 }
 
 /**
+ * @param {string} symbol
+ * @return {Promise<Pool>}
+ */
+export function getPoolByToken(symbol) {
+    return explorer.get(`pools/token/${symbol}`, {
+            cache: poolCache,
+        })
+        .then((response) => response.data.data);
+}
+
+/**
  * @param {string|number} coin0
  * @param {string|number} coin1
  * @param {string} address

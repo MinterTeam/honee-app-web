@@ -13,6 +13,7 @@ import SwapEstimation from '~/components/base/SwapEstimation.vue';
 import TxSequenceForm from '~/components/base/TxSequenceForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
+import PortfolioPriceImpact from '~/components/PortfolioPriceImpact.vue';
 
 
 export default {
@@ -22,6 +23,7 @@ export default {
         TxSequenceForm,
         BaseAmountEstimation,
         FieldCombined,
+        PortfolioPriceImpact,
     },
     mixins: [validationMixin],
     emits: [
@@ -114,7 +116,7 @@ export default {
                     coin: item.symbol,
                     // display amount to sell
                     amount: item.amount,
-                    hideUsd: true,
+                    hideUsd: false,
                 };
                 const needSwap = this.checkNeedSwapEqual(item.symbol);
                 if (!needSwap) {
@@ -156,6 +158,19 @@ export default {
                 disabled: this.estimationView.filter((item) => item.disabled),
             };
         },
+        estimationViewUsd() {
+            return this.estimationView
+                .filter((item) => !item.disabled && item.amountToGet > 0)
+                .map((item) => {
+                    return {
+                        spendUsd: item.amount * this.$store.getters['portfolio/getCoinPrice'](item.coin),
+                        resultUsd: item.amountToGet * this.$store.getters['portfolio/getCoinPrice'](this.form.coin),
+                    };
+                });
+        },
+        priceImpactUnavailable() {
+            return this.estimationSum > 0 && !this.$store.getters['portfolio/getCoinPrice'](this.form.coin);
+        },
         sequenceParams() {
             const swapReturnList = [];
             const swapSequence = this.coinList.map((coinItem, index) => {
@@ -163,6 +178,11 @@ export default {
                 const needSwap = this.checkNeedSwapEqual(coinSymbol);
                 const isDisabled = this.estimationView.find((item) => item.coin === coinSymbol)?.disabled;
                 const skip = !needSwap || isDisabled;
+
+                if (!needSwap) {
+                    swapReturnList.push(coinItem.amount);
+                }
+
                 return {
                     // pass null to txParams to not perform fee calculation
                     txParams: needSwap ? {
@@ -184,7 +204,7 @@ export default {
                     // pass skip to not send tx in sequence
                     skip,
                     prepareGasCoinPosition: 'start',
-                    prepare: skip ? undefined : (swapTx) => {
+                    prepare: (swapTx) => {
                         return this.getEstimationRef(index)?.getEstimation(true, true)
                             .then(() => {
                                 return {
@@ -322,6 +342,7 @@ export default {
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="estimationSum" format="approx" :is-loading="isEstimationFetchLoading"/>
                 </div>
+                <PortfolioPriceImpact class="form-row" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>
 
                 <SwapEstimation
                     class="u-text-medium form-row u-hidden"
@@ -367,6 +388,7 @@ export default {
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="estimationSum" format="approx" :is-loading="isEstimationFetchLoading"/>
                 </div>
+                <PortfolioPriceImpact class="form-row" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>
             </template>
         </TxSequenceForm>
     </div>

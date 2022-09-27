@@ -166,7 +166,7 @@
 .card__content--small {padding: 16px;}
 .card__content--mini {padding-block: 10px;}
 
-.card__action-head {display: flex; align-items: start;}
+.card__action-head {display: flex; align-items: flex-start;}
 .card__action-logo {
     border-radius: 50%; box-shadow: 0 8px 20px rgba(0,0,0,0.2); width: 40px; height: 40px;
     &:last-of-type {margin-right: 8px;}
@@ -183,9 +183,10 @@
 .card__action-tag-list {display: flex; margin-top: (24px - 8px); margin-left: -8px; flex-wrap: wrap;}
 .card__action-tag {margin-left: 8px; margin-top: 8px; padding: 2px 8px; line-height: 20px; background: rgba(255,255,255, 0.3); border-radius: 6px; font-weight: 700;}
 
-.card__token-list {display: flex; margin-bottom: auto;}
+.card__control-wrap {display: flex; align-items: center; justify-content: space-between; padding-top: 16px; margin-top: auto;}
+.card__token-list {display: flex;}
 .card__token-logo {
-    border-radius: 50%; border: 1px solid @c-white-light; background: @c-white-light; width: 30px; height: 30px;
+    border-radius: 50%; border: 1px solid @c-white-light; background: @c-white-light; width: 24px; height: 24px;
     &+& {margin-left: -6px;}
 }
 
@@ -216,18 +217,17 @@
     &+& {border-top: 1px solid @c-white-light;}
 }
 .header__container--premium {font-size: 16px; font-weight: 700; justify-content: center;}
-.header__logo {margin-right: 24px; display: flex; align-items: center; flex-grow: 2;}
+.header__logo {display: flex; align-items: center; flex-grow: 2;}
 .header__image-logo {vertical-align: top;}
 .header__image-back {margin-right: 24px;}
 .header__icon {vertical-align: top;}
 .header__logo-text {font-size: 26px; font-weight: 700; font-family: @heading-font-family; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 .header__controls {display: flex; height: 100%;}
 .header__controls-link {
-    display: flex; align-items: center; font-weight: 700; line-height: 20px; position: relative; transition: none;
+    display: flex; align-items: center; font-weight: 700; line-height: 20px; position: relative; transition: none; margin-left: 16px;
     &::after {content: ''; position: absolute; left: 0; bottom: 0; right: 0; height: 3px; transition: 0.1s;}
     &:hover::after, &:focus::after {background: fade(@c-main, 40%);}
     &.is-active::after {background: @c-main}
-    &+& {margin-left: 24px;}
 }
 .header__controls-divider {margin-block: 0; border: none; border-right: 1px solid @c-white-light; height: 100%;}
 .header__controls-premium {display: flex; align-items: center;}
@@ -242,6 +242,7 @@
 .header__language-icon {border: 2px solid #F5ECE9; border-radius: 50%;}
 @media (min-width: @breakpoint-small-up) {
     //.header__logo {margin-right: 70px;}
+    .header__controls-link {margin-left: 24px;}
     .header__controls-user {/*max-width: calc(100vw - 260px);*/ /*margin-right: 24px;*/}
     .header__controls-user-avatar {margin-right: 12px;}
     .header__controls-language {/*margin-left: 24px;*/}
@@ -250,6 +251,10 @@
     //.header {height: @header-height-large;}
     //.header__controls-user {max-width: calc(100vw - 340px);}
 }
+
+// back button
+.back-button {display: inline-flex; align-items: center; vertical-align: top;}
+.back-button__icon {margin-right: 16px;}
 
 // footer
 .footer {
@@ -296,6 +301,27 @@
 
 
 
+
+.tabs {}
+.tabs__item {
+    padding-bottom: 6px; position: relative; color: @c-black-light;
+    &+& {margin-left: 16px;}
+    // states
+    &:hover, &:focus {color: inherit;}
+    &.is-active {color: inherit;}
+    // pseudo
+    &::before {content: ''; position: absolute; left: 0; bottom: 0; right: 0; height: 2px; border-radius: 1px; background: transparent; transition: 0.1s;}
+    &:hover::before, &:focus::before {background: fade(@c-main, 40%);}
+    &.is-active::before {background: @c-main;}
+}
+@media (min-width: @breakpoint-medium-up) {
+    .tabs__item {
+        &+& {margin-left: 24px;}
+    }
+}
+
+
+
 // index
 .wallet__balance-wrap {
     @margin: 16px;
@@ -304,10 +330,15 @@
 }
 .wallet__balance {margin-right: auto;}
 .wallet__balance-value {font-size: 30px; line-height: 36px; font-weight: 700; font-feature-settings: "zero" on;}
+.wallet__balance-control-item {}
 .wallet__balance-buy-link {}
 .wallet__action-button {}
 .wallet__controls {display: flex; flex-direction: column; align-items: center;}
 .wallet__controls-fancy-button {}
+@media (max-width: @breakpoint-small-down) {
+    .wallet__balance {width: 100%;}
+    .wallet__balance-control-item {flex-grow: 2; flex-basis: 40%;}
+}
 @media (max-width: @breakpoint-medium-down) {
     .wallet__action-button {
         padding: 48px 0 0; min-width: 72px; position: relative;
@@ -327,25 +358,7 @@
     .wallet__controls-fancy-button {}
 }
 
-.wallet__asset-list-control-group {display: flex; align-items: flex-start;}
-.wallet__asset-list-control-item {
-    padding-bottom: 6px; position: relative;
-    &+& {margin-left: 16px;}
-    &::before {content: ''; position: absolute; left: 0; bottom: 0; right: 0; height: 2px; border-radius: 1px; background: transparent; transition: 0.1s;}
-    &:hover::before, &:focus::before {background: fade(@c-main, 40%);}
-    &.is-active::before {background: @c-main;}
-}
-.wallet__asset-list-control-item.u-semantic-button{
-    color: #868686;
-    &:hover {color: inherit;}
-    &.is-active {color: inherit;}
-}
 .wallet__asset-list-tx-link {margin-left: auto; margin-top: 1px;}
-@media (min-width: @breakpoint-medium-up) {
-    .wallet__asset-list-control-item {
-        &+& {margin-left: 24px;}
-    }
-}
 
 .wallet__coin-row {
     display: flex; justify-content: space-between;
@@ -369,8 +382,10 @@
 }
 .wallet__stake-row-title {margin-bottom: 2px;}
 
+/*
 .dashboard__category-title {font-size: 26px; line-height: 32px; display: flex; align-items: center; text-transform: uppercase;}
-.dashboard__category-icon {margin-left: 32px; margin-right: 16px;}
+.dashboard__category-icon {margin-left: 16px; margin-right: 16px;}
+*/
 
 
 // send
@@ -434,6 +449,13 @@
 .hub__buy-title-loader {margin: -12px 8px -6px 0; vertical-align: middle;}
 @media (min-width: @breakpoint-medium-up) {
     .hub__buy-transaction-meta {display: flex;}
+}
+
+.hub__preview-transaction-row {/*font-size: 14px;*/font-weight: 500;line-height: 20px;}
+.hub__preview-transaction-meta {color: @c-black-light;font-size: 12px;line-height: 18px;}
+.hub__preview-loader {width: 18px;height: 18px;display: inline-block;vertical-align: middle;margin-top: -3px;margin-left: 2px;}
+@media (min-width: @breakpoint-medium-up) {
+    //.hub__preview-transaction-row {display: flex;justify-content: space-between;}
 }
 
 
