@@ -9,7 +9,7 @@ import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import {pretty, prettyRound, getDateAmerican, getTimeDistance} from '~/assets/utils.js';
-import {getFarmProgram} from '~/api/farm.js';
+import {getFarmProgramWithPoolData, getAmountFromPool} from '~/api/farm.js';
 import {getBlock} from '~/api/explorer.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import TxSequenceWithSwapForm from '~/components/base/TxSequenceWithSwapForm.vue';
@@ -34,7 +34,7 @@ export default {
 
         let programId = this.params.id;
 
-        return getFarmProgram(programId)
+        return getFarmProgramWithPoolData(programId)
             .then((program) => {
                 this.program = program;
                 this.form.coin = program.tokenSymbol;
@@ -64,7 +64,7 @@ export default {
                 coin: this.$route.query.coin || '',
             },
             isUseMax: false,
-            /** @type {FarmProgram|null} */
+            /** @type {FarmProgramWithPoolData|null} */
             program: null,
             latestBlockHeight: 0,
             estimation: 0,
@@ -114,6 +114,16 @@ export default {
                 return this.estimation;
             }
         },
+        // based on that value rewards will be calcualated
+        lockValueToReward() {
+            if (!this.program) {
+                return 0;
+            }
+            const poolAmount = getAmountFromPool(this.program, this.program.rewardCoin.symbol);
+            const rewardCoinLockAmount = this.lockValue / this.program.liquidity * poolAmount;
+            // locked liquidity denominated in reward coin
+            return rewardCoinLockAmount * 2;
+        },
         dailyYieldPercent() {
             return this.program?.percent;
         },
@@ -126,7 +136,7 @@ export default {
             return lockDays * this.dailyYieldPercent;
         },
         totalYieldAmount() {
-            return this.lockValue * this.totalYieldPercent / 100;
+            return this.lockValueToReward * this.totalYieldPercent / 100;
         },
         txData() {
             return {
