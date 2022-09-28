@@ -166,7 +166,7 @@ export default {
                 </template>
                 <template v-if="!selectedFilter || selectedFilter === $options.FILTERS.STAKE">
                     <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="stakeCard in stakeCardList" :key="stakeCard.action">
-                        <Card :card="stakeCard" :button-label="stakeCard.buttonLabel"/>
+                        <Card :card="stakeCard"/>
                     </div>
                 </template>
             </div>

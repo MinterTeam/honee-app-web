@@ -10,7 +10,8 @@ const ACTION_TYPE = {
     FARM: 'farm',
     DELEGATE: 'delegate',
     WIN: 'win',
-    REMOVE_LIQUIDITY: 'remove_liquidity',
+    ADD_LIQUIDITY: 'add-liquidity',
+    REMOVE_LIQUIDITY: 'remove-liquidity',
     UNBOND: 'unbond',
     STAKE: 'stake',
 };
@@ -27,9 +28,6 @@ export default {
             required: true,
         },
         actionBaseUrl: {
-            type: String,
-        },
-        buttonLabel: {
             type: String,
         },
     },
@@ -100,10 +98,10 @@ function poolHasCoin(pool, symbol) {
             <div class="u-grid">
                 <div class="u-cell" :class="isUndoAvailable ? 'u-cell--6-10': ''">
                     <nuxt-link class="button button--full " :to="getDashboardUrl(card.action, actionBaseUrl)">
-                        <template v-if="buttonLabel">{{ buttonLabel }}</template>
+                        <template v-if="card.buttonLabel">{{ translate('buttonLabel') }}</template>
                         <template v-else-if="card.actionType === $options.ACTION_TYPE.DEPOSIT">{{ $td('Buy with BNB & ETH', 'index.card-button-deposit') }}</template>
                         <template v-else-if="card.actionType === $options.ACTION_TYPE.SWAP">{{ $td('Buy', 'index.swap') }}</template>
-                        <template v-else-if="card.actionType === $options.ACTION_TYPE.FARM">{{ $td('Add liquidity', 'index.add-liquidity') }}</template>
+                        <template v-else-if="card.actionType === $options.ACTION_TYPE.FARM || card.actionType === $options.ACTION_TYPE.ADD_LIQUIDITY">{{ $td('Add liquidity', 'index.add-liquidity') }}</template>
                         <template v-else-if="card.actionType === $options.ACTION_TYPE.DELEGATE">{{ $td('Delegate', 'index.delegate') }}</template>
                         <template v-else-if="card.actionType === $options.ACTION_TYPE.WIN">{{ $td('Participate', 'index.participate') }}</template>
                         <template v-else-if="card.actionType === $options.ACTION_TYPE.STAKE">{{ $td('Stake', 'index.stake') }}</template>

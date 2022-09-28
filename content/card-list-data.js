@@ -8,38 +8,36 @@ export default {
         title: 'Earning options',
         cards: [
             {
-                caption: 'Yield farming',
-                title: 'BEE / MUSD',
-                description: 'Put your BEE and MUSD into a liquidity pool. Then stake received LP-656 tokens for getting daily rewards.',
-                icon: ['BEE', 'MUSD'],
+                caption: 'Liquidity mining',
+                coin: ['BEE', 'MUSD'],
+                description: 'Put your BEE and MUSD into a liquidity pool. Then stake received LP-656 tokens for getting extra daily rewards.',
                 stats: {
-                    apr: {
-                        percent: 36.5,
-                        rewardCoin: 'BEE',
-                    },
+                    caption: 'APY',
+                    value: '≈3%',
                 },
-                tags: ['Farming', 'BEE', 'MUSD'],
-                action: '/farm/BEE/MUSD',
+                tags: [],
+                action: '/add-liquidity/BEE/MUSD',
                 ru: {
-                    title: 'BEE / MUSD',
-                    description: 'Поместите свои BEE и MUSD в пул ликвидности. Затем застейкуйте полученные LP-656 токены для получения ежедневных вознаграждений.',
-                    caption: 'Фарминг',
+                    caption: 'Майнинг ликвидностью',
+                    description: 'Поместите свои BEE и MUSD в пул ликвидности. Затем застейкуйте полученные LP-656 токены для получения дополнительных ежедневных наград.',
                 },
             },
             {
                 caption: 'Yield farming',
-                coin: `LP-656`,
-                description: 'Stake your LP-656 tokens with a 1-year lock to start getting daily rewards.',
+                coin: ['BEE', 'MUSD'],
+                description: 'Stake your LP-656 tokens with a 1-year lock to start getting extra daily rewards.',
+                buttonLabel: 'Stake',
                 stats: {
                     apr: {
                         percent: '36.5',
                     },
                 },
-                tags: ['Farming', 'BEE', 'MUSD'],
+                tags: ['Farming'],
                 action: `/farm/378`,
                 ru: {
-                    description: 'Застейкуйте свои LP-656 токены с блокировкой на 1 год, чтобы получать ежедневные вознаграждения.',
+                    description: 'Застейкуйте свои LP-656 токены с блокировкой на 1 год, чтобы получать дополнительные ежедневные награды.',
                     caption: 'Фарминг',
+                    buttonLabel: 'Застейковать',
                 },
             },
             {
@@ -260,6 +258,7 @@ export default {
  * @property {string} [caption]
  * @property {string} [title]
  * @property {string} [description]
+ * @property {string} [buttonLabel]
  * @property {object} [stats]
  * @property {string} [stats.caption]
  * @property {string|number} [stats.value]
