@@ -1,7 +1,7 @@
 <script>
 import get from 'lodash-es/get.js';
 import hashColor from '~/assets/hash-color.js';
-import {clearActionQuery} from '~/components/CardAction.vue';
+import {clearActionQuery} from '~/components/Action.vue';
 import CardHead from '~/components/CardHead.vue';
 
 const ACTION_TYPE = {
