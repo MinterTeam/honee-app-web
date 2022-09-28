@@ -108,7 +108,7 @@ export default {
         'assets-transactions': 'Транзакции',
 
         'card-button-deposit': 'Купить за BNB или ETH',
-        'add-liquidity': 'Добавить ликвидность',
+        'add-liquidity': 'Добавить',
         'delegate': 'Делегировать',
         'participate': 'Участвовать',
         'withdraw-unbond': 'Отозвать',
@@ -118,6 +118,7 @@ export default {
         'investments-tabs-label-0': 'Всё',
         'investments-tabs-label-portfolio': 'Портфели',
         'investments-tabs-label-stake': 'Стейки',
+        'investments-list-empty': 'У вас еще нет инвестиций',
         'stake-more': 'Застейковать еще',
         'total-delegated': 'Делегировано',
         'delegate-more': 'Делегировать',

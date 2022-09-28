@@ -8,6 +8,41 @@ export default {
         title: 'Earning options',
         cards: [
             {
+                caption: 'Yield farming',
+                title: 'BEE / MUSD',
+                description: 'Put your BEE and MUSD into a liquidity pool. Then stake received LP-656 tokens for getting daily rewards.',
+                icon: ['BEE', 'MUSD'],
+                stats: {
+                    apr: {
+                        percent: 36.5,
+                        rewardCoin: 'BEE',
+                    },
+                },
+                tags: ['Farming', 'BEE', 'MUSD'],
+                action: '/farm/BEE/MUSD',
+                ru: {
+                    title: 'BEE / MUSD',
+                    description: 'Поместите свои BEE и MUSD в пул ликвидности. Затем застейкуйте полученные LP-656 токены для получения ежедневных вознаграждений.',
+                    caption: 'Фарминг',
+                },
+            },
+            {
+                caption: 'Yield farming',
+                coin: `LP-656`,
+                description: 'Stake your LP-656 tokens with a 1-year lock to start getting daily rewards.',
+                stats: {
+                    apr: {
+                        percent: '36.5',
+                    },
+                },
+                tags: ['Farming', 'BEE', 'MUSD'],
+                action: `/farm/378`,
+                ru: {
+                    description: 'Застейкуйте свои LP-656 токены с блокировкой на 1 год, чтобы получать ежедневные вознаграждения.',
+                    caption: 'Фарминг',
+                },
+            },
+            {
                 caption: 'Stake & Earn',
                 coin: `BEE`,
                 description: 'Stake BEE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
