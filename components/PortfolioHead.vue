@@ -1,13 +1,19 @@
 <script>
 import {prettyUsd, shortHashFilter} from '~/assets/utils.js';
+import {PORTFOLIO_PROFIT_PERIOD} from '~/api/portfolio.js';
 
 export default {
     name: 'PortfolioHead',
+    PORTFOLIO_PROFIT_PERIOD,
     props: {
         /** @type {Portfolio|ConsumerPortfolio} */
         portfolio: {
             type: Object,
             required: true,
+        },
+        profitPeriod: {
+            type: String,
+            default: PORTFOLIO_PROFIT_PERIOD.AWP,
         },
         titleLink: {
             type: String,
@@ -25,11 +31,11 @@ export default {
             return !this.isConsumer;
         },
         profit() {
-            const profit = this.isConsumer ? this.portfolio.profit : this.portfolio.profit?.daily7;
+            const profit = this.isConsumer ? this.portfolio.profit : this.portfolio.profit?.[this.profitPeriod];
             if (profit === -101) {
                 return '—';
             }
-            return this.isConsumer ? this.portfolio.profit : this.portfolio.profit?.daily7;
+            return this.isConsumer ? this.portfolio.profit : this.portfolio.profit?.[this.profitPeriod];
         },
         profitText() {
             if (this.profit === -101) {
@@ -70,7 +76,12 @@ export default {
         </div>
         <div class="card__action-stats">
             <div class="card__action-stats-caption u-text-upper">
-                <template v-if="isTemplate">{{ $td('7 days', 'portfolio.head-profit-7d') }}</template>
+                <template v-if="isTemplate && profitPeriod === $options.PORTFOLIO_PROFIT_PERIOD.AWP">
+                    {{ $td('Average weekly profit', 'portfolio.head-profit-awp') }}
+                </template>
+                <template v-if="isTemplate && profitPeriod === $options.PORTFOLIO_PROFIT_PERIOD.DAILY7">
+                    {{ $td('7 days', 'portfolio.head-profit-7d') }}
+                </template>
                 <template v-if="isConsumer">{{ $td('Balance', 'portfolio.head-balance') }}</template>
             </div>
             <div class="card__action-stats-value" v-if="isConsumer">{{ prettyUsd(portfolio.price) }}$</div>

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
 import {PORTFOLIO_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
+import {toSnake} from '~/assets/utils/snake-case.js';
 import NotFoundError from '~/assets/utils/error-404.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import addEcdsaAuthInterceptor from '~/assets/axios-ecdsa-auth.js';
@@ -59,15 +60,13 @@ export function getPortfolio(id) {
 }
 
 /**
- * @param {PaginationParams&{owner?: string}} [params]
+ * @param {PaginationParams&{owner?: string, profitPeriod?: PORTFOLIO_PROFIT_PERIOD}} [params]
  * @return {Promise<PortfolioList>}
  */
 export function getPortfolioList(params) {
+    params.profitPeriod = params.profitPeriod || PORTFOLIO_PROFIT_PERIOD.AWP;
     return instance.get(`portfolio`, {
-            params: {
-                profit_period: 'daily7',
-                ...params,
-            },
+            params: toSnake(params),
         })
         .then((response) => response.data);
 }
@@ -151,3 +150,14 @@ export function getCmcCoinList() {
             return item;
         }));
 }
+
+
+/**
+ * @enum {string}
+ */
+export const PORTFOLIO_PROFIT_PERIOD = {
+    // average weekly profit: average of last 4 full weeks (monday-sunday) (negative week bans metric)
+    AWP: 'weekly',
+    // average of last 7 days
+    DAILY7: 'daily7',
+};

@@ -142,7 +142,7 @@ export default {
 <template>
     <div>
         <h2 class="u-h1 u-mb-15">
-            {{ $td('Investments', `index.investments-title`) }}
+            {{ $td('My investments', `index.investments-title`) }}
         </h2>
         <div v-if="$fetchState.pending" class="u-text-center">
             <BaseLoader class="" :is-loading="true"/>

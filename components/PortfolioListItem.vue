@@ -6,6 +6,7 @@ import PortfolioHead from '~/components/PortfolioHead.vue';
  */
 export const PORTFOLIO_LIST_TYPE = {
     TOP: 'top',
+    ALL: 'all',
     MANAGED: 'managed',
     COPIED: 'copied',
 };
@@ -36,7 +37,7 @@ export default {
             }
         },
         getLinkCaption() {
-            if (this.type === PORTFOLIO_LIST_TYPE.TOP) {
+            if (this.type === PORTFOLIO_LIST_TYPE.TOP || this.type === PORTFOLIO_LIST_TYPE.ALL) {
                 return this.$td('Buy', 'portfolio.buy-button');
             } else {
                 return this.$td('View', 'portfolio.view-button');
