@@ -13,6 +13,10 @@ export default {
             type: String,
             required: true,
         },
+        showWaitIndicator: {
+            type: Boolean,
+            default: false,
+        },
     },
     emits: [
         'topup',
@@ -64,12 +68,12 @@ export default {
 </script>
 
 <template>
-    <div v-if="isWaiting">
+    <div v-if="showWaitIndicator">
         <div class="form__error" v-if="serverError">{{ serverError }}</div>
         <template v-else>
             <div>{{ $td('Waiting top-up transaction', 'topup.waiting-topup') }}</div>
             <div class="u-text-center">
-                <BaseLoader :is-loading="isWaiting"/>
+                <BaseLoader :is-loading="true"/>
             </div>
         </template>
     </div>

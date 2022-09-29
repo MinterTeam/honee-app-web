@@ -63,6 +63,8 @@ export default {
     data() {
         return {
             isQrVisible: false,
+            isDepositProcessing: false,
+            successDeposit: false,
         };
     },
     computed: {
@@ -107,73 +109,76 @@ export default {
                 {{ $td('Top up with', 'topup-network.title') }} {{ network.coin }}
             </template>
         </h1>
-        <p class="u-text-center u-text-medium" v-if="description">{{ description }}</p>
-        <p class="u-text-center u-text-medium" v-else-if="description !== false">
-            <template v-if="network.coin === $store.getters.BASE_COIN">
-                {{ $td(`Send any amount of ${network.coin}, BEE, or any other Minter coin to this address`, 'topup-network.description-minter', {coin: network.coin}) }}
-            </template>
-            <template v-else>
-                {{ $td(`Send any amount of ${network.coin} to this address`, 'topup-network.description', {coin: network.coin}) }}
-            </template>
-        </p>
+        <template v-if="!isDepositProcessing && !successDeposit">
+            <p class="u-text-center u-text-medium" v-if="description">{{ description }}</p>
+            <p class="u-text-center u-text-medium" v-else-if="description !== false">
+                <template v-if="network.coin === $store.getters.BASE_COIN">
+                    {{ $td(`Send any amount of ${network.coin}, BEE, or any other Minter coin to this address`, 'topup-network.description-minter', {coin: network.coin}) }}
+                </template>
+                <template v-else>
+                    {{ $td(`Send any amount of ${network.coin} to this address`, 'topup-network.description', {coin: network.coin}) }}
+                </template>
+            </p>
 
-        <div class="h-field h-field--is-readonly u-mt-10 u-mb-10">
-            <div class="h-field__content" @click="copy(address)">
-                <div class="h-field__title">{{ $td('Your address', 'index.your-address') }}</div>
-                <div class="h-field__input h-field__input--medium is-not-empty">{{ address }}</div>
+            <div class="h-field h-field--is-readonly u-mt-10 u-mb-10">
+                <div class="h-field__content" @click="copy(address)">
+                    <div class="h-field__title">{{ $td('Your address', 'index.your-address') }}</div>
+                    <div class="h-field__input h-field__input--medium is-not-empty">{{ address }}</div>
+                </div>
             </div>
-        </div>
 
-        <div class="u-grid u-grid--vertical-margin--small">
-            <div class="u-cell u-cell--auto-grow" v-if="isClipboardSupported">
-                <button
-                    class="button button--ghost-main button--full button--narrow"
-                    type="button"
-                    @click="copy(address)"
-                >
-                    {{ $td('Copy', 'topup-network.copy') }}
-                </button>
+            <div class="u-grid u-grid--vertical-margin--small">
+                <div class="u-cell u-cell--auto-grow" v-if="isClipboardSupported">
+                    <button
+                        class="button button--ghost-main button--full button--narrow"
+                        type="button"
+                        @click="copy(address)"
+                    >
+                        {{ $td('Copy', 'topup-network.copy') }}
+                    </button>
+                </div>
+                <div class="u-cell u-cell--auto-grow" v-if="isShareSupported">
+                    <button
+                        class="button button--ghost-main button--full button--narrow"
+                        type="button"
+                        @click="shareAddress()"
+                    >
+                        {{ $td('Share', 'topup-network.share') }}
+                    </button>
+                </div>
+                <div class="u-cell u-cell--auto-grow">
+                    <button
+                        class="button button--ghost-main button--full button--narrow"
+                        type="button"
+                        @click="isQrVisible = !isQrVisible"
+                    >
+                        <template v-if="!isQrVisible">
+                            {{ $td('Show QR', 'topup-network.show-qr') }}
+                        </template>
+                        <template v-else>
+                            {{ $td('Hide QR', 'topup-network.hide-qr') }}
+                        </template>
+                    </button>
+                </div>
             </div>
-            <div class="u-cell u-cell--auto-grow" v-if="isShareSupported">
-                <button
-                    class="button button--ghost-main button--full button--narrow"
-                    type="button"
-                    @click="shareAddress()"
-                >
-                    {{ $td('Share', 'topup-network.share') }}
-                </button>
-            </div>
-            <div class="u-cell u-cell--auto-grow">
-                <button
-                    class="button button--ghost-main button--full button--narrow"
-                    type="button"
-                    @click="isQrVisible = !isQrVisible"
-                >
-                    <template v-if="!isQrVisible">
-                        {{ $td('Show QR', 'topup-network.show-qr') }}
-                    </template>
-                    <template v-else>
-                        {{ $td('Hide QR', 'topup-network.hide-qr') }}
-                    </template>
-                </button>
-            </div>
-        </div>
 
-        <qrcode-vue
-            v-show="isQrVisible"
-            class="u-mt-15 u-text-center"
-            :value="address"
-            :size="160"
-            level="L"
-            background="transparent"
-        />
+            <qrcode-vue
+                v-show="isQrVisible"
+                class="u-mt-15 u-text-center"
+                :value="address"
+                :size="160"
+                level="L"
+                background="transparent"
+            />
+        </template>
 
         <component
             :is="networkSlug === $options.HUB_CHAIN_ID.MINTER ? 'TopupWaitMinter' : 'TopupWaitEvm'"
             class="u-text-center u-mt-15 u-text-medium"
             :showWaitIndicator="showWaitIndicator"
             :network-slug="networkSlug"
-            @topup="$emit('topup', $event)"
+            @update:processing="isDepositProcessing = $event"
+            @topup="successDeposit = $event; $emit('topup', $event)"
         />
 
         <nuxt-link class="button button--ghost button--full u-mt-15" :to="backUrl || $i18nGetPreferredPath('/topup')">

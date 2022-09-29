@@ -109,7 +109,7 @@ export default {
 <template>
     <div class="" v-if="hasTx">
         <div class="u-h--uppercase u-mb-05">{{ $td('Last withdraw', 'hub.last-withdraw') }}</div>
-        <div class="preview__transaction" v-for="withdraw in withdrawList" :key="withdraw.tx.hash">
+        <div class="form-row" v-for="withdraw in withdrawList" :key="withdraw.tx.hash">
             <div class="hub__preview-transaction-row u-text-overflow">
                 <div class="u-fw-700">
                     {{ pretty(getAmount(withdraw)) }} {{ withdraw.tx.data.coin.symbol }}
