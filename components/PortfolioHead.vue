@@ -62,19 +62,14 @@ export default {
 </script>
 
 <template>
-    <div class="card__action-head">
-        <div class="card__action-title">
+    <div class="">
+        <div class="card__head-row">
+            <!-- left -->
             <div class="card__action-title-type">
                 <template v-if="isCopy">{{ $td('Copy of', 'portfolio.head-copy-of') }}</template>
                 #{{ portfolio.id }}
             </div>
-            <nuxt-link class="card__action-title-value" v-if="titleLink" :to="titleLink">
-                {{ portfolio.title }}
-            </nuxt-link>
-            <div class="card__action-title-value" v-else>{{ portfolio.title }}</div>
-            <div class="card__action-meta u-text-muted">By {{ shortHashFilter(portfolio.owner) }}</div>
-        </div>
-        <div class="card__action-stats">
+            <!-- right -->
             <div class="card__action-stats-caption u-text-upper">
                 <template v-if="isTemplate && profitPeriod === $options.PORTFOLIO_PROFIT_PERIOD.AWP">
                     {{ $td('Average weekly profit', 'portfolio.head-profit-awp') }}
@@ -84,8 +79,24 @@ export default {
                 </template>
                 <template v-if="isConsumer">{{ $td('Balance', 'portfolio.head-balance') }}</template>
             </div>
-            <div class="card__action-stats-value" v-if="isConsumer">{{ prettyUsd(portfolio.price) }}$</div>
-            <div :class="[profitColorClass, isTemplate ? 'card__action-stats-value' : 'card__action-meta u-fw-700']">
+        </div>
+        <div class="card__head-row">
+            <!-- left -->
+            <nuxt-link class="card__action-title-value" v-if="titleLink" :to="titleLink">
+                {{ portfolio.title }}
+            </nuxt-link>
+            <div class="card__action-title-value" v-else>{{ portfolio.title }}</div>
+            <!-- right -->
+            <div v-if="isConsumer" class="card__action-stats-value">{{ prettyUsd(portfolio.price) }}$</div>
+            <div v-if="isTemplate" class="card__action-stats-value" :class="[profitColorClass]">
+                {{ profitText }}
+            </div>
+        </div>
+        <div class="card__head-row">
+            <!-- left -->
+            <div class="card__action-meta u-text-muted">By {{ shortHashFilter(portfolio.owner) }}</div>
+            <!-- right -->
+            <div v-if="isConsumer" class="card__action-meta u-fw-700" :class="[profitColorClass]">
                 {{ profitText }}
             </div>
         </div>
