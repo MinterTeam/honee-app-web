@@ -18,15 +18,26 @@ export default {
 
 <template>
     <div class="u-section u-container u-container--large">
+        <h2 class="u-h1 u-mb-15">
+            {{ $td('Portfolios', `portfolio.list-title`) }}
+        </h2>
+
         <BaseTabs
             class="u-mb-15"
             v-model="selectedType"
             :tabs="[
-                {value: $options.PORTFOLIO_LIST_TYPE.TOP, label: $td('Top portfolios', 'portfolio.list-top-title')},
-                {value: $options.PORTFOLIO_LIST_TYPE.ALL, label: $td('All portfolios', 'portfolio.list-all-title')},
+                {value: $options.PORTFOLIO_LIST_TYPE.TOP, label: $td('Top', 'portfolio.tabs-label-top')},
+                {value: $options.PORTFOLIO_LIST_TYPE.ALL, label: $td('All', 'portfolio.tabs-label-all')},
             ]"
+            :reset-pages="true"
         />
 
-        <PortfolioList :page="$route.query.page" :show-pagination="true" :type="selectedType" :key="selectedType"/>
+        <PortfolioList
+            :key="selectedType"
+            :type="selectedType"
+            :page="$route.query.page"
+            :show-pagination="true"
+            :show-title="false"
+        />
     </div>
 </template>

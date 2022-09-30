@@ -32,6 +32,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        showTitle: {
+            type: Boolean,
+            default: true,
+        },
     },
     emits: [
         'update:portfolio-list',
@@ -79,7 +83,7 @@ export default {
 
 <template>
     <div>
-        <h2 class="u-h1 u-mb-15">
+        <h2 class="u-h1 u-mb-15" v-if="showTitle">
             <span v-if="type === $options.PORTFOLIO_LIST_TYPE.MANAGED">
                 {{ $td('Managed portfolios', `portfolio.list-managed-title`) }}
             </span>

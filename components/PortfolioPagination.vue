@@ -70,6 +70,7 @@ export default {
                 class="pagination__button button button--ghost-main"
                 :class="{'u-visually-hidden': !hasPrev, 'pagination__button--disabled': isLoading}"
                 :to="getPageHref(1)"
+                :replace="true"
                 :event="!hasPrev ? '' : 'click'"
             >
                 &lt;&lt;
@@ -78,6 +79,7 @@ export default {
                 class="pagination__button button button--ghost-main"
                 :class="{'u-visually-hidden': !hasPrev, 'pagination__button--disabled': isLoading}"
                 :to="getPageHref(currentPage - 1)"
+                :replace="true"
                 :event="!hasPrev ? '' : 'click'"
             >
                 &lt;
@@ -87,6 +89,7 @@ export default {
                 class="pagination__button button button--ghost-main"
                 :class="{'u-visually-hidden': !hasNext, 'pagination__button--disabled': isLoading}"
                 :to="getPageHref(currentPage + 1)"
+                :replace="true"
                 :event="!hasNext ? '' : 'click'"
             >
                 >
@@ -95,6 +98,7 @@ export default {
                 class="pagination__button button button--ghost-main"
                 :class="{'u-visually-hidden': !hasNext, 'pagination__button--disabled': isLoading}"
                 :to="getPageHref(paginationInfo.lastPage)"
+                :replace="true"
                 :event="!hasNext ? '' : 'click'"
             >
                 >>

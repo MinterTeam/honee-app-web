@@ -1,4 +1,5 @@
 <script>
+import {PORTFOLIO_PROFIT_PERIOD} from '~/api/portfolio.js';
 import PortfolioHead from '~/components/PortfolioHead.vue';
 
 /**
@@ -28,6 +29,17 @@ export default {
             default: PORTFOLIO_LIST_TYPE.TOP,
         },
     },
+    computed: {
+        profitPeriod() {
+            if (this.type === PORTFOLIO_LIST_TYPE.TOP) {
+                return PORTFOLIO_PROFIT_PERIOD.AWP;
+            }
+            if (this.type === PORTFOLIO_LIST_TYPE.ALL) {
+                return PORTFOLIO_PROFIT_PERIOD.DAILY7;
+            }
+            return undefined;
+        },
+    },
     methods: {
         getLinkUrl(portfolio) {
             if (this.type === PORTFOLIO_LIST_TYPE.COPIED) {
@@ -49,7 +61,11 @@ export default {
 
 <template>
     <div class="card card--action card__content--small">
-        <PortfolioHead :portfolio="portfolio" :title-link="getLinkUrl(portfolio)"/>
+        <PortfolioHead
+            :portfolio="portfolio"
+            :profit-period="profitPeriod"
+            :title-link="getLinkUrl(portfolio)"
+        />
         <p class="card__action-description u-text-break" v-if="portfolio.description">{{ portfolio.description }}</p>
 
         <div class="card__control-wrap">
