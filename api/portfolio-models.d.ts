@@ -178,15 +178,21 @@ export interface PortfolioList {
 export interface Profit {
   /**
    * @format float64
+   * @example 21.59
+   */
+  awr4: number;
+
+  /**
+   * @format float64
    * @example 40.25
    */
-  daily7?: number;
+  daily7: number;
 
   /**
    * @format float64
    * @example 45.5
    */
-  weekly?: number;
+  weekly: number;
 }
 
 export interface UpdateConsumerPortfolio {

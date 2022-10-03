@@ -1,7 +1,7 @@
 <script>
 import {getLeaderboard, PORTFOLIO_PROFIT_PERIOD} from '~/api/portfolio.js';
 import {getErrorText} from '~/assets/server-error.js';
-import {pretty, shortHashFilter} from '~/assets/utils.js';
+import {prettyUsd, shortHashFilter} from '~/assets/utils.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 
 export default {
@@ -53,17 +53,23 @@ export default {
         */
     },
     methods: {
-        pretty,
         shortHashFilter,
         getErrorText,
         getProfitColorClass(profit) {
             if (profit > 0) {
                 return 'u-text-green';
             }
-            if (profit >= -100 && profit < 0) {
+            if (profit < 0) {
                 return 'u-text-red';
             }
             return '';
+        },
+        getProfitText(profit) {
+            if (!profit && profit !== 0) {
+                return '—';
+            } else {
+                return prettyUsd(profit) + '%';
+            }
         },
     },
 };
@@ -100,7 +106,7 @@ export default {
                         <nuxt-link class="link--default" :to="`/portfolio/${portfolio.id}`">#{{ portfolio.id }}</nuxt-link>
                     </td>
                     <td class="u-text-right" :class="getProfitColorClass(portfolio.profit)">
-                        {{ pretty(portfolio.profit) }}%
+                        {{ getProfitText(portfolio.profit) }}
                     </td>
                 </tr>
                 </tbody>

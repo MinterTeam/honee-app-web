@@ -31,14 +31,10 @@ export default {
             return !this.isConsumer;
         },
         profit() {
-            const profit = this.isConsumer ? this.portfolio.profit : this.portfolio.profit?.[this.profitPeriod];
-            if (profit === -101) {
-                return '—';
-            }
             return this.isConsumer ? this.portfolio.profit : this.portfolio.profit?.[this.profitPeriod];
         },
         profitText() {
-            if (this.profit === -101) {
+            if (!this.profit && this.profit !== 0) {
                 return '—';
             } else {
                 return prettyUsd(this.profit) + '%';
@@ -48,7 +44,7 @@ export default {
             if (this.profit > 0) {
                 return 'u-text-green';
             }
-            if (this.profit >= -100 && this.profit < 0) {
+            if (this.profit < 0) {
                 return 'u-text-red';
             }
             return '';
