@@ -15,7 +15,6 @@ export function toSnake(source) {
  */
 function camelToSnake(value) {
     return value[0].toLowerCase() + value.slice(1).replace(/([A-Z]+)/g, (match, found) => {
-        console.log({match, found});
         return '_' + found.toLowerCase();
     });
 }

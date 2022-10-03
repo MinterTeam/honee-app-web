@@ -12,7 +12,7 @@
 export interface CoinItem {
   /**
    * @format float64
-   * @example 18.6
+   * @example 118.6
    */
   percentChange24H?: number;
 
@@ -21,6 +21,12 @@ export interface CoinItem {
    * @example 9086
    */
   cmcId?: number;
+
+  /**
+   * @format text
+   * @example Minter HUB
+   */
+  fullName: string;
 
   /**
    * @format int64
@@ -36,7 +42,7 @@ export interface CoinItem {
 
   /**
    * @format float64
-   * @example 24.04
+   * @example 240.0477
    */
   price?: number;
 }
@@ -80,6 +86,11 @@ export interface ConsumerPortfolio {
 }
 
 export interface ConsumerPortfolioList {
+  /**
+   * @format float64
+   * @example 2038.2
+   */
+  balance: number;
   list: ConsumerPortfolio[];
 }
 

@@ -3,6 +3,7 @@ import cardList from '~/content/card-list.js';
 import Card from '~/components/Card.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
 import InvestmentList from '~/components/InvestmentList.vue';
+import PortfolioLeaderboard from '~/components/PortfolioLeaderboard.vue';
 import PortfolioList from '~/components/PortfolioList.vue';
 
 const BASE_CARD = {
@@ -19,6 +20,7 @@ export default {
         Card,
         AddressAssets,
         InvestmentList,
+        PortfolioLeaderboard,
         PortfolioList,
     },
     fetch() {
@@ -64,6 +66,8 @@ export default {
 <template>
     <div class="u-container--large">
         <AddressAssets/>
+
+        <PortfolioLeaderboard class="u-mt-25" limit="5"/>
 
         <PortfolioList class="u-mt-25" limit="3"/>
         <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio')">

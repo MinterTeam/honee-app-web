@@ -162,7 +162,7 @@ export function decreasePrecisionFixed(value) {
  * @param {number} [minLengthToShort]
  * @return {string}
  */
-export function shortHashFilter(value, endLength = 6, minLengthToShort) {
+export function shortHashFilter(value, endLength = 4, minLengthToShort) {
     const startLength = endLength + 'Mx'.length;
     minLengthToShort = minLengthToShort || startLength + endLength;
     value = value.toString();
