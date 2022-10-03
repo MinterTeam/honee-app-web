@@ -67,7 +67,7 @@ export default {
     <div class="u-container--large">
         <AddressAssets/>
 
-        <PortfolioLeaderboard class="u-mt-25" limit="5"/>
+        <PortfolioLeaderboard class="u-mt-25 u-hidden" limit="5"/>
 
         <PortfolioList class="u-mt-25" limit="3"/>
         <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio')">
