@@ -99,7 +99,7 @@ export default {
                     <td class="u-text-center" width="1">
                         <div class="portfolio__leaderboard-icon" :class="`portfolio__leaderboard-icon--${index + 1}`">{{ index + 1 }}</div>
                     </td>
-                    <td width="25%">
+                    <td width="30%">
                         {{ shortHashFilter(portfolio.isolatedAddress) }}
                     </td>
                     <td>
@@ -111,35 +111,34 @@ export default {
                 </tr>
                 </tbody>
             </table>
-<!--            <div class="u-hidden-medium-up">-->
-<!--                <div class="wallet__stake-item" v-for="lockItem in lockList" :key="`${lockItem.dueBlock}-${lockItem.option}-${lockItem.program.id}`">-->
-<!--                    <div class="wallet__stake-row">-->
-<!--                        <div class="wallet__coin">-->
-<!--                            <img class="wallet__coin-icon" :src="getCoinIconUrl(lockItem.program.lockCoin.symbol)" width="24" height="24" alt="" role="presentation">-->
-<!--                            <span class="wallet__coin-name">{{ lockItem.program.lockCoin.symbol }}</span>-->
-<!--                        </div>-->
-<!--                        <div class="wallet__coin-balance">-->
-<!--                            {{ pretty(lockItem.amount) }}-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                    <div class="wallet__stake-row">-->
-<!--                        <div>-->
-<!--                            <div class="u-h&#45;&#45;uppercase wallet__stake-row-title">-->
-<!--                                {{ $td('Unlocks on', 'index.assets-stakes-table-unlock-on') }}-->
-<!--                            </div>-->
-<!--                            <div class="u-text-medium u-fw-600">-->
-<!--                                ≈ {{ getDate(getUnlockTime(lockItem)) }}-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                        <div class="u-text-right">-->
-<!--                            <div class="u-h&#45;&#45;uppercase wallet__stake-row-title">-->
-<!--                                {{ $td('APR', 'common.apr') }}-->
-<!--                            </div>-->
-<!--                            <div class="u-text-medium u-fw-600">{{ prettyRound(getApr(lockItem)) }}%</div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
+            <div class="u-hidden-medium-up u-fw-600">
+                <div class="wallet__stake-item" v-for="(portfolio, index) in portfolioList" :key="portfolio.isolatedAddress">
+                    <div class="wallet__stake-row">
+                        <div class="portfolio__leaderboard-address">
+                            <div class="portfolio__leaderboard-icon" :class="`portfolio__leaderboard-icon--${index + 1}`">{{ index + 1 }}</div>
+                            <div class="portfolio__leaderboard-address-value">
+                                {{ shortHashFilter(portfolio.isolatedAddress) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wallet__stake-row">
+                        <div>
+                            <div class="u-h--uppercase wallet__stake-row-title">
+                                {{ $td('Portfolio ID', 'portfolio.leaderboard-column-portfolio') }}
+                            </div>
+                            <nuxt-link class="link--default" :to="`/portfolio/${portfolio.id}`">#{{ portfolio.id }}</nuxt-link>
+                        </div>
+                        <div class="u-text-right">
+                            <div class="u-h--uppercase wallet__stake-row-title">
+                                {{ $td('Profit', 'portfolio.leaderboard-column-profit') }}
+                            </div>
+                            <div :class="getProfitColorClass(portfolio.profit)">
+                                {{ getProfitText(portfolio.profit) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
