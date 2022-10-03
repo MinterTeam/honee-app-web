@@ -1,11 +1,11 @@
 <script>
 import getTitle from '~/assets/get-title.js';
 import Modal from '~/components/base/Modal.vue';
-import CardAction from '~/components/CardAction.vue';
+import TheAction from '~/components/Action.vue';
 
 export default {
     components: {
-        CardAction,
+        TheAction,
         Modal,
     },
     head() {
@@ -40,7 +40,7 @@ export default {
         modalContainerClass=""
         @modal-close="$router.push(getDashboardUrl())"
     >
-        <CardAction
+        <TheAction
             :base-url="getDashboardUrl()"
             @update:action="action = $event"
             @success-modal-close="$router.push(getDashboardUrl())"

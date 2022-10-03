@@ -2,7 +2,7 @@
 import {flatCardList} from '~/content/card-list.js';
 import {pretty} from '~/assets/utils.js';
 import {BASE_COIN} from '~/assets/variables.js';
-import {clearActionQuery} from '~/components/CardAction.vue';
+import {clearActionQuery} from '~/components/Action.vue';
 import Card from '~/components/Card.vue';
 
 const ACTION_LIST = [

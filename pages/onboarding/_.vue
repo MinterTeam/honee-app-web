@@ -1,11 +1,11 @@
 <script>
 import getTitle from '~/assets/get-title.js';
-import CardAction from '~/components/CardAction.vue';
+import TheAction from '~/components/Action.vue';
 
 export default {
     layout: 'onboarding',
     components: {
-        CardAction,
+        TheAction,
     },
     head() {
         if (!this.action) {
@@ -32,7 +32,7 @@ export default {
 
 <template>
     <div class="u-section u-container u-container--small">
-        <CardAction
+        <TheAction
             base-url="/onboarding"
             @update:action="action = $event"
             @success-modal-close="$router.push(getDashboardUrl())"

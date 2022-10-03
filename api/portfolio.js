@@ -1,6 +1,8 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
+import format from 'date-fns/esm/format';
 import {PORTFOLIO_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
+import {toSnake} from '~/assets/utils/snake-case.js';
 import NotFoundError from '~/assets/utils/error-404.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import addEcdsaAuthInterceptor from '~/assets/axios-ecdsa-auth.js';
@@ -59,24 +61,96 @@ export function getPortfolio(id) {
 }
 
 /**
- * @param {PaginationParams&{owner?: string}} [params]
+ * @param {PortfolioListParams&{owner?: string}} [params]
  * @return {Promise<PortfolioList>}
  */
 export function getPortfolioList(params) {
+    params.profitPeriod = params.profitPeriod || PORTFOLIO_PROFIT_PERIOD.AWP;
     return instance.get(`portfolio`, {
-            params: {
-                profit_period: 'daily7',
-                ...params,
-            },
+            params: toSnake(params),
         })
         .then((response) => response.data);
 }
+
+/**
+ * @typedef {PaginationParams} PortfolioListParams
+ * @property {PORTFOLIO_PROFIT_PERIOD} [profitPeriod]
+ */
 
 /**
  * @typedef {object} PaginationParams
  * @property {number} [page]
  * @property {number} [limit]
  */
+
+// leaderboard updates once 24h, so 1h cache is ok
+const leaderboardCache = new Cache({maxAge: 60 * 60 * 1000});
+/**
+ * @param {PortfolioListParams} [params]
+ * @return {Promise<ConsumerPortfolioList>}
+ */
+export function getLeaderboard({limit, profitPeriod} = {}) {
+    return instance.get(`consumer/portfolio/${getLeaderboardDateParams(profitPeriod)}`, {
+        cache: leaderboardCache,
+    })
+        .then((response) => {
+            if (limit) {
+                return {
+                    list: response.data.list.slice(0, limit),
+                };
+            }
+
+            return response.data;
+        });
+}
+function getLeaderboardDateParams(profitPeriod) {
+    if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.DAILY7) {
+        const today = getToday();
+        const weekAgo = shiftDate(today, -7);
+        return formatDate(weekAgo) + '/' + formatDate(today);
+    }
+    if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.AWP) {
+        const monday = getLastMonday();
+        const weekAgo = shiftDate(monday, -7);
+        return formatDate(weekAgo) + '/' + formatDate(monday);
+    }
+
+    /**
+     * @param {Date} date
+     * @return {string}
+     */
+    function formatDate(date) {
+        return format(date, 'yyyy-MM-dd');
+    }
+
+    /**
+     * @return {Date}
+     */
+    function getToday() {
+        let now = new Date();
+        let today = new Date(0);
+        today.setUTCFullYear(now.getUTCFullYear());
+        today.setUTCMonth(now.getUTCMonth());
+        today.setUTCDate(now.getUTCDate());
+        return today;
+    }
+
+    function getLastMonday() {
+        const today = getToday();
+        return shiftDate(today, today.getDay() * -1 + 1);
+    }
+
+    /**
+     * @param {Date} targetDate
+     * @param {number} dayCount
+     * @return {Date}
+     */
+    function shiftDate(targetDate, dayCount) {
+        let result = new Date(targetDate);
+        result.setDate(targetDate.getDate() + dayCount);
+        return result;
+    }
+}
 
 
 /**
@@ -151,3 +225,16 @@ export function getCmcCoinList() {
             return item;
         }));
 }
+
+
+/**
+ * @enum {string}
+ */
+export const PORTFOLIO_PROFIT_PERIOD = {
+    // average weekly profit: average of last 4 full weeks (monday-sunday) (negative week bans metric)
+    AWP: 'awr4',
+    // average of last full week (monday-sunday)
+    WEEKLY: 'weekly',
+    // average of last 7 days
+    DAILY7: 'daily7',
+};

@@ -45,7 +45,7 @@ function isObject(item) {
 }
 
 /**
- * Deep merge objects. Overwrite arrays
+ * Deep merge objects. Overwrite arrays. Mutates target
  * https://stackoverflow.com/a/34749873/4936667
  * @param {object} target
  * @param {...object} sources
@@ -66,4 +66,28 @@ export function deepMerge(target, ...sources) {
     }
 
     return deepMerge(target, ...sources);
+}
+
+/**
+ *
+ * @param {object} source
+ * @param {function(key: string, value: any): [string, any]} mapper
+ * @return {object}
+ */
+export function mapObject(source, mapper) {
+    if (!isObject(source)) {
+        return source;
+    }
+
+    const result = {};
+    for (const key in source) {
+        const [newKey, newValue] = mapper(key, source[key]);
+        if (isObject(newValue)) {
+            result[newKey] = mapObject(newValue, mapper);
+        } else {
+            result[newKey] = newValue;
+        }
+    }
+
+    return result;
 }
