@@ -232,7 +232,9 @@ export function getCmcCoinList() {
  */
 export const PORTFOLIO_PROFIT_PERIOD = {
     // average weekly profit: average of last 4 full weeks (monday-sunday) (negative week bans metric)
-    AWP: 'weekly',
+    AWP: 'awr4',
+    // average of last full week (monday-sunday)
+    WEEKLY: 'weekly',
     // average of last 7 days
     DAILY7: 'daily7',
 };
