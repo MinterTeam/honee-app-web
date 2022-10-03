@@ -166,6 +166,11 @@
 .card__content--small {padding: 16px;}
 .card__content--mini {padding-block: 10px;}
 
+
+.card__head-row {
+    display: flex; align-items: flex-start;
+    & > :nth-child(2) {margin-left: auto; text-align: right;}
+}
 .card__action-head {display: flex; align-items: flex-start;}
 .card__action-logo {
     border-radius: 50%; box-shadow: 0 8px 20px rgba(0,0,0,0.2); width: 40px; height: 40px;
@@ -461,6 +466,14 @@
 
 .topup__vertical-container {display: flex; flex-direction: column; align-items: stretch; flex-grow: 2;}
 .topup__vertical-center {margin: auto 0;}
+
+
+.portfolio__leaderboard-icon {.u-text-muted(); width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 50%; font-size: 14px; font-weight: 600;}
+.portfolio__leaderboard-icon--1 {color: #fff; background: linear-gradient(180deg, #A57C01 0%, #F2C028 100%);}
+.portfolio__leaderboard-icon--2 {color: #fff; background: linear-gradient(180deg, #929292 0%, #D9D9D9 100%);}
+.portfolio__leaderboard-icon--3 {color: #fff; background: linear-gradient(180deg, #D56C31 0%, #FF9558 100%);}
+.portfolio__leaderboard-address {display: flex; align-items: center;}
+.portfolio__leaderboard-address-value {margin-left: 16px;}
 
 
 

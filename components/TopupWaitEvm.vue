@@ -39,6 +39,7 @@ export default {
         },
     },
     emits: [
+        'update:processing',
         'topup',
     ],
     setup() {
@@ -94,7 +95,6 @@ export default {
     },
     data() {
         return {
-            isWaiting: true,
             evmWaitCanceler: () => {},
             serverError: '',
             isConfirmModalVisible: false,
@@ -140,6 +140,10 @@ export default {
         },
         isEvmToppedUp() {
             return this.txServiceState.steps[LOADING_STAGE.WAIT_ETH]?.amount;
+        },
+        isDepositStarted() {
+            // has any step except WAIT_ETH
+            return Object.keys(this.txServiceState.steps).some((key) => key !== LOADING_STAGE.WAIT_ETH);
         },
         depositProps() {
             return {
@@ -213,7 +217,10 @@ export default {
                 // wait computed to recalculate
                 .then(() => wait(100))
                 .then(() => this.waitEvmBalance())
-                .then(() => this.depositFromEthereum())
+                .then(() => {
+                    this.$emit('update:processing', true);
+                    return this.depositFromEthereum();
+                })
                 .then((outputAmount) => {
                     this.finishTopup(outputAmount, this.tokenSymbol);
                 })
@@ -230,6 +237,7 @@ export default {
             this.evmWaitCanceler();
             this.setStepList({});
             this.isConfirmModalVisible = false;
+            this.$emit('update:processing', true);
 
             this.depositFromEthereum()
                 .then((outputAmount) => {
@@ -241,8 +249,8 @@ export default {
                 });
         },
         finishTopup(amount, coinSymbol) {
-            this.isWaiting = false;
-            this.setStepList({});
+            // this.setStepList({});
+            this.$emit('update:processing', false);
             this.$emit('topup', {amount: stripZeros(amount), coinSymbol});
         },
     },
@@ -250,8 +258,8 @@ export default {
 </script>
 
 <template>
-    <div v-if="isWaiting">
-        <div class="form-row" v-if="depositAmountAfterGas > 0 && !isEvmToppedUp">
+    <div>
+        <div class="form-row" v-if="depositAmountAfterGas > 0 && !isEvmToppedUp && !isDepositStarted">
             <p>{{ $td(`You have ${pretty(balance)} ${tokenSymbol} on you ${hubChainData.shortName} address. Do you want to deposit it?`, 'topup.deposit-evm-balance-description', {amount: pretty(balance), coin: tokenSymbol, network: hubChainData.shortName}) }}</p>
             <button type="button" class="button button--main button--full u-mt-10" @click="isConfirmModalVisible = true">
                 {{ $td(`Deposit ${pretty(balance)} ${tokenSymbol}`, 'topup.deposit-evm-balance-button', {amount: pretty(balance), coin: tokenSymbol}) }}
@@ -261,7 +269,7 @@ export default {
         <div class="form-row" v-if="showWaitIndicator && currentLoadingStage === $options.LOADING_STAGE.WAIT_ETH">
             <div>{{ $td('Waiting top-up transaction', 'topup.waiting-topup') }}</div>
             <div class="u-text-center">
-                <BaseLoader :is-loading="isWaiting"/>
+                <BaseLoader :is-loading="true"/>
             </div>
         </div>
         <HubBuyTxListItem

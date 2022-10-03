@@ -120,16 +120,23 @@ function _getFarmList(ownerAddress) {
  * @return {Promise<FarmProgram>}
  */
 export function getFarmProgram(id) {
-    return _getFarmList()
-        .then((farmList) => farmList.find((item) => item.id === Number(id)));
-/*
     return instance.get(`rewarding/${id}`, {
             cache: farmCache,
         })
         .then((response) => {
-            return prepareFarmProgram(response.data.data);
+            return prepareFarmProgram(response.data.data[0] || response.data.data);
         });
-*/
+}
+
+/**
+ * @param {number|string} id
+ * @return {Promise<FarmProgramWithPoolData>}
+ */
+export async function getFarmProgramWithPoolData(id) {
+    const program = await getFarmProgram(id);
+    const pool = await getPoolByToken(program.tokenSymbol);
+
+    return addPoolFields(program, pool);
 }
 
 /**
@@ -191,17 +198,34 @@ export function fillFarmWithPoolData(farmPromise, {trySharePoolsRequest} = {}) {
 
 
 /**
- * @param {FarmItem} farmProgram
+ * @param {FarmItem|FarmProgram} farmProgram
  * @param {Pool} pool
- * @return {FarmItemWithPoolData}
+ * @return {FarmItemWithPoolData|FarmProgramWithPoolData}
  */
 function addPoolFields(farmProgram, pool) {
     if (pool) {
+        farmProgram.liquidity = pool.liquidity;
         farmProgram.liquidityBip = pool.liquidityBip;
         farmProgram.tradeVolumeBip1D = pool.tradeVolumeBip1D;
+        farmProgram.amount0 = getAmountFromPool(pool, farmProgram.coin0.symbol);
+        farmProgram.amount1 = getAmountFromPool(pool, farmProgram.coin1.symbol);
     }
 
     return farmProgram;
+}
+
+/**
+ * @param {Pool|FarmProgramWithPoolData|FarmItemWithPoolData} pool
+ * @param {string} symbol
+ * @return {Pool.amount0|Pool.amount1}
+ */
+export function getAmountFromPool(pool, symbol) {
+    if (pool.coin0.symbol === symbol) {
+        return pool.amount0;
+    }
+    if (pool.coin1.symbol === symbol) {
+        return pool.amount1;
+    }
 }
 
 /**
@@ -215,9 +239,20 @@ function addPoolFields(farmProgram, pool) {
  */
 
 /**
- * @typedef {FarmItem} FarmItemWithPoolData
- * @property {number|string} liquidityBip
- * @property {number|string} tradeVolumeBip1D
+ * @typedef {object} FarmExtraPoolData
+ * @property {Pool.liquidity} liquidity
+ * @property {Pool.liquidityBip} liquidityBip
+ * @property {Pool.tradeVolumeBip1D} tradeVolumeBip1D
+ * @property {Pool.amount0} amount0
+ * @property {Pool.amount1} amount1
+ */
+
+/**
+ * @typedef {FarmProgram & FarmExtraPoolData} FarmProgramWithPoolData
+ */
+
+/**
+ * @typedef {FarmItem & FarmExtraPoolData} FarmItemWithPoolData
  */
 
 

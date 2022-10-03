@@ -9,10 +9,26 @@ export default {
             type: Array,
             required: true,
         },
+        resetPages: {
+            type: Boolean,
+            default: false,
+        },
     },
     emits: [
         'input',
     ],
+    methods: {
+        handleClick(newValue) {
+            this.$emit('input', newValue);
+            if (this.resetPages && this.$route.query.page > 1) {
+                const {page, ...queryWithoutPage} = this.$route.query;
+                this.$router.replace({
+                    path: this.$route.path,
+                    query: queryWithoutPage,
+                });
+            }
+        },
+    },
 };
 </script>
 
@@ -23,7 +39,7 @@ export default {
             :key="tabItem.value"
             class="tabs__item u-h u-h3 u-semantic-button" type="button"
             :class="{'is-active': value === tabItem.value}"
-            @click="$emit('input', tabItem.value)"
+            @click="handleClick(tabItem.value)"
         >
             {{ tabItem.label || tabItem.value }}
         </button>

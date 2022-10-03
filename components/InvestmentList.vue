@@ -142,7 +142,7 @@ export default {
 <template>
     <div>
         <h2 class="u-h1 u-mb-15">
-            {{ $td('Investments', `index.investments-title`) }}
+            {{ $td('My investments', `index.investments-title`) }}
         </h2>
         <div v-if="$fetchState.pending" class="u-text-center">
             <BaseLoader class="" :is-loading="true"/>
@@ -166,7 +166,7 @@ export default {
                 </template>
                 <template v-if="!selectedFilter || selectedFilter === $options.FILTERS.STAKE">
                     <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="stakeCard in stakeCardList" :key="stakeCard.action">
-                        <Card :card="stakeCard" :button-label="stakeCard.buttonLabel"/>
+                        <Card :card="stakeCard"/>
                     </div>
                 </template>
             </div>
