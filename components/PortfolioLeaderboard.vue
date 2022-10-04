@@ -16,7 +16,7 @@ export default {
     },
     data() {
         return {
-            selectedType: PORTFOLIO_PROFIT_PERIOD.AWP,
+            selectedType: PORTFOLIO_PROFIT_PERIOD.WTD,
         };
     },
 };
@@ -33,8 +33,8 @@ export default {
                 class="u-mb-15"
                 v-model="selectedType"
                 :tabs="[
-                    {value: $options.PORTFOLIO_PROFIT_PERIOD.AWP, label: $td('Weekly', 'portfolio.tabs-label-weekly')},
-                    {value: $options.PORTFOLIO_PROFIT_PERIOD.DAILY7, label: $td('Live', 'portfolio.tabs-label-live')},
+                    {value: $options.PORTFOLIO_PROFIT_PERIOD.WTD, label: $td('Live', 'portfolio.tabs-label-live')},
+                    {value: $options.PORTFOLIO_PROFIT_PERIOD.WEEKLY, label: $td('Weekly', 'portfolio.tabs-label-weekly')},
                 ]"
             />
 
