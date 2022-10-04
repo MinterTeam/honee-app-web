@@ -11,7 +11,7 @@ export default {
     props: {
         profitPeriod: {
             type: String,
-            default: PORTFOLIO_PROFIT_PERIOD.AWP,
+            default: PORTFOLIO_PROFIT_PERIOD.WEEKLY,
         },
         limit: {
             type: [Number, String],

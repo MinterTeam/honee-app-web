@@ -109,7 +109,12 @@ function getLeaderboardDateParams(profitPeriod) {
         const weekAgo = shiftDate(today, -7);
         return formatDate(weekAgo) + '/' + formatDate(today);
     }
-    if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.AWP) {
+    if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.WTD) {
+        const today = getToday();
+        const monday = getLastMonday();
+        return formatDate(monday) + '/' + formatDate(today);
+    }
+    if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.WEEKLY) {
         const monday = getLastMonday();
         const weekAgo = shiftDate(monday, -7);
         return formatDate(weekAgo) + '/' + formatDate(monday);
@@ -232,9 +237,11 @@ export function getCmcCoinList() {
  */
 export const PORTFOLIO_PROFIT_PERIOD = {
     // average weekly profit: average of last 4 full weeks (monday-sunday) (negative week bans metric)
-    AWP: 'awr4',
+    AWP: 'awp',
     // average of last full week (monday-sunday)
     WEEKLY: 'weekly',
     // average of last 7 days
     DAILY7: 'daily7',
+    // from monday to today (aka week to date)
+    WTD: 'wtd',
 };
