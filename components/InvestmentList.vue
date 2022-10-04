@@ -49,33 +49,20 @@ export default {
         coinLockList() {
             const result = {};
             this.lockList.forEach((lockItem) => {
-                const coinSymbol = lockItem.program.lockCoin.symbol;
+                const PREMIUM_ID = 23;
+                const isPremium = lockItem.program.id === PREMIUM_ID;
+                const coinSymbol = isPremium ? PREMIUM_ID : lockItem.program.lockCoin.symbol;
                 if (!result[coinSymbol]) {
-                    result[coinSymbol] = fillCardWithCoin({
-                        amount: 0,
-                        coin: coinSymbol,
-                        // store previous item programId to compare it later
-                        programId: lockItem.program.id,
-                        // dummy action to fill correct actionType
-                        action: `/stake/${lockItem.program.id}`,
-                        caption: 'Stake & Earn',
-                        stats: {
-                            caption: 'Total staked',
-                            value: 0,
-                        },
-                        ru: {
-                            caption: 'Стейкинг',
-                            stats: {
-                                caption: 'Общий стейк',
-                            },
-                        },
-                        buttonLabel: this.$td('Stake more', 'index.stake-more'),
-                    });
+                    result[coinSymbol] = isPremium ? this.getEmptyPremiumCard(coinSymbol, lockItem) : this.getEmptyStakeCard(coinSymbol, lockItem);
                 }
                 result[coinSymbol].amount += Number(lockItem.amount);
-                // use latest program to ensure it is actual (it is fallback if nothing found in card-data)
-                result[coinSymbol].programId = Math.max(lockItem.program.id, result[coinSymbol].programId);
-                result[coinSymbol].action = `/stake/${result[coinSymbol].programId}`;
+                if (isPremium) {
+                    result[coinSymbol].title = 'LEVEL ' + getPremiumLevel(result[coinSymbol].amount);
+                } else {
+                    // use latest program to ensure it is actual (it is fallback if nothing found in card-data)
+                    result[coinSymbol].programId = Math.max(lockItem.program.id, result[coinSymbol].programId);
+                    result[coinSymbol].action = `/stake/${result[coinSymbol].programId}`;
+                }
             });
             return Object.values(result);
         },
@@ -84,24 +71,7 @@ export default {
             this.$store.state.stakeList.forEach((delegationItem) => {
                 const coinSymbol = delegationItem.coin.symbol;
                 if (!result[coinSymbol]) {
-                    result[coinSymbol] = fillCardWithCoin({
-                        amount: 0,
-                        coin: coinSymbol,
-                        // dummy action to fill correct actionType
-                        action: `/delegate/${coinSymbol}`,
-                        caption: 'Delegate',
-                        stats: {
-                            caption: this.$td('Total delegated', 'index.total-delegated'),
-                            value: 0,
-                        },
-                        ru: {
-                            caption: 'Делегирование',
-                            stats: {
-                                caption: 'Всего',
-                            },
-                        },
-                        buttonLabel: this.$td('Delegate more', 'index.delegate-more'),
-                    });
+                    result[coinSymbol] = this.getEmptyDelegationCard(coinSymbol);
                 }
                 result[coinSymbol].amount += Number(delegationItem.value);
             });
@@ -135,8 +105,76 @@ export default {
     },
     methods: {
         getErrorText,
+        getEmptyStakeCard(coinSymbol, lockItem) {
+            return fillCardWithCoin({
+                amount: 0,
+                coin: coinSymbol,
+                // store previous item programId to compare it later
+                programId: lockItem.program.id,
+                // dummy action to fill correct actionType
+                action: `/stake/${lockItem.program.id}`,
+                caption: 'Stake & Earn',
+                stats: {
+                    caption: 'Total staked',
+                    value: 0,
+                },
+                ru: {
+                    caption: 'Стейкинг',
+                    stats: {
+                        caption: 'Общий стейк',
+                    },
+                },
+                buttonLabel: this.$td('Stake more', 'index.stake-more'),
+            });
+        },
+        getEmptyPremiumCard(coinSymbol, lockItem) {
+            return {
+                ...this.getEmptyStakeCard(coinSymbol, lockItem),
+                caption: 'Premium',
+                title: 'LEVEL 0',
+                icon: '/img/icon-premium.svg',
+                action: `/premium`,
+                buttonLabel: this.$td('Update your level', 'premium.card-update-button'),
+            };
+        },
+        getEmptyDelegationCard(coinSymbol) {
+            return fillCardWithCoin({
+                amount: 0,
+                coin: coinSymbol,
+                // dummy action to fill correct actionType
+                action: `/delegate/${coinSymbol}`,
+                caption: 'Delegate',
+                stats: {
+                    caption: 'Total delegated',
+                    value: 0,
+                },
+                ru: {
+                    caption: 'Делегирование',
+                    stats: {
+                        caption: 'Всего',
+                    },
+                },
+                buttonLabel: this.$td('Delegate more', 'index.delegate-more'),
+            });
+        },
     },
 };
+
+function getPremiumLevel(amount) {
+    if (amount >= 1000000) {
+        return 4;
+    }
+    if (amount >= 100000) {
+        return 3;
+    }
+    if (amount >= 10000) {
+        return 2;
+    }
+    if (amount >= 1000) {
+        return 1;
+    }
+    return 0;
+}
 </script>
 
 <template>
