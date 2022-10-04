@@ -112,7 +112,13 @@ function getLeaderboardDateParams(profitPeriod) {
     if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.WTD) {
         const today = getToday();
         const monday = getLastMonday();
-        return formatDate(monday) + '/' + formatDate(today);
+        if (monday === today) {
+            // no data for today yet, so show last week
+            const weekAgo = shiftDate(today, -7);
+            return formatDate(weekAgo) + '/' + formatDate(today);
+        } else {
+            return formatDate(monday) + '/' + formatDate(today);
+        }
     }
     if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.WEEKLY) {
         const monday = getLastMonday();
