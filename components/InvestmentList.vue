@@ -92,6 +92,15 @@ export default {
                     return item;
                 });
         },
+        filteredListLength() {
+            if (this.selectedFilter === FILTERS.PORTFOLIO) {
+                return this.portfolioList.length;
+            }
+            if (this.selectedFilter === FILTERS.STAKE) {
+                return this.stakeCardList.length;
+            }
+            return this.portfolioList.length + this.stakeCardList.length;
+        },
         filterTabs() {
             return Object.values(FILTERS).map((filterValue) => {
                 return {
@@ -196,7 +205,7 @@ function getPremiumLevel(amount) {
                 v-model="selectedFilter"
                 :tabs="filterTabs"
             />
-            <div class="u-grid u-grid--vertical-margin">
+            <div class="u-grid u-grid--vertical-margin" v-if="filteredListLength > 0">
                 <template v-if="!selectedFilter || selectedFilter === $options.FILTERS.PORTFOLIO">
                     <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="portfolio in portfolioList" :key="portfolio.id">
                         <PortfolioListItem :portfolio="portfolio" :type="$options.PORTFOLIO_LIST_TYPE.COPIED"/>
@@ -208,6 +217,7 @@ function getPremiumLevel(amount) {
                     </div>
                 </template>
             </div>
+            <div v-else>Empty list</div>
         </template>
     </div>
 </template>

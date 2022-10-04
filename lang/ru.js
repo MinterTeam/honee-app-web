@@ -271,8 +271,8 @@ export default {
         'list-my-title': 'Мои портфели',
         'tabs-label-top': 'Топ',
         'tabs-label-all': 'Все',
-        // 'tabs-label-weekly': 'Неделя',
-        // 'tabs-label-live': 'Live',
+        'tabs-label-weekly': 'Последняя неделя',
+        'tabs-label-live': 'Лайв',
 
         'view-all': 'Смотреть все портфели',
         'create-new-link': 'Создать свой портфель',

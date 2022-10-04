@@ -67,8 +67,6 @@ export default {
     <div class="u-container--large">
         <AddressAssets/>
 
-        <PortfolioLeaderboard class="u-mt-25 u-hidden" limit="5"/>
-
         <PortfolioList class="u-mt-25" limit="3"/>
         <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio')">
             {{ $td('View all portfolios', 'portfolio.view-all') }}
@@ -141,6 +139,8 @@ export default {
         <nuxt-link v-if="portfolioListManaged.length === 0" class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">
             + {{ $td('Create portfolio', 'portfolio.create-new-link') }}
         </nuxt-link>
+
+        <PortfolioLeaderboard class="u-mt-25" limit="5"/>
 
         <nuxt-child/>
     </div>

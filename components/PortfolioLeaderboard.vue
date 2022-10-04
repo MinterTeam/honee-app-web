@@ -34,7 +34,7 @@ export default {
                 v-model="selectedType"
                 :tabs="[
                     {value: $options.PORTFOLIO_PROFIT_PERIOD.WTD, label: $td('Live', 'portfolio.tabs-label-live')},
-                    {value: $options.PORTFOLIO_PROFIT_PERIOD.WEEKLY, label: $td('Weekly', 'portfolio.tabs-label-weekly')},
+                    {value: $options.PORTFOLIO_PROFIT_PERIOD.WEEKLY, label: $td('Last week', 'portfolio.tabs-label-weekly')},
                 ]"
             />
 
