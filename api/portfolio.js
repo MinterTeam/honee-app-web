@@ -65,7 +65,7 @@ export function getPortfolio(id) {
  * @return {Promise<PortfolioList>}
  */
 export function getPortfolioList(params) {
-    params.profitPeriod = params.profitPeriod || PORTFOLIO_PROFIT_PERIOD.AWP;
+    // params.profitPeriod = params.profitPeriod || PORTFOLIO_PROFIT_PERIOD.AWP;
     return instance.get(`portfolio`, {
             params: toSnake(params),
         })
