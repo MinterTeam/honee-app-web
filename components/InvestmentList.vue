@@ -3,6 +3,7 @@ import {getAddressLockList} from '~/api/staking.js';
 import {fillCardWithCoin, flatCardList} from '~/content/card-list.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {pretty} from '~/assets/utils.js';
+import {deepMerge} from '~/assets/utils/collection.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import BaseTabs from '~/components/base/BaseTabs.vue';
 import Card from '~/components/Card.vue';
@@ -80,6 +81,7 @@ export default {
         stakeCardList() {
             return [].concat(this.coinLockList, this.coinDelegationList)
                 .map((item) => {
+                    item = JSON.parse(JSON.stringify(item));
                     item.stats.value = pretty(item.amount);
                     // get latest actual staking program from card-data
                     const cardData = flatCardList.find((data) => data.coin === item.coin && data.actionType === item.actionType);
@@ -87,7 +89,7 @@ export default {
                         // overwrite action to ensure latest actual
                         item.action = cardData.action;
                         item.description = cardData.description;
-                        item.ru = cardData.ru;
+                        item.ru = deepMerge(item.ru, cardData.ru);
                     }
                     return item;
                 });
@@ -155,6 +157,24 @@ export default {
             };
         },
         getEmptyDelegationCard(coinSymbol) {
+            console.log(fillCardWithCoin({
+                amount: 0,
+                coin: coinSymbol,
+                // dummy action to fill correct actionType
+                action: `/delegate/${coinSymbol}`,
+                caption: 'Delegate',
+                stats: {
+                    caption: 'Total delegated',
+                    value: 0,
+                },
+                ru: {
+                    caption: 'Делегирование',
+                    stats: {
+                        caption: 'Всего',
+                    },
+                },
+                buttonLabel: this.$td('Delegate more', 'index.delegate-more'),
+            }));
             return fillCardWithCoin({
                 amount: 0,
                 coin: coinSymbol,
