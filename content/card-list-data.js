@@ -12,8 +12,9 @@ export default {
                 coin: ['BEE', 'MUSD'],
                 description: 'Put your BEE and MUSD into a liquidity pool. Then stake received LP-656 tokens for getting extra daily rewards.',
                 stats: {
-                    caption: 'APY',
-                    value: '≈3%',
+                    apy: {
+                        percent: '≈3',
+                    },
                 },
                 tags: [],
                 action: '/add-liquidity/BEE/MUSD',

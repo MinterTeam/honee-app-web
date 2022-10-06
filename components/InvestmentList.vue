@@ -141,9 +141,17 @@ export default {
                 ...this.getEmptyStakeCard(coinSymbol, lockItem),
                 caption: 'Premium',
                 title: 'LEVEL 0',
+                description: 'Premium is extended account that allows you to get extra rewards without lifting a finger and enjoy additional features.',
                 icon: '/img/icon-premium.svg',
                 action: `/premium`,
-                buttonLabel: this.$td('Update your level', 'premium.card-update-button'),
+                ru: {
+                    description: 'Premium – это расширенный аккаунт, который позволит получать дополнительный доход, а также добавит новые функции.',
+                    caption: 'Premium',
+                    stats: {
+                        caption: 'Общий стейк',
+                    },
+                },
+                buttonLabel: this.$td('Upgrade your level', 'premium.card-update-button'),
             };
         },
         getEmptyDelegationCard(coinSymbol) {
@@ -217,7 +225,7 @@ function getPremiumLevel(amount) {
                     </div>
                 </template>
             </div>
-            <div v-else>Empty list</div>
+            <div v-else>{{ $td('Empty list', 'index.portfolio-list-empty') }}</div>
         </template>
     </div>
 </template>

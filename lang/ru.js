@@ -106,6 +106,8 @@ export default {
         'assets-stakes-table-unlock-on': 'Разблокировка',
         'assets-stakes-table-amount': 'Количество',
         'assets-transactions': 'Транзакции',
+        'nostakes': 'Еще нет стейков',
+        'error-stake-list': 'Не удается загрузить список стейков',
 
         'card-button-deposit': 'Купить за BNB или ETH',
         'add-liquidity': 'Добавить',
@@ -113,6 +115,7 @@ export default {
         'participate': 'Участвовать',
         'withdraw-unbond': 'Отозвать',
         'stake': 'Застейковать',
+        'portfolio-list-empty': 'Портфелей еще нет',
 
         'investments-title': 'Мои инвестиции',
         'investments-tabs-label-0': 'Всё',
@@ -276,6 +279,12 @@ export default {
 
         'view-all': 'Смотреть все портфели',
         'create-new-link': 'Создать свой портфель',
+
+        'leaderboard-title': 'Прибыль пользователей',
+        'leaderboard-column-address': 'Адрес',
+        'leaderboard-column-portfolio': 'Портфель',
+        'leaderboard-column-profit': 'Профит',
+        'leaderboard-view-all': 'Посмотреть все',
     },
     action: {
         'title-buy': 'Купите BIP, HUB и BEE',

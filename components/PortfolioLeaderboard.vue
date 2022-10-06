@@ -25,7 +25,7 @@ export default {
 <template>
     <div>
         <h2 class="u-h1 u-mb-15">
-            {{ $td('Profit leaderboard', `portfolio.leaderboard-title`) }}
+            {{ $td('Users’ profit', `portfolio.leaderboard-title`) }}
         </h2>
 
         <div class="card card__content">
