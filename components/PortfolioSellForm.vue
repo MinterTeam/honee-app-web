@@ -4,9 +4,10 @@ import required from 'vuelidate/src/validators/required';
 import minLength from 'vuelidate/src/validators/minLength';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {convertFromPip} from 'minterjs-util/src/converter.js';
-import Big from '~/assets/big.js';
+import Big, {BIG_ROUND_DOWN} from '~/assets/big.js';
+import {PREMIUM_STAKE_PROGRAM_ID, PREMIUM_STAKE_LOCK_DURATION, SUCCESS_FEE_TEAM_ADDRESS, SUCCESS_FEE_FUND_ADDRESS} from '~/assets/variables.js';
 import {pretty} from '~/assets/utils.js';
-import {getBalance} from '~/api/explorer.js';
+import {getBalance, getBlock} from '~/api/explorer.js';
 import {postConsumerPortfolio} from '~/api/portfolio.js';
 import usePortfolioWallet from '~/composables/use-portfolio-wallet.js';
 import SwapEstimation from '~/components/base/SwapEstimation.vue';
@@ -61,6 +62,9 @@ export default {
             estimationTxDataList: [],
             v$estimationList: [],
             estimationFetchStateList: [],
+            v$serviceFeeSwapEstimation: {},
+            serviceFeeSwapEstimation: 0,
+            serviceFeeSwapTxData: {},
         };
     },
     validations() {
@@ -171,8 +175,36 @@ export default {
         priceImpactUnavailable() {
             return this.estimationSum > 0 && !this.$store.getters['portfolio/getCoinPrice'](this.form.coin);
         },
+        estimationPremiumFee() {
+            return getPremiumFee(this.estimationSum);
+        },
+        estimationSuccessFee() {
+            return getSuccessFee(this.estimationSum, this.portfolio.profit);
+        },
+        estimationServiceFee() {
+            return new Big(this.estimationPremiumFee).plus(this.estimationSuccessFee).toString();
+        },
+        estimationAfterFee() {
+            return this.estimationSum - this.estimationServiceFee;
+        },
+        isNeedSwapServiceFee() {
+            return this.form.coin && this.form.coin !== 'BEE';
+        },
         sequenceParams() {
-            const swapReturnList = [];
+            const coinToReturn = this.form.coin;
+            const privateKey = this.portfolioWallet.privateKey;
+
+            // const swapReturnList = [];
+            let swapTotalReturn = 0;
+            let swapServiceFeeReturn = 0;
+            // fee denominated in coin
+            let premiumFeeInCoin = 0;
+            let successFeeInCoin = 0;
+            // fee in BEE to lock
+            let premiumFeeAmount = 0;
+            // total gas used for premium fee txs
+            let premiumFeeTotalGas = 0;
+
             const swapSequence = this.coinList.map((coinItem, index) => {
                 const coinSymbol = coinItem.symbol;
                 const needSwap = this.checkNeedSwapEqual(coinSymbol);
@@ -180,7 +212,8 @@ export default {
                 const skip = !needSwap || isDisabled;
 
                 if (!needSwap) {
-                    swapReturnList.push(coinItem.amount);
+                    // swapReturnList.push(coinItem.amount);
+                    swapTotalReturn = coinItem.amount;
                 }
 
                 return {
@@ -198,12 +231,13 @@ export default {
                             coins: [item.symbol, 1, 2, 3, 4],
                         },
                         gasCoin: item.symbol,
-                    } : undefined;
+                    } : undefined,
                     */
-                    privateKey: this.portfolioWallet.privateKey,
+                    privateKey,
                     // pass skip to not send tx in sequence
                     skip,
-                    prepareGasCoinPosition: 'start',
+                    // prepareGasCoin not matter for sellAll tx
+                    prepareGasCoinPosition: 'skip',
                     prepare: (swapTx) => {
                         return this.getEstimationRef(index)?.getEstimation(true, true)
                             .then(() => {
@@ -214,44 +248,148 @@ export default {
                             });
                     },
                     finalize: (tx) => {
-                        swapReturnList.push(convertFromPip(tx.tags['tx.return']));
+                        const swapReturn = convertFromPip(tx.tags['tx.return']);
+                        // swapReturnList.push(swapReturn);
+                        swapTotalReturn = new Big(swapTotalReturn).plus(swapReturn).toString();
                         return tx;
                     },
                 };
             });
 
-            const send = {
-                prepareGasCoinPosition: 'start',
-                prepare: (swapTx, prevPrepareGasCoin) => {
-                    // @TODO existing dust in balance not included here
-                    const swapTotalReturn = swapReturnList.reduce((prev, current) => new Big(prev).plus(current)).toString();
-                    const value = new Big(swapTotalReturn).minus(prevPrepareGasCoin.extra.fee.value).toString();
+
+            // SWAP SERVICE FEE TX
+            const swapServiceFee = {
+                skip: !this.isNeedSwapServiceFee,
+                // pass null to txParams to not perform fee calculation
+                txParams: this.isNeedSwapServiceFee ? {
+                    type: this.$refs.estimationServiceFee?.getTxType(),
+                    data: this.serviceFeeSwapTxData,
+                    gasCoin: coinToReturn,
+                } : null,
+                feeTxParams: this.isNeedSwapServiceFee ? {
+                    type: TX_TYPE.SELL_SWAP_POOL,
+                    data: {
+                        coins: [1, 2, 3, 4, 5],
+                    },
+                    gasCoin: coinToReturn,
+                } : undefined,
+                privateKey,
+                // prepareGasCoin position not matter because not selling all
+                prepareGasCoinPosition: 'skip',
+                prepare: (swapTx) => {
+                    premiumFeeInCoin = getPremiumFee(swapTotalReturn);
+                    successFeeInCoin = getSuccessFee(swapTotalReturn, this.portfolio.profit);
+                    const valueToSell = new Big(premiumFeeInCoin).plus(successFeeInCoin).toString();
+                    return this.$refs.estimationServiceFee?.getEstimation(true, true, {
+                        valueToSell,
+                    })
+                        .then(() => {
+                            return {
+                                type: this.$refs.estimationServiceFee?.getTxType(),
+                                data: {
+                                    ...this.serviceFeeSwapTxData,
+                                    valueToSell,
+                                },
+                            };
+                        });
+                },
+                finalize: (tx) => {
+                    swapServiceFeeReturn = convertFromPip(tx.tags['tx.return']);
+                    const gasUsed = convertFromPip(tx.tags['tx.commission_amount']);
+                    premiumFeeTotalGas = new Big(premiumFeeTotalGas).plus(gasUsed).toString();
+                    return tx;
+                },
+            };
+
+            // LOCK TX
+            const lock = {
+                txParams: {
+                    type: TX_TYPE.LOCK,
+                    data: {
+                        coin: 'BEE',
+                        // value and dueBlock from 'prepare'
+                        value: 0,
+                        dueBlock: 1,
+                    },
+                    gasCoin: coinToReturn,
+                    payload: JSON.stringify({lock_id: PREMIUM_STAKE_PROGRAM_ID}),
+                },
+                privateKey,
+                prepareGasCoinPosition: 'skip',
+                prepare: async () => {
+                    premiumFeeAmount = this.isNeedSwapServiceFee ? restorePremiumFee(swapServiceFeeReturn, this.portfolio.profit) : premiumFeeInCoin;
+                    const block = await getBlock('latest');
 
                     return {
                         data: {
-                            value,
+                            value: premiumFeeAmount,
+                            dueBlock: block.height + PREMIUM_STAKE_LOCK_DURATION,
+                        },
+                    };
+                },
+                finalize: (tx) => {
+                    const gasUsed = convertFromPip(tx.tags['tx.commission_amount']);
+                    premiumFeeTotalGas = new Big(premiumFeeTotalGas).plus(gasUsed).toString();
+                    return tx;
+                },
+            };
+
+
+            const send = {
+                prepareGasCoinPosition: 'start',
+                prepare: (swapTx, prevPrepareGasCoin) => {
+                    // success fee denominated in coinToReturn
+                    const successFeeAmount = this.isNeedSwapServiceFee ? restoreSuccessFee(swapServiceFeeReturn, this.portfolio.profit) : successFeeInCoin;
+                    const successFeeManagerAmount = percent(successFeeAmount, 25);
+                    const successFeeTeamAmount = percent(successFeeAmount, 25);
+                    const successFeeFundAmount = percent(successFeeAmount, 50);
+                    // @TODO existing dust in balance not included here
+                    const value = new Big(swapTotalReturn)
+                        .minus(premiumFeeInCoin)
+                        .minus(successFeeInCoin)
+                        .minus(premiumFeeTotalGas)
+                        .minus(prevPrepareGasCoin.extra.fee.value)
+                        .toString();
+
+                    console.log({value, swapTotalReturn, premiumFeeAmount, successFeeInCoin, premiumFeeTotalGas, prepareGasValue: prevPrepareGasCoin.extra.fee.value});
+
+                    return {
+                        data: {
+                            list: [
+                                {
+                                    to: this.$store.getters.address,
+                                    value,
+                                    coin: coinToReturn,
+                                },
+                                ...this.getSuccessFeeDistribution(successFeeManagerAmount, successFeeTeamAmount, successFeeFundAmount),
+                            ],
                         },
                     };
                 },
                 txParams: {
-                    type: TX_TYPE.SEND,
+                    type: TX_TYPE.MULTISEND,
                     data: {
-                        to: this.$store.getters.address,
-                        // value from 'prepare'
-                        value: 0,
-                        coin: this.form.coin,
+                        list: [
+                            {
+                                to: this.$store.getters.address,
+                                // value from 'prepare'
+                                value: 0,
+                                coin: coinToReturn,
+                            },
+                            ...this.getSuccessFeeDistribution(0, 0, 0),
+                        ],
                     },
-                    gasCoin: this.form.coin,
+                    gasCoin: coinToReturn,
                     payload: JSON.stringify({
                         app: 'portfolio',
                         type: 'sell',
                         id: this.portfolio.id,
                     }),
                 },
-                privateKey: this.portfolioWallet.privateKey,
+                privateKey,
             };
 
-            return swapSequence.concat(send);
+            return swapSequence.concat(swapServiceFee, lock, send);
         },
     },
     watch: {
@@ -265,6 +403,28 @@ export default {
         // if coins are equal, then no need swap
         checkNeedSwapEqual(coinSymbol) {
             return this.form.coin !== coinSymbol;
+        },
+        getSuccessFeeDistribution(managerFee, teamFee, fundFee) {
+            if (!this.portfolio.profit ||  this.portfolio.profit <= 0) {
+                return [];
+            }
+            return [
+                {
+                    to: this.portfolio.owner,
+                    value: managerFee,
+                    coin: 'BEE',
+                },
+                {
+                    to: SUCCESS_FEE_TEAM_ADDRESS,
+                    value: teamFee,
+                    coin: 'BEE',
+                },
+                {
+                    to: SUCCESS_FEE_FUND_ADDRESS,
+                    value: fundFee,
+                    coin: 'BEE',
+                },
+            ];
         },
         clearForm() {
             this.form.value = '';
@@ -292,6 +452,82 @@ export default {
     },
 };
 
+const PREMIUM_FEE_PERCENT = 1;
+/**
+ * @param {number|string} amount
+ * @return {number|string}
+ */
+function getPremiumFee(amount) {
+    if (!amount) {
+        return 0;
+    }
+    return percent(amount, PREMIUM_FEE_PERCENT);
+}
+/**
+ * @param {number|string} amount
+ * @param {number|string} profitPercent
+ * @return {number|string}
+ */
+function getSuccessFee(amount, profitPercent) {
+    if (profitPercent <= 0 || !amount) {
+        return 0;
+    }
+    const profitValue = percent(amount, profitPercent);
+    const successFeePercent = getProfitFeePercent(profitPercent);
+    return percent(profitValue, successFeePercent);
+}
+/**
+ * @param {number|string} profitPercent
+ * @return {number}
+ */
+function getProfitFeePercent(profitPercent) {
+    if (!profitPercent || profitPercent <= 0) {
+        return 0;
+    }
+    if (profitPercent < 10) {
+        return 10;
+    }
+    if (profitPercent < 20) {
+        return 20;
+    }
+    if (profitPercent < 40) {
+        return 30;
+    }
+    return 40;
+}
+
+function restorePremiumFee(serviceFee, profitPercent) {
+    if (profitPercent <= 0) {
+        return serviceFee;
+    }
+    // calculated basing on full amount, not just on profitValue
+    // (successFee = amount * profitPercent * profitFeePercent)
+    const successFeePercent = percent(profitPercent, getProfitFeePercent(profitPercent));
+    // (PREMIUM_FEE_PERCENT + successFeePercent) / PREMIUM_FEE_PERCENT = serviceFee / premiumFee;
+    // premiumFee = serviceFee * PREMIUM_FEE_PERCENT / (PREMIUM_FEE_PERCENT + successFeePercent);
+    return new Big(serviceFee).times(PREMIUM_FEE_PERCENT).div(new Big(PREMIUM_FEE_PERCENT).plus(successFeePercent)).toString(undefined, BIG_ROUND_DOWN);
+}
+function restoreSuccessFee(serviceFee, profitPercent) {
+    if (profitPercent <= 0) {
+        return 0;
+    }
+    // calculated basing on full amount, not just on profitValue
+    // (successFee = amount * profitPercent * profitFeePercent)
+    const successFeePercent = percent(profitPercent, getProfitFeePercent(profitPercent));
+    // (PREMIUM_FEE_PERCENT + successFeePercent) / successFeePercent = serviceFee / successFee;
+    // successFee = serviceFee * successFeePercent / (PREMIUM_FEE_PERCENT + successFeePercent);
+    return new Big(serviceFee).times(successFeePercent).div(new Big(PREMIUM_FEE_PERCENT).plus(successFeePercent)).toString(undefined, BIG_ROUND_DOWN);
+}
+
+/**
+ * calculate percent
+ * @param {number|string} amount
+ * @param {number|string} percent
+ * @return {number|string}
+ */
+function percent(amount, percent) {
+    return new Big(amount).times(percent).div(100).toString(undefined, BIG_ROUND_DOWN);
+}
 </script>
 
 
@@ -339,8 +575,11 @@ export default {
                         />
                     </template>
 
+                    <h3 class="information__title">{{ $td('Service fee', 'portfolio.estimation-service-fee') }}</h3>
+                    <BaseAmountEstimation :coin="form.coin" :amount="estimationServiceFee" format="approx" :is-loading="isEstimationFetchLoading"/>
+
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
-                    <BaseAmountEstimation :coin="form.coin" :amount="estimationSum" format="approx" :is-loading="isEstimationFetchLoading"/>
+                    <BaseAmountEstimation :coin="form.coin" :amount="estimationAfterFee" format="approx" :is-loading="isEstimationFetchLoading"/>
                 </div>
                 <PortfolioPriceImpact class="form-row" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>
 
@@ -360,6 +599,18 @@ export default {
                     @update:tx-data="handleEstimationTxData(index, $event)"
                     @update:v$estimation="handleV$estimation(index, $event)"
                     @update:fetch-state="handleFetchState(index, $event)"
+                />
+
+                <SwapEstimation
+                    class="u-text-medium form-row u-hidden"
+                    ref="estimationServiceFee"
+                    idPreventConcurrency="swapPortfolioServiceFee"
+                    :coin-to-sell="form.coin"
+                    :coin-to-buy="isNeedSwapServiceFee ? 'BEE' : ''"
+                    :value-to-sell="estimationServiceFee"
+                    @update:estimation="serviceFeeSwapEstimation = $event"
+                    @update:tx-data="serviceFeeSwapTxData = $event"
+                    @update:v$estimation="v$serviceFeeSwapEstimation = $event"
                 />
             </template>
 

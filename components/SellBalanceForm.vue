@@ -170,11 +170,11 @@ export default {
                             coins: [item.symbol, 1, 2, 3, 4],
                         },
                         gasCoin: item.symbol,
-                    } : undefined;
+                    } : undefined,
                     */
                     // pass skip to not send tx in sequence
                     skip,
-                    prepareGasCoinPosition: 'end',
+                    prepareGasCoinPosition: 'skip',
                     prepare: skip ? undefined : (swapTx) => {
                         return this.getEstimationRef(index)?.getEstimation(true, true)
                             .then(() => {

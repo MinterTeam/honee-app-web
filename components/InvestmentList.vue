@@ -2,6 +2,7 @@
 import {getAddressLockList} from '~/api/staking.js';
 import {fillCardWithCoin, flatCardList} from '~/content/card-list.js';
 import {getErrorText} from '~/assets/server-error.js';
+import {PREMIUM_STAKE_PROGRAM_ID} from '~/assets/variables.js';
 import {pretty} from '~/assets/utils.js';
 import {deepMerge} from '~/assets/utils/collection.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
@@ -50,9 +51,8 @@ export default {
         coinLockList() {
             const result = {};
             this.lockList.forEach((lockItem) => {
-                const PREMIUM_ID = 23;
-                const isPremium = lockItem.program.id === PREMIUM_ID;
-                const coinSymbol = isPremium ? PREMIUM_ID : lockItem.program.lockCoin.symbol;
+                const isPremium = lockItem.program.id === PREMIUM_STAKE_PROGRAM_ID;
+                const coinSymbol = isPremium ? PREMIUM_STAKE_PROGRAM_ID : lockItem.program.lockCoin.symbol;
                 if (!result[coinSymbol]) {
                     result[coinSymbol] = isPremium ? this.getEmptyPremiumCard(coinSymbol, lockItem) : this.getEmptyStakeCard(coinSymbol, lockItem);
                 }
