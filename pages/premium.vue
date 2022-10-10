@@ -20,7 +20,7 @@ export default {
             <div class="card__content card__content--medium">
                 <h1 class="card__action-title-value">🌟 {{ $t('premium.activate-title') }}</h1>
                 <p class="card__action-description u-mt-05">
-                    {{ $td('To activate a premium account, lock at least 1,000 BEE. The lockup period is 5 years. Once over, you will be able to use your coins again.', 'premium.activate-description') }}
+                    {{ $td('To activate a premium account, lock at least 1000 BEE. The lockup period is 5 years. Once over, you will be able to use your coins again.', 'premium.activate-description') }}
                 </p>
             </div>
 
@@ -33,10 +33,21 @@ export default {
                 />
 
 
-                <!--                <div class="card__content card__content&#45;&#45;medium u-text-medium">
-                                    <h3 class="u-h5 u-mb-05">Terms & Conditions</h3>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Massa pellentesque donec in mus mi massa fusce netus. Nec gravida faucibus pellentesque aliquam consequat sed. Dignissim suspendisse blandit lacinia amet. Cras tincidunt nec maecenas eleifend nisl tristique volutpat enim habitant.</p>
-                                </div>-->
+                <div class="card__content card__content--medium u-text-medium">
+                    <h3 class="u-h5 u-mb-05">{{ $td('Premium levels', 'premium.levels-title') }}</h3>
+                    <ul v-if="$i18n.locale === 'en'" class="list-simple list-simple--small">
+                        <li>LEVEL 1 - from 1000 BEE</li>
+                        <li>LEVEL 2 - from 10 000 BEE</li>
+                        <li>LEVEL 3 - from 100 000 BEE</li>
+                        <li>LEVEL 4 - from 1 000 000 BEE</li>
+                    </ul>
+                    <ul v-if="$i18n.locale === 'ru'" class="list-simple list-simple--small">
+                        <li>LEVEL 1 - от 1000 BEE</li>
+                        <li>LEVEL 2 - от 10 000 BEE</li>
+                        <li>LEVEL 3 - от 100 000 BEE</li>
+                        <li>LEVEL 4 - от 1 000 000 BEE</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

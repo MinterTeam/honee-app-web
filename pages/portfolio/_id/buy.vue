@@ -56,10 +56,15 @@ export default {
                 />
 
 
-<!--                <div class="card__content card__content&#45;&#45;medium u-text-medium">
-                    <h3 class="u-h5 u-mb-05">Terms & Conditions</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Massa pellentesque donec in mus mi massa fusce netus. Nec gravida faucibus pellentesque aliquam consequat sed. Dignissim suspendisse blandit lacinia amet. Cras tincidunt nec maecenas eleifend nisl tristique volutpat enim habitant.</p>
-                </div>-->
+                <div class="card__content card__content--medium u-text-medium">
+                    <h3 class="u-h5 u-mb-05">{{ $td('Terms', 'common.terms') }}</h3>
+                    <template v-if="$i18n.locale === 'en'">
+                        <p>Selling portfolio will cause deducting 1% premium fee and 10-40% success fee on gained profit</p>
+                    </template>
+                    <template v-if="$i18n.locale === 'ru'">
+                        <p>При продаже портфеля будет взиматься 1% Premium fee и 10-40% Success fee от полученной прибыли</p>
+                    </template>
+                </div>
             </div>
         </div>
     </div>

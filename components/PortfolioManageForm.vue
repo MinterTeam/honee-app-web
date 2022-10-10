@@ -212,8 +212,8 @@ function getEmptyCoin() {
 </script>
 
 <template>
-    <div>
-        <form novalidate @submit.prevent="openConfirmation()">
+    <div class="card card--pop card--light-grey">
+        <form class="card__content card__content--medium" novalidate @submit.prevent="openConfirmation()">
             <div class="form-row" v-for="(v$coin, index) in $v.form.coinList.$each.$iter" :key="index">
                 <FieldCombined
                     placeholder="0%"
@@ -307,6 +307,19 @@ function getEmptyCoin() {
             </div>
             <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the disclaimer in the footer.', 'form.read-understood') }}</p>
         </form>
+        <div class="card__content card__content--medium u-text-medium">
+            <h3 class="u-h5 u-mb-05">{{ $td('Terms', 'common.terms') }}</h3>
+            <ul v-if="$i18n.locale === 'en'" class="list-simple list-simple--small">
+                <li>You can create only 1 portfolio</li>
+                <li>You can edit portfolio once a day</li>
+                <li>You will accrue success fee from users exiting your portfolio with profit</li>
+            </ul>
+            <ul v-if="$i18n.locale === 'ru'" class="list-simple list-simple--small">
+                <li>Вы можете создать только 1 портфель</li>
+                <li>Вы можете редактировать портфель раз в сутки</li>
+                <li>Вы будете получать награду от прибыли пользователей, выходящих из вашего портфеля</li>
+            </ul>
+        </div>
 
 
         <!-- Confirm Modal -->
