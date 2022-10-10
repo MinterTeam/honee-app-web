@@ -33,6 +33,7 @@ export default {
         'override-stats-value',
     ],
     props: {
+        /** @type {ConsumerPortfolio} */
         portfolio: {
             type: Object,
             required: true,
@@ -197,7 +198,7 @@ export default {
             // const swapReturnList = [];
             let swapTotalReturn = 0;
             let swapServiceFeeReturn = 0;
-            // fee denominated in coin
+            // fee denominated in coinToReturn
             let premiumFeeInCoin = 0;
             let successFeeInCoin = 0;
             // fee in BEE to lock
@@ -301,44 +302,11 @@ export default {
                 },
             };
 
-            // LOCK TX
-            const lock = {
-                txParams: {
-                    type: TX_TYPE.LOCK,
-                    data: {
-                        coin: 'BEE',
-                        // value and dueBlock from 'prepare'
-                        value: 0,
-                        dueBlock: 1,
-                    },
-                    gasCoin: coinToReturn,
-                    payload: JSON.stringify({lock_id: PREMIUM_STAKE_PROGRAM_ID}),
-                },
-                privateKey,
-                prepareGasCoinPosition: 'skip',
-                prepare: async () => {
-                    premiumFeeAmount = this.isNeedSwapServiceFee ? restorePremiumFee(swapServiceFeeReturn, this.portfolio.profit) : premiumFeeInCoin;
-                    const block = await getBlock('latest');
-
-                    return {
-                        data: {
-                            value: premiumFeeAmount,
-                            dueBlock: block.height + PREMIUM_STAKE_LOCK_DURATION,
-                        },
-                    };
-                },
-                finalize: (tx) => {
-                    const gasUsed = convertFromPip(tx.tags['tx.commission_amount']);
-                    premiumFeeTotalGas = new Big(premiumFeeTotalGas).plus(gasUsed).toString();
-                    return tx;
-                },
-            };
-
 
             const send = {
                 prepareGasCoinPosition: 'start',
                 prepare: (swapTx, prevPrepareGasCoin) => {
-                    // success fee denominated in coinToReturn
+                    premiumFeeAmount = this.isNeedSwapServiceFee ? restorePremiumFee(swapServiceFeeReturn, this.portfolio.profit) : premiumFeeInCoin;
                     const successFeeAmount = this.isNeedSwapServiceFee ? restoreSuccessFee(swapServiceFeeReturn, this.portfolio.profit) : successFeeInCoin;
                     const successFeeManagerAmount = percent(successFeeAmount, 25);
                     const successFeeTeamAmount = percent(successFeeAmount, 25);
@@ -351,7 +319,7 @@ export default {
                         .minus(prevPrepareGasCoin.extra.fee.value)
                         .toString();
 
-                    console.log({value, swapTotalReturn, premiumFeeAmount, successFeeInCoin, premiumFeeTotalGas, prepareGasValue: prevPrepareGasCoin.extra.fee.value});
+                    console.log({value, swapTotalReturn, premiumFeeInCoin, successFeeInCoin, premiumFeeTotalGas, prepareGasValue: prevPrepareGasCoin.extra.fee.value});
 
                     return {
                         data: {
@@ -360,6 +328,11 @@ export default {
                                     to: this.$store.getters.address,
                                     value,
                                     coin: coinToReturn,
+                                },
+                                {
+                                    to: this.$store.getters.address,
+                                    value: premiumFeeAmount,
+                                    coin: 'BEE',
                                 },
                                 ...this.getSuccessFeeDistribution(successFeeManagerAmount, successFeeTeamAmount, successFeeFundAmount),
                             ],
@@ -376,6 +349,11 @@ export default {
                                 value: 0,
                                 coin: coinToReturn,
                             },
+                            {
+                                to: this.$store.getters.address,
+                                value: 0,
+                                coin: 'BEE',
+                            },
                             ...this.getSuccessFeeDistribution(0, 0, 0),
                         ],
                     },
@@ -389,7 +367,38 @@ export default {
                 privateKey,
             };
 
-            return swapSequence.concat(swapServiceFee, lock, send);
+            // LOCK TX
+            const lock = {
+                txParams: {
+                    type: TX_TYPE.LOCK,
+                    data: {
+                        coin: 'BEE',
+                        // value and dueBlock from 'prepare'
+                        value: 0,
+                        dueBlock: 1,
+                    },
+                    gasCoin: coinToReturn,
+                    payload: JSON.stringify({lock_id: PREMIUM_STAKE_PROGRAM_ID}),
+                },
+                prepareGasCoinPosition: 'skip',
+                prepare: async () => {
+                    const block = await getBlock('latest');
+
+                    return {
+                        data: {
+                            value: premiumFeeAmount,
+                            dueBlock: block.height + PREMIUM_STAKE_LOCK_DURATION,
+                        },
+                    };
+                },
+                finalize: (tx) => {
+                    const gasUsed = convertFromPip(tx.tags['tx.commission_amount']);
+                    premiumFeeTotalGas = new Big(premiumFeeTotalGas).plus(gasUsed).toString();
+                    return tx;
+                },
+            };
+
+            return swapSequence.concat(swapServiceFee, send, lock);
         },
     },
     watch: {
@@ -575,8 +584,13 @@ function percent(amount, percent) {
                         />
                     </template>
 
-                    <h3 class="information__title">{{ $td('Honee fee', 'portfolio.estimation-honee-fee') }}</h3>
+                    <h3 class="information__title">{{ $td('Premium fee', 'portfolio.estimation-premium-fee') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="estimationServiceFee" format="approx" :is-loading="isEstimationFetchLoading"/>
+
+                    <template v-if="portfolio.profit > 0">
+                        <h3 class="information__title">{{ $td('Success fee', 'portfolio.estimation-success-fee') }}</h3>
+                        <BaseAmountEstimation :coin="form.coin" :amount="estimationServiceFee" format="approx" :is-loading="isEstimationFetchLoading"/>
+                    </template>
 
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="estimationAfterFee" format="approx" :is-loading="isEstimationFetchLoading"/>
@@ -633,6 +647,14 @@ function percent(amount, percent) {
                             :key="item.coin"
                             v-bind="item"
                         />
+                    </template>
+
+                    <h3 class="information__title">{{ $td('Premium fee', 'portfolio.estimation-premium-fee') }}</h3>
+                    <BaseAmountEstimation :coin="form.coin" :amount="estimationServiceFee" format="approx" :is-loading="isEstimationFetchLoading"/>
+
+                    <template v-if="portfolio.profit > 0">
+                        <h3 class="information__title">{{ $td('Success fee', 'portfolio.estimation-success-fee') }}</h3>
+                        <BaseAmountEstimation :coin="form.coin" :amount="estimationServiceFee" format="approx" :is-loading="isEstimationFetchLoading"/>
                     </template>
 
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
