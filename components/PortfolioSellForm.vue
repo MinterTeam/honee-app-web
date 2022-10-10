@@ -575,7 +575,7 @@ function percent(amount, percent) {
                         />
                     </template>
 
-                    <h3 class="information__title">{{ $td('Service fee', 'portfolio.estimation-service-fee') }}</h3>
+                    <h3 class="information__title">{{ $td('Honee fee', 'portfolio.estimation-honee-fee') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="estimationServiceFee" format="approx" :is-loading="isEstimationFetchLoading"/>
 
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
