@@ -585,11 +585,11 @@ function percent(amount, percent) {
                     </template>
 
                     <h3 class="information__title">{{ $td('Premium fee', 'portfolio.estimation-premium-fee') }}</h3>
-                    <BaseAmountEstimation :coin="form.coin" :amount="estimationServiceFee" format="approx" :is-loading="isEstimationFetchLoading"/>
+                    <BaseAmountEstimation :coin="form.coin" :amount="estimationPremiumFee" format="approx" :is-loading="isEstimationFetchLoading"/>
 
                     <template v-if="portfolio.profit > 0">
                         <h3 class="information__title">{{ $td('Success fee', 'portfolio.estimation-success-fee') }}</h3>
-                        <BaseAmountEstimation :coin="form.coin" :amount="estimationServiceFee" format="approx" :is-loading="isEstimationFetchLoading"/>
+                        <BaseAmountEstimation :coin="form.coin" :amount="estimationSuccessFee" format="approx" :is-loading="isEstimationFetchLoading"/>
                     </template>
 
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
@@ -650,11 +650,11 @@ function percent(amount, percent) {
                     </template>
 
                     <h3 class="information__title">{{ $td('Premium fee', 'portfolio.estimation-premium-fee') }}</h3>
-                    <BaseAmountEstimation :coin="form.coin" :amount="estimationServiceFee" format="approx" :is-loading="isEstimationFetchLoading"/>
+                    <BaseAmountEstimation :coin="form.coin" :amount="estimationPremiumFee" format="approx" :is-loading="isEstimationFetchLoading"/>
 
                     <template v-if="portfolio.profit > 0">
                         <h3 class="information__title">{{ $td('Success fee', 'portfolio.estimation-success-fee') }}</h3>
-                        <BaseAmountEstimation :coin="form.coin" :amount="estimationServiceFee" format="approx" :is-loading="isEstimationFetchLoading"/>
+                        <BaseAmountEstimation :coin="form.coin" :amount="estimationSuccessFee" format="approx" :is-loading="isEstimationFetchLoading"/>
                     </template>
 
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
