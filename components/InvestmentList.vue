@@ -2,7 +2,9 @@
 import {getAddressLockList} from '~/api/staking.js';
 import {fillCardWithCoin, flatCardList} from '~/content/card-list.js';
 import {getErrorText} from '~/assets/server-error.js';
+import {PREMIUM_STAKE_PROGRAM_ID} from '~/assets/variables.js';
 import {pretty} from '~/assets/utils.js';
+import {deepMerge} from '~/assets/utils/collection.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import BaseTabs from '~/components/base/BaseTabs.vue';
 import Card from '~/components/Card.vue';
@@ -49,33 +51,19 @@ export default {
         coinLockList() {
             const result = {};
             this.lockList.forEach((lockItem) => {
-                const coinSymbol = lockItem.program.lockCoin.symbol;
+                const isPremium = lockItem.program.id === PREMIUM_STAKE_PROGRAM_ID;
+                const coinSymbol = isPremium ? PREMIUM_STAKE_PROGRAM_ID : lockItem.program.lockCoin.symbol;
                 if (!result[coinSymbol]) {
-                    result[coinSymbol] = fillCardWithCoin({
-                        amount: 0,
-                        coin: coinSymbol,
-                        // store previous item programId to compare it later
-                        programId: lockItem.program.id,
-                        // dummy action to fill correct actionType
-                        action: `/stake/${lockItem.program.id}`,
-                        caption: 'Stake & Earn',
-                        stats: {
-                            caption: 'Total staked',
-                            value: 0,
-                        },
-                        ru: {
-                            caption: 'Стейкинг',
-                            stats: {
-                                caption: 'Общий стейк',
-                            },
-                        },
-                        buttonLabel: this.$td('Stake more', 'index.stake-more'),
-                    });
+                    result[coinSymbol] = isPremium ? this.getEmptyPremiumCard(coinSymbol, lockItem) : this.getEmptyStakeCard(coinSymbol, lockItem);
                 }
                 result[coinSymbol].amount += Number(lockItem.amount);
-                // use latest program to ensure it is actual (it is fallback if nothing found in card-data)
-                result[coinSymbol].programId = Math.max(lockItem.program.id, result[coinSymbol].programId);
-                result[coinSymbol].action = `/stake/${result[coinSymbol].programId}`;
+                if (isPremium) {
+                    result[coinSymbol].title = 'LEVEL ' + getPremiumLevel(result[coinSymbol].amount);
+                } else {
+                    // use latest program to ensure it is actual (it is fallback if nothing found in card-data)
+                    result[coinSymbol].programId = Math.max(lockItem.program.id, result[coinSymbol].programId);
+                    result[coinSymbol].action = `/stake/${result[coinSymbol].programId}`;
+                }
             });
             return Object.values(result);
         },
@@ -84,24 +72,7 @@ export default {
             this.$store.state.stakeList.forEach((delegationItem) => {
                 const coinSymbol = delegationItem.coin.symbol;
                 if (!result[coinSymbol]) {
-                    result[coinSymbol] = fillCardWithCoin({
-                        amount: 0,
-                        coin: coinSymbol,
-                        // dummy action to fill correct actionType
-                        action: `/delegate/${coinSymbol}`,
-                        caption: 'Delegate',
-                        stats: {
-                            caption: this.$td('Total delegated', 'index.total-delegated'),
-                            value: 0,
-                        },
-                        ru: {
-                            caption: 'Делегирование',
-                            stats: {
-                                caption: 'Всего',
-                            },
-                        },
-                        buttonLabel: this.$td('Delegate more', 'index.delegate-more'),
-                    });
+                    result[coinSymbol] = this.getEmptyDelegationCard(coinSymbol);
                 }
                 result[coinSymbol].amount += Number(delegationItem.value);
             });
@@ -110,6 +81,7 @@ export default {
         stakeCardList() {
             return [].concat(this.coinLockList, this.coinDelegationList)
                 .map((item) => {
+                    item = JSON.parse(JSON.stringify(item));
                     item.stats.value = pretty(item.amount);
                     // get latest actual staking program from card-data
                     const cardData = flatCardList.find((data) => data.coin === item.coin && data.actionType === item.actionType);
@@ -117,10 +89,19 @@ export default {
                         // overwrite action to ensure latest actual
                         item.action = cardData.action;
                         item.description = cardData.description;
-                        item.ru = cardData.ru;
+                        item.ru = deepMerge(item.ru, cardData.ru);
                     }
                     return item;
                 });
+        },
+        filteredListLength() {
+            if (this.selectedFilter === FILTERS.PORTFOLIO) {
+                return this.portfolioList.length;
+            }
+            if (this.selectedFilter === FILTERS.STAKE) {
+                return this.stakeCardList.length;
+            }
+            return this.portfolioList.length + this.stakeCardList.length;
         },
         filterTabs() {
             return Object.values(FILTERS).map((filterValue) => {
@@ -135,8 +116,102 @@ export default {
     },
     methods: {
         getErrorText,
+        getEmptyStakeCard(coinSymbol, lockItem) {
+            return fillCardWithCoin({
+                amount: 0,
+                coin: coinSymbol,
+                // store previous item programId to compare it later
+                programId: lockItem.program.id,
+                // dummy action to fill correct actionType
+                action: `/stake/${lockItem.program.id}`,
+                caption: 'Stake & Earn',
+                stats: {
+                    caption: 'Total staked',
+                    value: 0,
+                },
+                ru: {
+                    caption: 'Стейкинг',
+                    stats: {
+                        caption: 'Общий стейк',
+                    },
+                },
+                buttonLabel: this.$td('Stake more', 'index.stake-more'),
+            });
+        },
+        getEmptyPremiumCard(coinSymbol, lockItem) {
+            return {
+                ...this.getEmptyStakeCard(coinSymbol, lockItem),
+                caption: 'Premium',
+                title: 'LEVEL 0',
+                description: 'Premium is extended account that allows you to get extra rewards without lifting a finger and enjoy additional features.',
+                icon: '/img/icon-premium.svg',
+                action: `/premium`,
+                ru: {
+                    description: 'Premium – это расширенный аккаунт, который позволит получать дополнительный доход, а также добавит новые функции.',
+                    caption: 'Premium',
+                    stats: {
+                        caption: 'Общий стейк',
+                    },
+                },
+                buttonLabel: this.$td('Upgrade your level', 'premium.card-update-button'),
+            };
+        },
+        getEmptyDelegationCard(coinSymbol) {
+            console.log(fillCardWithCoin({
+                amount: 0,
+                coin: coinSymbol,
+                // dummy action to fill correct actionType
+                action: `/delegate/${coinSymbol}`,
+                caption: 'Delegate',
+                stats: {
+                    caption: 'Total delegated',
+                    value: 0,
+                },
+                ru: {
+                    caption: 'Делегирование',
+                    stats: {
+                        caption: 'Всего',
+                    },
+                },
+                buttonLabel: this.$td('Delegate more', 'index.delegate-more'),
+            }));
+            return fillCardWithCoin({
+                amount: 0,
+                coin: coinSymbol,
+                // dummy action to fill correct actionType
+                action: `/delegate/${coinSymbol}`,
+                caption: 'Delegate',
+                stats: {
+                    caption: 'Total delegated',
+                    value: 0,
+                },
+                ru: {
+                    caption: 'Делегирование',
+                    stats: {
+                        caption: 'Всего',
+                    },
+                },
+                buttonLabel: this.$td('Delegate more', 'index.delegate-more'),
+            });
+        },
     },
 };
+
+function getPremiumLevel(amount) {
+    if (amount >= 1000000) {
+        return 4;
+    }
+    if (amount >= 100000) {
+        return 3;
+    }
+    if (amount >= 10000) {
+        return 2;
+    }
+    if (amount >= 1000) {
+        return 1;
+    }
+    return 0;
+}
 </script>
 
 <template>
@@ -158,7 +233,7 @@ export default {
                 v-model="selectedFilter"
                 :tabs="filterTabs"
             />
-            <div class="u-grid u-grid--vertical-margin">
+            <div class="u-grid u-grid--vertical-margin" v-if="filteredListLength > 0">
                 <template v-if="!selectedFilter || selectedFilter === $options.FILTERS.PORTFOLIO">
                     <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="portfolio in portfolioList" :key="portfolio.id">
                         <PortfolioListItem :portfolio="portfolio" :type="$options.PORTFOLIO_LIST_TYPE.COPIED"/>
@@ -170,6 +245,7 @@ export default {
                     </div>
                 </template>
             </div>
+            <div v-else>{{ $td('Empty list', 'index.portfolio-list-empty') }}</div>
         </template>
     </div>
 </template>

@@ -37,6 +37,10 @@ export const CHAIN_ID = NETWORK === MAINNET ? 1 : 2;
 export const LANGUAGE_COOKIE_KEY = 'minter-language';
 export const I18N_ROUTE_NAME_SEPARATOR = '___';
 
+export const PREMIUM_STAKE_PROGRAM_ID = 23;
+export const PREMIUM_STAKE_LOCK_DURATION = 31536000; // 5 years
+export const SUCCESS_FEE_TEAM_ADDRESS = 'Mx5a67a1f59138609f502a0e16e210d70bad03a745';
+export const SUCCESS_FEE_FUND_ADDRESS = 'Mx2d347ede679b8c6b91d272c9aade5a716bda4b2f';
 export const STAKE_RECALCULATE_BLOCK_COUNT = 720;
 export const DASHBOARD_URL = '/';
 

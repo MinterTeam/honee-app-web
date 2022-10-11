@@ -8,7 +8,7 @@ import maxValue from 'vuelidate/src/validators/maxValue.js';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import checkEmpty from '~/assets/v-check-empty.js';
-import {pretty, prettyRound, getDateAmerican, getTimeDistance} from '~/assets/utils.js';
+import {pretty, getDateAmerican, getTimeDistance} from '~/assets/utils.js';
 import {getFarmProgramWithPoolData, getAmountFromPool} from '~/api/farm.js';
 import {getBlock} from '~/api/explorer.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
@@ -194,7 +194,7 @@ export default {
     },
     watch: {
         apr() {
-            this.$emit('override-stats-value', prettyRound(this.apr) + '%');
+            this.$emit('override-stats-value', pretty(this.apr) + '%');
         },
     },
     methods: {

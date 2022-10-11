@@ -51,11 +51,18 @@ export default {
         const address = this.$store.getters.address;
         const page = this.page || 1;
         const limit = this.limit;
+        let profitPeriod;
+        if (this.type === PORTFOLIO_LIST_TYPE.TOP) {
+            profitPeriod = PORTFOLIO_PROFIT_PERIOD.AWP;
+        }
+        if (this.type === PORTFOLIO_LIST_TYPE.ALL) {
+            profitPeriod = PORTFOLIO_PROFIT_PERIOD.DAILY7;
+        }
         const listPromise = this.type === PORTFOLIO_LIST_TYPE.COPIED
             ? this.$store.dispatch('portfolio/fetchConsumerPortfolioList')
             : getPortfolioList({
                 owner: this.type === PORTFOLIO_LIST_TYPE.MANAGED ? address : undefined,
-                profitPeriod: this.type === PORTFOLIO_LIST_TYPE.ALL ? PORTFOLIO_PROFIT_PERIOD.DAILY7 : undefined,
+                profitPeriod,
                 limit,
                 page,
             });

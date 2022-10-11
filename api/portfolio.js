@@ -65,7 +65,7 @@ export function getPortfolio(id) {
  * @return {Promise<PortfolioList>}
  */
 export function getPortfolioList(params) {
-    params.profitPeriod = params.profitPeriod || PORTFOLIO_PROFIT_PERIOD.AWP;
+    // params.profitPeriod = params.profitPeriod || PORTFOLIO_PROFIT_PERIOD.AWP;
     return instance.get(`portfolio`, {
             params: toSnake(params),
         })
@@ -90,6 +90,7 @@ const leaderboardCache = new Cache({maxAge: 60 * 60 * 1000});
  * @return {Promise<ConsumerPortfolioList>}
  */
 export function getLeaderboard({limit, profitPeriod} = {}) {
+    console.log(profitPeriod);
     return instance.get(`consumer/portfolio/${getLeaderboardDateParams(profitPeriod)}`, {
         cache: leaderboardCache,
     })
@@ -112,7 +113,13 @@ function getLeaderboardDateParams(profitPeriod) {
     if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.WTD) {
         const today = getToday();
         const monday = getLastMonday();
-        return formatDate(monday) + '/' + formatDate(today);
+        if (monday.getTime() === today.getTime()) {
+            // no data for today yet, so show last week
+            const weekAgo = shiftDate(today, -7);
+            return formatDate(weekAgo) + '/' + formatDate(today);
+        } else {
+            return formatDate(monday) + '/' + formatDate(today);
+        }
     }
     if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.WEEKLY) {
         const monday = getLastMonday();

@@ -257,7 +257,7 @@ export default {
             }
             this.getEstimation();
         },
-        getEstimation(force, throwOnError) {
+        getEstimation(force, throwOnError, overrideParams = {}) {
             if (this.$v.propsGroup.$invalid) {
                 return Promise.reject('get swap estimation: Invalid props passed');
             }
@@ -271,6 +271,7 @@ export default {
                 sellAll: this.isSellAll,
                 force,
                 throwOnError,
+                ...overrideParams,
             });
         },
         getTxType() {

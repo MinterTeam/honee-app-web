@@ -14,6 +14,8 @@ export default {
         'from': 'от',
         'to': 'до',
         'upto': 'до',
+        'terms': 'Условия',
+        'learn-more': 'Подробнее',
     },
     error: {
         'title-error': 'Ошибка',
@@ -106,6 +108,8 @@ export default {
         'assets-stakes-table-unlock-on': 'Разблокировка',
         'assets-stakes-table-amount': 'Количество',
         'assets-transactions': 'Транзакции',
+        'nostakes': 'Еще нет стейков',
+        'error-stake-list': 'Не удается загрузить список стейков',
 
         'card-button-deposit': 'Купить за BNB или ETH',
         'add-liquidity': 'Добавить',
@@ -113,6 +117,7 @@ export default {
         'participate': 'Участвовать',
         'withdraw-unbond': 'Отозвать',
         'stake': 'Застейковать',
+        'portfolio-list-empty': 'Портфелей еще нет',
 
         'investments-title': 'Мои инвестиции',
         'investments-tabs-label-0': 'Всё',
@@ -222,6 +227,8 @@ export default {
     premium: {
         'activate-title': 'Стань премиум пользователем',
         'activate-description': 'Для активации премиум аккаунта отправьте в блокировку от 1000 BEE. Срок блокировки 5 лет. После окончания этого срока ваши монеты будут снова доступны для использования.',
+        'card-update-button': 'Повысить уровень',
+        'levels-title': 'Уровни премиума',
     },
     portfolio: {
         'manage-create-title': 'Создание портфеля',
@@ -261,6 +268,7 @@ export default {
         'sell-button': 'Продать',
         'tokens-buy-label': 'Токены для покупки',
         'tokens-sell-label': 'Токены на продажу',
+        'tokens-buy-disabled-label': 'Не доступно для покупки',
         'tokens-sell-disabled-label': 'Не доступно для продажи',
         'list-title': 'Портфели',
         'list-top-title': 'Топ портфели',
@@ -270,11 +278,17 @@ export default {
         'list-my-title': 'Мои портфели',
         'tabs-label-top': 'Топ',
         'tabs-label-all': 'Все',
-        // 'tabs-label-weekly': 'Неделя',
-        // 'tabs-label-live': 'Live',
+        'tabs-label-weekly': 'Последняя неделя',
+        'tabs-label-live': 'Лайв',
 
         'view-all': 'Смотреть все портфели',
         'create-new-link': 'Создать свой портфель',
+
+        'leaderboard-title': 'Прибыль пользователей',
+        'leaderboard-column-address': 'Адрес',
+        'leaderboard-column-portfolio': 'Портфель',
+        'leaderboard-column-profit': 'Профит',
+        'leaderboard-view-all': 'Посмотреть все',
     },
     action: {
         'title-buy': 'Купите BIP, HUB и BEE',

@@ -71,10 +71,10 @@ export default {
             <BaseLoader class="" :is-loading="true"/>
         </div>
         <div v-else-if="$fetchState.error">
-            Can't get stake list <br>
+            {{ $td('Can\'t get stake list', 'index.error-stake-list') }} <br>
             {{ getErrorText($fetchState.error) }}
         </div>
-        <div v-else-if="lockList.length === 0">No stakes yet</div>
+        <div v-else-if="lockList.length === 0">{{ $td('No stakes yet', 'index.nostakes') }}</div>
         <div class="table-wrap" v-else-if="lockList.length">
             <table class="u-hidden-medium-down">
                 <thead>
