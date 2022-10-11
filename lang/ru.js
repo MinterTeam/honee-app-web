@@ -15,6 +15,7 @@ export default {
         'to': 'до',
         'upto': 'до',
         'terms': 'Условия',
+        'learn-more': 'Подробнее',
     },
     error: {
         'title-error': 'Ошибка',
@@ -267,6 +268,7 @@ export default {
         'sell-button': 'Продать',
         'tokens-buy-label': 'Токены для покупки',
         'tokens-sell-label': 'Токены на продажу',
+        'tokens-buy-disabled-label': 'Не доступно для покупки',
         'tokens-sell-disabled-label': 'Не доступно для продажи',
         'list-title': 'Портфели',
         'list-top-title': 'Топ портфели',
