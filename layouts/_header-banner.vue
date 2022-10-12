@@ -6,11 +6,11 @@ export default {
         };
     },
     beforeMount() {
-        this.showBanner = !window.localStorage.getItem('honee-alpha-banner-accepted');
+        this.showBanner = !window.localStorage.getItem('honee-support-banner-accepted');
     },
     methods: {
         close() {
-            window.localStorage.setItem('honee-alpha-banner-accepted', 'accepted');
+            window.localStorage.setItem('honee-support-banner-accepted', 'accepted');
             this.showBanner = false;
         },
     },
@@ -22,8 +22,9 @@ export default {
         <div class="alpha-banner__container u-container u-container--wide">
             <div class="alpha-banner__placeholder u-hidden-medium-down"></div>
             <div class="alpha-banner__content">
-                <img class="alpha-banner__icon" src="/img/icon-alpha-banner.svg" alt="" role="presentation">
-                <div class="alpha-banner__text">{{ $td('Honee’s in alpha.', 'index.alpha-banner-text') }} <a class="link--default u-display-ib" href="https://minter.link/HoneeTests" target="_blank">{{ $td('Join testing and get crypto for feedback.', 'index.alpha-banner-link') }}</a></div>
+                <div class="alpha-banner__text">
+                    <a class="link--default u-display-ib" href="https://t.me/+hbaB8L1si8diZTNi" target="_blank">{{ $td('Get support in Telegram group', 'index.support-banner-link') }}</a>
+                </div>
             </div>
             <button class="alpha-banner__close u-semantic-button link--opacity" type="button" @click="close()">
                 <span class="alpha-banner__close-icon">{{ $td('Close', 'common.close') }}</span>

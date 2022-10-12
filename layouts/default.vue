@@ -1,6 +1,7 @@
 <script>
 import {ref} from '@vue/composition-api';
 import { useIntervalFn } from '@vueuse/core';
+import HeaderBanner from '~/layouts/_header-banner.vue';
 import TheHeader from '~/layouts/_header.vue';
 import TheFooter from '~/layouts/_footer.vue';
 import BackButton from '~/components/layout/BackButton.vue';
@@ -9,6 +10,7 @@ import Snackbar from '~/components/layout/Snackbar.vue';
 
 export default {
     components: {
+        HeaderBanner,
         TheHeader,
         TheFooter,
         BackButton,
@@ -46,6 +48,7 @@ export default {
 
 <template>
     <div>
+        <HeaderBanner/>
         <TheHeader/>
 
         <BackButton class="u-section--top u-container" :class="pageContainerClass"/>
