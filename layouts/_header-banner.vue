@@ -23,7 +23,7 @@ export default {
             <div class="alpha-banner__placeholder u-hidden-medium-down"></div>
             <div class="alpha-banner__content">
                 <div class="alpha-banner__text">
-                    <a class="link--default u-display-ib" href="https://t.me/+hbaB8L1si8diZTNi" target="_blank">{{ $td('Get support in Telegram group', 'index.support-banner-link') }}</a>
+                    <a class="link--default u-display-ib" href="https://t.me/+hbaB8L1si8diZTNi" target="_blank">{{ $td('Get support in our Telegram group', 'index.support-banner-link') }}</a>
                 </div>
             </div>
             <button class="alpha-banner__close u-semantic-button link--opacity" type="button" @click="close()">
