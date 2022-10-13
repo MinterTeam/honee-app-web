@@ -8,7 +8,7 @@ import {pretty} from '~/assets/utils.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useWeb3Deposit from '~/composables/use-web3-deposit.js';
 import useTxService from '~/composables/use-tx-service.js';
-import useHubTokenData from '~/composables/use-hub-token-data.js';
+import useHubOracle from '~/composables/use-hub-oracle.js';
 import {TOP_UP_NETWORK} from '~/components/Topup.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
@@ -44,7 +44,7 @@ export default {
     ],
     setup() {
         const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
-        const {initPromise: hubInfoInitPromise, hubTokenList, hubPriceList} = useHubTokenData({subscribePriceList: true});
+        const {initPromise: hubInfoInitPromise, hubTokenList, hubPriceList} = useHubOracle({subscribePriceList: true});
 
         const {
             tokenData,
@@ -52,7 +52,7 @@ export default {
             nativeBalance,
             wrappedBalance,
             balance,
-            setTokenProps,
+            setWeb3TokenProps,
             waitEnoughTokenBalance,
         } = useWeb3TokenBalance();
 
@@ -82,7 +82,7 @@ export default {
             nativeBalance,
             wrappedBalance,
             balance,
-            setTokenProps,
+            setWeb3TokenProps,
             waitEnoughTokenBalance,
 
             setDepositProps, depositFromEthereum, amountToUnwrap, isUnwrapRequired, evmGasPriceGwei, evmTotalFee, depositAmountAfterGas,
@@ -159,8 +159,6 @@ export default {
                 // @TODO don't unwrap micro WETH balance
                 amount: this.balance,
                 tokenSymbol: this.tokenSymbol,
-                /** @type Array<HubCoinItem> */
-                hubCoinList: this.hubTokenList,
                 priceList: this.hubPriceList,
             }),
             (newVal) => {
@@ -169,7 +167,7 @@ export default {
                     return;
                 }
                 this.setDepositProps(newVal);
-                this.setTokenProps(newVal);
+                this.setWeb3TokenProps(newVal);
             },
             {deep: true, immediate: true},
         );

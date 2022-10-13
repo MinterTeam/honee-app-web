@@ -20,7 +20,7 @@ import {getErrorText} from '~/assets/server-error.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import useEstimateSwap from '~/composables/use-estimate-swap.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
-import useHubTokenData from '~/composables/use-hub-token-data.js';
+import useHubOracle from '~/composables/use-hub-oracle.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useWeb3Deposit from '~/composables/use-web3-deposit.js';
 import useTxService from '~/composables/use-tx-service.js';
@@ -140,7 +140,7 @@ export default {
             idPreventConcurrency: 'hubBuy',
         });
         const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
-        const {hubTokenList: hubCoinList, hubPriceList: priceList} = useHubTokenData({subscribePriceList: true});
+        const {hubPriceList: priceList} = useHubOracle({subscribePriceList: true});
 
         const {
             tokenData: externalToken,
@@ -151,7 +151,7 @@ export default {
             wrappedBalance: selectedWrapped,
             balance: selectedBalance,
             tokenAllowance: coinToDepositUnlocked,
-            setTokenProps,
+            setWeb3TokenProps,
             updateTokenBalance,
             updateTokenAllowance,
             waitEnoughTokenBalance,
@@ -181,11 +181,11 @@ export default {
             discountUpsidePercent,
             setDiscountProps,
 
-            hubCoinList,
+            // hubCoinList,
             priceList,
 
             externalToken, coinContractAddress, coinDecimals, isEthSelected, selectedNative, selectedWrapped, selectedBalance, coinToDepositUnlocked,
-            setTokenProps,
+            setWeb3TokenProps,
             updateTokenBalance,
             updateTokenAllowance,
             waitEnoughTokenBalance,
@@ -384,9 +384,7 @@ export default {
                 chainId: this.chainId,
                 amount: this.form.amountEth,
                 tokenSymbol: this.externalTokenSymbol,
-                // @TODO maybe use hub data directly from useHubTokenData composable (need handle disable polling gasPrice)
-                /** @type Array<HubCoinItem> */
-                hubCoinList: this.hubCoinList,
+                // @TODO maybe use hub data directly from composable (need handle disable polling gasPrice)
                 priceList: this.priceList,
                 isDisableUpdateProps: this.isFormSending,
             }),
@@ -396,7 +394,7 @@ export default {
                     return;
                 }
                 this.setDepositProps(newVal);
-                this.setTokenProps(newVal);
+                this.setWeb3TokenProps(newVal);
             },
             {deep: true, immediate: true},
         );

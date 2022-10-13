@@ -16,7 +16,7 @@ import {getErrorText} from '~/assets/server-error.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import useFee from '~/composables/use-fee.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
-import useHubTokenData from '~/composables/use-hub-token-data.js';
+import useHubOracle from '~/composables/use-hub-oracle.js';
 import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
@@ -51,7 +51,7 @@ export default {
     setup() {
         const {fee, setFeeProps} = useFee();
         const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
-        const {hubTokenList: hubCoinList, hubPriceList: priceList} = useHubTokenData({subscribePriceList: true});
+        const {hubTokenList: hubCoinList, hubPriceList: priceList} = useHubOracle({subscribePriceList: true});
 
         return {
             fee,

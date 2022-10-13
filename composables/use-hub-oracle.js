@@ -26,6 +26,7 @@ const gasPrice = computed(() => {
 });
 
 
+//@TODO don't fire new fetch if one is already processing
 function fetchTokenList() {
     return getOracleCoinList()
         .then((result) => {
@@ -74,7 +75,7 @@ function unsubscribePriceList() {
 }
 
 
-export default function useHubTokenData({
+export default function useHubOracle({
     subscribeTokenList: isSubscribeTokenList = false,
     subscribePriceList: isSubscribePriceList = false,
 } = {}) {

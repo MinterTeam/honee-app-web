@@ -17,11 +17,11 @@ const GAS_LIMIT_UNLOCK = 75000;
 const GAS_LIMIT_BRIDGE = 75000;
 
 
-const { tokenContractAddress: tokenAddress, tokenDecimals, isNativeToken, nativeBalance, setTokenProps } = useWeb3TokenBalance();
+const { tokenContractAddress: tokenAddress, tokenDecimals, isNativeToken, nativeBalance, setWeb3TokenProps } = useWeb3TokenBalance();
 const { txServiceState, sendEthTx, addStepData, waitPendingStep } = useTxService();
 
 /**
- * @type {import('@vue/composition-api').UnwrapRef<{amount: number, tokenSymbol: string, accountAddress: string, destinationMinterAddress: string, chainId: number, hubCoinList: Array<HubCoinItem>, priceList: Array<Object>}>}
+ * @type {import('@vue/composition-api').UnwrapRef<{amount: number, tokenSymbol: string, accountAddress: string, destinationMinterAddress: string, chainId: number, priceList: Array<Object>}>}
  */
 const props = reactive({
     destinationMinterAddress: '',
@@ -29,21 +29,18 @@ const props = reactive({
     chainId: 0,
     amount: 0,
     tokenSymbol: '',
-    /** @type Array<HubCoinItem> */
-    hubCoinList: [],
     priceList: [],
 });
 
 /**
- * @param {{amount?: number, tokenSymbol?: string, accountAddress?: string, destinationMinterAddress?: string, chainId?: number, hubCoinList?: Array<HubCoinItem>, priceList?: Array<Object>}} newProps
+ * @param {{amount?: number, tokenSymbol?: string, accountAddress?: string, destinationMinterAddress?: string, chainId?: number, priceList?: Array<Object>}} newProps
  */
 function setProps(newProps) {
     Object.assign(props, newProps);
-    setTokenProps({
+    setWeb3TokenProps({
         tokenSymbol: newProps.tokenSymbol,
         accountAddress: newProps.accountAddress,
         chainId: newProps.chainId,
-        hubCoinList: newProps.hubCoinList,
     });
 }
 
