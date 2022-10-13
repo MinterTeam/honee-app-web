@@ -32,11 +32,11 @@ export default {
         },
     },
     setup() {
-        const {fee, feeProps} = useFee();
+        const {fee, setFeeProps} = useFee();
 
         return {
             fee,
-            feeProps,
+            setFeeProps,
         };
     },
     data() {
@@ -69,23 +69,6 @@ export default {
         };
     },
     computed: {
-        feeBusParams() {
-            const isEstimationTypePool = !!this.txData.coins;
-            return {
-                txParams: {
-                    // don't use `this.txType`, it may lead to infinite loop
-                    // ignore `isSellAll` to get `sell` fee (assume sell and sell-all txs consume equal fees)
-                    type: getTxType({isPool: isEstimationTypePool, isSelling: this.isSelling, isSellAll: false}),
-                    data: {
-                        // pass only fields that affect fee
-                        coinToSell: this.form.coinFrom,
-                        coins: this.txData.coins,
-                    },
-                },
-                baseCoinAmount: this.$store.getters.baseCoinAmount,
-                fallbackToCoinToSpend: true,
-            };
-        },
     },
     watch: {
         'v$estimation.estimationError': {
@@ -93,13 +76,30 @@ export default {
                 this.handleEstimationError(this.v$estimation.estimationError?.$invalid);
             },
         },
-        feeBusParams: {
-            handler(newVal) {
-                Object.assign(this.feeProps, newVal);
+    },
+    created() {
+        // feeBusParams
+        this.$watch(
+            () => {
+                const isEstimationTypePool = !!this.txData.coins;
+                return {
+                    txParams: {
+                        // don't use `this.txType`, it may lead to infinite loop
+                        // ignore `isSellAll` to get `sell` fee (assume sell and sell-all txs consume equal fees)
+                        type: getTxType({isPool: isEstimationTypePool, isSelling: this.isSelling, isSellAll: false}),
+                        data: {
+                            // pass only fields that affect fee
+                            coinToSell: this.form.coinFrom,
+                            coins: this.txData.coins,
+                        },
+                    },
+                    baseCoinAmount: this.$store.getters.baseCoinAmount,
+                    fallbackToCoinToSpend: true,
+                };
             },
-            deep: true,
-            immediate: true,
-        },
+            (newVal) => this.setFeeProps(newVal),
+            {deep: true, immediate: true},
+        );
     },
     methods: {
         pretty,

@@ -49,13 +49,14 @@ export default {
     },
     mixins: [validationMixin],
     setup() {
-        const {fee, feeProps} = useFee();
+        const {fee, setFeeProps} = useFee();
         const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
         const {hubTokenList: hubCoinList, hubPriceList: priceList} = useHubTokenData({subscribePriceList: true});
 
         return {
             fee,
-            feeProps,
+            setFeeProps,
+
             discount,
             discountUpsidePercent,
             setDiscountProps,
@@ -186,30 +187,6 @@ export default {
             });
             */
         },
-        feeBusParams() {
-            return {
-                txParams: {
-                    // gasCoin: this.form.gasCoin,
-                    type: TX_TYPE.SEND,
-                    data: {
-                        to: HUB_MINTER_MULTISIG_ADDRESS,
-                        // value: this.amountToSend,
-                        value: 0,
-                        coin: this.coinId,
-                    },
-                    payload: JSON.stringify({
-                        recipient: this.form.address,
-                        type: 'send_to_' + this.form.networkTo,
-                        // fee for destination network
-                        fee: convertToPip(this.coinFee),
-                    }),
-                },
-                baseCoinAmount: this.$store.getters.baseCoinAmount,
-                fallbackToCoinToSpend: true,
-                isOffline: !this.$store.state.onLine,
-                precision: FEE_PRECISION_SETTING.PRECISE,
-            };
-        },
     },
     validations() {
         return {
@@ -242,25 +219,45 @@ export default {
                 this.getDestinationFee();
             },
         },
-        'form.address': {
-            handler(newVal) {
-                this.setDiscountProps({ethAddress: newVal});
-            },
-            immediate: true,
-        },
-        '$store.getters.address': {
-            handler(newVal) {
-                this.setDiscountProps({minterAddress: newVal});
-            },
-            immediate: true,
-        },
-        feeBusParams: {
-            handler(newVal) {
-                Object.assign(this.feeProps, newVal);
-            },
-            deep: true,
-            immediate: true,
-        },
+    },
+    created() {
+        // discountProps
+        this.$watch(
+            () => ({
+                minterAddress: this.$store.getters.address,
+                ethAddress: this.form.address,
+            }),
+            (newVal) => this.setDiscountProps(newVal),
+            {deep: true, immediate: true},
+        );
+
+        // feeBusParams
+        this.$watch(
+            () => ({
+                txParams: {
+                    // gasCoin: this.form.gasCoin,
+                    type: TX_TYPE.SEND,
+                    data: {
+                        to: HUB_MINTER_MULTISIG_ADDRESS,
+                        // value: this.amountToSend,
+                        value: 0,
+                        coin: this.coinId,
+                    },
+                    payload: JSON.stringify({
+                        recipient: this.form.address,
+                        type: 'send_to_' + this.form.networkTo,
+                        // fee for destination network
+                        fee: convertToPip(this.coinFee),
+                    }),
+                },
+                baseCoinAmount: this.$store.getters.baseCoinAmount,
+                fallbackToCoinToSpend: true,
+                isOffline: !this.$store.state.onLine,
+                precision: FEE_PRECISION_SETTING.PRECISE,
+            }),
+            (newVal) => this.setFeeProps(newVal),
+            {deep: true, immediate: true},
+        );
     },
     mounted() {
         interval = setInterval(() => {

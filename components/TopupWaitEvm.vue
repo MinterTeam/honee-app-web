@@ -145,8 +145,14 @@ export default {
             // has any step except WAIT_ETH
             return Object.keys(this.txServiceState.steps).some((key) => key !== LOADING_STAGE.WAIT_ETH);
         },
-        depositProps() {
-            return {
+    },
+    watch: {
+    },
+    created() {
+        // depositProps
+        // tokenProps
+        this.$watch(
+            () => ({
                 destinationMinterAddress: this.$store.getters.address,
                 accountAddress: this.$store.getters.evmAddress,
                 chainId: this.hubChainData.chainId,
@@ -156,19 +162,8 @@ export default {
                 /** @type Array<HubCoinItem> */
                 hubCoinList: this.hubTokenList,
                 priceList: this.hubPriceList,
-            };
-        },
-        txServiceProps() {
-            return {
-                privateKey: this.$store.getters.privateKey,
-                accountAddress: this.$store.getters.evmAddress,
-                chainId: this.hubChainData.chainId,
-            };
-        },
-    },
-    watch: {
-        depositProps: {
-            handler(newVal) {
+            }),
+            (newVal) => {
                 // disable updating priceList > gasPriceGwei > coinAmountAfterBridge, which will triggers watchEstimation
                 if (newVal.isDisableUpdateProps) {
                     return;
@@ -176,22 +171,29 @@ export default {
                 this.setDepositProps(newVal);
                 this.setTokenProps(newVal);
             },
-            deep: true,
-            immediate: true,
-        },
-        txServiceProps: {
-            handler(newVal) {
-                this.setTxServiceProps(newVal);
-            },
-            deep: true,
-            immediate: true,
-        },
-    },
-    mounted() {
-        this.setDiscountProps({
-            minterAddress: this.$store.getters.address,
-            ethAddress: this.$store.getters.evmAddress,
-        });
+            {deep: true, immediate: true},
+        );
+
+        // txServiceProps
+        this.$watch(
+            () => ({
+                privateKey: this.$store.getters.privateKey,
+                accountAddress: this.$store.getters.evmAddress,
+                chainId: this.hubChainData.chainId,
+            }),
+            (newVal) => this.setTxServiceProps(newVal),
+            {deep: true, immediate: true},
+        );
+
+        // discountProps
+        this.$watch(
+            () => ({
+                minterAddress: this.$store.getters.address,
+                ethAddress: this.$store.getters.evmAddress,
+            }),
+            (newVal) => this.setDiscountProps(newVal),
+            {deep: true, immediate: true},
+        );
     },
     destroyed() {
         this.evmWaitCanceler();

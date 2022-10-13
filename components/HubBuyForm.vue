@@ -352,28 +352,6 @@ export default {
             // eip-681
             return `ethereum:${this.ethAddress}@${this.chainId}?value=${this.ethToTopUp*1e18}&amount=${this.ethToTopUp}`;
         },
-        depositProps() {
-            return {
-                destinationMinterAddress: this.$store.getters.address,
-                accountAddress: this.ethAddress,
-                chainId: this.chainId,
-                amount: this.form.amountEth,
-                tokenSymbol: this.externalTokenSymbol,
-                // @TODO maybe use hub data directly from useHubTokenData composable (need handle disable polling gasPrice)
-                /** @type Array<HubCoinItem> */
-                hubCoinList: this.hubCoinList,
-                priceList: this.priceList,
-                isDisableUpdateProps: this.isFormSending,
-            };
-        },
-        txServiceProps() {
-            return {
-                privateKey: this.$store.getters.privateKey,
-                accountAddress: this.ethAddress,
-                chainId: this.chainId,
-                form: this.form,
-            };
-        },
     },
     watch: {
         'form.selectedHubNetwork': {
@@ -395,8 +373,24 @@ export default {
                 this.watchEstimation();
             },
         },
-        depositProps: {
-            handler(newVal) {
+    },
+    created() {
+        // depositProps
+        // tokenProps
+        this.$watch(
+            () => ({
+                destinationMinterAddress: this.$store.getters.address,
+                accountAddress: this.ethAddress,
+                chainId: this.chainId,
+                amount: this.form.amountEth,
+                tokenSymbol: this.externalTokenSymbol,
+                // @TODO maybe use hub data directly from useHubTokenData composable (need handle disable polling gasPrice)
+                /** @type Array<HubCoinItem> */
+                hubCoinList: this.hubCoinList,
+                priceList: this.priceList,
+                isDisableUpdateProps: this.isFormSending,
+            }),
+            (newVal) => {
                 // disable updating priceList > gasPriceGwei > coinAmountAfterBridge, which will triggers watchEstimation
                 if (newVal.isDisableUpdateProps) {
                     return;
@@ -404,23 +398,32 @@ export default {
                 this.setDepositProps(newVal);
                 this.setTokenProps(newVal);
             },
-            deep: true,
-            immediate: true,
-        },
-        txServiceProps: {
-            handler(newVal) {
-                this.setTxServiceProps(newVal);
-            },
-            deep: true,
-            immediate: true,
-        },
+            {deep: true, immediate: true},
+        );
+
+        // txServiceProps
+        this.$watch(
+            () => ({
+                privateKey: this.$store.getters.privateKey,
+                accountAddress: this.ethAddress,
+                chainId: this.chainId,
+                form: this.form,
+            }),
+            (newVal) => this.setTxServiceProps(newVal),
+            {deep: true, immediate: true},
+        );
+
+        // discountProps
+        this.$watch(
+            () => ({
+                minterAddress: this.$store.getters.address,
+                ethAddress: this.$store.getters.evmAddress,
+            }),
+            (newVal) => this.setDiscountProps(newVal),
+            {deep: true, immediate: true},
+        );
     },
     mounted() {
-        this.setDiscountProps({
-            minterAddress: this.$store.getters.address,
-            ethAddress: this.$store.getters.evmAddress,
-        });
-
         const recoveryJson = window.localStorage.getItem('hub-buy-recovery');
         if (recoveryJson) {
             try {
