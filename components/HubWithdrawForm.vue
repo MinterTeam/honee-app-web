@@ -6,17 +6,15 @@ import minValue from 'vuelidate/src/validators/minValue.js';
 import maxValue from 'vuelidate/src/validators/maxValue.js';
 import minLength from 'vuelidate/src/validators/minLength.js';
 import {FEE_PRECISION_SETTING} from 'minter-js-sdk/src/api/estimate-tx-commission.js';
-import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import {convertToPip} from 'minterjs-util/src/converter.js';
 import {postTx} from '~/api/gate.js';
 import {getOracleFee} from '~/api/hub.js';
 import {getExplorerTxUrl, pretty, prettyPrecise} from '~/assets/utils.js';
-import {HUB_MINTER_MULTISIG_ADDRESS, HUB_CHAIN_ID, HUB_CHAIN_DATA} from '~/assets/variables.js';
+import {HUB_CHAIN_ID, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import useFee from '~/composables/use-fee.js';
-import useHubDiscount from '~/composables/use-hub-discount.js';
 import useHubToken from '~/composables/use-hub-token.js';
+import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
 import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
@@ -26,14 +24,9 @@ import FieldSelect from '~/components/base/FieldSelect.vue';
 import HubFeeImpact from '~/components/HubFeeImpact.vue';
 
 
-const SPEED_MIN = 'min';
-const SPEED_FAST = 'fast';
-
 let interval;
 
 export default {
-    SPEED_MIN,
-    SPEED_FAST,
     HUB_CHAIN_ID,
     HUB_CHAIN_DATA,
     components: {
@@ -50,22 +43,29 @@ export default {
     mixins: [validationMixin],
     setup() {
         const {fee, setFeeProps} = useFee();
-        const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
         const {hubCoin: coinItem, tokenPrice: coinPrice, tokenData: externalToken, networkHubCoinList, setHubTokenProps} = useHubToken();
+        const {discountUpsidePercent, destinationFeeInCoin: coinFee, hubFeeRate, hubFeeRatePercent, hubFee, amountToSend, minAmountToSend: minAmount, txParams, feeTxParams, setWithdrawProps} = useWeb3Withdraw();
 
         return {
             fee,
             setFeeProps,
-
-            discount,
-            discountUpsidePercent,
-            setDiscountProps,
 
             coinItem,
             coinPrice,
             externalToken,
             networkHubCoinList,
             setHubTokenProps,
+
+            discountUpsidePercent,
+            coinFee,
+            hubFeeRate,
+            hubFeeRatePercent,
+            hubFee,
+            amountToSend,
+            minAmount,
+            txParams,
+            feeTxParams,
+            setWithdrawProps,
         };
     },
     fetch() {
@@ -81,9 +81,8 @@ export default {
             form: {
                 coin: '',
                 amount: "",
-                // @TODO use eth address from deposit form
                 address: this.$store.getters.address.replace('Mx', '0x'),
-                speed: SPEED_FAST,
+                speed: HUB_WITHDRAW_SPEED.FAST,
                 networkTo: HUB_CHAIN_ID.ETHEREUM,
             },
             isFormSending: false,
@@ -95,41 +94,11 @@ export default {
         };
     },
     computed: {
-        coinId() {
-            return this.coinItem?.minterId;
-        },
-        hubFeeRate() {
-            const discountModifier = 1 - this.discount;
-            // commission to withdraw is taken from origin token data (e.g. chainId: 'minter' for withdraw)
-            return new Big(this.coinItem?.commission || 0.01).times(discountModifier).toString();
-        },
-        hubFeeRatePercent() {
-            return new Big(this.hubFeeRate).times(100).toString();
-        },
-        // fee for destination network calculated in COIN
-        coinFee() {
-            if (this.coinPrice === '0') {
-                return 0;
-            }
-            const destinationFee = this.form.speed === SPEED_MIN ? this.destinationFee.min : this.destinationFee.fast;
-
-            return new Big(destinationFee).div(this.coinPrice).toString();
-        },
-        // fee to Hub bridge calculated in COIN
-        hubFee() {
-            const amount = new Big(this.coinFee).plus(this.form.amount || 0);
-            // x / (1 - x)
-            const inverseRate = new Big(this.hubFeeRate).div(new Big(1).minus(this.hubFeeRate));
-            return amount.times(inverseRate).toString();
-        },
         /*
         totalFee() {
             return new Big(this.coinFee).plus(this.hubFee).toString();
         },
         */
-        amountToSend() {
-            return new Big(this.form.amount || 0).plus(this.coinFee).plus(this.hubFee).toString();
-        },
         amountToSpend() {
             if (this.form.coin === this.fee.coinSymbol) {
                 return new Big(this.amountToSend).plus(this.fee.value).toString();
@@ -163,9 +132,6 @@ export default {
             } else {
                 return maxAmount.toString();
             }
-        },
-        minAmount() {
-            return getHubMinAmount(this.coinFee, this.hubFeeRate);
         },
         suggestionList() {
             return this.networkHubCoinList
@@ -212,6 +178,21 @@ export default {
         },
     },
     created() {
+        // withdrawProps
+        this.$watch(
+            () => ({
+                hubNetworkSlug: this.form.networkTo,
+                amountToReceive: this.form.amount,
+                tokenSymbol: this.form.coin,
+                accountAddress: this.$store.getters.address,
+                destinationAddress: this.form.address,
+                destinationFee: this.destinationFee,
+                speed: this.form.speed,
+            }),
+            (newVal) => this.setWithdrawProps(newVal),
+            {deep: true, immediate: true},
+        );
+
         // hubTokenProps
         this.$watch(
             () => ({
@@ -222,35 +203,10 @@ export default {
             {deep: true, immediate: true},
         );
 
-        // discountProps
-        this.$watch(
-            () => ({
-                minterAddress: this.$store.getters.address,
-                ethAddress: this.form.address,
-            }),
-            (newVal) => this.setDiscountProps(newVal),
-            {deep: true, immediate: true},
-        );
-
         // feeBusParams
         this.$watch(
             () => ({
-                txParams: {
-                    // gasCoin: this.form.gasCoin,
-                    type: TX_TYPE.SEND,
-                    data: {
-                        to: HUB_MINTER_MULTISIG_ADDRESS,
-                        // value: this.amountToSend,
-                        value: 0,
-                        coin: this.coinId,
-                    },
-                    payload: JSON.stringify({
-                        recipient: this.form.address,
-                        type: 'send_to_' + this.form.networkTo,
-                        // fee for destination network
-                        fee: convertToPip(this.coinFee),
-                    }),
-                },
+                txParams: this.feeTxParams,
                 baseCoinAmount: this.$store.getters.baseCoinAmount,
                 fallbackToCoinToSpend: true,
                 isOffline: !this.$store.state.onLine,
@@ -335,18 +291,7 @@ export default {
             }
 
             let txParams = {
-                type: TX_TYPE.SEND,
-                data: {
-                    to: HUB_MINTER_MULTISIG_ADDRESS,
-                    value: this.amountToSend,
-                    coin: this.coinId,
-                },
-                payload: JSON.stringify({
-                    recipient: this.form.address,
-                    type: 'send_to_' + this.form.networkTo,
-                    // fee for destination network
-                    fee: convertToPip(this.coinFee),
-                }),
+                ...this.txParams,
                 gasCoin: this.fee.coin,
             };
 
@@ -376,48 +321,6 @@ export default {
         },
     },
 };
-
-/**
- * // Minter Hub not consider discount in amount validation, so we need compensate amount for discount difference
- * @param {number|string} destinationNetworkFee
- * @param {number|string} hubFeeRate
- * @param {number|string} hubFeeBaseRate - hub fee rate without discount (0.01)
- * @return {number|string}
- */
-function getHubMinAmount(destinationNetworkFee, hubFeeRate, hubFeeBaseRate = 0.01) {
-    // minAmount = hubFeeBase - hubFee
-    // But while form.amount increase hubFee increase too, so we need to find such formAmount which will be equal minAmount, it will be maximum minAmount
-
-    // Some 7 grade math below
-    // hubFeeBase = (destinationNetworkFee + formAmount) * (0.01 / (1 - 0.01));
-    // hubFee = (destinationNetworkFee + formAmount) * (hubFeeRate / (1 - hubFeeRate))
-    // define (a = hubFeeBaseRate; b = hubFeeRate)
-    // minAmount = (destinationNetworkFee + formAmount) * (a / (1 - a)) - (destinationNetworkFee + formAmount) * (b / (1 - b))
-    // minAmount = (destinationNetworkFee + formAmount) * ((a / (1 - a) - (b / (1 - b));
-    // minAmount = (destinationNetworkFee + formAmount) * x;
-
-    // Let's calculate factor x
-    // x = a / (1 - a) - b / (1 - b)
-    // x = a * (1-b) / ((1-a)*(1-b)) - b * (1-a) / ((1-a)*(1-b))
-    // x = (a * (1-b) - b * (1-a)) / ((1-a)*(1-b))
-    // x = (a - ab - b + ab) / ((1-a)*(1-b))
-    // x = (a - b) / ((1-a)*(1-b))
-    // const factor = (hubFeeBaseRate - hubFeeRate) / ((1 - hubFeeBaseRate) * (1 - hubFeeRate));
-    const factor = new Big(hubFeeBaseRate).minus(hubFeeRate).div(new Big(1).minus(hubFeeBaseRate).times(new Big(1).minus(hubFeeRate))).toString();
-
-    // We are finding formAmount equal to minAmount (fa = formAmount, dnf = destinationNetworkFee)
-    // fa = minAmount
-    // fa = (fa + dnf) * x
-    // fa = fa * x + dnf * x
-    // fa - fa * x = dnf * x
-    // fa * 1 - fa * x = dnf * x
-    // fa * (1 -x) = dnf * x
-    // fa = dnf * x / (1 - x)
-    // const minAmount = destinationNetworkFee * factor / (1 - factor);
-    const minAmount = new Big(destinationNetworkFee).times(factor).div(new Big(1).minus(factor)).toString();
-    // add 1 pip because 0 will not pass validation too
-    return new Big(minAmount).plus(1e-18).toString();
-}
 </script>
 
 <template>

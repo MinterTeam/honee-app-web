@@ -159,6 +159,14 @@ export const HUB_BUY_STAGE = {
 };
 
 /**
+ * @enum {string}
+ */
+export const HUB_WITHDRAW_SPEED = {
+    MIN: 'min',
+    FAST: 'fast',
+};
+
+/**
  * @readonly
  * @enum {boolean}
  */
