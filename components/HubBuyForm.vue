@@ -14,13 +14,12 @@ import {pretty, prettyPrecise, prettyRound, prettyExact, decreasePrecisionSignif
 import erc20ABI from '~/assets/abi-erc20.js';
 import hubABI from '~/assets/abi-hub.js';
 import wethAbi from '~/assets/abi-weth.js';
-import debounce from '~/assets/lodash5-debounce.js';
-import {NETWORK, MAINNET, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, HUB_TRANSFER_STATUS, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+import {NETWORK, MAINNET, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import useEstimateSwap from '~/composables/use-estimate-swap.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
-import useHubOracle from '~/composables/use-hub-oracle.js';
+import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useWeb3Deposit from '~/composables/use-web3-deposit.js';
 import useTxService from '~/composables/use-tx-service.js';
@@ -140,13 +139,16 @@ export default {
             idPreventConcurrency: 'hubBuy',
         });
         const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
-        const {hubPriceList: priceList} = useHubOracle({subscribePriceList: true});
 
         const {
             tokenData: externalToken,
             tokenContractAddress: coinContractAddress,
             tokenDecimals: coinDecimals,
             isNativeToken: isEthSelected,
+            tokenPrice,
+            setHubTokenProps,
+        } = useHubToken();
+        const {
             nativeBalance: selectedNative,
             wrappedBalance: selectedWrapped,
             balance: selectedBalance,
@@ -181,10 +183,9 @@ export default {
             discountUpsidePercent,
             setDiscountProps,
 
-            // hubCoinList,
-            priceList,
+            externalToken, coinContractAddress, coinDecimals, isEthSelected, tokenPrice, setHubTokenProps,
 
-            externalToken, coinContractAddress, coinDecimals, isEthSelected, selectedNative, selectedWrapped, selectedBalance, coinToDepositUnlocked,
+            selectedNative, selectedWrapped, selectedBalance, coinToDepositUnlocked,
             setWeb3TokenProps,
             updateTokenBalance,
             updateTokenAllowance,
@@ -328,12 +329,8 @@ export default {
             if (this.$v.form.$invalid || !this.estimation || this.isEstimationWaiting || this.estimationError) {
                 return 0;
             }
-            const priceItem = this.priceList.find((item) => item.name === this.externalTokenSymbol.toLowerCase());
-            if (!priceItem) {
-                return 0;
-            }
-            const ethPrice = priceItem.value;
-            return this.form.amountEth * ethPrice / this.estimation;
+            const externalTokenPrice = this.tokenPrice > 0 ? this.tokenPrice : 0;
+            return this.form.amountEth * externalTokenPrice / this.estimation;
         },
         /** @type {Array<SequenceStepItem>} */
         //@TODO
@@ -384,16 +381,12 @@ export default {
                 chainId: this.chainId,
                 amount: this.form.amountEth,
                 tokenSymbol: this.externalTokenSymbol,
-                // @TODO maybe use hub data directly from composable (need handle disable polling gasPrice)
-                priceList: this.priceList,
-                isDisableUpdateProps: this.isFormSending,
+                // disable updating gasPriceGwei > coinAmountAfterBridge, which will triggers watchEstimation
+                freezeGasPrice: this.isFormSending,
             }),
             (newVal) => {
-                // disable updating priceList > gasPriceGwei > coinAmountAfterBridge, which will triggers watchEstimation
-                if (newVal.isDisableUpdateProps) {
-                    return;
-                }
                 this.setDepositProps(newVal);
+                this.setHubTokenProps(newVal);
                 this.setWeb3TokenProps(newVal);
             },
             {deep: true, immediate: true},

@@ -16,7 +16,7 @@ import {getErrorText} from '~/assets/server-error.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import useFee from '~/composables/use-fee.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
-import useHubOracle from '~/composables/use-hub-oracle.js';
+import useHubToken from '~/composables/use-hub-token.js';
 import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
@@ -51,7 +51,7 @@ export default {
     setup() {
         const {fee, setFeeProps} = useFee();
         const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
-        const {hubTokenList: hubCoinList, hubPriceList: priceList} = useHubOracle({subscribePriceList: true});
+        const {hubCoin: coinItem, tokenPrice: coinPrice, tokenData: externalToken, networkHubCoinList, setHubTokenProps} = useHubToken();
 
         return {
             fee,
@@ -61,8 +61,11 @@ export default {
             discountUpsidePercent,
             setDiscountProps,
 
-            hubCoinList,
-            priceList,
+            coinItem,
+            coinPrice,
+            externalToken,
+            networkHubCoinList,
+            setHubTokenProps,
         };
     },
     fetch() {
@@ -92,27 +95,16 @@ export default {
         };
     },
     computed: {
-        coinItem() {
-            return this.hubCoinList.find((item) => item.symbol === this.form.coin);
-        },
         coinId() {
             return this.coinItem?.minterId;
         },
-        externalToken() {
-            return this.coinItem?.[this.form.networkTo];
-        },
         hubFeeRate() {
             const discountModifier = 1 - this.discount;
-            // commission to withdraw is taken from origin token data (e.g. chainId: 'minter')
+            // commission to withdraw is taken from origin token data (e.g. chainId: 'minter' for withdraw)
             return new Big(this.coinItem?.commission || 0.01).times(discountModifier).toString();
         },
         hubFeeRatePercent() {
             return new Big(this.hubFeeRate).times(100).toString();
-        },
-        // coin price in dollar
-        coinPrice() {
-            const priceItem = this.priceList.find((item) => item.name === this.externalToken?.denom);
-            return priceItem ? priceItem.value : '0';
         },
         // fee for destination network calculated in COIN
         coinFee() {
@@ -176,14 +168,13 @@ export default {
             return getHubMinAmount(this.coinFee, this.hubFeeRate);
         },
         suggestionList() {
-            return this.hubCoinList
+            return this.networkHubCoinList
                 // show only available coins for selected network
-                .filter((item) => !!item[this.form.networkTo])
                 .map((item) => item.symbol);
             // intersection of address balance and hub supported coins
             /*
             return this.$store.state.balance.filter((balanceItem) => {
-                return this.hubCoinList.find((item) => Number(item.minterId) === balanceItem.coin.id);
+                return this.networkHubCoinList.some((item) => Number(item.minterId) === balanceItem.coin.id);
             });
             */
         },
@@ -221,6 +212,16 @@ export default {
         },
     },
     created() {
+        // hubTokenProps
+        this.$watch(
+            () => ({
+                chainId: HUB_CHAIN_DATA[this.form.networkTo].chainId,
+                tokenSymbol: this.form.coin,
+            }),
+            (newVal) => this.setHubTokenProps(newVal),
+            {deep: true, immediate: true},
+        );
+
         // discountProps
         this.$watch(
             () => ({

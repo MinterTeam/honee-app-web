@@ -85,23 +85,25 @@ export const HUB_NETWORK = HUB_CHAIN_ID;
  * @type {Object.<string, HubChainDataItem>}
  */
 export const HUB_CHAIN_DATA = {
-    [HUB_CHAIN_ID.ETHEREUM]: {
+    [HUB_NETWORK.ETHEREUM]: {
         name: 'Ethereum',
         shortName: 'Ethereum',
         coinSymbol: 'ETH',
         chainId: ETHEREUM_CHAIN_ID,
-        hubChainId: HUB_CHAIN_ID.ETHEREUM,
+        hubChainId: HUB_NETWORK.ETHEREUM,
+        hubNetworkSlug: HUB_NETWORK.ETHEREUM,
         apiUrl: ETHEREUM_API_URL,
         explorerHost: ETHERSCAN_HOST,
         hubContractAddress: HUB_ETHEREUM_CONTRACT_ADDRESS.toLowerCase(),
         wrappedNativeContractAddress: WETH_CONTRACT_ADDRESS.toLowerCase(),
     },
-    [HUB_CHAIN_ID.BSC]: {
+    [HUB_NETWORK.BSC]: {
         name: 'Binance Smart Chain',
         shortName: 'BSC',
         coinSymbol: 'BNB',
         chainId: BSC_CHAIN_ID,
-        hubChainId: HUB_CHAIN_ID.BSC,
+        hubChainId: HUB_NETWORK.BSC,
+        hubNetworkSlug: HUB_NETWORK.BSC,
         apiUrl: BSC_API_URL,
         explorerHost: BSCSCAN_HOST,
         hubContractAddress: HUB_BSC_CONTRACT_ADDRESS.toLowerCase(),

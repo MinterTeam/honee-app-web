@@ -20,7 +20,7 @@ const gasPrice = computed(() => {
     const entries = Object.values(HUB_CHAIN_ID)
         .map((network) => {
             const priceItem = priceList.value.find((item) => item.name === `${network}/gas`);
-            return [network, priceItem];
+            return [network, priceItem?.value];
         });
     return Object.fromEntries(entries);
 });

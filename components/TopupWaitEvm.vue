@@ -1,22 +1,21 @@
 <script>
 import stripZeros from 'pretty-num/src/strip-zeros.js';
-import {findNativeCoinSymbol} from '~/api/hub.js';
+import Big from '~/assets/big.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_ID} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {wait} from '~/assets/utils/wait.js';
 import {pretty} from '~/assets/utils.js';
+import useHubDiscount from '~/composables/use-hub-discount.js';
+import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useWeb3Deposit from '~/composables/use-web3-deposit.js';
 import useTxService from '~/composables/use-tx-service.js';
-import useHubOracle from '~/composables/use-hub-oracle.js';
 import {TOP_UP_NETWORK} from '~/components/Topup.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 import HubBuyTxListItem from '~/components/HubBuyTxListItem.vue';
 import HubFeeImpact from '~/components/HubFeeImpact.vue';
-import Big from '~/assets/big.js';
-import useHubDiscount from '~/composables/use-hub-discount.js';
 
 export default {
     LOADING_STAGE,
@@ -44,11 +43,16 @@ export default {
     ],
     setup() {
         const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
-        const {initPromise: hubInfoInitPromise, hubTokenList, hubPriceList} = useHubOracle({subscribePriceList: true});
 
         const {
+            initPromise: hubInfoInitPromise,
             tokenData,
             isNativeToken,
+            networkNativeCoin,
+            setHubTokenProps,
+        } = useHubToken();
+
+        const {
             nativeBalance,
             wrappedBalance,
             balance,
@@ -74,11 +78,11 @@ export default {
             setDiscountProps,
 
             hubInfoInitPromise,
-            hubTokenList,
-            hubPriceList,
-
             tokenData,
             isNativeToken,
+            networkNativeCoin,
+            setHubTokenProps,
+
             nativeBalance,
             wrappedBalance,
             balance,
@@ -110,7 +114,7 @@ export default {
             return HUB_CHAIN_DATA[this.networkSlug];
         },
         tokenSymbol() {
-            return findNativeCoinSymbol(this.hubTokenList, this.networkSlug);
+            return this.networkNativeCoin?.symbol;
         },
         hubFeeRate() {
             const discountModifier = 1 - this.discount;
@@ -159,14 +163,12 @@ export default {
                 // @TODO don't unwrap micro WETH balance
                 amount: this.balance,
                 tokenSymbol: this.tokenSymbol,
-                priceList: this.hubPriceList,
+                // disable updating gasPriceGwei > coinAmountAfterBridge, which will triggers watchEstimation
+                freezeGasPrice: false,
             }),
             (newVal) => {
-                // disable updating priceList > gasPriceGwei > coinAmountAfterBridge, which will triggers watchEstimation
-                if (newVal.isDisableUpdateProps) {
-                    return;
-                }
                 this.setDepositProps(newVal);
+                this.setHubTokenProps(newVal);
                 this.setWeb3TokenProps(newVal);
             },
             {deep: true, immediate: true},

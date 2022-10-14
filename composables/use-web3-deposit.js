@@ -1,4 +1,4 @@
-import {reactive, computed, watch} from '@vue/composition-api';
+import {ref, reactive, computed, watch} from '@vue/composition-api';
 
 import {subscribeTransfer} from '~/api/hub.js';
 import {getProviderByChain, web3Utils, toErcDecimals} from '~/api/web3.js';
@@ -7,6 +7,7 @@ import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_TRANSFER_STATUS, MA
 import Big from '~/assets/big.js';
 import wethAbi from '~/assets/abi-weth.js';
 import hubABI from '~/assets/abi-hub.js';
+import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useTxService from '~/composables/use-tx-service.js';
 
@@ -17,11 +18,12 @@ const GAS_LIMIT_UNLOCK = 75000;
 const GAS_LIMIT_BRIDGE = 75000;
 
 
-const { tokenContractAddress: tokenAddress, tokenDecimals, isNativeToken, nativeBalance, setWeb3TokenProps } = useWeb3TokenBalance();
+const { tokenContractAddress: tokenAddress, tokenDecimals, isNativeToken, networkGasPrice, setHubTokenProps } = useHubToken();
+const { nativeBalance, setWeb3TokenProps } = useWeb3TokenBalance();
 const { txServiceState, sendEthTx, addStepData, waitPendingStep } = useTxService();
 
 /**
- * @type {import('@vue/composition-api').UnwrapRef<{amount: number, tokenSymbol: string, accountAddress: string, destinationMinterAddress: string, chainId: number, priceList: Array<Object>}>}
+ * @type {import('@vue/composition-api').UnwrapRef<{amount: number, tokenSymbol: string, accountAddress: string, destinationMinterAddress: string, chainId: number, freezeGasPrice: boolean}>}
  */
 const props = reactive({
     destinationMinterAddress: '',
@@ -29,14 +31,18 @@ const props = reactive({
     chainId: 0,
     amount: 0,
     tokenSymbol: '',
-    priceList: [],
+    freezeGasPrice: false,
 });
 
 /**
- * @param {{amount?: number, tokenSymbol?: string, accountAddress?: string, destinationMinterAddress?: string, chainId?: number, priceList?: Array<Object>}} newProps
+ * @param {{amount?: number, tokenSymbol?: string, accountAddress?: string, destinationMinterAddress?: string, chainId?: number, freezeGasPrice?: boolean}} newProps
  */
 function setProps(newProps) {
     Object.assign(props, newProps);
+    setHubTokenProps({
+        tokenSymbol: newProps.tokenSymbol,
+        chainId: newProps.chainId,
+    });
     setWeb3TokenProps({
         tokenSymbol: newProps.tokenSymbol,
         accountAddress: newProps.accountAddress,
@@ -87,20 +93,12 @@ const isApproveRequired = computed(() => {
 // @TODO gasPrice not updated during isFormSending and may be too low/high after waiting pin gasPrice on submit
 // @TODO use *network*_fee instead of 'prices'
 // @TODO use web3.eth.getGasPrice for testnet @see https://web3js.readthedocs.io/en/v1.7.3/web3-eth.html#getgasprice
-const gasPriceGwei = computed(() => {
-    const selectedHubNetwork = HUB_CHAIN_BY_ID[props.chainId]?.hubChainId;
-    const priceItem = props.priceList.find((item) => item.name === `${selectedHubNetwork}/gas`);
-    let gasPriceGwei;
-    if (!priceItem) {
-        gasPriceGwei = 100;
-    } else {
-        gasPriceGwei = priceItem.value;
+const gasPriceGwei = ref(0);
+watch(networkGasPrice, () => {
+    if (!props.freezeGasPrice) {
+        gasPriceGwei.value = networkGasPrice.value;
     }
-
-    // return NETWORK === MAINNET ? gasPriceGwei : 5;
-    // eslint-disable-next-line no-unreachable
-    return NETWORK === MAINNET ? gasPriceGwei : new Big(gasPriceGwei).times(10).toNumber();
-});
+}, {immediate: true});
 const gasTotalFee = computed(() => {
     const unwrapGasLimit = isUnwrapRequired.value ? GAS_LIMIT_UNWRAP : 0;
     const unlockGasLimit = isApproveRequired.value ? GAS_LIMIT_UNLOCK : 0;

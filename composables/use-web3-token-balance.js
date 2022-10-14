@@ -176,11 +176,6 @@ export default function useWeb3TokenBalance() {
 
 
     return {
-        // reexport
-        tokenData,
-        tokenContractAddress,
-        tokenDecimals,
-        isNativeToken,
         // computed
         nativeBalance,
         wrappedBalance,
