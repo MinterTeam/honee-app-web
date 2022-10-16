@@ -149,7 +149,12 @@ function getLeaderboardDateParams(profitPeriod) {
 
     function getLastMonday() {
         const today = getToday();
-        return shiftDate(today, today.getDay() * -1 + 1);
+        let todayDay = today.getDay();
+        // fix sunday
+        if (todayDay === 0) {
+            todayDay = 7;
+        }
+        return shiftDate(today, todayDay * -1 + 1);
     }
 
     /**
