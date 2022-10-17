@@ -7,12 +7,12 @@ import maxValue from 'vuelidate/src/validators/maxValue.js';
 import minLength from 'vuelidate/src/validators/minLength.js';
 import {FEE_PRECISION_SETTING} from 'minter-js-sdk/src/api/estimate-tx-commission.js';
 import {postTx} from '~/api/gate.js';
-import {getOracleFee} from '~/api/hub.js';
 import {getExplorerTxUrl, pretty, prettyPrecise} from '~/assets/utils.js';
 import {HUB_CHAIN_ID, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import useFee from '~/composables/use-fee.js';
+import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
 import Loader from '~/components/base/BaseLoader.vue';
@@ -23,8 +23,6 @@ import FieldCombined from '~/components/base/FieldCombined.vue';
 import FieldSelect from '~/components/base/FieldSelect.vue';
 import HubFeeImpact from '~/components/HubFeeImpact.vue';
 
-
-let interval;
 
 export default {
     HUB_CHAIN_ID,
@@ -43,12 +41,17 @@ export default {
     mixins: [validationMixin],
     setup() {
         const {fee, setFeeProps} = useFee();
+        const {
+            fetchHubDestinationFee,
+        } = useHubOracle();
         const {hubCoin: coinItem, tokenPrice: coinPrice, tokenData: externalToken, networkHubCoinList, setHubTokenProps} = useHubToken();
         const {discountUpsidePercent, destinationFeeInCoin: coinFee, hubFeeRate, hubFeeRatePercent, hubFee, amountToSend, minAmountToSend: minAmount, txParams, feeTxParams, setWithdrawProps} = useWeb3Withdraw();
 
         return {
             fee,
             setFeeProps,
+
+            fetchHubDestinationFee,
 
             coinItem,
             coinPrice,
@@ -68,16 +71,8 @@ export default {
             setWithdrawProps,
         };
     },
-    fetch() {
-        return this.getDestinationFee();
-    },
     data() {
         return {
-            // fee for destination network calculated in dollars
-            destinationFee: {
-                min: 0,
-                fast: 0,
-            },
             form: {
                 coin: '',
                 amount: "",
@@ -169,13 +164,6 @@ export default {
         };
     },
     watch: {
-        'form.networkTo': {
-            handler() {
-                // fetch fee for updated network
-                this.destinationFee = {min: 0, fast: 0};
-                this.getDestinationFee();
-            },
-        },
     },
     created() {
         // withdrawProps
@@ -186,7 +174,6 @@ export default {
                 tokenSymbol: this.form.coin,
                 accountAddress: this.$store.getters.address,
                 destinationAddress: this.form.address,
-                destinationFee: this.destinationFee,
                 speed: this.form.speed,
             }),
             (newVal) => this.setWithdrawProps(newVal),
@@ -216,29 +203,17 @@ export default {
             {deep: true, immediate: true},
         );
     },
-    mounted() {
-        interval = setInterval(() => {
-            this.getDestinationFee();
-        }, 30 * 1000);
-    },
-    destroyed() {
-        clearInterval(interval);
-    },
     methods: {
         pretty,
         prettyPrecise,
         getExplorerTxUrl,
         getDestinationFee({checkWarning} = {}) {
-            if (!this.form.networkTo) {
-                return 0;
-            }
-            return getOracleFee(this.form.networkTo)
+            return this.fetchHubDestinationFee()
                 .then((fee) => {
-                    if (checkWarning && new Big(fee.fast).gt(this.destinationFee.fast)) {
+                    if (checkWarning && fee.isIncreased) {
                         // don't send form, show warning to user, so he has to press Submit again
                         this.serverWarning = true;
                     }
-                    this.destinationFee = fee;
                 });
         },
         submitConfirm() {

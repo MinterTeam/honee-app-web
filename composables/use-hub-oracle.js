@@ -1,6 +1,7 @@
-import { ref, computed, onUnmounted } from '@vue/composition-api';
-import {getOracleCoinList, getOraclePriceList} from '~/api/hub.js';
-import {HUB_CHAIN_ID} from '~/assets/variables.js';
+import {ref, computed, reactive, set, watch} from '@vue/composition-api';
+import {getOracleCoinList, getOracleFee, getOraclePriceList} from '~/api/hub.js';
+import {HUB_NETWORK, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
+import usePolling from '~/composables/use-polling.js';
 
 /**
  * @type {Ref<Array<HubCoinItem>>}
@@ -11,13 +12,19 @@ const tokenList = ref([]);
  */
 const priceList = ref([]);
 
+/**
+ * Withdraw tx fee for destination network in dollars (e.g. fee to send bsc tx from hub to recipient)
+ * @type {UnwrapRef<Object.<HUB_NETWORK, DestinationFee>>}
+ */
+const destinationFeeMap = reactive({});
+
 
 /**
- *
- * @type {ComputedRef<Object.<HUB_CHAIN_ID, (number|string)>>}
+ * Gas price in external network in gwei
+ * @type {ComputedRef<Object.<HUB_NETWORK, (number|string)>>}
  */
 const gasPrice = computed(() => {
-    const entries = Object.values(HUB_CHAIN_ID)
+    const entries = Object.values(HUB_NETWORK)
         .map((network) => {
             const priceItem = priceList.value.find((item) => item.name === `${network}/gas`);
             return [network, priceItem?.value];
@@ -43,64 +50,89 @@ function fetchPriceList() {
         });
 }
 
-let timerToken;
-let timerPrice;
-let subscribeCount = {
-    token: 0,
-    price: 0,
-};
-function subscribeTokenList() {
-    subscribeCount.token++;
-    if (subscribeCount.token === 1) {
-        timerToken = setInterval(fetchTokenList, 60 * 1000);
+/**
+ * @param {HUB_NETWORK} hubNetwork
+ * @return {Promise<undefined>}
+ */
+function fetchDestinationFee(hubNetwork) {
+    if (!hubNetwork) {
+        return Promise.resolve();
     }
+    return getOracleFee(hubNetwork)
+        .then((result) => {
+            const oldFee = destinationFeeMap[hubNetwork]?.[HUB_WITHDRAW_SPEED.FAST];
+            const isIncreased = oldFee && Number(result[HUB_WITHDRAW_SPEED.FAST]) > Number(oldFee);
+            set(destinationFeeMap, hubNetwork, Object.freeze({...result, isIncreased}));
+        });
 }
-function subscribePriceList() {
-    subscribeCount.price++;
-    if (subscribeCount.price === 1) {
-        timerPrice = setInterval(fetchPriceList, 15 * 1000);
-    }
-}
-function unsubscribeTokenList() {
-    subscribeCount.token--;
-    if (subscribeCount.token === 0) {
-        clearInterval(timerToken);
-    }
-}
-function unsubscribePriceList() {
-    subscribeCount.price--;
-    if (subscribeCount.price === 0) {
-        clearInterval(timerToken);
-    }
-}
+
+const TOKEN_LIST_INTERVAL = 60 * 1000;
+const PRICE_LIST_INTERVAL = 15 * 1000;
+const DESTINATION_FEE_INTERVAL = 30 * 1000;
 
 
 export default function useHubOracle({
     subscribeTokenList: isSubscribeTokenList = false,
     subscribePriceList: isSubscribePriceList = false,
+    subscribeDestinationFee: isSubscribeDestinationFee = false,
 } = {}) {
-    const promise = Promise.all([
-        fetchTokenList(),
-        fetchPriceList(),
-    ]);
+
+    const props = reactive({
+        hubNetworkSlug: '',
+    });
+
+    /**
+     * @param {{hubNetworkSlug?: HUB_NETWORK}} newProps
+     */
+    function setProps(newProps) {
+        Object.assign(props, newProps);
+    }
+
+    const promiseList = [];
 
     if (isSubscribeTokenList) {
-        subscribeTokenList();
-        onUnmounted(unsubscribeTokenList);
+        promiseList.push(fetchTokenList());
+        usePolling('hub-token-list', fetchTokenList, TOKEN_LIST_INTERVAL);
     }
     if (isSubscribePriceList) {
-        subscribePriceList();
-        onUnmounted(unsubscribePriceList);
+        promiseList.push(fetchPriceList());
+        usePolling('hub-price-list', fetchPriceList, PRICE_LIST_INTERVAL);
     }
 
+    if (isSubscribeDestinationFee) {
+        const {updatePolling} = usePolling();
+        watch(() => props.hubNetworkSlug, (newVal, oldVal) => {
+            fetchDestinationFee(newVal);
+            updatePolling(oldVal, newVal, () => fetchDestinationFee(newVal), DESTINATION_FEE_INTERVAL);
+        });
+    }
+
+    const destinationFee = computed(() => {
+        if (destinationFeeMap[props.hubNetworkSlug]) {
+            return destinationFeeMap[props.hubNetworkSlug];
+        } else {
+            return {
+                [HUB_WITHDRAW_SPEED.MIN]: 0,
+                [HUB_WITHDRAW_SPEED.FAST]: 0,
+            };
+        }
+    });
+
     return {
-        initPromise: promise,
+        initPromise: Promise.all(promiseList),
 
         hubTokenList: tokenList,
         hubPriceList: priceList,
         gasPrice,
+        // requires hubNetworkSlug
+        hubDestinationFee: destinationFee,
 
+        setHubOracleProps: setProps,
         fetchHubTokenList: fetchTokenList,
         fetchHubPriceList: fetchPriceList,
+        fetchHubDestinationFee: () => {
+            return fetchDestinationFee(props.hubNetworkSlug)
+                .then(() => destinationFee.value);
+        },
     };
 }

@@ -6,7 +6,7 @@ import {isValidAddress as isValidMinterAddress} from 'minterjs-util';
 import {isValidAddress as isValidEthAddress} from 'ethereumjs-util';
 import {getCoinList} from '~/api/explorer.js';
 import Big from '~/assets/big.js';
-import {HUB_API_URL, HUB_TRANSFER_STATUS, HUB_CHAIN_ID, NETWORK, MAINNET, BASE_COIN, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from "~/assets/variables.js";
+import {HUB_API_URL, HUB_TRANSFER_STATUS, HUB_CHAIN_ID, HUB_NETWORK, NETWORK, MAINNET, BASE_COIN, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {isHubTransferFinished} from '~/assets/utils.js';
 
@@ -19,9 +19,9 @@ addToCamelInterceptor(instance);
 const fastCache = new Cache({ttl: 5 * 1000, max: 100});
 
 /**
- * Withdraw tx fee in dollars
- * @param {HUB_CHAIN_ID} network
- * @return {Promise<{min: string, fast: string}>}
+ * Withdraw tx fee for destination network in dollars (e.g. fee to send bsc tx from hub to recipient)
+ * @param {HUB_NETWORK} network
+ * @return {Promise<QueryEthFeeResponse.AsObject>}
  */
 export function getOracleFee(network) {
     return instance.get(`oracle/v1/${network}_fee`, {
