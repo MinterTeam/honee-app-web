@@ -17,6 +17,7 @@ export default {
         'success',
         'success-modal-close',
         'update:estimation',
+        'update:v$estimation',
         'validation-touch',
     ],
     props: {
@@ -97,7 +98,7 @@ export default {
             return [
                 {
                     txParams: {
-                        type: this.$refs.estimation.getTxType(),
+                        type: this.$refs.estimation?.getTxType(),
                         data: this.txData,
                     },
                     /**
@@ -170,7 +171,7 @@ export default {
         @success-modal-close="$emit('success-modal-close')"
     >
         <template v-slot:default="{fee}">
-            <slot :fee="fee" :estimation="estimation"/>
+            <slot :fee="fee" :estimation="estimation" :vEstimation="v$estimation"/>
 
 
             <SwapEstimation
@@ -185,7 +186,7 @@ export default {
                 :fee="swapFee"
                 @update:estimation="estimation = $event"
                 @update:tx-data="txData = $event"
-                @update:v$estimation="v$estimation = $event"
+                @update:v$estimation="v$estimation = $event; $emit('update:v$estimation', $event)"
             />
         </template>
 

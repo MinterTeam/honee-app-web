@@ -14,6 +14,7 @@ import TxStakeDelegateForm from '~/components/TxStakeDelegateForm.vue';
 import TxStakeUnbondForm from '~/components/TxStakeUnbondForm.vue';
 import StakeByLock from '~/components/StakeByLock.vue';
 import ActionFarmWithLock from '~/components/ActionFarmWithLock.vue';
+import ActionSwapPancake from '~/components/ActionSwapPancake.vue';
 import Modal from '~/components/base/Modal.vue';
 import CardHead from '~/components/CardHead.vue';
 
@@ -49,6 +50,10 @@ const actionList = {
         params: ['coinToBuy', 'coinToSell'],
         component: Swap,
         tags: ['exchange'],
+    },
+    'swap-pancake': {
+        params: [],
+        component: ActionSwapPancake,
     },
     send: {
         params: ['address', 'coin', 'amount'],

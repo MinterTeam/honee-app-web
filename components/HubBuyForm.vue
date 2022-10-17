@@ -14,7 +14,7 @@ import {pretty, prettyPrecise, prettyRound, prettyExact, decreasePrecisionSignif
 import erc20ABI from '~/assets/abi-erc20.js';
 import hubABI from '~/assets/abi-hub.js';
 import wethAbi from '~/assets/abi-weth.js';
-import {NETWORK, MAINNET, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+import {NETWORK, MAINNET, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID, HUB_COIN_DATA as DEPOSIT_COIN_DATA} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import useEstimateSwap from '~/composables/use-estimate-swap.js';
@@ -55,25 +55,6 @@ let waitingCancel;
 
 let timer;
 
-
-const DEPOSIT_COIN_DATA = {
-    ETH: {
-        testnetSymbol: 'TESTETH',
-        smallAmount: 0.0001,
-    },
-    BNB: {
-        testnetSymbol: 'TESTBNB',
-        smallAmount: 0.001,
-    },
-    USDTE: {
-        testnetSymbol: 'USDC',
-        smallAmount: 0.1,
-    },
-    HUB: {
-        testnetSymbol: 'TESTHUB',
-        smallAmount: 0.01,
-    },
-};
 
 const isValidAmount = withParams({type: 'validAmount'}, (value) => {
     return parseFloat(value) >= 0;

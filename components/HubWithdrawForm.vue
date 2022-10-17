@@ -349,7 +349,8 @@ export default {
                     :coin-list="suggestionList"
                     :amount.sync="form.amount"
                     :$amount="$v.form.amount"
-                    :max-value="maxAmount"
+                    :use-balance-for-max-value="true"
+                    :fee="fee"
                     :label="$td('Amount', 'form.wallet-send-amount')"
                 />
                 <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>

@@ -68,16 +68,20 @@ export const COIN_TYPE = {
  * @readonly
  * @enum {string}
  */
-export const HUB_CHAIN_ID = {
+export const HUB_NETWORK = {
     ETHEREUM: 'ethereum',
     BSC: 'bsc',
     MINTER: 'minter',
 };
 
-export const HUB_NETWORK = HUB_CHAIN_ID;
+/**
+ * @deprecated
+ * @type {HUB_NETWORK}
+ */
+export const HUB_CHAIN_ID = HUB_NETWORK;
 
 /**
- * @typedef {{coinSymbol: string, name: string, shortName: string, chainId: number, hubChainId: HUB_CHAIN_ID, apiUrl: string, explorerHost: string, hubContractAddress: string, wrappedNativeContractAddress: string}} HubChainDataItem
+ * @typedef {{coinSymbol: string, name: string, shortName: string, chainId: number, hubChainId: HUB_CHAIN_ID, hubNetworkSlug: HUB_CHAIN_ID, apiUrl: string, explorerHost: string, hubContractAddress: string, wrappedNativeContractAddress: string}} HubChainDataItem
  */
 
 /**
@@ -140,6 +144,25 @@ export const HUB_DEPOSIT_TX_PURPOSE = {
     WRAP: 'Wrap',
     UNWRAP: 'Unwrap',
     OTHER: 'Other',
+};
+
+export const HUB_COIN_DATA = {
+    ETH: {
+        testnetSymbol: 'TESTETH',
+        smallAmount: 0.0001,
+    },
+    BNB: {
+        testnetSymbol: 'TESTBNB',
+        smallAmount: 0.001,
+    },
+    USDTE: {
+        testnetSymbol: 'USDC',
+        smallAmount: 0.1,
+    },
+    HUB: {
+        testnetSymbol: 'TESTHUB',
+        smallAmount: 0.01,
+    },
 };
 
 /**

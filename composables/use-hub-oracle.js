@@ -4,6 +4,16 @@ import {findNativeCoin, getOracleCoinList, getOracleFee, getOraclePriceList} fro
 import {HUB_NETWORK, HUB_WITHDRAW_SPEED, MAINNET, NETWORK} from '~/assets/variables.js';
 import usePolling from '~/composables/use-polling.js';
 
+// workaround for `set` not trigger computed properly
+// @see https://github.com/vuejs/composition-api/issues/580
+function getInitialChainData() {
+    return Object.fromEntries(Object.values(HUB_NETWORK).map((hubNetworkSlug) => [hubNetworkSlug, getEmptyItem()]));
+
+    function getEmptyItem() {
+        return {};
+    }
+}
+
 /**
  * @type {Ref<Array<HubCoinItem>>}
  */
@@ -17,7 +27,7 @@ const priceList = ref([]);
  * Withdraw tx fee for destination network in dollars (e.g. fee to send bsc tx from hub to recipient)
  * @type {UnwrapRef<Object.<HUB_NETWORK, DestinationFee>>}
  */
-const destinationFeeMap = reactive({});
+const destinationFeeMap = reactive(getInitialChainData());
 
 
 /**
