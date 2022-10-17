@@ -4,11 +4,6 @@ import {findHubCoinItem, findNativeCoin, findTokenInfo} from '~/api/hub.js';
 import {HUB_CHAIN_BY_ID, MAINNET, NETWORK} from '~/assets/variables.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 
-const {initPromise, hubTokenList, hubPriceList, gasPrice} = useHubOracle({
-    subscribeTokenList: true,
-    subscribePriceList: true,
-});
-
 /**
  * return WETH/WBNB address
  * @param {number} chainId
@@ -19,6 +14,11 @@ function getWrappedNativeContractAddress(chainId) {
 }
 
 export default function useHubToken() {
+    const {initPromise, hubTokenList, hubPriceList, gasPrice} = useHubOracle({
+        subscribeTokenList: true,
+        subscribePriceList: true,
+    });
+
     const props = reactive({
         chainId: 0,
         tokenSymbol: '',
