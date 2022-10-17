@@ -1,6 +1,7 @@
 import {ref, computed, reactive, set, watch} from '@vue/composition-api';
-import {getOracleCoinList, getOracleFee, getOraclePriceList} from '~/api/hub.js';
-import {HUB_NETWORK, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
+import Big from '~/assets/big.js';
+import {findNativeCoin, getOracleCoinList, getOracleFee, getOraclePriceList} from '~/api/hub.js';
+import {HUB_NETWORK, HUB_WITHDRAW_SPEED, MAINNET, NETWORK} from '~/assets/variables.js';
 import usePolling from '~/composables/use-polling.js';
 
 /**
@@ -23,7 +24,7 @@ const destinationFeeMap = reactive({});
  * Gas price in external network in gwei
  * @type {ComputedRef<Object.<HUB_NETWORK, (number|string)>>}
  */
-const gasPrice = computed(() => {
+const gasPriceMap = computed(() => {
     const entries = Object.values(HUB_NETWORK)
         .map((network) => {
             const priceItem = priceList.value.find((item) => item.name === `${network}/gas`);
@@ -107,7 +108,39 @@ export default function useHubOracle({
         });
     }
 
-    const destinationFee = computed(() => {
+    /**
+     * gas price in gwei for selected network
+     * @type {ComputedRef<number|string>}
+     */
+    const networkGasPrice = computed(() => {
+        let gasPriceGwei = gasPriceMap.value[props.hubNetworkSlug];
+        if (!(gasPriceGwei > 0)) {
+            gasPriceGwei = 100;
+        }
+
+        // return NETWORK === MAINNET ? gasPriceGwei : 5;
+        // eslint-disable-next-line no-unreachable
+        return NETWORK === MAINNET ? gasPriceGwei : new Big(gasPriceGwei).times(10).toNumber();
+    });
+    /**
+     * available coins for selected network
+     * @type {ComputedRef<Array<HubCoinItem>>}
+     */
+    const networkHubCoinList = computed(() => {
+        return tokenList.value.filter((item) => !!item[props.hubNetworkSlug]);
+    });
+    /**
+     *
+     * @type {ComputedRef<HubCoinItem>}
+     */
+    const networkNativeCoin = computed(() => {
+        return findNativeCoin(tokenList.value, props.hubNetworkSlug);
+    });
+    /**
+     * Withdraw tx fee for destination network in dollars (e.g. fee to send bsc tx from hub to recipient)
+     * @type {ComputedRef<DestinationFee>}
+     */
+    const networkDestinationFee = computed(() => {
         if (destinationFeeMap[props.hubNetworkSlug]) {
             return destinationFeeMap[props.hubNetworkSlug];
         } else {
@@ -123,16 +156,24 @@ export default function useHubOracle({
 
         hubTokenList: tokenList,
         hubPriceList: priceList,
-        gasPrice,
+        gasPrice: gasPriceMap,
         // requires hubNetworkSlug
-        hubDestinationFee: destinationFee,
+        networkGasPrice,
+        networkHubCoinList,
+        networkNativeCoin,
+        hubDestinationFee: networkDestinationFee,
 
         setHubOracleProps: setProps,
         fetchHubTokenList: fetchTokenList,
         fetchHubPriceList: fetchPriceList,
         fetchHubDestinationFee: () => {
             return fetchDestinationFee(props.hubNetworkSlug)
-                .then(() => destinationFee.value);
+                .then(() => networkDestinationFee.value);
         },
     };
 }
+
+/**
+ * @typedef {QueryEthFeeResponse.AsObject} DestinationFee
+ * @property {boolean} isIncreased
+ */

@@ -42,21 +42,26 @@ export default {
     setup() {
         const {fee, setFeeProps} = useFee();
         const {
+            networkHubCoinList,
+            setHubOracleProps,
             fetchHubDestinationFee,
-        } = useHubOracle();
-        const {hubCoin: coinItem, tokenPrice: coinPrice, tokenData: externalToken, networkHubCoinList, setHubTokenProps} = useHubToken();
+        } = useHubOracle({
+            // no need to subscribe here, because already subscribed in useHubToken and useWeb3Withdraw
+        });
+        const {hubCoin: coinItem, tokenPrice: coinPrice, tokenData: externalToken, setHubTokenProps} = useHubToken();
         const {discountUpsidePercent, destinationFeeInCoin: coinFee, hubFeeRate, hubFeeRatePercent, hubFee, amountToSend, minAmountToSend: minAmount, txParams, feeTxParams, setWithdrawProps} = useWeb3Withdraw();
 
         return {
             fee,
             setFeeProps,
 
+            networkHubCoinList,
+            setHubOracleProps,
             fetchHubDestinationFee,
 
             coinItem,
             coinPrice,
             externalToken,
-            networkHubCoinList,
             setHubTokenProps,
 
             discountUpsidePercent,
@@ -177,6 +182,15 @@ export default {
                 speed: this.form.speed,
             }),
             (newVal) => this.setWithdrawProps(newVal),
+            {deep: true, immediate: true},
+        );
+
+        // withdrawProps
+        this.$watch(
+            () => ({
+                hubNetworkSlug: this.form.networkTo,
+            }),
+            (newVal) => this.setHubOracleProps(newVal),
             {deep: true, immediate: true},
         );
 

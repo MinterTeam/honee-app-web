@@ -7,6 +7,7 @@ import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_TRANSFER_STATUS, MA
 import Big from '~/assets/big.js';
 import wethAbi from '~/assets/abi-weth.js';
 import hubABI from '~/assets/abi-hub.js';
+import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useTxService from '~/composables/use-tx-service.js';
@@ -20,7 +21,10 @@ const GAS_LIMIT_BRIDGE = 75000;
 
 export default function useWeb3Deposit(destinationMinterAddress) {
 
-    const { tokenContractAddress: tokenAddress, tokenDecimals, isNativeToken, networkGasPrice, setHubTokenProps } = useHubToken();
+    const { networkGasPrice, setHubOracleProps } = useHubOracle({
+        // subscribe not needed because already subscribed in useHubToken
+    });
+    const { tokenContractAddress: tokenAddress, tokenDecimals, isNativeToken, setHubTokenProps } = useHubToken();
     const { nativeBalance, setWeb3TokenProps } = useWeb3TokenBalance();
     const { txServiceState, sendEthTx, addStepData, waitPendingStep } = useTxService();
 
@@ -41,6 +45,9 @@ export default function useWeb3Deposit(destinationMinterAddress) {
      */
     function setProps(newProps) {
         Object.assign(props, newProps);
+        setHubOracleProps({
+            hubNetworkSlug: HUB_CHAIN_BY_ID[newProps.chainId]?.hubNetworkSlug,
+        });
         setHubTokenProps({
             tokenSymbol: newProps.tokenSymbol,
             chainId: newProps.chainId,

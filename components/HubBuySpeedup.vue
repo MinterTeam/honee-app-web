@@ -2,9 +2,9 @@
 import Big from '~/assets/big.js';
 import {web3Utils} from '~/api/web3.js';
 import {pretty, getEvmTxUrl, shortHashFilter} from '~/assets/utils.js';
-import {HUB_BUY_STAGE as LOADING_STAGE} from '~/assets/variables.js';
+import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import useNow from '~/composables/use-now.js';
-import useHubToken from '~/composables/use-hub-token.js';
+import useHubOracle from '~/composables/use-hub-oracle.js';
 
 
 export default {
@@ -21,13 +21,13 @@ export default {
     ],
     setup() {
         const {now} = useNow();
-        const {networkGasPrice, setHubTokenProps} = useHubToken();
+        const {networkGasPrice, setHubOracleProps} = useHubOracle();
 
         return {
             now,
 
             networkGasPrice,
-            setHubTokenProps,
+            setHubOracleProps,
         };
     },
     data() {
@@ -64,9 +64,9 @@ export default {
         // hubTokenProps
         this.$watch(
             () => ({
-                chainId: this.slowStep?.tx.chainId,
+                hubNetworkSlug: HUB_CHAIN_BY_ID[this.slowStep?.tx.chainId]?.hubNetworkSlug,
             }),
-            (newVal) => this.setHubTokenProps(newVal),
+            (newVal) => this.setHubOracleProps(newVal),
             {deep: true, immediate: true},
         );
     },

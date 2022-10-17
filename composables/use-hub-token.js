@@ -1,7 +1,6 @@
 import {reactive, computed} from '@vue/composition-api';
-import Big from '~/assets/big.js';
-import {findHubCoinItem, findNativeCoin, findTokenInfo} from '~/api/hub.js';
-import {HUB_CHAIN_BY_ID, MAINNET, NETWORK} from '~/assets/variables.js';
+import {findHubCoinItem, findTokenInfo} from '~/api/hub.js';
+import {HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 
 /**
@@ -14,7 +13,7 @@ function getWrappedNativeContractAddress(chainId) {
 }
 
 export default function useHubToken() {
-    const {initPromise, hubTokenList, hubPriceList, gasPrice} = useHubOracle({
+    const {initPromise, hubTokenList, hubPriceList} = useHubOracle({
         subscribeTokenList: true,
         subscribePriceList: true,
     });
@@ -31,7 +30,6 @@ export default function useHubToken() {
         Object.assign(props, newProps);
     }
 
-    const hubNetworkSlug = computed(() => HUB_CHAIN_BY_ID[props.chainId]?.hubNetworkSlug);
     /**
      * @type {import('@vue/composition-api').ComputedRef<HubCoinItem>}
      */
@@ -52,34 +50,6 @@ export default function useHubToken() {
         const priceItem = hubPriceList.value.find((item) => item.name === hubCoin.value?.denom);
         return priceItem ? priceItem.value : '0';
     });
-    /**
-     * gas price in gwei for selected network
-     * @type {ComputedRef<number|string>}
-     */
-    const networkGasPrice = computed(() => {
-        let gasPriceGwei = gasPrice.value[hubNetworkSlug.value];
-        if (!(gasPriceGwei > 0)) {
-            gasPriceGwei = 100;
-        }
-
-        // return NETWORK === MAINNET ? gasPriceGwei : 5;
-        // eslint-disable-next-line no-unreachable
-        return NETWORK === MAINNET ? gasPriceGwei : new Big(gasPriceGwei).times(10).toNumber();
-    });
-    /**
-     * available coins for selected network
-     * @type {ComputedRef<Array<HubCoinItem>>}
-     */
-    const networkHubCoinList = computed(() => {
-        return hubTokenList.value.filter((item) => !!item[hubNetworkSlug.value]);
-    });
-    /**
-     *
-     * @type {ComputedRef<HubCoinItem>}
-     */
-    const networkNativeCoin = computed(() => {
-        return findNativeCoin(hubTokenList.value, hubNetworkSlug.value);
-    });
 
 
     return {
@@ -95,10 +65,6 @@ export default function useHubToken() {
         tokenContractAddress,
         tokenDecimals,
         isNativeToken,
-        // requires only chainId
-        networkGasPrice,
-        networkHubCoinList,
-        networkNativeCoin,
 
         setHubTokenProps: setProps,
     };

@@ -1,11 +1,12 @@
 <script>
 import stripZeros from 'pretty-num/src/strip-zeros.js';
 import Big from '~/assets/big.js';
-import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_ID} from '~/assets/variables.js';
+import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_CHAIN_ID} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {wait} from '~/assets/utils/wait.js';
 import {pretty} from '~/assets/utils.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
+import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useWeb3Deposit from '~/composables/use-web3-deposit.js';
@@ -46,9 +47,15 @@ export default {
 
         const {
             initPromise: hubInfoInitPromise,
+            networkNativeCoin,
+            setHubOracleProps,
+        } = useHubOracle({
+            subscribeTokenList: true,
+            subscribePriceList: true,
+        });
+        const {
             tokenData,
             isNativeToken,
-            networkNativeCoin,
             setHubTokenProps,
         } = useHubToken();
 
@@ -77,10 +84,12 @@ export default {
             discountUpsidePercent,
             setDiscountProps,
 
+            networkNativeCoin,
+            setHubOracleProps,
+
             hubInfoInitPromise,
             tokenData,
             isNativeToken,
-            networkNativeCoin,
             setHubTokenProps,
 
             nativeBalance,
@@ -168,6 +177,9 @@ export default {
             }),
             (newVal) => {
                 this.setDepositProps(newVal);
+                this.setHubOracleProps({
+                    hubNetworkSlug: HUB_CHAIN_BY_ID[newVal.chainId]?.hubNetworkSlug,
+                });
                 this.setHubTokenProps(newVal);
                 this.setWeb3TokenProps(newVal);
             },
