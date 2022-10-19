@@ -255,5 +255,5 @@ export const PORTFOLIO_PROFIT_PERIOD = {
     // average of last 7 days
     DAILY7: 'daily7',
     // from monday to today (aka week to date)
-    WTD: 'wtd',
+    WTD: 'live',
 };
