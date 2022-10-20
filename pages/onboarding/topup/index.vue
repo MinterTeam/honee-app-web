@@ -6,7 +6,7 @@ import InlineSvg from 'vue-inline-svg';
 
 export default {
     CARD_TO_MINTER_HOST,
-    layout: 'onboarding',
+    layout: 'splash',
     components: {
         InlineSvg,
     },

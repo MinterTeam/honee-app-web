@@ -17,7 +17,7 @@ const ACTION_LIST_CONDITIONAL = {
 const MAX_PAGE = 3;
 
 export default {
-    layout: 'onboarding',
+    layout: 'splash',
     components: {
         Card,
     },

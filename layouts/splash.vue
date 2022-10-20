@@ -1,16 +1,16 @@
 <script>
 import HeaderBanner from '~/layouts/_header-banner.vue';
-import Language from '~/components/layout/Language.vue';
+import TheHeader from '~/layouts/_header.vue';
 import Snackbar from '~/components/layout/Snackbar.vue';
 
 export default {
     components: {
         HeaderBanner,
-        Language,
+        TheHeader,
         Snackbar,
     },
     head: {
-        bodyAttrs: {
+        htmlAttrs: {
             class: 'splash-layout',
         },
     },
@@ -20,11 +20,9 @@ export default {
 <template>
     <div class="splash-layout__wrap">
         <HeaderBanner/>
-        <div class="u-container u-container--wide header__language-container">
-            <Language/>
-        </div>
+        <TheHeader :simple="true"/>
 
-        <nuxt class="u-container"/>
+        <nuxt class="splash-layout__inner"/>
 
         <Snackbar/>
     </div>

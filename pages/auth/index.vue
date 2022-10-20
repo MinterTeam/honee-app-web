@@ -1,6 +1,6 @@
 <script>
 import getTitle from '~/assets/get-title.js';
-import FormAddAdvancedAddress from '~/components/FormAddAdvancedAddress.vue';
+import FormAddAdvancedAddress from '~/components/AuthLogin.vue';
 
 export default {
     PAGE_TITLE: 'Auth',
@@ -15,7 +15,7 @@ export default {
                 { hid: 'og-title', name: 'og:title', content: getTitle(this.$options.PAGE_TITLE) },
             ],
             bodyAttrs: {
-                class: 'auth__body',
+                class: 'auth__body layout--hide-header-logo layout--transparent-header',
             },
         };
     },
@@ -26,7 +26,7 @@ export default {
 </script>
 
 <template>
-    <div class="u-section u-relative u-container--mini">
+    <div class="u-section u-relative u-container u-container--mini">
         <div class="u-relative">
             <!--<img class="auth__bee" src="/img/logo-bee.svg" alt="" role="presentation">-->
             <img class="auth__logo" src="/img/logo-honee.svg" alt="Honee" width="280" height="56">
