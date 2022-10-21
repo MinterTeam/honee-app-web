@@ -51,7 +51,7 @@ export default {
             />
 
             <div class="u-text-right u-mt-15" v-if="limit">
-                <nuxt-link class="link--default" :to="$i18nGetPreferredPath('/portfolio/leaderboard')">
+                <nuxt-link class="link--default" :to="$i18nGetPreferredPath('/portfolio/battle')">
                     {{ $td('View all', 'portfolio.leaderboard-view-all') }}
                 </nuxt-link>
             </div>
