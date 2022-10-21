@@ -7,6 +7,7 @@ import maxValue from 'vuelidate/src/validators/maxValue.js';
 import minValue from 'vuelidate/src/validators/minValue.js';
 import autosize from 'v-autosize';
 import {createPortfolio, updatePortfolio} from '~/api/portfolio.js';
+import {NETWORK, MAINNET} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
@@ -114,13 +115,22 @@ export default {
         },
     },
     fetch() {
-        return getOracleCoinList()
-            .then((tokenList) => {
-                tokenList = tokenList
-                    .map((item) => item.symbol)
-                    .filter((coinSymbol) => !disabledTokenMap[coinSymbol]);
-                this.tokenList = Object.freeze(tokenList);
-            });
+        const promiseList = [];
+        if (this.isNew) {
+            promiseList.push(this.$store.dispatch('telegram/fetchAuth'));
+        }
+
+        if (NETWORK === MAINNET) {
+            const tokenListPromise = getOracleCoinList()
+                .then((tokenList) => {
+                    tokenList = tokenList
+                        .map((item) => item.symbol)
+                        .filter((coinSymbol) => !disabledTokenMap[coinSymbol]);
+                    this.tokenList = Object.freeze(tokenList);
+                });
+            promiseList.push(tokenListPromise);
+        }
+        return Promise.all(promiseList);
     },
     methods: {
         /**
@@ -128,7 +138,7 @@ export default {
          */
         managePortfolio(portfolio) {
             if (this.isNew) {
-                return createPortfolio(portfolio, this.$store.getters.privateKey);
+                return createPortfolio(portfolio, this.$store.getters.privateKey, this.$store.getters['telegram/authString']);
             } else {
                 return updatePortfolio(this.portfolio.id, portfolio, this.$store.getters.privateKey);
             }

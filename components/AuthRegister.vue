@@ -75,7 +75,7 @@ export default {
             <button type="submit" class="button button--main button--full" :class="{'is-disabled': !isMnemonicSaved}">{{ $td('Launch Honee', 'index.launch-honee') }}</button>
             <div class="form__error u-mt-05 u-text-center" v-if="$v.isMnemonicSaved.$error">{{ $td('You must save the phrase', 'index.save-phrase-error') }}</div>
 
-            <nuxt-link class="button button--ghost button--full u-mt-05" :to="$i18nGetPreferredPath('/auth')">{{ $td('Back', 'index.back') }}</nuxt-link>
+            <!--<nuxt-link class="button button&#45;&#45;ghost button&#45;&#45;full u-mt-05" :to="$i18nGetPreferredPath('/auth')">{{ $td('Back', 'index.back') }}</nuxt-link>-->
         </div>
 
         <p class="u-mt-20 u-text-medium">

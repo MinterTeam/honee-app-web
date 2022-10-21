@@ -97,6 +97,12 @@
 //    &:hover, &:focus {color: @c-black; background: #fff;}
 //    &:active {color: @c-black; background: shade(#fff, 10%);}
 //}
+.button--telegram {
+    @color-tg: #68a9e5;
+    color: #fff; background: @color-tg;
+    &:hover, &:focus {background: tint(@color-tg, 15%);}
+    &:active {background: shade(@color-tg, 6%);}
+}
 
 .button-group {
     display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; margin-top: -10px; margin-left: -16px;
