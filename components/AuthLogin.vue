@@ -14,6 +14,13 @@ export default {
         checkEmpty,
     },
     mixins: [validationMixin],
+    props: {
+        finishUrl: {
+            type: String,
+            // default: DASHBOARD_URL,
+            default: '/',
+        },
+    },
     data() {
         return {
             mnemonic: '',
@@ -38,7 +45,7 @@ export default {
         },
         authorize() {
             // redirect
-            const authRedirectPath = this.$store.state.authRedirectPath || '/';
+            const authRedirectPath = this.$store.state.authRedirectPath || this.finishUrl;
             this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
             this.$router.push(this.$i18nGetPreferredPath({path: authRedirectPath}));
         },

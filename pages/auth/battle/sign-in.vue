@@ -1,11 +1,11 @@
 <script>
 import getTitle from '~/assets/get-title.js';
-import FormAddAdvancedAddress from '~/components/AuthLogin.vue';
+import AuthLogin from '~/components/AuthLogin.vue';
 
 export default {
     layout: 'splash',
     components: {
-        FormAddAdvancedAddress,
+        AuthLogin,
     },
     head() {
         const title = getTitle(this.$td('Sign in', 'index.sign-in'));
@@ -30,7 +30,7 @@ export default {
         <div class="card card__content card--light-grey">
             <h1 class="u-h3 u-mb-05 u-text-center">{{ $td('Sign in', 'index.sign-in') }}</h1>
 
-            <FormAddAdvancedAddress class="u-mt-10"/>
+            <AuthLogin class="u-mt-10" finish-url="/onboarding/battle"/>
         </div>
     </div>
 </template>

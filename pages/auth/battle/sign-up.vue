@@ -25,7 +25,7 @@ export default {
 
 <template>
     <div class="u-section u-container u-container--small">
-        <AuthRegister/>
+        <AuthRegister finish-url="/onboarding/battle"/>
     </div>
 </template>
 

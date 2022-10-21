@@ -17,6 +17,13 @@ export default {
         BaseButtonCopyIcon,
     },
     mixins: [validationMixin],
+    props: {
+        finishUrl: {
+            type: String,
+            // default: DASHBOARD_URL,
+            default: '/onboarding/topup',
+        },
+    },
     data() {
         return {
             mnemonic: '',
@@ -41,9 +48,7 @@ export default {
             this.$store.commit('LOGOUT');
             this.$store.commit('ADD_AUTH_ADVANCED', this.mnemonic);
             // redirect
-            const nextUrl = '/onboarding/topup';
-            // const nextUrl = DASHBOARD_URL;
-            const authRedirectPath = this.$store.state.authRedirectPath || nextUrl;
+            const authRedirectPath = this.$store.state.authRedirectPath || this.finishUrl;
             this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
             this.$router.push(this.$i18nGetPreferredPath({path: authRedirectPath}));
         },
