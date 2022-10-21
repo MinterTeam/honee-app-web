@@ -1,6 +1,6 @@
 <script>
 import {getAddressLockList, getPremiumLevel} from '~/api/staking.js';
-import {fillCardWithCoin, flatCardList} from '~/content/card-list.js';
+import {fillCardWithCoin, flatCardList} from '~/data/cards.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {PREMIUM_STAKE_PROGRAM_ID} from '~/assets/variables.js';
 import {pretty} from '~/assets/utils.js';

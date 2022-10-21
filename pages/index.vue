@@ -1,5 +1,5 @@
 <script>
-import cardList from '~/content/card-list.js';
+import cardList from '~/data/cards.js';
 import Card from '~/components/Card.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
 import InvestmentList from '~/components/InvestmentList.vue';

@@ -3,7 +3,7 @@ import { waitUntil } from 'async-wait-until';
 import getTitle from '~/assets/get-title.js';
 import hashColor from '~/assets/hash-color.js';
 import {isCoinId as isId} from 'minter-js-sdk/src/utils.js';
-import {flatCardList} from '~/content/card-list.js';
+import {flatCardList} from '~/data/cards.js';
 import {translateCardField} from '~/components/Card.vue';
 import HubBuyForm from '~/components/HubBuyForm.vue';
 import Swap from '~/components/Swap.vue';

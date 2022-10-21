@@ -1,4 +1,4 @@
-import cardList from '~/content/card-list-data.js';
+import cardList from '~/data/cards-raw.js';
 
 /**
  * Fill omitted card properties (title, icon, tags) with data from 'coin' property
