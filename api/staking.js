@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
-import {STAKING_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
+import Big from '~/assets/big.js';
+import {STAKING_API_URL, PREMIUM_STAKE_PROGRAM_ID} from "~/assets/variables.js";
 import NotFoundError from '~/assets/utils/error-404.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 
@@ -40,6 +41,7 @@ export function getStakingProgram(id) {
 }
 
 /**
+ * @param {string} address
  * @return {Promise<Array<StakingProgramAddressLock>>}
  */
 export function getAddressLockList(address) {
@@ -66,6 +68,51 @@ export function getAddressLockList(address) {
                 throw error;
             }
         });
+}
+
+/**
+ * @param {string} address
+ * @return {Promise<number|string>}
+ */
+export function getAddressPremiumAmount(address) {
+    return getAddressLockList(address)
+        .then((lockList) => {
+            return lockList
+                .filter((item) => item.program.id === PREMIUM_STAKE_PROGRAM_ID)
+                .reduce((accumulator, item) => {
+                    return new Big(accumulator).plus(item.amount).toString();
+                }, 0);
+        });
+}
+
+/**
+ *
+ * @param {string} address
+ * @return {Promise<number>}
+ */
+export function getAddressPremiumLevel(address) {
+    return getAddressPremiumAmount(address)
+        .then((amount) => getPremiumLevel(amount));
+}
+
+/**
+ * @param {number|string} amount
+ * @return {number}
+ */
+export function getPremiumLevel(amount) {
+    if (amount >= 1000000) {
+        return 4;
+    }
+    if (amount >= 100000) {
+        return 3;
+    }
+    if (amount >= 10000) {
+        return 2;
+    }
+    if (amount >= 1000) {
+        return 1;
+    }
+    return 0;
 }
 
 /**

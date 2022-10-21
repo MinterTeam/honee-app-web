@@ -1,5 +1,5 @@
 <script>
-import {getAddressLockList} from '~/api/staking.js';
+import {getAddressLockList, getPremiumLevel} from '~/api/staking.js';
 import {fillCardWithCoin, flatCardList} from '~/content/card-list.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {PREMIUM_STAKE_PROGRAM_ID} from '~/assets/variables.js';
@@ -196,22 +196,6 @@ export default {
         },
     },
 };
-
-function getPremiumLevel(amount) {
-    if (amount >= 1000000) {
-        return 4;
-    }
-    if (amount >= 100000) {
-        return 3;
-    }
-    if (amount >= 10000) {
-        return 2;
-    }
-    if (amount >= 1000) {
-        return 1;
-    }
-    return 0;
-}
 </script>
 
 <template>

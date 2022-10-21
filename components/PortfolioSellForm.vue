@@ -15,6 +15,7 @@ import TxSequenceForm from '~/components/base/TxSequenceForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import PortfolioPriceImpact from '~/components/PortfolioPriceImpact.vue';
+import {getAddressPremiumLevel} from '~/api/staking.js';
 
 
 export default {
@@ -47,13 +48,21 @@ export default {
         };
     },
     fetch() {
-        return getBalance(this.portfolioWallet.address)
+        const managerPremiumLevelPromise = getAddressPremiumLevel(this.portfolio.owner)
+            .then((level) => {
+                this.managerPremiumLevel = level;
+            });
+
+        const balancePromise =  getBalance(this.portfolioWallet.address)
             .then((result) => {
                 this.balanceList = result.data.balances.filter((item) => item.amount > 0);
             });
+
+        return Promise.all([managerPremiumLevelPromise, balancePromise]);
     },
     data() {
         return {
+            managerPremiumLevel: 0,
             balanceList: [],
             form: {
                 coin: this.$route.query.coin || '',
@@ -308,9 +317,11 @@ export default {
                 prepare: (swapTx, prevPrepareGasCoin) => {
                     premiumFeeAmount = this.isNeedSwapServiceFee ? restorePremiumFee(swapServiceFeeReturn, this.portfolio.profit) : premiumFeeInCoin;
                     const successFeeAmount = this.isNeedSwapServiceFee ? restoreSuccessFee(swapServiceFeeReturn, this.portfolio.profit) : successFeeInCoin;
-                    const successFeeManagerAmount = percent(successFeeAmount, 25);
+                    const successFeeManagerPercent = this.managerPremiumLevel > 0 ? 25 : 0;
+                    const successFeeFundPercent = this.managerPremiumLevel > 0 ? 50 : 75;
+                    const successFeeManagerAmount = percent(successFeeAmount, successFeeManagerPercent);
                     const successFeeTeamAmount = percent(successFeeAmount, 25);
-                    const successFeeFundAmount = percent(successFeeAmount, 50);
+                    const successFeeFundAmount = percent(successFeeAmount, successFeeFundPercent);
                     // @TODO existing dust in balance not included here
                     const value = new Big(swapTotalReturn)
                         .minus(premiumFeeInCoin)
@@ -419,11 +430,6 @@ export default {
             }
             return [
                 {
-                    to: this.portfolio.owner,
-                    value: managerFee,
-                    coin: 'BEE',
-                },
-                {
                     to: SUCCESS_FEE_TEAM_ADDRESS,
                     value: teamFee,
                     coin: 'BEE',
@@ -433,7 +439,11 @@ export default {
                     value: fundFee,
                     coin: 'BEE',
                 },
-            ];
+            ].concat(this.managerPremiumLevel > 0 ? {
+                to: this.portfolio.owner,
+                value: managerFee,
+                coin: 'BEE',
+            } : []);
         },
         clearForm() {
             this.form.value = '';
