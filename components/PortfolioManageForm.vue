@@ -390,7 +390,7 @@ function getEmptyCoin() {
                 </template>
             </p>
 
-            <nuxt-link class="button button--main button--full" :to="$i18nGetPreferredPath(`/portfolio/${serverSuccess.id}`)" target="_blank" v-if="serverSuccess">
+            <nuxt-link class="button button--main button--full" :to="$i18nGetPreferredPath(`/portfolio/${serverSuccess.id}`)" v-if="serverSuccess">
                 {{ $td('View portfolio', 'portfolio.manage-success-view') }}
             </nuxt-link>
             <button class="button button--ghost-main button--full" type="button" @click="isSuccessModalVisible = false">
