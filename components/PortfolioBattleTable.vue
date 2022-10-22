@@ -103,7 +103,7 @@ export default {
                 </tr>
                 </thead>
                 <tbody class="u-fw-600">
-                <tr v-for="(portfolio, index) in portfolioList" :key="portfolio.owner">
+                <tr v-for="(portfolio, index) in portfolioList" :key="portfolio.id">
                     <td class="u-text-center" width="1">
                         <div class="portfolio__leaderboard-icon" :class="`portfolio__leaderboard-icon--${index + 1}`">{{ index + 1 }}</div>
                     </td>
@@ -134,7 +134,7 @@ export default {
                 </tbody>
             </table>
             <div class="u-hidden-medium-up u-fw-600">
-                <div class="wallet__stake-item" v-for="(portfolio, index) in portfolioList" :key="portfolio.owner">
+                <div class="wallet__stake-item" v-for="(portfolio, index) in portfolioList" :key="portfolio.id">
                     <div class="wallet__stake-row portfolio__leaderboard-address">
                         <div class="portfolio__leaderboard-icon" :class="`portfolio__leaderboard-icon--${index + 1}`">{{ index + 1 }}</div>
                         <div class="portfolio__leaderboard-address-value">

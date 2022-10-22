@@ -2,10 +2,12 @@
 import Big from '~/assets/big.js';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {pretty, txTypeFilter} from '~/assets/utils.js';
+import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';
 import PoolLink from '~/components/base/PoolLink.vue';
 
 export default {
     components: {
+        BaseCoinSymbol,
         PoolLink,
     },
     props: {
@@ -31,11 +33,18 @@ export default {
         hasAmount(tx) {
             return typeof this.getAmount(tx) !== 'undefined';
         },
-        getAmountWithCoin(tx) {
+        getAmountString(tx) {
+            if (this.isMultisend(tx) && this.isMultisendMultipleCoin(tx)) {
+                return '';
+            } else {
+                return pretty(this.getAmount(tx) || 0);
+            }
+        },
+        getCoinString(tx) {
             if (this.isMultisend(tx) && this.isMultisendMultipleCoin(tx)) {
                 return 'Multiple coins';
             } else {
-                return pretty(this.getAmount(tx) || 0) + ' ' + (this.getCoinSymbol(tx.data.coin) || tx.data.symbol || this.getConvertCoinSymbol(tx) /* || this.getCoinSymbol(tx.data.check?.coin) */ || this.getMultisendCoin(tx));
+                return this.getCoinSymbol(tx.data.coin) || tx.data.symbol || this.getConvertCoinSymbol(tx) /* || this.getCoinSymbol(tx.data.check?.coin) */ || this.getMultisendCoin(tx);
             }
         },
         isEditPool(tx) {
@@ -154,7 +163,7 @@ function getCoinId(coin) {
     <div>
         {{ formatTxType(tx.type) }}
         <template v-if="hasAmount(tx)">
-            {{ getAmountWithCoin(tx) }}
+            {{ getAmountString(tx) }} <BaseCoinSymbol>{{ getCoinString(tx) }}</BaseCoinSymbol>
         </template>
         <template v-if="getSwapOppositeCoinSymbol(tx)">
             {{ $td('for', 'form.stage-for') }} {{ getSwapOppositeCoinSymbol(tx) }}

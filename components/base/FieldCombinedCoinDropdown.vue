@@ -1,10 +1,12 @@
 <script>
 import {pretty} from '~/assets/utils.js';
 import {COIN_TYPE} from '~/assets/variables.js';
+import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';
 import FieldCombinedBaseDropdown from '~/components/base/FieldCombinedBaseDropdown.vue';
 
 export default {
     components: {
+        BaseCoinSymbol,
         FieldCombinedBaseDropdown,
     },
     inheritAttrs: false,
@@ -95,7 +97,7 @@ function ofType(coinType, selectedType) {
     >
         <template v-slot:suggestion-item="{suggestion}">
             <img class="h-field__suggestion-icon" :src="getCoinIconUrl(getSuggestionCoin(suggestion))" width="24" height="24" alt="" role="presentation">
-            <span class="h-field__suggestion-symbol">{{ getSuggestionCoin(suggestion) }}</span>
+            <BaseCoinSymbol class="h-field__suggestion-symbol">{{ getSuggestionCoin(suggestion) }}</BaseCoinSymbol>
             <span class="h-field__suggestion-amount" v-if="getSuggestionAmount(suggestion)">{{ getSuggestionAmount(suggestion) }}</span>
         </template>
     </FieldCombinedBaseDropdown>
