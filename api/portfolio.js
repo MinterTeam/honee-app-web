@@ -94,7 +94,6 @@ const leaderboardCache = new Cache({maxAge: 60 * 60 * 1000});
  * @return {Promise<ConsumerPortfolioList>}
  */
 export function getLeaderboard({limit, profitPeriod} = {}) {
-    console.log(profitPeriod);
     return instance.get(`consumer/portfolio/${getLeaderboardDateParams(profitPeriod)}`, {
         cache: leaderboardCache,
     })

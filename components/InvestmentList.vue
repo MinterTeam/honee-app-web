@@ -157,24 +157,6 @@ export default {
             };
         },
         getEmptyDelegationCard(coinSymbol) {
-            console.log(fillCardWithCoin({
-                amount: 0,
-                coin: coinSymbol,
-                // dummy action to fill correct actionType
-                action: `/delegate/${coinSymbol}`,
-                caption: 'Delegate',
-                stats: {
-                    caption: 'Total delegated',
-                    value: 0,
-                },
-                ru: {
-                    caption: 'Делегирование',
-                    stats: {
-                        caption: 'Всего',
-                    },
-                },
-                buttonLabel: this.$td('Delegate more', 'index.delegate-more'),
-            }));
             return fillCardWithCoin({
                 amount: 0,
                 coin: coinSymbol,
