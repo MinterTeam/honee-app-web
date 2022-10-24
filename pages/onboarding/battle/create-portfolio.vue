@@ -26,7 +26,7 @@ export default {
                 </p>
                 <p class="card__action-description">
                     <strong>{{ $td('Remember:', 'battle.create-remember') }}</strong>
-                    {{ $td('you can create only one portfolio and edit it once a day.', 'battle.create-description21') }}
+                    {{ $td('you can create only one portfolio and edit it once a day.', 'battle.create-description-2') }}
                 </p>
             </div>
 

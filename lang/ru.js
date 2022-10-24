@@ -600,6 +600,6 @@ export default {
         'telegram-login-description': 'Нажмите "Запустить" в HoneeAuthBot',
         'create-description-1': 'Выберите от 2х до 10ти токенов и укажите долю в процентах.',
         'create-remember': 'Помните:',
-        'create-description-2': 'вы можете создать только один портфель и редактировать его раз в день',
+        'create-description-2': 'Вы можете создать только один портфель и редактировать его раз в день.',
     },
 };
