@@ -14,7 +14,9 @@ export default {
     render(createElement, context) {
         const coinSymbol = context.children?.[0].text?.trim();
         const customToken = customTokens[coinSymbol];
-        const content = customToken ? `${customToken.name} ${customToken.network}` : context.children;
+        const content = customToken?.name
+            ? [customToken.name + ' ', createElement('span', {class: 'u-text-muted'}, customToken.network)]
+            : context.children;
         return createElement('span', context.data, content);
     },
 };
