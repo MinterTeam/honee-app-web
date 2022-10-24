@@ -23,6 +23,10 @@ export default {
             type: [Number, String],
             default: 1,
         },
+        showPagination: {
+            type: Boolean,
+            default: false,
+        },
     },
     emits: [
     ],
@@ -82,6 +86,10 @@ export default {
                 return prettyUsd(profit) + '%';
             }
         },
+        getRank(index) {
+            const pageOffset = ((this.page || 1) - 1) * this.limit;
+            return pageOffset + index + 1;
+        },
     },
 };
 </script>
@@ -109,7 +117,7 @@ export default {
                 <tbody class="u-fw-600">
                 <tr v-for="(portfolio, index) in portfolioList" :key="portfolio.id">
                     <td class="u-text-center" width="1">
-                        <div class="portfolio__leaderboard-icon" :class="`portfolio__leaderboard-icon--${index + 1}`">{{ index + 1 }}</div>
+                        <div class="portfolio__leaderboard-icon" :class="`portfolio__leaderboard-icon--${getRank(index)}`">{{ getRank(index) }}</div>
                     </td>
                     <td width="30%">
                         <nuxt-link class="link--hover u-fw-600" :to="$i18nGetPreferredPath(`/portfolio/${portfolio.id}`)">
@@ -182,6 +190,6 @@ export default {
                 </div>
             </div>
         </div>
-        <PortfolioPagination v-if="true" class="u-mt-15" :pagination-info="paginationInfo" :is-loading="$fetchState.pending"/>
+        <PortfolioPagination v-if="showPagination" class="u-mt-15" :pagination-info="paginationInfo" :is-loading="$fetchState.pending"/>
     </div>
 </template>

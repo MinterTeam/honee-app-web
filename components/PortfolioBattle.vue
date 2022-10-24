@@ -49,6 +49,7 @@ export default {
                 :profit-period="selectedType"
                 :limit="limit"
                 :page="$route.query.page"
+                :show-pagination="!limit"
             />
 
             <div class="u-text-right u-mt-15" v-if="limit">
