@@ -10,11 +10,16 @@ export default function({app, store, route, redirect, error}) {
 
     const urlRequiresNonAuth = /^(\/ru)?\/auth(\/|$)/.test(route.path);
     // const urlRequiresAuth = /^(\/ru)?\/dashboard(\/|$)/.test(route.path);
+    const urlAuthBattle = /^(\/ru)?\/auth\/battle(\/|$)/.test(route.path);
 
     if (!store.getters.isAuthorized && !urlRequiresNonAuth) {
         console.log('-- restricted: redirect to auth');
         store.commit('SET_AUTH_REDIRECT_PATH', route.fullPath);
         return redirect(app.i18nGetPreferredPath({path: '/auth'}));
+    }
+    if (store.getters.isAuthorized && urlAuthBattle) {
+        console.log('-- restricted: redirect to battle onboarding');
+        return redirect(app.i18nGetPreferredPath({path: '/onboarding/battle'}));
     }
     if (store.getters.isAuthorized && urlRequiresNonAuth) {
         console.log('-- restricted: redirect to index');
