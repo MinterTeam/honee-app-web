@@ -83,7 +83,7 @@ export default {
     HUBABUBA: {
         hide: true,
     },
-    1INCH: {
+    '1INCH': {
         name: '1INCH',
         network: 'ETH',
     },
@@ -130,7 +130,7 @@ export default {
         network: 'BSC',
     },
     COFOUNDER: {
-        name: 'COFOUNDER',
+        hide: true,
     },
     DOTBSC: {
         name: 'DOT',

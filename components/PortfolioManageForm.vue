@@ -6,14 +6,15 @@ import maxLength from 'vuelidate/src/validators/maxLength.js';
 import maxValue from 'vuelidate/src/validators/maxValue.js';
 import minValue from 'vuelidate/src/validators/minValue.js';
 import autosize from 'v-autosize';
+import {getOracleCoinList} from '~/api/hub.js';
 import {createPortfolio, updatePortfolio} from '~/api/portfolio.js';
 import {NETWORK, MAINNET} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
+import customTokenList from '~/data/tokens.js';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
-import {getOracleCoinList} from '~/api/hub.js';
 
 const MIN_COUNT = 2;
 const MAX_COUNT = 10;
@@ -25,7 +26,10 @@ const disabledTokens = [
     'HUBABUBA',
     'SQD',
 ];
-const disabledTokenMap = Object.fromEntries(disabledTokens.map((coinSymbol) => [coinSymbol, true]));
+const customDisabledTokenEntries = Object.entries(customTokenList)
+    .filter(([coinSymbol, tokenData]) => tokenData.hide)
+    .map(([coinSymbol, tokenData]) => [coinSymbol, true]);
+const disabledTokenMap = Object.fromEntries(customDisabledTokenEntries);
 
 export default {
     MIN_COUNT,
@@ -51,6 +55,7 @@ export default {
     data() {
         const initialCoins = this.portfolio?.coins.map((item) => {
             return {
+                //@TODO not loaded yet
                 symbol: this.$store.state.explorer.coinMapId[item.id]?.symbol,
                 allocation: item.allocation,
             };
