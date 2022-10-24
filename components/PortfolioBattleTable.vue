@@ -3,10 +3,12 @@ import {getPortfolioList, PORTFOLIO_PROFIT_PERIOD} from '~/api/portfolio.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {prettyUsd, shortHashFilter} from '~/assets/utils.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
+import PortfolioPagination from '~/components/PortfolioPagination.vue';
 
 export default {
     components: {
         BaseLoader,
+        PortfolioPagination,
     },
     props: {
         profitPeriod: {
@@ -16,6 +18,10 @@ export default {
         limit: {
             type: [Number, String],
             default: 100,
+        },
+        page: {
+            type: [Number, String],
+            default: 1,
         },
     },
     emits: [
@@ -32,7 +38,7 @@ export default {
         const listPromise = getPortfolioList({
             profitPeriod: this.profitPeriod,
             limit: this.limit,
-            // page,
+            page,
         });
 
         return listPromise
@@ -43,14 +49,12 @@ export default {
             });
     },
     watch: {
-        /*
         page: {
             handler() {
                 this.$fetch();
                 window.scroll(0, 0);
             },
         },
-        */
     },
     methods: {
         shortHashFilter,
@@ -108,7 +112,7 @@ export default {
                         <div class="portfolio__leaderboard-icon" :class="`portfolio__leaderboard-icon--${index + 1}`">{{ index + 1 }}</div>
                     </td>
                     <td width="30%">
-                        <nuxt-link class="link--hover u-fw-600" :to="`/portfolio/${portfolio.id}`">
+                        <nuxt-link class="link--hover u-fw-600" :to="$i18nGetPreferredPath(`/portfolio/${portfolio.id}`)">
                             {{ portfolio.title }}
                         </nuxt-link>
                         <div class="u-fw-700 u-text-medium u-text-muted u-mt-025">
@@ -178,5 +182,6 @@ export default {
                 </div>
             </div>
         </div>
+        <PortfolioPagination v-if="true" class="u-mt-15" :pagination-info="paginationInfo" :is-loading="$fetchState.pending"/>
     </div>
 </template>
