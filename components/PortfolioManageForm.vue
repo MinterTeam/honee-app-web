@@ -327,12 +327,12 @@ function getEmptyCoin() {
             <ul v-if="$i18n.locale === 'en'" class="list-simple list-simple--small">
                 <li>You can create only 1 portfolio</li>
                 <li>You can edit portfolio once a day</li>
-                <li>You will accrue success fee from users exiting your portfolio with profit</li>
+                <li>You will accrue success fee from users exiting your portfolio with profit (only for portfolio managers with Premium accounts)</li>
             </ul>
             <ul v-if="$i18n.locale === 'ru'" class="list-simple list-simple--small">
                 <li>Вы можете создать только 1 портфель</li>
                 <li>Вы можете редактировать портфель раз в сутки</li>
-                <li>Вы будете получать награду от прибыли пользователей, выходящих из вашего портфеля</li>
+                <li>Вы будете получать награду от прибыли пользователей, выходящих из вашего портфеля (только для управляющих с Premium-аккаунтами)</li>
             </ul>
         </div>
 

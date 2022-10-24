@@ -57,13 +57,13 @@ export default {
         >
             <img class="button__icon" src="/img/icon-social-telegram.svg" alt="" role="presentation">
             <template v-if="!$store.getters['telegram/isAuthorized']">
-                {{ $td('Log in with Telegram', 'battle.telegram-login-button') }}
+                {{ $td('Login with Telegram', 'battle.telegram-login-button') }}
             </template>
             <template v-else>Logged as @{{ $store.state.telegram.auth.user.username }}</template>
         </a>
 
         <Modal :isOpen.sync="isModalVisible" :disable-outside-click="true" :hide-close-button="true">
-            <h2 class="u-h3 u-mb-10">{{ $td('Log in with Telegram', 'battle.telegram-login-button') }}</h2>
+            <h2 class="u-h3 u-mb-10">{{ $td('Login with Telegram', 'battle.telegram-login-button') }}</h2>
             <p class="u-mb-10">{{ $td('Click Start in the HoneeAuthBot', 'battle.telegram-login-description') }}</p>
 
             <BaseLoader :is-loading="true"/>

@@ -288,6 +288,12 @@ export default {
         'leaderboard-column-portfolio': 'Портфель',
         'leaderboard-column-profit': 'Профит',
         'leaderboard-view-all': 'Посмотреть все',
+
+        'battle-title': 'Битва портфелей',
+        'battle-column-portfolio': 'Портфель',
+        'battle-column-tokens': 'Токены',
+        'battle-column-balance': 'Баланс, $',
+        'battle-column-profit': 'Профит',
     },
     action: {
         'title-buy': 'Купите BIP, HUB и BEE',
@@ -585,5 +591,11 @@ export default {
 
         'warning-fee-impact': 'Высокая комиссия в {network}',
         'warning-fee-impact-description': 'Комиссии за перевод поглотят ≈{impact}% ваших {symbol}',
+    },
+    battle: {
+        'begin-title': 'Да начнется битва!',
+        'begin-description': 'Вы зарегистрировались на турнир. Теперь вам нужно авторизоваться через Telegram и создать свой портфель.',
+        'telegram-login-button': 'Войти через Telegram',
+        'telegram-login-description': 'Нажмите "Запустить" в HoneeAuthBot',
     },
 };

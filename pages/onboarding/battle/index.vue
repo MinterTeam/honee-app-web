@@ -23,7 +23,7 @@ export default {
         <div class="card card__content card--light-grey u-text-center">
             <img class="u-mb-05" src="/img/battle-begin.png" srcset="/img/battle-begin@2x.png 2x" alt="" role="presentation">
             <h1 class="u-h3 u-mb-05">{{ $td('Let the Battle Begin!', 'battle.begin-title') }}</h1>
-            <p>{{ $td('You’ve registered for the tournament. Now log in with Telegram and create your&nbsp;portfolio.', 'battle.begin-description') }}</p>
+            <p>{{ $td('You’ve registered for the tournament. Now you need to login via Telegram and create your portfolio.', 'battle.begin-description') }}</p>
 
             <TelegramAuth class="u-mt-10 u-mb-10"/>
 
