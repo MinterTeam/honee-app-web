@@ -477,10 +477,11 @@
 .topup__vertical-center {margin: auto 0;}
 
 
-.portfolio__leaderboard-icon {.u-text-muted(); width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 50%; font-size: 14px; font-weight: 600;}
-.portfolio__leaderboard-icon--1 {color: #fff; background: linear-gradient(180deg, #A57C01 0%, #F2C028 100%);}
-.portfolio__leaderboard-icon--2 {color: #fff; background: linear-gradient(180deg, #929292 0%, #D9D9D9 100%);}
-.portfolio__leaderboard-icon--3 {color: #fff; background: linear-gradient(180deg, #D56C31 0%, #FF9558 100%);}
+.portfolio__leaderboard-rank {.u-text-muted(); line-height: 22px; font-size: 14px; font-weight: 600;}
+.portfolio__leaderboard-icon--1, .portfolio__leaderboard-icon--2, .portfolio__leaderboard-icon--3 {width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 50%; color: #fff;}
+.portfolio__leaderboard-icon--1 {background: linear-gradient(180deg, #A57C01 0%, #F2C028 100%);}
+.portfolio__leaderboard-icon--2 {background: linear-gradient(180deg, #929292 0%, #D9D9D9 100%);}
+.portfolio__leaderboard-icon--3 {background: linear-gradient(180deg, #D56C31 0%, #FF9558 100%);}
 .portfolio__leaderboard-address {display: flex; align-items: center;}
 .portfolio__leaderboard-address-value {margin-left: 16px;}
 
@@ -489,6 +490,10 @@
 .battle__splash-top-image {vertical-align: top; margin-top: 6px; margin-bottom: 46px; margin-left: -50px;}
 .battle__splash-title {display: block; margin-bottom: 25px; max-width: 100%; height: auto;}
 .battle__splash-bottom-image {margin-left: -27px; margin-top: 25px;}
+
+.battle__ranking-item {
+    &+& {margin-top: 16px; padding-top: 16px; border-top: 1px solid @c-border-light;}
+}
 
 
 

@@ -97,7 +97,7 @@ export default {
                 <tbody class="u-fw-600">
                 <tr v-for="(portfolio, index) in portfolioList" :key="portfolio.isolatedAddress">
                     <td class="u-text-center" width="1">
-                        <div class="portfolio__leaderboard-icon" :class="`portfolio__leaderboard-icon--${index + 1}`">{{ index + 1 }}</div>
+                        <div class="portfolio__leaderboard-rank" :class="`portfolio__leaderboard-icon--${index + 1}`">{{ index + 1 }}</div>
                     </td>
                     <td width="30%">
                         {{ shortHashFilter(portfolio.isolatedAddress) }}
@@ -115,7 +115,7 @@ export default {
                 <div class="wallet__stake-item" v-for="(portfolio, index) in portfolioList" :key="portfolio.isolatedAddress">
                     <div class="wallet__stake-row">
                         <div class="portfolio__leaderboard-address">
-                            <div class="portfolio__leaderboard-icon" :class="`portfolio__leaderboard-icon--${index + 1}`">{{ index + 1 }}</div>
+                            <div class="portfolio__leaderboard-rank" :class="`portfolio__leaderboard-icon--${index + 1}`">{{ index + 1 }}</div>
                             <div class="portfolio__leaderboard-address-value">
                                 {{ shortHashFilter(portfolio.isolatedAddress) }}
                             </div>

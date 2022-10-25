@@ -117,7 +117,7 @@ export default {
                 <tbody class="u-fw-600">
                 <tr v-for="(portfolio, index) in portfolioList" :key="portfolio.id">
                     <td class="u-text-center" width="1">
-                        <div class="portfolio__leaderboard-icon" :class="`portfolio__leaderboard-icon--${getRank(index)}`">{{ getRank(index) }}</div>
+                        <div class="portfolio__leaderboard-rank" :class="`portfolio__leaderboard-icon--${getRank(index)}`">{{ getRank(index) }}</div>
                     </td>
                     <td width="30%">
                         <nuxt-link class="link--hover u-fw-600" :to="$i18nGetPreferredPath(`/portfolio/${portfolio.id}`)">
@@ -146,40 +146,33 @@ export default {
                 </tbody>
             </table>
             <div class="u-hidden-medium-up u-fw-600">
-                <div class="wallet__stake-item" v-for="(portfolio, index) in portfolioList" :key="portfolio.id">
-                    <div class="wallet__stake-row">
-                        <div class="portfolio__leaderboard-address">
-                            <div class="portfolio__leaderboard-icon" :class="`portfolio__leaderboard-icon--${index + 1}`">{{ index + 1 }}</div>
-                            <div class="portfolio__leaderboard-address-value">
-                                <nuxt-link class="link--hover u-fw-600" :to="`/portfolio/${portfolio.id}`">
-                                    {{ portfolio.title }}
-                                </nuxt-link>
-                                <div class="u-fw-700 u-text-medium u-text-muted">
-                                    {{ shortHashFilter(portfolio.owner) }}
-                                </div>
+                <div class="battle__ranking-item" v-for="(portfolio, index) in portfolioList" :key="portfolio.id">
+                    <div class="portfolio__leaderboard-rank" :class="`portfolio__leaderboard-icon--${getRank(index)}`">{{ getRank(index) }}</div>
+                    <div class="u-flex u-flex--justify-between u-mt-05">
+                        <div>
+                            <nuxt-link class="link--hover u-fw-600" :to="$i18nGetPreferredPath(`/portfolio/${portfolio.id}`)">
+                                {{ portfolio.title }}
+                            </nuxt-link>
+                            <div class="u-fw-700 u-text-medium u-text-muted">
+                                {{ shortHashFilter(portfolio.owner) }}
+                            </div>
+                            <div class="card__token-list u-mt-10">
+                                <img
+                                    class="card__token-logo"
+                                    v-for="coin in portfolio.coins"
+                                    :key="coin.id"
+                                    :src="$store.getters['explorer/getCoinIcon'](coin.id)"
+                                    :alt="$store.getters['explorer/getCoinSymbol'](coin.id)"
+                                >
                             </div>
                         </div>
-                    </div>
-                    <div class="wallet__stake-row">
-                        <div class="card__token-list">
-                            <img
-                                class="card__token-logo"
-                                v-for="coin in portfolio.coins"
-                                :key="coin.id"
-                                :src="$store.getters['explorer/getCoinIcon'](coin.id)"
-                                :alt="$store.getters['explorer/getCoinSymbol'](coin.id)"
-                            >
-                        </div>
-                    </div>
-                    <div class="wallet__stake-row">
-                        <div>
+                        <div class="u-text-right">
                             <div class="u-h--uppercase wallet__stake-row-title">
                                 {{ $td('Total value, $', 'portfolio.battle-column-balance') }}
                             </div>
                             <div>{{ getBalance(portfolio) }}</div>
-                        </div>
-                        <div class="u-text-right">
-                            <div class="u-h--uppercase wallet__stake-row-title">
+
+                            <div class="u-h--uppercase wallet__stake-row-title u-mt-05">
                                 {{ $td('Profit', 'portfolio.battle-column-profit') }}
                             </div>
                             <div :class="getProfitColorClass(portfolio.profit)">
