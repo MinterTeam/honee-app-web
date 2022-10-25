@@ -8,10 +8,15 @@ export default function({app, store, route, redirect, error}) {
     console.log('-- route', route);
     console.log('-- path', route.path);
 
+    const urlAllowAll = /^(\/ru)?\/embed(\/|$)/.test(route.path);
     const urlRequiresNonAuth = /^(\/ru)?\/auth(\/|$)/.test(route.path);
     // const urlRequiresAuth = /^(\/ru)?\/dashboard(\/|$)/.test(route.path);
     const urlAuthBattle = /^(\/ru)?\/auth\/battle(\/|$)/.test(route.path);
 
+    if (urlAllowAll) {
+        console.log('-- allow all');
+        return Promise.resolve();
+    }
     if (!store.getters.isAuthorized && !urlRequiresNonAuth) {
         console.log('-- restricted: redirect to auth');
         store.commit('SET_AUTH_REDIRECT_PATH', route.fullPath);
