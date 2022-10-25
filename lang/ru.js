@@ -598,7 +598,7 @@ export default {
         'begin-description-already-created': 'Вы зарегистрировались на турнир. У вас уже есть портфель.',
         'telegram-login-button': 'Войти через Telegram',
         'telegram-login-description': 'Нажмите "Запустить" в HoneeAuthBot',
-        'create-description-1': 'Выберите от 2х до 10ти токенов и укажите долю в процентах.',
+        'create-description-1': 'Выберите от 2х до 10ти токенов и укажите их долю в процентах.',
         'create-remember': 'Помните:',
         'create-description-2': 'Вы можете создать только один портфель и редактировать его раз в день.',
     },

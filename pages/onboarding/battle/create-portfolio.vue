@@ -24,10 +24,6 @@ export default {
                 <p class="card__action-description u-mt-05">
                     {{ $td('Choose from 2 to 10 tokens and specify the allocation percentage.', 'battle.create-description-1') }}
                 </p>
-                <p class="card__action-description">
-                    <strong>{{ $td('Remember:', 'battle.create-remember') }}</strong>
-                    {{ $td('you can create only one portfolio and edit it once a day.', 'battle.create-description-2') }}
-                </p>
             </div>
 
             <PortfolioManageForm/>
