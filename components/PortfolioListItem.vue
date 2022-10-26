@@ -6,6 +6,7 @@ import PortfolioHead from '~/components/PortfolioHead.vue';
  * @enum {string}
  */
 export const PORTFOLIO_LIST_TYPE = {
+    RECOMMEND: PORTFOLIO_PROFIT_PERIOD.RECOMMEND,
     TOP: 'top',
     ALL: 'all',
     MANAGED: 'managed',
@@ -31,6 +32,9 @@ export default {
     },
     computed: {
         profitPeriod() {
+            if (this.type === PORTFOLIO_LIST_TYPE.RECOMMEND) {
+                return PORTFOLIO_PROFIT_PERIOD.DAILY7;
+            }
             if (this.type === PORTFOLIO_LIST_TYPE.TOP) {
                 return PORTFOLIO_PROFIT_PERIOD.AWP;
             }

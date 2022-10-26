@@ -18,7 +18,7 @@ export default {
         /** @type {PORTFOLIO_LIST_TYPE}*/
         type: {
             type: String,
-            default: PORTFOLIO_LIST_TYPE.TOP,
+            default: PORTFOLIO_LIST_TYPE.RECOMMEND,
         },
         limit: {
             type: [Number, String],
@@ -57,6 +57,9 @@ export default {
         }
         if (this.type === PORTFOLIO_LIST_TYPE.ALL) {
             profitPeriod = PORTFOLIO_PROFIT_PERIOD.DAILY7;
+        }
+        if (this.type === PORTFOLIO_LIST_TYPE.RECOMMEND) {
+            profitPeriod = PORTFOLIO_PROFIT_PERIOD.RECOMMEND;
         }
         const listPromise = this.type === PORTFOLIO_LIST_TYPE.COPIED
             ? this.$store.dispatch('portfolio/fetchConsumerPortfolioList')
@@ -100,8 +103,11 @@ export default {
             <template v-else-if="type === $options.PORTFOLIO_LIST_TYPE.ALL">
                 {{ $td('All portfolios', `portfolio.list-all-title`) }}
             </template>
-            <template v-else>
+            <template v-else-if="type === $options.PORTFOLIO_LIST_TYPE.TOP">
                 {{ $td('Top portfolios', `portfolio.list-top-title`) }}
+            </template>
+            <template v-else-if="type === $options.PORTFOLIO_LIST_TYPE.RECOMMEND">
+                {{ $td('Recommended portfolios', `portfolio.list-recommend-title`) }}
             </template>
         </h2>
         <div v-if="$fetchState.pending" class="u-text-center">

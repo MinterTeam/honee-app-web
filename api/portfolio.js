@@ -259,4 +259,6 @@ export const PORTFOLIO_PROFIT_PERIOD = {
     DAILY7: 'daily7',
     // from monday to today (aka week to date)
     WTD: 'live',
+    // works only as query, data is provided in daily7
+    RECOMMEND: 'recommend',
 };
