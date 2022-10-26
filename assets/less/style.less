@@ -98,8 +98,10 @@
     .header {background: none; box-shadow: none; color: inherit;}
 }
 
+.battle-bg-gradient() {background: linear-gradient(180deg, #E73C3C -3.15%, #FFB800 100%);}
+
 .splash-layout {}
-.splash-layout--battle {background: linear-gradient(180deg, #E73C3C -3.15%, #FFB800 100%); color: #fff;}
+.splash-layout--battle {.battle-bg-gradient(); color: #fff;}
 .splash-layout__wrap {min-height: 100vh; display: flex; flex-direction: column;}
 .splash-layout__inner {width: 100%; margin-top: auto; margin-bottom: auto;}
 
@@ -155,7 +157,7 @@
 .card--light-grey {
     background: @c-white-light;
 }
-.card--transparent {background: transparent; box-shadow: none;}
+.card--battle {.battle-bg-gradient();}
 .card--action {display: flex; flex-direction: column; flex-grow: 2; min-width: 0; /* prevent flex item to overflow parent */}
 .card-content-base-padding() {
     padding: 16px;
@@ -477,13 +479,17 @@
 .topup__vertical-center {margin: auto 0;}
 
 
-.portfolio__leaderboard-rank {.u-text-muted(); line-height: 22px; font-size: 14px; font-weight: 600;}
-.portfolio__leaderboard-icon--1, .portfolio__leaderboard-icon--2, .portfolio__leaderboard-icon--3 {width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 50%; color: #fff;}
+.portfolio__leaderboard-rank {.u-text-muted(); min-width: 24px; line-height: 22px; font-size: 14px; font-weight: 600; text-align: center; display: inline-block;}
+.portfolio__leaderboard-icon--1, .portfolio__leaderboard-icon--2, .portfolio__leaderboard-icon--3 {width: 24px; height: 24px; line-height: 24px; border-radius: 50%; color: #fff;}
 .portfolio__leaderboard-icon--1 {background: linear-gradient(180deg, #A57C01 0%, #F2C028 100%);}
 .portfolio__leaderboard-icon--2 {background: linear-gradient(180deg, #929292 0%, #D9D9D9 100%);}
 .portfolio__leaderboard-icon--3 {background: linear-gradient(180deg, #D56C31 0%, #FF9558 100%);}
+.portfolio__leaderboard-address-cell {}
 .portfolio__leaderboard-address {display: flex; align-items: center;}
 .portfolio__leaderboard-address-value {margin-left: 16px;}
+@media (min-width: @breakpoint-large-up) {
+    .portfolio__leaderboard-address-cell {width: 30%;}
+}
 
 
 .battle__body {background: url(../img/battle-bg-left.svg) 0 0 no-repeat, url(../img/battle-bg-right.svg) 100% 0  no-repeat;}

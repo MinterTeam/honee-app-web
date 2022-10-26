@@ -10,7 +10,7 @@ export default {
     },
     data() {
         return {
-            selectedType: PORTFOLIO_LIST_TYPE.RECOMMEND,
+            selectedType: PORTFOLIO_LIST_TYPE.ALL,
         };
     },
 };
@@ -26,9 +26,9 @@ export default {
             class="u-mb-15"
             v-model="selectedType"
             :tabs="[
-                {value: $options.PORTFOLIO_LIST_TYPE.RECOMMEND, label: $td('Recommended', 'portfolio.tabs-label-recommend')},
-                {value: $options.PORTFOLIO_LIST_TYPE.TOP, label: $td('Top', 'portfolio.tabs-label-top')},
                 {value: $options.PORTFOLIO_LIST_TYPE.ALL, label: $td('All', 'portfolio.tabs-label-all')},
+                {value: $options.PORTFOLIO_LIST_TYPE.TOP, label: $td('Top', 'portfolio.tabs-label-top')},
+                {value: $options.PORTFOLIO_LIST_TYPE.RECOMMEND, label: $td('Recommended', 'portfolio.tabs-label-recommend')},
             ]"
             :reset-pages="true"
         />

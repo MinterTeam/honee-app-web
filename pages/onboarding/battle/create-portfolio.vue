@@ -9,7 +9,7 @@ export default {
     head() {
         return {
             htmlAttrs: {
-                class: 'splash-layout splash-layout--battle',
+                class: 'splash-layout',
             },
         };
     },
@@ -18,7 +18,7 @@ export default {
 
 <template>
     <div class="u-section u-container u-container--small">
-        <div class="card card--invert card--transparent">
+        <div class="card card--invert card--battle">
             <div class="card__content card__content--medium">
                 <h1 class="card__action-title-value">{{ $td('Create portfolio', 'portfolio.manage-create-title') }}</h1>
                 <p class="card__action-description u-mt-05">

@@ -86,24 +86,31 @@ export default {
         </div>
         <div v-else-if="portfolioList.length === 0" class="u-text-center">Empty list</div>
         <div class="table-wrap" v-else-if="portfolioList.length">
-            <table class="u-hidden-medium-down">
+            <table class="table--mobile-divide">
                 <thead>
                 <tr>
-                    <th colspan="2">{{ $td('Address', 'portfolio.leaderboard-column-address') }}</th>
-                    <th>{{ $td('Portfolio ID', 'portfolio.leaderboard-column-portfolio') }}</th>
+                    <th class="u-hidden-medium-down" colspan="2">{{ $td('Address', 'portfolio.leaderboard-column-address') }}</th>
+                    <th class="u-hidden-medium-down">{{ $td('Portfolio', 'portfolio.leaderboard-column-portfolio') }}</th>
+                    <th class="u-hidden-medium-up is-first-child">{{ $td('Rank', 'portfolio.leaderboard-column-rank') }}</th>
+                    <th class="u-hidden-medium-up">{{ $td('Address & portfolio', 'portfolio.leaderboard-column-address-and-portfolio') }}</th>
                     <th class="u-text-right">{{ $td('Profit', 'portfolio.leaderboard-column-profit') }}</th>
                 </tr>
                 </thead>
                 <tbody class="u-fw-600">
                 <tr v-for="(portfolio, index) in portfolioList" :key="portfolio.isolatedAddress">
-                    <td class="u-text-center" width="1">
+                    <td width="1">
                         <div class="portfolio__leaderboard-rank" :class="`portfolio__leaderboard-icon--${index + 1}`">{{ index + 1 }}</div>
                     </td>
-                    <td width="30%">
-                        {{ shortHashFilter(portfolio.isolatedAddress) }}
+                    <td class="portfolio__leaderboard-address-cell">
+                        <div>{{ shortHashFilter(portfolio.isolatedAddress) }}</div>
+                        <nuxt-link class="link--default u-hidden-medium-up" :to="`/portfolio/${portfolio.id}`">
+                            {{ portfolio.title }}
+                        </nuxt-link>
                     </td>
-                    <td>
-                        <nuxt-link class="link--default" :to="`/portfolio/${portfolio.id}`">#{{ portfolio.id }}</nuxt-link>
+                    <td class="u-hidden-medium-down">
+                        <nuxt-link class="link--default" :to="`/portfolio/${portfolio.id}`">
+                            {{ portfolio.title }}
+                        </nuxt-link>
                     </td>
                     <td class="u-text-right" :class="getProfitColorClass(portfolio.profit)">
                         {{ getProfitText(portfolio.profit) }}
@@ -111,34 +118,6 @@ export default {
                 </tr>
                 </tbody>
             </table>
-            <div class="u-hidden-medium-up u-fw-600">
-                <div class="wallet__stake-item" v-for="(portfolio, index) in portfolioList" :key="portfolio.isolatedAddress">
-                    <div class="wallet__stake-row">
-                        <div class="portfolio__leaderboard-address">
-                            <div class="portfolio__leaderboard-rank" :class="`portfolio__leaderboard-icon--${index + 1}`">{{ index + 1 }}</div>
-                            <div class="portfolio__leaderboard-address-value">
-                                {{ shortHashFilter(portfolio.isolatedAddress) }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="wallet__stake-row">
-                        <div>
-                            <div class="u-h--uppercase wallet__stake-row-title">
-                                {{ $td('Portfolio ID', 'portfolio.leaderboard-column-portfolio') }}
-                            </div>
-                            <nuxt-link class="link--default" :to="`/portfolio/${portfolio.id}`">#{{ portfolio.id }}</nuxt-link>
-                        </div>
-                        <div class="u-text-right">
-                            <div class="u-h--uppercase wallet__stake-row-title">
-                                {{ $td('Profit', 'portfolio.leaderboard-column-profit') }}
-                            </div>
-                            <div :class="getProfitColorClass(portfolio.profit)">
-                                {{ getProfitText(portfolio.profit) }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </template>

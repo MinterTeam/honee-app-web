@@ -288,6 +288,8 @@ export default {
         'leaderboard-title': 'Прибыль пользователей',
         'leaderboard-column-address': 'Адрес',
         'leaderboard-column-portfolio': 'Портфель',
+        'leaderboard-column-rank': 'Ранг',
+        'leaderboard-column-address-and-portfolio': 'Адрес и портфель',
         'leaderboard-column-profit': 'Профит',
         'leaderboard-view-all': 'Посмотреть все',
 
