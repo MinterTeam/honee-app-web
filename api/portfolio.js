@@ -109,20 +109,14 @@ export function getLeaderboard({limit, profitPeriod} = {}) {
 }
 function getLeaderboardDateParams(profitPeriod) {
     if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.DAILY7) {
-        const today = getToday();
+        const future = '2999-01-01';
         const weekAgo = shiftDate(today, -7);
-        return formatDate(weekAgo) + '/' + formatDate(today);
+        return formatDate(weekAgo) + '/' + future;
     }
     if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.WTD) {
-        const today = getToday();
+        const future = '2999-01-01';
         const monday = getLastMonday();
-        if (monday.getTime() === today.getTime()) {
-            // no data for today yet, so show last week
-            const weekAgo = shiftDate(today, -7);
-            return formatDate(weekAgo) + '/' + formatDate(today);
-        } else {
-            return formatDate(monday) + '/' + formatDate(today);
-        }
+        return formatDate(monday) + '/' + future;
     }
     if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.WEEKLY) {
         const monday = getLastMonday();
