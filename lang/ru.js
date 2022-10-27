@@ -111,6 +111,9 @@ export default {
         'nostakes': 'Еще нет стейков',
         'error-stake-list': 'Не удается загрузить список стейков',
 
+        'card-twitter-description': 'Зарабатывайте BEE за ретвиты и лайки в Twitter! Перейдите в Telegram-бот для получения дальнейшей инструкции.',
+        'card-twitter-button': 'Подключиться',
+
         'card-button-deposit': 'Купить за BNB или ETH',
         'add-liquidity': 'Добавить',
         'delegate': 'Делегировать',
