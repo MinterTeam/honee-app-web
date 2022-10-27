@@ -88,7 +88,7 @@ export function getPortfolioList(params) {
  */
 
 // leaderboard updates once 24h, so 1h cache is ok
-const leaderboardCache = new Cache({maxAge: 60 * 60 * 1000});
+const leaderboardCache = new Cache({ttl: 60 * 60 * 1000, max: 100});
 /**
  * @param {PortfolioListParams} [params]
  * @return {Promise<ConsumerPortfolioList>}
@@ -193,7 +193,7 @@ export function postConsumerPortfolio(type, id, address, privateKey) {
 }
 
 // consumer portfolio list can be cached, because we will update local state on init/buy/sell change manually
-const consumerCache = new Cache({maxAge: 1 * 60 * 1000});
+const consumerCache = new Cache({ttl: 1 * 60 * 1000, max: 100});
 
 /**
  * @param {string} address
@@ -231,7 +231,7 @@ export function getConsumerPortfolio(address, id) {
         });
 }
 
-const coinsCache = new Cache({maxAge: 5 * 60 * 1000});
+const coinsCache = new Cache({ttl: 5 * 60 * 1000, max: 100});
 
 /**
  * @return {Promise<Array<CoinItem>>}

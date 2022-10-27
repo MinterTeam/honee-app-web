@@ -10,7 +10,7 @@ const instance = axios.create({
 addToCamelInterceptor(instance);
 
 // 24 hr cache
-const tgUserCache = new Cache({maxAge: 24 * 60 * 60 * 1000});
+const tgUserCache = new Cache({ttl: 24 * 60 * 60 * 1000, max: 100});
 /**
  * @return {Promise<TelegramAuthResponse>}
  */

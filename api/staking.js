@@ -12,7 +12,7 @@ const instance = axios.create({
 addToCamelInterceptor(instance);
 
 // 5 sec cache for same block
-const blockCache = new Cache({maxAge: 5 * 1000});
+const blockCache = new Cache({ttl: 5 * 1000, max: 100});
 /**
  * @return {Promise<Array<StakingProgram>>}
  */
