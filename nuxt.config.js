@@ -93,8 +93,8 @@ module.exports = {
                     base-uri 'none';
                     form-action 'none';
                     frame-ancestors https://honee.app;
-                    report-uri https://1ba68dd21788a2dfc5522a62c6674f25.report-uri.com/r/d/csp/reportOnly;
-                    report-to default-csp-report-collector;
+                    report-uri https://csp-report-collector.minter.network https://1ba68dd21788a2dfc5522a62c6674f25.report-uri.com/r/d/csp/reportOnly;
+                    report-to default;
                 `,
             },
             { hid: 'description', name: 'description', content: BASE_DESCRIPTION },
