@@ -35,7 +35,7 @@ const NUXT_LOADING_INLINE_SCRIPT_SHA = process.env.NODE_ENV === 'production'
 function prepareCSP(env, keyFilter) {
     // make array of filtered URLs
     const filteredKeys = Object.keys(env).filter(keyFilter);
-    const filtered = filteredKeys.map((key) => env[key]);
+    const filtered = filteredKeys.map((key) => env[key]).filter((item) => typeof item === 'string');
 
     const parsed = filtered.map((item) => {
         // remove path, remove query
@@ -58,9 +58,6 @@ function prepareCSP(env, keyFilter) {
 }
 
 const connectCSP = prepareCSP(varsConfig, (item) => {
-    if (typeof item !== 'string') {
-        return false;
-    }
     return item.indexOf('API_URL') >= 0 || item.indexOf('RTM_URL') >= 0 || item.indexOf('API_HOST') >= 0;
 });
 const imageCSP = prepareCSP(varsConfig, (item) => {
