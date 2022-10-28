@@ -4,7 +4,7 @@ import Card from '~/components/Card.vue';
 import CardHead from '~/components/CardHead.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
 import InvestmentList from '~/components/InvestmentList.vue';
-import PortfolioBattle from '~/components/PortfolioBattle.vue';
+import PortfolioBattleTable from '~/components/PortfolioBattleTable.vue';
 import PortfolioLeaderboard from '~/components/PortfolioLeaderboard.vue';
 import PortfolioList from '~/components/PortfolioList.vue';
 
@@ -35,7 +35,7 @@ export default {
         CardHead,
         AddressAssets,
         InvestmentList,
-        PortfolioBattle,
+        PortfolioBattleTable,
         PortfolioLeaderboard,
         PortfolioList,
     },
@@ -161,7 +161,18 @@ export default {
 
         <PortfolioLeaderboard class="u-mt-25" limit="5"/>
 
-        <PortfolioBattle class="u-mt-25" limit="5"/>
+        <h2 class="u-h1 u-mt-25 u-mb-15">
+            {{ $td('Portfolio battle', `portfolio.battle-title`) }}
+        </h2>
+        <div class="card card__content">
+            <PortfolioBattleTable limit="5"/>
+
+            <div class="u-text-right u-mt-15">
+                <nuxt-link class="link--default" :to="$i18nGetPreferredPath('/portfolio/battle')">
+                    {{ $td('View all', 'portfolio.leaderboard-view-all') }}
+                </nuxt-link>
+            </div>
+        </div>
 
         <PortfolioList class="u-mt-25" type="managed" @update:portfolio-list="portfolioListManaged = $event"/>
         <nuxt-link v-if="portfolioListManaged.length === 0" class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">

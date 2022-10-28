@@ -1,7 +1,8 @@
 <script>
-import {getPortfolioList, PORTFOLIO_PROFIT_PERIOD} from '~/api/portfolio.js';
+import {getPortfolioList, getPortfolioBattleHistory, BATTLE_CURRENT_WEEK_NUMBER, PORTFOLIO_PROFIT_PERIOD} from '~/api/portfolio.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {prettyUsd, shortHashFilter} from '~/assets/utils.js';
+import {arrayToMap} from '~/assets/utils/collection.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import PortfolioPagination from '~/components/PortfolioPagination.vue';
 
@@ -14,6 +15,9 @@ export default {
         profitPeriod: {
             type: String,
             default: PORTFOLIO_PROFIT_PERIOD.WTD,
+        },
+        week: {
+            type: [String, Number],
         },
         limit: {
             type: [Number, String],
@@ -39,11 +43,29 @@ export default {
     },
     fetch() {
         const page = this.page || 1;
-        const listPromise = getPortfolioList({
-            profitPeriod: this.profitPeriod,
-            limit: this.limit,
-            page,
-        });
+        let listPromise;
+        if (this.isHistoryWeek) {
+            listPromise = getPortfolioBattleHistory(this.week);
+        } else {
+            listPromise = Promise.all([
+                getPortfolioList({
+                    profitPeriod: this.profitPeriod,
+                    limit: this.limit,
+                    page,
+                }),
+                // get results from the start of the battle
+                getPortfolioBattleHistory(1, BATTLE_CURRENT_WEEK_NUMBER + 10, {limit: 100000}),
+            ])
+                .then(([portfolioInfo, totalBattlePortfolioInfo]) => {
+                    const totalBattleMap = arrayToMap(totalBattlePortfolioInfo.list, 'id');
+                    portfolioInfo = JSON.parse(JSON.stringify(portfolioInfo));
+                    portfolioInfo.list = portfolioInfo.list.map((portfolio) => {
+                        portfolio.totalProfit = totalBattleMap[portfolio.id]?.profit;
+                        return portfolio;
+                    });
+                    return portfolioInfo;
+                });
+        }
 
         return listPromise
             .then((portfolioInfo) => {
@@ -51,6 +73,14 @@ export default {
                 this.paginationInfo = Object.freeze(portfolioInfo.pagination) || undefined;
                 // this.$emit('update:portfolio-list', this.portfolioList);
             });
+    },
+    computed: {
+        isCurrentWeek() {
+            return typeof this.week === 'undefined';
+        },
+        isHistoryWeek() {
+            return !this.isCurrentWeek;
+        },
     },
     watch: {
         page: {
@@ -63,13 +93,17 @@ export default {
     methods: {
         shortHashFilter,
         getErrorText,
-        // @TODO should be from portfolio creation date
         getBalance(portfolio) {
-            const coefficient = 1 + (portfolio.profit[this.profitPeriod] / 100);
+            const totalProfit = this.isCurrentWeek ? portfolio.totalProfit : portfolio.profit;
+            const coefficient = 1 + (this.getProfitValue(totalProfit) / 100);
             return prettyUsd(coefficient * 100);
         },
+        getProfitValue(profit) {
+            const isPrimitive = typeof profit === 'string' || typeof profit === 'number';
+            return isPrimitive ? profit : profit[this.profitPeriod];
+        },
         getProfitColorClass(profit) {
-            profit = profit[this.profitPeriod];
+            profit = this.getProfitValue(profit);
             if (profit > 0) {
                 return 'u-text-green';
             }
@@ -79,7 +113,7 @@ export default {
             return '';
         },
         getProfitText(profit) {
-            profit = profit[this.profitPeriod];
+            profit = this.getProfitValue(profit);
             if (!profit && profit !== 0) {
                 return '—';
             } else {

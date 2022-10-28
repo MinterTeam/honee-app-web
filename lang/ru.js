@@ -608,5 +608,9 @@ export default {
         'create-description-1': 'Выберите от 2х до 10ти токенов и укажите их долю в процентах.',
         'create-remember': 'Помните:',
         'create-description-2': 'вы можете создать только один портфель и редактировать его раз в день.',
+
+        'week-results-title': 'Победители недели #{week}',
+        'week-results-button': 'Результаты',
+        'week-profit-caption': 'Неделя #{week}',
     },
 };

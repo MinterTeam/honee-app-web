@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
+import {differenceInCalendarISOWeeks} from 'date-fns';
 import format from 'date-fns/esm/format';
 import {PORTFOLIO_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
 import {toSnake} from '~/assets/utils/snake-case.js';
@@ -76,6 +77,48 @@ export function getPortfolioList(params) {
         .then((response) => response.data);
 }
 
+
+/**
+ * week numbers starting from BATTLE_START_DATE
+ * @param {number} startWeek - start week number
+ * @param {number} [endWeek] - end week number
+ * @param {PaginationParams} params
+ * @return {Promise<PortfolioList>}
+ */
+export function getPortfolioBattleHistory(startWeek, endWeek, params) {
+    if (typeof endWeek === 'undefined') {
+        endWeek = startWeek;
+    }
+    const startMonday = shiftDate(BATTLE_START_DATE, (startWeek - 1) * 7);
+    const end = shiftDate(BATTLE_START_DATE, endWeek * 7);
+
+    return getPortfolioListByDates(formatDate(startMonday), formatDate(end), params);
+}
+
+const portfolioByDatesCache = new Cache({ttl: 24 * 60 * 60 * 1000, max: 1000});
+
+/**
+ * week numbers starting from BATTLE_START_DATE
+ * @param {string} start
+ * @param {string} end - end week number
+ * @param {PaginationParams} params
+ * @return {Promise<PortfolioList>}
+ */
+export function getPortfolioListByDates(start, end, params) {
+    const today = getToday();
+    const endDate = new Date(end + 'T00:00:00Z');
+    // check equal here, because 00:00:00 snapshot is considered as past day snapshot
+    const isPastDaySnapshot = endDate <= today;
+    // enough future to ensure 24hr cache will not affect results
+    const isEnoughFuture = endDate > shiftDate(today, 3);
+
+    return instance.get(`portfolio/${start}/${end}`, {
+            params,
+            cache: isPastDaySnapshot || isEnoughFuture ? portfolioByDatesCache : undefined,
+        })
+        .then((response) => response.data);
+}
+
 /**
  * @typedef {PaginationParams} PortfolioListParams
  * @property {PORTFOLIO_PROFIT_PERIOD} [profitPeriod]
@@ -123,47 +166,47 @@ function getLeaderboardDateParams(profitPeriod) {
         const weekAgo = shiftDate(monday, -7);
         return formatDate(weekAgo) + '/' + formatDate(monday);
     }
+}
 
-    /**
-     * @param {Date} date
-     * @return {string}
-     */
-    function formatDate(date) {
-        return format(date, 'yyyy-MM-dd');
-    }
+/**
+ * @param {Date} date
+ * @return {string}
+ */
+function formatDate(date) {
+    return format(date, 'yyyy-MM-dd');
+}
 
-    /**
-     * @return {Date}
-     */
-    function getToday() {
-        let now = new Date();
-        let today = new Date(0);
-        today.setUTCFullYear(now.getUTCFullYear());
-        today.setUTCMonth(now.getUTCMonth());
-        today.setUTCDate(now.getUTCDate());
-        return today;
-    }
+/**
+ * @return {Date}
+ */
+function getToday() {
+    let now = new Date();
+    let today = new Date(0);
+    today.setUTCFullYear(now.getUTCFullYear());
+    today.setUTCMonth(now.getUTCMonth());
+    today.setUTCDate(now.getUTCDate());
+    return today;
+}
 
-    function getLastMonday() {
-        const today = getToday();
-        let todayDay = today.getDay();
-        // fix sunday
-        if (todayDay === 0) {
-            todayDay = 7;
-        }
-        return shiftDate(today, todayDay * -1 + 1);
+function getLastMonday() {
+    const today = getToday();
+    let todayDay = today.getDay();
+    // fix sunday
+    if (todayDay === 0) {
+        todayDay = 7;
     }
+    return shiftDate(today, todayDay * -1 + 1);
+}
 
-    /**
-     * @param {Date} targetDate
-     * @param {number} dayCount
-     * @return {Date}
-     */
-    function shiftDate(targetDate, dayCount) {
-        let result = new Date(targetDate);
-        result.setDate(targetDate.getDate() + dayCount);
-        return result;
-    }
+/**
+ * @param {Date} targetDate
+ * @param {number} dayCount
+ * @return {Date}
+ */
+function shiftDate(targetDate, dayCount) {
+    let result = new Date(targetDate);
+    result.setDate(targetDate.getDate() + dayCount);
+    return result;
 }
 
 
@@ -239,6 +282,11 @@ export function getCmcCoinList() {
             return item;
         }));
 }
+
+// monday of 43 ISO week
+export const BATTLE_START_DATE = new Date('2022-10-24T00:00:00Z');
+// week number starting from 1
+export const BATTLE_CURRENT_WEEK_NUMBER = differenceInCalendarISOWeeks(new Date(), BATTLE_START_DATE) + 1;
 
 
 /**

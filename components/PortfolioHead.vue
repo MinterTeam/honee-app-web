@@ -15,6 +15,9 @@ export default {
             type: String,
             default: PORTFOLIO_PROFIT_PERIOD.AWP,
         },
+        profitCaption: {
+            type: String,
+        },
         titleLink: {
             type: String,
         },
@@ -31,7 +34,8 @@ export default {
             return !this.isConsumer;
         },
         profit() {
-            return this.isConsumer ? this.portfolio.profit : this.portfolio.profit?.[this.profitPeriod];
+            const isPrimitive = typeof this.portfolio.profit === 'string' || typeof this.portfolio.profit === 'number';
+            return isPrimitive ? this.portfolio.profit : this.portfolio.profit?.[this.profitPeriod];
         },
         profitText() {
             if (!this.profit && this.profit !== 0) {
@@ -67,13 +71,14 @@ export default {
             </div>
             <!-- right -->
             <div class="card__action-stats-caption u-text-upper">
-                <template v-if="isTemplate && profitPeriod === $options.PORTFOLIO_PROFIT_PERIOD.AWP">
+                <template v-if="profitCaption">{{ profitCaption }}</template>
+                <template v-else-if="isTemplate && profitPeriod === $options.PORTFOLIO_PROFIT_PERIOD.AWP">
                     {{ $td('Average weekly profit', 'portfolio.head-profit-awp') }}
                 </template>
-                <template v-if="isTemplate && profitPeriod === $options.PORTFOLIO_PROFIT_PERIOD.DAILY7">
+                <template v-else-if="isTemplate && profitPeriod === $options.PORTFOLIO_PROFIT_PERIOD.DAILY7">
                     {{ $td('7 days', 'portfolio.head-profit-7d') }}
                 </template>
-                <template v-if="isConsumer">{{ $td('Balance', 'portfolio.head-balance') }}</template>
+                <template v-else-if="isConsumer">{{ $td('Balance', 'portfolio.head-balance') }}</template>
             </div>
         </div>
         <div class="card__head-row">
