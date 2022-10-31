@@ -8,6 +8,7 @@ import minValue from 'vuelidate/src/validators/minValue.js';
 import autosize from 'v-autosize';
 import {getOracleCoinList} from '~/api/hub.js';
 import {createPortfolio, updatePortfolio} from '~/api/portfolio.js';
+import {getAddressPremiumLevel} from '~/api/staking.js';
 import {NETWORK, MAINNET} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import customTokenList from '~/data/tokens.js';
@@ -15,6 +16,7 @@ import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
+import TelegramAuth from '~/components/TelegramAuth.vue';
 
 const MIN_COUNT = 2;
 const MAX_COUNT = 10;
@@ -40,7 +42,7 @@ export default {
         BaseLoader,
         Modal,
         FieldCombined,
-
+        TelegramAuth,
     },
     directives: {
         autosize,
@@ -77,6 +79,7 @@ export default {
             },
             // tokens available to use in portfolio
             tokenList: [],
+            premiumLevel: 0,
         };
     },
     validations() {
@@ -115,6 +118,9 @@ export default {
         isNew() {
             return !this.portfolio;
         },
+        hasAccess() {
+            return this.premiumLevel > 0 || this.$store.getters['telegram/isAuthorized'];
+        },
         allocationSum() {
             return this.form.coinList.reduce((accumulator, item) => accumulator + Number(item.allocation), 0);
         },
@@ -123,6 +129,13 @@ export default {
         const promiseList = [];
         if (this.isNew) {
             promiseList.push(this.$store.dispatch('telegram/fetchAuth'));
+            promiseList.push(
+                getAddressPremiumLevel(this.$store.getters.address)
+                    .then((level) => {
+                        this.premiumLevel = level;
+                    }),
+            );
+
         }
 
         if (NETWORK === MAINNET) {
@@ -227,8 +240,15 @@ function getEmptyCoin() {
 </script>
 
 <template>
-    <div class="card card--pop card--light-grey">
-        <form class="card__content card__content--medium" novalidate @submit.prevent="openConfirmation()">
+    <div class="card card--light-grey" :class="{'card--pop': hasAccess}">
+        <div class="card__content card__content--medium u-text-center" v-if="$fetchState.pending">
+            <BaseLoader :is-loading="true"/>
+        </div>
+        <form
+            class="card__content card__content--medium" novalidate
+            v-if="hasAccess"
+            @submit.prevent="openConfirmation()"
+        >
             <div class="form-row" v-for="(v$coin, index) in $v.form.coinList.$each.$iter" :key="index">
                 <FieldCombined
                     placeholder="0%"
@@ -322,6 +342,15 @@ function getEmptyCoin() {
             </div>
             <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the disclaimer in the footer.', 'form.read-understood') }}</p>
         </form>
+        <div class="card__content card__content--medium u-text-center" v-else>
+            <p>{{ $td('You need to be a Premium user or be logged in via Telegram to create your portfolio.', 'portfolio.create-requirements-description') }}</p>
+            <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath('/premium')">
+                <img class="button__icon" src="/img/icon-premium.svg" alt="" role="presentation" width="24" height="24">
+                {{ $t('premium.activate-title') }}
+            </nuxt-link>
+            <p class="u-mt-10">{{ $td('or', 'common.or') }}</p>
+            <TelegramAuth class="u-mt-10"/>
+        </div>
         <div class="card__content card__content--medium u-text-medium">
             <h3 class="u-h5 u-mb-05">{{ $td('Terms', 'common.terms') }}</h3>
             <ul v-if="$i18n.locale === 'en'" class="list-simple list-simple--small">
