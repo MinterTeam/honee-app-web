@@ -23,7 +23,7 @@ export default {
     fetch() {
         // const page = this.page || 1;
         //@TODO
-        let weeks = BATTLE_CURRENT_WEEK_NUMBER > 1 ? [BATTLE_CURRENT_WEEK_NUMBER] : [0];
+        let weeks = [BATTLE_CURRENT_WEEK_NUMBER - 1];
         /**
          * @type {Array<Promise<[string,Portfolio]>>}
          */
