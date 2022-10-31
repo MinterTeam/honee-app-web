@@ -296,6 +296,8 @@ export default {
         'leaderboard-column-profit': 'Профит',
         'leaderboard-view-all': 'Посмотреть все',
 
+        'tabs-label-battle-current': 'Текущая неделя',
+        'tabs-label-battle-previous': 'Победители',
         'battle-title': 'Битва портфелей',
         'battle-column-portfolio': 'Портфель',
         'battle-column-tokens': 'Токены',
