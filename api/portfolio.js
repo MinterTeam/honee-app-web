@@ -92,7 +92,10 @@ export function getPortfolioBattleHistory(startWeek, endWeek, params) {
     const startMonday = shiftDate(BATTLE_START_DATE, (startWeek - 1) * 7);
     const end = shiftDate(BATTLE_START_DATE, endWeek * 7);
 
-    return getPortfolioListByDates(formatDate(startMonday), formatDate(end), params);
+    return getPortfolioListByDates(formatDate(startMonday), formatDate(end), {
+        limit: 100,
+        ...params,
+    });
 }
 
 const portfolioByDatesCache = new Cache({ttl: 24 * 60 * 60 * 1000, max: 1000});
