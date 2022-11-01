@@ -15,7 +15,8 @@ export default function useWeb3Withdraw(destinationAddress) {
 
     const props = reactive({
         hubNetworkSlug: '',
-        amountToReceive: 0,
+        amountToSend: 0,
+        // amountToReceive: 0,
         tokenSymbol: '',
         accountAddress: '',
         destinationAddress: destinationAddress || '',
@@ -47,27 +48,56 @@ export default function useWeb3Withdraw(destinationAddress) {
 
         return new Big(selectedDestinationFee).div(tokenPrice.value).toString();
     });
+    // base hub rate without discount
+    const hubFeeBaseRate = computed(() => {
+        return hubCoin.value?.commission || 0.01;
+    });
+    // e.g 0.01 without discount, or 0.004 for 60% discount
     const hubFeeRate = computed(() => {
         const discountModifier = 1 - discount.value;
         // commission to withdraw is taken from origin token data (e.g. chainId: 'minter' for withdraw)
-        return new Big(hubCoin.value?.commission || 0.01).times(discountModifier).toString();
+        return new Big(hubFeeBaseRate.value).times(discountModifier).toString();
     });
     const hubFeeRatePercent = computed(() => {
         return new Big(hubFeeRate.value).times(100).toString();
     });
-// fee to Hub bridge calculated in COIN to withdraw
+    // fee to Hub bridge calculated in COIN to withdraw
     const hubFee = computed(() => {
-        const amount = new Big(destinationFeeInCoin.value).plus(props.amountToReceive || 0);
-        // x / (1 - x)
-        const inverseRate = new Big(hubFeeRate.value).div(new Big(1).minus(hubFeeRate.value));
-        return amount.times(inverseRate).toString();
+        return getHubFeeFromSendAmount(hubFeeRate.value, props.amountToSend);
+        // return getHubFeeFromReceiveAmount(hubFeeRate.value, props.amountToReceive, destinationFeeInCoin.value);
     });
-// amount to send to Hub bridge
+    // (destinationNetworkFee + amountToReceive) * (hubFeeRate / (1 - hubFeeRate))
+    function getHubFeeFromReceiveAmount(hubFeeRate, amountToReceive, destinationFeeInCoin) {
+        const amount = new Big(destinationFeeInCoin).plus(amountToReceive || 0);
+        // x / (1 - x)
+        const inverseRate = new Big(hubFeeRate).div(new Big(1).minus(hubFeeRate));
+        return amount.times(inverseRate).toString();
+    }
+    function getHubFeeFromSendAmount(hubFeeRate, amountToSend) {
+        return new Big(amountToSend || 0).times(hubFeeRate).toString();
+    }
+    // amount to receive from Hub bridge
+    const amountToReceive = computed(() => {
+        const amount = new Big(props.amountToSend || 0).minus(destinationFeeInCoin.value).minus(hubFee.value).toString();
+        if (amount < 0) {
+            return 0;
+        }
+        return amount;
+    });
+    // amount to send to Hub bridge
+    /*
     const amountToSend = computed(() => {
         return new Big(props.amountToReceive || 0).plus(destinationFeeInCoin.value).plus(hubFee.value).toString();
     });
+    */
     const minAmountToSend = computed(() => {
-        return getHubMinAmount(destinationFeeInCoin.value, hubFeeRate.value);
+        // Minter Hub not consider discount in amount validation, so use hubFeeBaseRate without discount
+        const minTotalFee = new Big(destinationFeeInCoin.value).times(new Big(1).plus(hubFeeBaseRate.value)).toString();
+        // add 1 pip because 0 will not pass validation too
+        return new Big(minTotalFee).plus(1e-18).toString();
+    });
+    const minAmountToReceive = computed(() => {
+        return getHubMinAmount(destinationFeeInCoin.value, hubFeeRate.value, hubFeeBaseRate.value);
     });
 
     /**
@@ -79,15 +109,15 @@ export default function useWeb3Withdraw(destinationAddress) {
      */
     function getHubMinAmount(destinationNetworkFee, hubFeeRate, hubFeeBaseRate = 0.01) {
         // minAmount = hubFeeBase - hubFee
-        // But while form.amount increase hubFee increase too, so we need to find such formAmount which will be equal minAmount, it will be maximum minAmount
+        // But while amountToReceive increase hubFee increase too, so we need to find such amountToReceive which will be equal minAmount, it will be maximum minAmount
 
         // Some 7 grade math below
-        // hubFeeBase = (destinationNetworkFee + formAmount) * (0.01 / (1 - 0.01));
-        // hubFee = (destinationNetworkFee + formAmount) * (hubFeeRate / (1 - hubFeeRate))
+        // hubFeeBase = (destinationNetworkFee + amountToReceive) * (0.01 / (1 - 0.01));
+        // hubFee = (destinationNetworkFee + amountToReceive) * (hubFeeRate / (1 - hubFeeRate))
         // define (a = hubFeeBaseRate; b = hubFeeRate)
-        // minAmount = (destinationNetworkFee + formAmount) * (a / (1 - a)) - (destinationNetworkFee + formAmount) * (b / (1 - b))
-        // minAmount = (destinationNetworkFee + formAmount) * ((a / (1 - a) - (b / (1 - b));
-        // minAmount = (destinationNetworkFee + formAmount) * x;
+        // minAmount = (destinationNetworkFee + amountToReceive) * (a / (1 - a)) - (destinationNetworkFee + amountToReceive) * (b / (1 - b))
+        // minAmount = (destinationNetworkFee + amountToReceive) * ((a / (1 - a) - (b / (1 - b));
+        // minAmount = (destinationNetworkFee + amountToReceive) * x;
 
         // Let's calculate factor x
         // x = a / (1 - a) - b / (1 - b)
@@ -98,14 +128,14 @@ export default function useWeb3Withdraw(destinationAddress) {
         // const factor = (hubFeeBaseRate - hubFeeRate) / ((1 - hubFeeBaseRate) * (1 - hubFeeRate));
         const factor = new Big(hubFeeBaseRate).minus(hubFeeRate).div(new Big(1).minus(hubFeeBaseRate).times(new Big(1).minus(hubFeeRate))).toString();
 
-        // We are finding formAmount equal to minAmount (fa = formAmount, dnf = destinationNetworkFee)
-        // fa = minAmount
-        // fa = (fa + dnf) * x
-        // fa = fa * x + dnf * x
-        // fa - fa * x = dnf * x
-        // fa * 1 - fa * x = dnf * x
-        // fa * (1 -x) = dnf * x
-        // fa = dnf * x / (1 - x)
+        // We are finding amountToReceive equal to minAmount (ar = amountToReceive, dnf = destinationNetworkFee)
+        // ar = minAmount
+        // ar = (ar + dnf) * x
+        // ar = ar * x + dnf * x
+        // ar - ar * x = dnf * x
+        // ar * 1 - ar * x = dnf * x
+        // ar * (1 -x) = dnf * x
+        // ar = dnf * x / (1 - x)
         // const minAmount = destinationNetworkFee * factor / (1 - factor);
         const minAmount = new Big(destinationNetworkFee).times(factor).div(new Big(1).minus(factor)).toString();
         // add 1 pip because 0 will not pass validation too
@@ -117,7 +147,7 @@ export default function useWeb3Withdraw(destinationAddress) {
             type: TX_TYPE.SEND,
             data: {
                 to: HUB_MINTER_MULTISIG_ADDRESS,
-                value: amountToSend.value,
+                value: props.amountToSend,
                 coin: hubCoin.value?.minterId,
             },
             payload: JSON.stringify({
@@ -142,8 +172,9 @@ export default function useWeb3Withdraw(destinationAddress) {
         hubFeeRate,
         hubFeeRatePercent,
         hubFee,
-        amountToSend,
+        amountToReceive,
         minAmountToSend,
+        minAmountToReceive,
         txParams,
         feeTxParams,
         // methods

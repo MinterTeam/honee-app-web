@@ -49,7 +49,7 @@ export default {
             // no need to subscribe here, because already subscribed in useHubToken and useWeb3Withdraw
         });
         const {hubCoin: coinItem, tokenPrice: coinPrice, tokenData: externalToken, setHubTokenProps} = useHubToken();
-        const {discountUpsidePercent, destinationFeeInCoin: coinFee, hubFeeRate, hubFeeRatePercent, hubFee, amountToSend, minAmountToSend: minAmount, txParams, feeTxParams, setWithdrawProps} = useWeb3Withdraw();
+        const {discountUpsidePercent, destinationFeeInCoin: coinFee, hubFeeRate, hubFeeRatePercent, hubFee, amountToReceive, minAmountToSend: minAmount, txParams, feeTxParams, setWithdrawProps} = useWeb3Withdraw();
 
         return {
             fee,
@@ -69,7 +69,7 @@ export default {
             hubFeeRate,
             hubFeeRatePercent,
             hubFee,
-            amountToSend,
+            amountToReceive,
             minAmount,
             txParams,
             feeTxParams,
@@ -98,24 +98,27 @@ export default {
         totalFee() {
             return new Big(this.coinFee).plus(this.hubFee).toString();
         },
-        */
         amountToSpend() {
             if (this.form.coin === this.fee.coinSymbol) {
-                return new Big(this.amountToSend).plus(this.fee.value).toString();
+                return new Big(this.form.amount).plus(this.fee.value).toString();
             } else {
-                return this.amountToSend;
+                return this.form.amount;
             }
         },
+         */
         // positive price impact means lose of value
         totalFeeImpact() {
-            const totalSpend = this.amountToSpend;
-            const totalResult = this.form.amount;
+            const totalSpend = this.form.amount;
+            const totalResult = this.amountToReceive;
             if (!totalSpend || !totalResult) {
                 return 0;
             }
             return Math.min((totalSpend - totalResult) / totalSpend * 100, 100);
         },
         maxAmount() {
+            return this.maxAmountToSend;
+        },
+        maxAmountToSend() {
             const selectedCoin = this.$store.state.balance.find((coin) => {
                 return coin.coin.symbol === this.form.coin;
             });
@@ -123,7 +126,10 @@ export default {
             if (!selectedCoin) {
                 return 0;
             }
-            const availableAmount = getAvailableSelectedBalance(selectedCoin, this.fee);
+            return getAvailableSelectedBalance(selectedCoin, this.fee);
+        },
+        maxAmountToReceive() {
+            const availableAmount = this.maxAmountToSend;
 
             const maxHubFee = new Big(availableAmount).times(this.hubFeeRate);
             const maxAmount = new Big(availableAmount).minus(maxHubFee).minus(this.coinFee);
@@ -175,7 +181,7 @@ export default {
         this.$watch(
             () => ({
                 hubNetworkSlug: this.form.networkTo,
-                amountToReceive: this.form.amount,
+                amountToSend: this.form.amount,
                 tokenSymbol: this.form.coin,
                 accountAddress: this.$store.getters.address,
                 destinationAddress: this.form.address,
@@ -379,8 +385,8 @@ export default {
                     </a>
                 </div>
 
-                <h3 class="information__title">{{ $td('Total spend', 'hub.withdraw-estimate') }}</h3>
-                <BaseAmountEstimation :coin="form.coin" :amount="amountToSpend" format="exact"/>
+                <h3 class="information__title">{{ $td('You will receive', 'hub.withdraw-estimate') }}</h3>
+                <BaseAmountEstimation :coin="form.coin" :amount="amountToReceive" format="exact"/>
             </div>
             <HubFeeImpact class="form-row" :coin="form.coin" :fee-impact="totalFeeImpact" :network="$options.HUB_CHAIN_DATA[form.networkTo].shortName"/>
             <!--
@@ -441,10 +447,10 @@ export default {
 
             <div class="information form-row">
                 <h3 class="information__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
-                <BaseAmountEstimation :coin="form.coin" :amount="amountToSpend" format="exact"/>
+                <BaseAmountEstimation :coin="form.coin" :amount="form.amount" format="exact"/>
 
                 <h3 class="information__title">{{ $td('You receive', 'form.you-will-get') }}</h3>
-                <BaseAmountEstimation :coin="form.coin" :amount="form.amount" format="exact"/>
+                <BaseAmountEstimation :coin="form.coin" :amount="amountToReceive" format="exact"/>
 
                 <h3 class="information__title">{{ $td('To the address', 'form.wallet-send-confirm-address') }}</h3>
                 <div class="information__item information__item--content u-text-wrap">

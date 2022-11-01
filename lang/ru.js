@@ -601,7 +601,7 @@ export default {
         'withdraw-address-invalid': 'Неверный',
         'withdraw-button-title': 'Вывести',
         'fee-updated': 'комиссия обновлена',
-        'withdraw-estimate': 'Всего',
+        'withdraw-estimate': 'Вы получите',
         'withdraw-eth-fee': 'комиссия',
         'withdraw-hub-fee': 'Комиссия моста',
         'withdraw-minter-fee': 'Комиссия Minter',
