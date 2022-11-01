@@ -246,7 +246,7 @@ function getEmptyCoin() {
         </div>
         <form
             class="card__content card__content--medium" novalidate
-            v-if="hasAccess"
+            v-else-if="hasAccess"
             @submit.prevent="openConfirmation()"
         >
             <div class="form-row" v-for="(v$coin, index) in $v.form.coinList.$each.$iter" :key="index">
