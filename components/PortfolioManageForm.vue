@@ -119,6 +119,9 @@ export default {
             return !this.portfolio;
         },
         hasAccess() {
+            if (!this.isNew) {
+                return true;
+            }
             return this.premiumLevel > 0 || this.$store.getters['telegram/isAuthorized'];
         },
         allocationSum() {
