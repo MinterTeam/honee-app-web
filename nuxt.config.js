@@ -168,7 +168,7 @@ module.exports = {
                 routes.splice(rootEnIndex, 0, rootRu);
             });
         },
-        '@nuxt/content',
+        // '@nuxt/content',
     ],
     buildModules: [
         setVueAliasesModule,

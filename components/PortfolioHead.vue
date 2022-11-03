@@ -78,6 +78,9 @@ export default {
                 <template v-else-if="isTemplate && profitPeriod === $options.PORTFOLIO_PROFIT_PERIOD.DAILY7">
                     {{ $td('7 days', 'portfolio.head-profit-7d') }}
                 </template>
+                <template v-else-if="isTemplate && profitPeriod === $options.PORTFOLIO_PROFIT_PERIOD.RECOMMEND">
+                    {{ $td('Last update', 'portfolio.head-profit-last-update') }}
+                </template>
                 <template v-else-if="isConsumer">{{ $td('Balance', 'portfolio.head-balance') }}</template>
             </div>
         </div>

@@ -263,6 +263,7 @@ export default {
         'head-copy-of': 'Копия',
         'head-profit-7d': '7 дней',
         'head-profit-awp': 'Средняя прибыль в неделю',
+        'head-profit-last-update': 'Последнее обновление',
         'head-balance': 'Баланс',
         'view-button': 'Перейти',
         'buy-title': 'Купить портфель',
