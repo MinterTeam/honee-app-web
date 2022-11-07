@@ -72,6 +72,9 @@ export default {
             <!-- right -->
             <div class="card__action-stats-caption u-text-upper">
                 <template v-if="profitCaption">{{ profitCaption }}</template>
+                <template v-else-if="isTemplate && profitPeriod === $options.PORTFOLIO_PROFIT_PERIOD.APY">
+                    {{ $td('APY', 'common.apy') }}
+                </template>
                 <template v-else-if="isTemplate && profitPeriod === $options.PORTFOLIO_PROFIT_PERIOD.AWP">
                     {{ $td('Average weekly profit', 'portfolio.head-profit-awp') }}
                 </template>

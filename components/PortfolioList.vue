@@ -59,7 +59,7 @@ export default {
             profitPeriod = PORTFOLIO_PROFIT_PERIOD.DAILY7;
         }
         if (this.type === PORTFOLIO_LIST_TYPE.RECOMMEND) {
-            profitPeriod = PORTFOLIO_PROFIT_PERIOD.RECOMMEND;
+            profitPeriod = PORTFOLIO_PROFIT_PERIOD.APY;
         }
         const listPromise = this.type === PORTFOLIO_LIST_TYPE.COPIED
             ? this.$store.dispatch('portfolio/fetchConsumerPortfolioList')

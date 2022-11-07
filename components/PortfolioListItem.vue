@@ -33,7 +33,7 @@ export default {
     computed: {
         profitPeriod() {
             if (this.type === PORTFOLIO_LIST_TYPE.RECOMMEND) {
-                return PORTFOLIO_PROFIT_PERIOD.RECOMMEND;
+                return PORTFOLIO_PROFIT_PERIOD.APY;
             }
             if (this.type === PORTFOLIO_LIST_TYPE.TOP) {
                 return PORTFOLIO_PROFIT_PERIOD.AWP;

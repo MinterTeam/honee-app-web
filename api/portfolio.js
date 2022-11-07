@@ -322,6 +322,8 @@ export const BATTLE_CURRENT_WEEK_NUMBER = differenceInCalendarISOWeeks(new Date(
  * @enum {string}
  */
 export const PORTFOLIO_PROFIT_PERIOD = {
+    // profit for some last updates (5-10) compounded
+    APY: 'apy',
     // average weekly profit: average of last 4 full weeks (monday-sunday) (negative week bans metric)
     AWP: 'awp',
     // average of last full week (monday-sunday)
@@ -330,6 +332,6 @@ export const PORTFOLIO_PROFIT_PERIOD = {
     DAILY7: 'daily7',
     // from monday to today (aka week to date)
     WTD: 'live',
-    // works only as query, data is provided in daily7
+    // change from last update and filtered for few hours (6hr) since update
     RECOMMEND: 'recommend',
 };
