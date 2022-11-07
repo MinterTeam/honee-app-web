@@ -1,5 +1,5 @@
 <script>
-import {getPortfolioBattleHistory, BATTLE_CURRENT_WEEK_NUMBER} from '~/api/portfolio.js';
+import {getPortfolioBattleWeek, BATTLE_CURRENT_WEEK_NUMBER} from '~/api/portfolio.js';
 import {getErrorText} from '~/assets/server-error.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import PortfolioHead from '~/components/PortfolioHead.vue';
@@ -16,27 +16,29 @@ export default {
     ],
     data() {
         return {
-            /** @type {Object<string, Portfolio>} */
-            winners: {},
+            /** @type {Array<{week: number, portfolio: Portfolio}>} */
+            winners: [],
         };
     },
     fetch() {
-        // const page = this.page || 1;
-        //@TODO
-        let weeks = [BATTLE_CURRENT_WEEK_NUMBER - 1];
+        let weeks = Array.from({length: BATTLE_CURRENT_WEEK_NUMBER - 1}, (item, index) => index + 1)
+            .sort((a, b) => b - a);
         /**
-         * @type {Array<Promise<[string,Portfolio]>>}
+         * @type {Array<Promise<{week: number, portfolio: Portfolio}>>}
          */
         const winnersPromiseList = weeks.map((weekNumber) => {
-            return Promise.all([
-                weekNumber.toString(),
-                getPortfolioBattleHistory(weekNumber).then((portfolioInfo) => portfolioInfo.list[0]),
-            ]);
+            return getPortfolioBattleWeek(weekNumber, {skipTotalProfit: true})
+                .then((portfolioInfo) => {
+                    return {
+                        week: weekNumber,
+                        portfolio: portfolioInfo.list[0],
+                    };
+                });
         });
 
         return Promise.all(winnersPromiseList)
-            .then((winnersEntries) => {
-                this.winners = Object.freeze(Object.fromEntries(winnersEntries));
+            .then((winners) => {
+                this.winners = Object.freeze(winners);
                 // this.$emit('update:portfolio-list', this.portfolioList);
             });
     },
@@ -58,7 +60,7 @@ export default {
             {{ getErrorText($fetchState.error) }}
         </div>
         <div class="u-grid u-grid--vertical-margin" v-else>
-            <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3" v-for="(portfolio, week) in winners" :key="portfolio.id">
+            <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3" v-for="{portfolio, week} in winners" :key="week">
                 <div class="card card--simple-border card__content--small">
                     <PortfolioHead
                         :portfolio="portfolio"

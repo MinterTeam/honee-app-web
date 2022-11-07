@@ -4,6 +4,7 @@ import {differenceInCalendarISOWeeks} from 'date-fns';
 import format from 'date-fns/esm/format';
 import {PORTFOLIO_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
 import {toSnake} from '~/assets/utils/snake-case.js';
+import {arrayToMap} from '~/assets/utils/collection.js';
 import NotFoundError from '~/assets/utils/error-404.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import addEcdsaAuthInterceptor from '~/assets/axios-ecdsa-auth.js';
@@ -80,25 +81,52 @@ export function getPortfolioList(params) {
 
 /**
  * week numbers starting from BATTLE_START_DATE
- * @param {number} startWeek - start week number
- * @param {number} [endWeek] - end week number
- * @param {PaginationParams} params
+ * @param {number} week - week number
+ * @param {PaginationParams&{skipTotalProfit:boolean}} [params]
  * @return {Promise<PortfolioList>}
  */
-export function getPortfolioBattleHistory(startWeek, endWeek, params) {
-    if (typeof endWeek === 'undefined') {
-        endWeek = startWeek;
-    }
-    const startMonday = shiftDate(BATTLE_START_DATE, (startWeek - 1) * 7);
-    const end = shiftDate(BATTLE_START_DATE, endWeek * 7);
+export function getPortfolioBattleWeek(week, params) {
+    const weekMonday = shiftDate(BATTLE_START_DATE, (week - 1) * 7);
+    const weekEnd = shiftDate(BATTLE_START_DATE, week * 7);
 
-    return getPortfolioListByDates(formatDate(startMonday), formatDate(end), {
+    const weekPromise = getPortfolioListByDates(formatDate(weekMonday), formatDate(weekEnd), {
         limit: 100,
         ...params,
     });
+    if (params.skipTotalProfit) {
+        return weekPromise;
+    }
+
+    // fill portfolio list with `totalProfit` field
+    if (Number(week) === 1) {
+        return weekPromise
+            .then((portfolioInfo) => {
+                portfolioInfo = JSON.parse(JSON.stringify(portfolioInfo));
+                portfolioInfo.list = portfolioInfo.list.map((portfolio) => {
+                    portfolio.totalProfit = portfolio.profit;
+                    return portfolio;
+                });
+                return portfolioInfo;
+            });
+    } else {
+        const totalPromise = getPortfolioListByDates(formatDate(BATTLE_START_DATE), formatDate(weekEnd), {
+            limit: 100000,
+        });
+        return Promise.all([weekPromise, totalPromise])
+            .then(([portfolioInfo, totalBattlePortfolioInfo]) => {
+                const totalBattleMap = arrayToMap(totalBattlePortfolioInfo.list, 'id');
+                portfolioInfo = JSON.parse(JSON.stringify(portfolioInfo));
+                portfolioInfo.list = portfolioInfo.list.map((portfolio) => {
+                    portfolio.totalProfit = totalBattleMap[portfolio.id]?.profit;
+                    return portfolio;
+                });
+                return portfolioInfo;
+            });
+    }
 }
 
-const portfolioByDatesCache = new Cache({ttl: 24 * 60 * 60 * 1000, max: 1000});
+const portfolioByDatesCacheLong = new Cache({ttl: 24 * 60 * 60 * 1000, max: 1000});
+const portfolioByDatesCacheShort = new Cache({ttl: 5 * 60 * 1000, max: 1000});
 
 /**
  * week numbers starting from BATTLE_START_DATE
@@ -112,12 +140,10 @@ export function getPortfolioListByDates(start, end, params) {
     const endDate = new Date(end + 'T00:00:00Z');
     // check equal here, because 00:00:00 snapshot is considered as past day snapshot
     const isPastDaySnapshot = endDate <= today;
-    // enough future to ensure 24hr cache will not affect results
-    const isEnoughFuture = endDate > shiftDate(today, 3);
 
     return instance.get(`portfolio/${start}/${end}`, {
             params,
-            cache: isPastDaySnapshot || isEnoughFuture ? portfolioByDatesCache : undefined,
+            cache: isPastDaySnapshot  ? portfolioByDatesCacheLong : portfolioByDatesCacheShort,
         })
         .then((response) => response.data);
 }
