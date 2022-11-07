@@ -320,6 +320,7 @@ export default {
         'title-swap-combined': '@:action.title-swap {coin0} {conjunction} {coin1}',
         'title-swap-coin0-empty': '',
         'title-swap-conjunction': 'на',
+        'title-swap-bsc': 'Обмен через BSC',
         'title-send': 'Отправьте монеты',
         'title-win': 'Выигрывайте',
         'title-farm': 'Участвуйте в фарминге',

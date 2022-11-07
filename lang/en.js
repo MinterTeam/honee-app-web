@@ -12,6 +12,7 @@ export default {
         'title-swap-combined': 'Swap {coin0} {conjunction} {coin1}',
         'title-swap-coin0-empty': 'coins',
         'title-swap-conjunction': 'for',
+        'title-swap-bsc': 'Swap via BSC',
         'title-send': 'Send coins',
         'title-win': 'Win',
         'title-farm': 'Yield farm',

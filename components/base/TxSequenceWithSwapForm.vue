@@ -16,6 +16,7 @@ export default {
         'clear-form',
         'success',
         'success-modal-close',
+        'update:fee',
         'update:estimation',
         'update:v$estimation',
         'validation-touch',
@@ -164,7 +165,7 @@ export default {
         :v$sequence-params="$v"
         :before-post-sequence="beforePostSequence"
         :before-confirm-modal-show="beforeConfirmModalShow"
-        @update:fee="fee = $event"
+        @update:fee="fee = $event; $emit('update:fee', $event)"
         @validation-touch="$emit('validation-touch'); $v.$touch(); v$estimation.$touch(); v$sequenceParams.$touch()"
         @clear-form="clearForm()"
         @success="$emit('success')"

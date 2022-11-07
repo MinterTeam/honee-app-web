@@ -43,6 +43,14 @@ export default function useHubToken() {
         return findTokenInfo(hubTokenList.value, props.tokenSymbol, props.chainId);
     });
     const tokenContractAddress = computed(() => tokenData.value?.externalTokenId.toLowerCase() || '');
+    const tokenContractAddressFixNative = computed(() => {
+        const isNative = HUB_CHAIN_BY_ID[props.chainId] && props.tokenSymbol === HUB_CHAIN_BY_ID[props.chainId].coinSymbol;
+        if (isNative) {
+            return '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+        } else {
+            return tokenContractAddress.value;
+        }
+    });
     const tokenDecimals = computed(() => tokenData.value ? Number(tokenData.value.externalDecimals) : undefined);
     const isNativeToken = computed(() => tokenContractAddress.value === getWrappedNativeContractAddress(props.chainId));
     // price in dollar
@@ -63,6 +71,7 @@ export default function useHubToken() {
         // requires tokenSymbol and chainId
         tokenData,
         tokenContractAddress,
+        tokenContractAddressFixNative,
         tokenDecimals,
         isNativeToken,
 
