@@ -3,6 +3,7 @@ export const TESTNET = 'testnet';
 export const NETWORK = process.env.APP_ENV === MAINNET ? MAINNET : TESTNET;
 export const BASE_TITLE = 'Honee';
 export const BASE_DESCRIPTION = '';
+export const BASE_URL_PREFIX = '';
 export const ACCOUNTS_API_URL = process.env.APP_ACCOUNTS_API_URL;
 export const GATE_API_URL = process.env.APP_GATE_API_URL;
 export const EXPLORER_API_URL = process.env.APP_EXPLORER_API_URL;

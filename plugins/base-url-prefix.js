@@ -1,6 +1,5 @@
 import Vue from 'vue';
-// import {BASE_URL_PREFIX} from '~/assets/variables.js';
-const BASE_URL_PREFIX = '';
+import {BASE_URL_PREFIX} from '~/assets/variables.js';
 
 Vue.mixin({
     computed: {
