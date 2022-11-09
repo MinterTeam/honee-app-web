@@ -121,6 +121,9 @@ export default {
             <template v-if="type === $options.PORTFOLIO_LIST_TYPE.MANAGED || type === $options.PORTFOLIO_LIST_TYPE.COPIED">
                 {{ $td('You don\'t have any portfolios yet', 'portfolio.list-managed-empty') }}
             </template>
+            <template v-else-if="type === $options.PORTFOLIO_LIST_TYPE.RECOMMEND">
+                {{ $td('Here will be shown recently updated profitable portfolios', 'portfolio.list-recommend-empty') }}
+            </template>
             <template v-else>
                 Empty list
             </template>

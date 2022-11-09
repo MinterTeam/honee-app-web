@@ -13,7 +13,7 @@ export default {
         },
         profitPeriod: {
             type: String,
-            default: PORTFOLIO_PROFIT_PERIOD.AWP,
+            default: PORTFOLIO_PROFIT_PERIOD.APY,
         },
         profitCaption: {
             type: String,
