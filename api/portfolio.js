@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
-import {differenceInCalendarISOWeeks} from 'date-fns';
+import {differenceInCalendarUTCISOWeeks} from '~/assets/utils/date-fns.js';
 import format from 'date-fns/esm/format';
 import {PORTFOLIO_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
 import {toSnake} from '~/assets/utils/snake-case.js';
@@ -315,7 +315,7 @@ export function getCmcCoinList() {
 // monday of 43 ISO week
 export const BATTLE_START_DATE = new Date('2022-10-24T00:00:00Z');
 // week number starting from 1
-export const BATTLE_CURRENT_WEEK_NUMBER = differenceInCalendarISOWeeks(new Date(), BATTLE_START_DATE) + 1;
+export const BATTLE_CURRENT_WEEK_NUMBER = differenceInCalendarUTCISOWeeks(new Date(), BATTLE_START_DATE) + 1;
 
 
 /**
