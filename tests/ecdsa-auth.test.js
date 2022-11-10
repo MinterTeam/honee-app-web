@@ -79,6 +79,38 @@ describe('test case from api', () => {
     expect(publicToAddress(Buffer.from(publicKeyReceived), true).toString('hex')).toEqual(validAddress);
 });
 
+describe('timestamp', () => {
+    const TIMESTAMP = '2022-11-10T15:28:31.670Z';
+
+    test('empty get', () => {
+        const dataHash = keccakFromString(TIMESTAMP);
+        expect(dataHash.toString('hex'))
+            .toEqual('dc5e03057e7bd30d173706d55392fd055f03efbd0e2c3f7fb3032fd87659396a');
+
+        const auth = signRequest(TIMESTAMP, PRIVATE_KEY);
+        expect(auth).toEqual('0x8b7a07e514cd38914d9f4628ddb6d4b14c923efe230d4383462343aa5b7851fd72fa6823a7e7e74ca86a6623025d50211676dfdc61fb8370e4a0650d338d64fa0102f9e036839a29f7fba2d5394bd489eda927ccb95acc99e506e688e4888082b3a3');
+
+        const {signature, publicKey} = parseHeaderAuth(auth);
+        expect(signature.toString('hex')).toEqual('8b7a07e514cd38914d9f4628ddb6d4b14c923efe230d4383462343aa5b7851fd72fa6823a7e7e74ca86a6623025d50211676dfdc61fb8370e4a0650d338d64fa');
+        expect(publicKey.toString('hex')).toEqual('02f9e036839a29f7fba2d5394bd489eda927ccb95acc99e506e688e4888082b3a3');
+
+        const isValid = ecdsaVerify(signature, dataHash, publicKey);
+        expect(isValid).toEqual(true);
+    });
+
+    test('empty post', () => {
+        const data = {
+            timestamp: TIMESTAMP,
+        };
+        const dataHash = hashObject(data);
+        expect(dataHash.toString('hex'))
+            .toEqual('29899ccee51d6626b0dd3a32d9f59c4c32f367e79952f0b4469dacd95eb177b6');
+
+        const auth = signRequest(data, PRIVATE_KEY);
+        expect(auth).toEqual('0xf3483103c63c62d70f2a16dc134f486beeb65e6ac36ccb676478fa5c78c4853428659d42029c9a62a58e8f7670876fe350356d9e89cfac63614cd76755adb0430002f9e036839a29f7fba2d5394bd489eda927ccb95acc99e506e688e4888082b3a3');
+    });
+});
+
 /**
  * @param {string} authResult - hex string
  * @return {{signature: Buffer, publicKey: Buffer, recid: number}}

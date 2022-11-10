@@ -24,14 +24,14 @@ export default function addEcdsaAuthInterceptor(instance) {
 }
 
 /**
- * @param {object} data
+ * @param {object|string} data
  * @param {string} privateKey
  * @param {boolean} [includePublicKey=true]
  * @return {string}
  */
 export function signRequest(data, privateKey, includePublicKey = true) {
     const privateKeyBuffer = toBuffer(privateKey);
-    const dataHash = hashObject(data);
+    const dataHash = typeof data === 'string' ? keccakFromString(data) : hashObject(data);
     // recid is 0-3 number @see https://ethereum.stackexchange.com/a/118342
     const {signature, recid} = ecdsaSign(dataHash, privateKeyBuffer);
 
