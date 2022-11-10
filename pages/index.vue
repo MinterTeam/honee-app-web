@@ -24,6 +24,11 @@ const TWITTER_CARD_HEAD = {
         caption: 'Per action',
         value: '1-500 BEE',
     },
+    ru: {
+        stats: {
+            caption: 'За действие',
+        },
+    },
 };
 
 export default {
