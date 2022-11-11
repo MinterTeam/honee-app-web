@@ -33,7 +33,7 @@ export default {
             <h3 class="auth__subtitle">{{ $td('Crypto wallet that helps you earn', 'index.sign-up-subtitle') }}</h3>
         </div>
 
-        <nuxt-link class="button button--main button--full button--large" :to="$i18nGetPreferredPath('/auth/new-wallet')">{{ $td('Sign up', 'index.sign-up') }}</nuxt-link>
+        <nuxt-link class="button button--main button--full button--large" :to="$i18nGetPreferredPath('/auth/sign-up')">{{ $td('Sign up', 'index.sign-up') }}</nuxt-link>
 
         <div class="u-section-divider-text">
             <div class="u-section-divider-text__inner">{{ $td('or', 'index.or') }}</div>

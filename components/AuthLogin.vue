@@ -20,6 +20,9 @@ export default {
             // default: DASHBOARD_URL,
             default: '/',
         },
+        fieldClass: {
+            type: String,
+        },
     },
     data() {
         return {
@@ -56,7 +59,7 @@ export default {
 <template>
     <form class="" @submit.prevent="addAddress()">
         <div class="form-row">
-            <div class="h-field" :class="{'is-error': $v.mnemonic.$error}">
+            <div class="h-field" :class="[{'is-error': $v.mnemonic.$error}, fieldClass]">
                 <textarea
                     class="h-field__input h-field__input--medium" rows="2" autocapitalize="off"
                     :placeholder="$td('Enter your seed phrase', 'index.enter-seed')"

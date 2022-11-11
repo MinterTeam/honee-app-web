@@ -30,12 +30,12 @@ export default {
         <img class="battle__splash-top-image" src="/img/battle-coin-top.png" srcset="/img/battle-coin-top@2x.png 2x" alt="" role="presentation" width="50" height="59">
         <img class="battle__splash-title" :src="`/img/battle-title-${$i18n.locale}.svg`" :alt="$td('Portfolio battle', 'portfolio.battle-title')" height="106">
 
-        <nuxt-link class="button button--white button--full button--large" :to="$i18nGetPreferredPath('/auth/battle/sign-up')">
+        <nuxt-link class="button button--white button--full button--large" :to="$i18nGetPreferredPath('/auth/sign-up?battle=true')">
             {{ $td('Sign up', 'index.sign-up') }}
         </nuxt-link>
 
         <div class="u-text-center u-mt-15">
-            <nuxt-link class="link link--underline u-fw-700" :to="$i18nGetPreferredPath('/auth/battle/sign-in')">
+            <nuxt-link class="link link--underline u-fw-700" :to="$i18nGetPreferredPath('/auth/sign-in?battle=true')">
                 {{ $td('Sign in', 'index.sign-in') }}
             </nuxt-link>
         </div>
