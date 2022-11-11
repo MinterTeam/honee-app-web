@@ -33,7 +33,7 @@ export default {
             <AuthLogin
                 class="u-mt-10"
                 field-class="h-field--is-readonly"
-                :finish-url="$route.query.battle ? '/onboarding/battle' : undefined"
+                :onboarding-url="$route.query.battle ? '/onboarding/battle' : undefined"
             />
         </div>
     </div>

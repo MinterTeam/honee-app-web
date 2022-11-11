@@ -2,11 +2,16 @@
 import {getTopupFinishQuery} from '~/pages/onboarding/topup/_name.vue';
 
 export default {
-    asyncData({error, redirect, query, app}) {
+    asyncData({error, redirect, query, app, store}) {
         if (!query.ctm_order_coin || !query.ctm_order_amount) {
             error({status: 404});
         }
-        redirect(app.i18nGetPreferredPath('/onboarding') + getTopupFinishQuery(query.ctm_order_coin, query.ctm_order_amount));
+        if (store.state.authRedirectPath) {
+            redirect(app.i18nGetPreferredPath(store.state.authRedirectPath));
+            store.commit('SET_AUTH_REDIRECT_PATH', '');
+        } else {
+            redirect(app.i18nGetPreferredPath('/onboarding') + getTopupFinishQuery(query.ctm_order_coin, query.ctm_order_amount));
+        }
     },
 };
 </script>

@@ -15,10 +15,8 @@ export default {
     },
     mixins: [validationMixin],
     props: {
-        finishUrl: {
+        onboardingUrl: {
             type: String,
-            // default: DASHBOARD_URL,
-            default: '/',
         },
         fieldClass: {
             type: String,
@@ -48,8 +46,13 @@ export default {
         },
         authorize() {
             // redirect
-            const authRedirectPath = this.$store.state.authRedirectPath || this.finishUrl;
-            this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
+            let authRedirectPath;
+            if (this.onboardingUrl) {
+                authRedirectPath = this.onboardingUrl;
+            } else {
+                authRedirectPath = this.$store.state.authRedirectPath || this.DASHBOARD_URL;
+                this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
+            }
             this.$router.push(this.$i18nGetPreferredPath({path: authRedirectPath}));
         },
     },

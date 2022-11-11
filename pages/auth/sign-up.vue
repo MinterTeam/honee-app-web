@@ -25,7 +25,7 @@ export default {
 
 <template>
     <div class="u-section u-container u-container--small">
-        <AuthRegister :finish-url="$route.query.battle ? '/onboarding/battle' : undefined"/>
+        <AuthRegister :onboarding-url="$route.query.battle ? '/onboarding/battle' : undefined"/>
     </div>
 </template>
 

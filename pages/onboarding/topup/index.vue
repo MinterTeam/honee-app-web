@@ -63,7 +63,7 @@ export default {
             </nuxt-link>
         </div>
 
-        <nuxt-link class="link--default-black u-mt-15" :to="getDashboardUrl()">
+        <nuxt-link class="link--default-black u-mt-15" :to="$i18nGetPreferredPath($store.state.authRedirectPath || DASHBOARD_URL)" @click.native="$nextTick(() => $store.commit('SET_AUTH_REDIRECT_PATH', ''))">
             {{ $td('I\'ll do it later', 'onboarding.skip') }}
         </nuxt-link>
     </div>
