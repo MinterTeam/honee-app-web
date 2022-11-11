@@ -1,29 +1,15 @@
 <script>
-import HeaderBanner from '~/layouts/_header-banner.vue';
-import TheHeader from '~/layouts/_header.vue';
-import Snackbar from '~/components/layout/Snackbar.vue';
+import SplashLayout from '~/layouts/_splash.vue';
 
 export default {
     components: {
-        HeaderBanner,
-        TheHeader,
-        Snackbar,
-    },
-    head: {
-        htmlAttrs: {
-            class: 'splash-layout',
-        },
+        SplashLayout,
     },
 };
 </script>
 
 <template>
-    <div class="splash-layout__wrap">
-        <HeaderBanner/>
-        <TheHeader :simple="true"/>
-
+    <SplashLayout>
         <nuxt class="splash-layout__inner"/>
-
-        <Snackbar/>
-    </div>
+    </SplashLayout>
 </template>
