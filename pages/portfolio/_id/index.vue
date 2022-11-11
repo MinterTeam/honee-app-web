@@ -2,11 +2,16 @@
 import {getPortfolio} from '~/api/portfolio.js';
 import {shortHashFilter} from '~/assets/utils.js';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
+import AuthButtons from '~/components/layout/AuthButtons.vue';
 import PortfolioHead from '~/components/PortfolioHead.vue';
 
 export default {
+    layout(context) {
+        return context.store.getters.isAuthorized ? 'default' : 'splash-index';
+    },
     components: {
         BaseAmountEstimation,
+        AuthButtons,
         PortfolioHead,
     },
     asyncData({route, store, error}) {
@@ -52,8 +57,8 @@ export default {
 </script>
 
 <template>
-    <div class="u-section u-container u-container--small">
-        <div class="card card--invert">
+    <div class="u-section--only u-container u-container--small">
+        <div class="card card--invert" v-if="portfolio">
             <div class="card__content card__content--medium">
                 <PortfolioHead :portfolio="portfolio"/>
                 <p class="card__action-description u-text-break" v-if="portfolio.description">{{ portfolio.description }}</p>
@@ -76,7 +81,7 @@ export default {
                     </div>
 
                     <div class="form-row">
-                        <div class="u-grid u-grid--vertical-margin">
+                        <div class="u-grid u-grid--vertical-margin" v-if="$store.getters.isAuthorized">
                             <div class="u-cell">
                                 <nuxt-link class="button button--main button--full" :to="$i18nGetPreferredPath(`/portfolio/${portfolio.id}/buy`)">
                                     {{ $td('Buy', 'portfolio.buy-button') }}
@@ -93,6 +98,7 @@ export default {
                                 </nuxt-link>
                             </div>
                         </div>
+                        <AuthButtons v-else button-class="button--main"/>
                     </div>
                 </div>
 

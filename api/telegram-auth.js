@@ -25,7 +25,7 @@ export function getAuth(secretDeviceUuid) {
 
 /**
  * @typedef {object} TelegramAuthResponse
- * @property {string} signed
+ * @property {string} signed - signature of tg-id by private key shared between honee bot and honee api
  * @property {TelegramUser} user
  */
 
