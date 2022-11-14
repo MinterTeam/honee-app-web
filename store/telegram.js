@@ -1,10 +1,9 @@
-import {v4 as getUid} from 'uuid';
-import {getAuth} from '~/api/telegram-auth.js';
+import {getAuth, getLegacyAuth, switchLegacyAuth} from '~/api/telegram.js';
 
-const TELEGRAM_SECRET_ID_STORAGE_KEY = 'telegram-auth-id';
+const LEGACY_TELEGRAM_SECRET_ID_STORAGE_KEY = 'telegram-auth-id';
 
 export const state = () => ({
-    secretDeviceId: '',
+    legacySecretDeviceId: '',
     /** @type {TelegramAuthResponse} */
     auth: undefined,
 });
@@ -13,7 +12,8 @@ export const getters = {
     isAuthorized(state) {
         return !!state.auth;
     },
-    authString(state) {
+    // proof for portfolio api that address has signed in to telegram
+    authProof(state) {
         if (!state.auth) {
             return '';
         }
@@ -22,21 +22,19 @@ export const getters = {
 };
 
 export const mutations = {
-    initSecretId(state) {
+    loadLegacySecretId(state) {
         // try restore saved id
-        if (!state.secretDeviceId) {
+        if (!state.legacySecretDeviceId) {
             try {
-                state.secretDeviceId = window.localStorage.getItem(TELEGRAM_SECRET_ID_STORAGE_KEY);
+                state.legacySecretDeviceId = window.localStorage.getItem(LEGACY_TELEGRAM_SECRET_ID_STORAGE_KEY);
             } catch (e) {}
         }
-
-        // init new
-        if (!state.secretDeviceId) {
-            state.secretDeviceId = getUid();
-            try {
-                window.localStorage.setItem(TELEGRAM_SECRET_ID_STORAGE_KEY, state.secretDeviceId);
-            } catch (e) {}
-        }
+    },
+    cleanLegacySecretId(state) {
+        state.legacySecretDeviceId = '';
+        try {
+            window.localStorage.removeItem(LEGACY_TELEGRAM_SECRET_ID_STORAGE_KEY);
+        } catch (e) {}
     },
     saveAuth(state, data) {
         state.auth = data;
@@ -44,11 +42,14 @@ export const mutations = {
 };
 
 export const actions = {
-    fetchAuth({state, commit}) {
-        if (!state.secretDeviceId) {
-            commit('initSecretId');
+    fetchAuth({state, commit, dispatch, rootGetters}) {
+        if (!state.legacySecretDeviceId) {
+            commit('loadLegacySecretId');
         }
-        return getAuth(state.secretDeviceId)
+        const authPromise = state.legacySecretDeviceId
+            ? dispatch('tryFetchAndSwitchLegacyAuth')
+            : getAuth(rootGetters.privateKey);
+        return authPromise
             .then((data) => {
                 commit('saveAuth', data);
                 return data;
@@ -57,6 +58,24 @@ export const actions = {
                 if (error.response?.status !== 404) {
                     throw error;
                 }
+            });
+    },
+    tryFetchAndSwitchLegacyAuth({state, commit, rootGetters}) {
+        return getLegacyAuth(state.legacySecretDeviceId)
+            .catch((error) => {
+                // if no legacy auth - clean
+                if (error.response?.status === 404) {
+                    commit('cleanLegacySecretId');
+                }
+                throw error;
+            })
+            .then((data) => {
+                return Promise.all([data, switchLegacyAuth(state.legacySecretDeviceId, rootGetters.privateKey)]);
+            })
+            .then(([data]) => {
+                // if switched from legacy auth - clean
+                commit('cleanLegacySecretId');
+                return data;
             });
     },
 };

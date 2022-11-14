@@ -1,4 +1,6 @@
 <script>
+import {getAuthString} from '~/api/telegram.js';
+import useNow from '~/composables/use-now.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 
@@ -9,6 +11,13 @@ export default {
         BaseLoader,
         Modal,
     },
+    setup() {
+        const {now} = useNow(60 * 1000);
+
+        return {
+            now,
+        };
+    },
     fetch() {
         return this.$store.dispatch('telegram/fetchAuth');
     },
@@ -18,8 +27,14 @@ export default {
         };
     },
     computed: {
+        timestamp() {
+            return new Date(this.now).toISOString();
+        },
+        authString() {
+            return getAuthString(this.timestamp, this.$store.getters.privateKey);
+        },
         loginUrl() {
-            return `https://t.me/HoneeAuthBot?start=${this.$store.state.telegram.secretDeviceId}`;
+            return `https://premium-bot.honee.app/login?timestamp=${this.timestamp}&auth=${this.authString}`;
         },
     },
     destroyed() {

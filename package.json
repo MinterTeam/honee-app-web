@@ -71,7 +71,6 @@
     "secp256k1": "^4.0.3",
     "thousands": "^1.0.1",
     "tiny-emitter": "^2.1.0",
-    "uuid": "^9.0.0",
     "v-autosize": "^1.0.3",
     "v-file-input": "^0.1.2",
     "vue-async-computed": "https://git@github.com/shrpne/vue-async-computed#mixin-src",

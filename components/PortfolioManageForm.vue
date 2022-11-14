@@ -159,7 +159,7 @@ export default {
          */
         managePortfolio(portfolio) {
             if (this.isNew) {
-                return createPortfolio(portfolio, this.$store.getters.privateKey, this.$store.getters['telegram/authString']);
+                return createPortfolio(portfolio, this.$store.getters.privateKey, this.$store.getters['telegram/authProof']);
             } else {
                 return updatePortfolio(this.portfolio.id, portfolio, this.$store.getters.privateKey);
             }

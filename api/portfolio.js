@@ -28,16 +28,16 @@ addEcdsaAuthInterceptor(instance);
 /**
  * @param {UpdatePortfolio} portfolio
  * @param {string} privateKey
- * @param {string} [telegramAuthString]
+ * @param {string} [telegramAuthProof]
  * @return {Promise<Portfolio>}
  */
-export function createPortfolio(portfolio, privateKey, telegramAuthString) {
+export function createPortfolio(portfolio, privateKey, telegramAuthProof) {
     return instance.post('portfolio', portfolio, {
             ecdsaAuth: {
                 privateKey,
             },
             headers: {
-                'X-Telegram-Auth': telegramAuthString,
+                'X-Telegram-Auth': telegramAuthProof,
             },
         })
         .then((response) => response.data);
