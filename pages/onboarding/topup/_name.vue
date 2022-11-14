@@ -39,6 +39,7 @@ export default {
     },
     methods: {
         handleTopup(balance) {
+            //@TODO success window not showed here
             if (this.$store.state.authRedirectPath) {
                 this.$router.push(this.$i18nGetPreferredPath(this.$store.state.authRedirectPath));
                 this.$store.commit('SET_AUTH_REDIRECT_PATH', '');

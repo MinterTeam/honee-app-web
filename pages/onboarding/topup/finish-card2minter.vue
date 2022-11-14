@@ -6,6 +6,7 @@ export default {
         if (!query.ctm_order_coin || !query.ctm_order_amount) {
             error({status: 404});
         }
+        //@TODO state not persisted here after new page open
         if (store.state.authRedirectPath) {
             redirect(app.i18nGetPreferredPath(store.state.authRedirectPath));
             store.commit('SET_AUTH_REDIRECT_PATH', '');
