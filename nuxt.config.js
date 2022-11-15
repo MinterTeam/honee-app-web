@@ -121,6 +121,7 @@ module.exports = {
             'explorer',
             'portfolio',
             'balance',
+            'telegram',
         ],
     },
     env: envConfigParsed,

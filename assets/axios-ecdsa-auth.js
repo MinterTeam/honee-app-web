@@ -14,8 +14,8 @@ export default function addEcdsaAuthInterceptor(instance) {
         if (request.ecdsaAuth?.privateKey) {
             let dataToSign;
             // timestamp used as nonce to prevent replay attack
-            const timestamp = (new Date()).toISOString();
-            if (request.method === 'get') {
+            const timestamp = getTimestamp(request.ecdsaAuth.timestampThrottle);
+            if (request.method === 'get' || request.method === 'delete') {
                 request.params ||= {};
                 request.params.timestamp = timestamp;
                 dataToSign = timestamp;
@@ -30,6 +30,12 @@ export default function addEcdsaAuthInterceptor(instance) {
         }
         return request;
     });
+}
+
+function getTimestamp(interval) {
+    const now = Date.now();
+    const offset = interval ? now % interval : 0;
+    return new Date(now - offset).toISOString();
 }
 
 /**

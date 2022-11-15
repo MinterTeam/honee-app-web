@@ -11,6 +11,12 @@ export default {
         BaseLoader,
         Modal,
     },
+    props: {
+        label: String,
+    },
+    emits: [
+        'success',
+    ],
     setup() {
         const {now} = useNow(60 * 1000);
 
@@ -54,6 +60,7 @@ export default {
                         if (this.$store.getters['telegram/isAuthorized']) {
                             clearInterval(timer);
                             this.isModalVisible = false;
+                            this.$emit('success');
                         }
                     });
             }, 2000);
@@ -72,14 +79,14 @@ export default {
         >
             <img class="button__icon" src="/img/icon-social-telegram.svg" alt="" role="presentation">
             <template v-if="!$store.getters['telegram/isAuthorized']">
-                {{ $td('Login with Telegram', 'battle.telegram-login-button') }}
+                {{ label || $td('Login with Telegram', 'battle.telegram-login-button') }}
             </template>
             <template v-else>Logged as @{{ $store.state.telegram.auth.user.username }}</template>
         </a>
 
         <Modal :isOpen.sync="isModalVisible" :disable-outside-click="true" :hide-close-button="true">
             <h2 class="u-h3 u-mb-10">{{ $td('Login with Telegram', 'battle.telegram-login-button') }}</h2>
-            <p class="u-mb-10">{{ $td('Click Start in the HoneeAuthBot', 'battle.telegram-login-description') }}</p>
+            <p class="u-mb-10">{{ $td('Click Start in the HoneePremiumBot', 'battle.telegram-login-description') }}</p>
 
             <BaseLoader :is-loading="true"/>
         </Modal>

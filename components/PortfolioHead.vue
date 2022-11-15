@@ -1,10 +1,14 @@
 <script>
 import {prettyUsd, shortHashFilter} from '~/assets/utils.js';
 import {PORTFOLIO_PROFIT_PERIOD} from '~/api/portfolio.js';
+import PortfolioNotificationButton from '~/components/PortfolioNotificationButton.vue';
 
 export default {
     name: 'PortfolioHead',
     PORTFOLIO_PROFIT_PERIOD,
+    components: {
+        PortfolioNotificationButton,
+    },
     props: {
         /** @type {Portfolio|ConsumerPortfolio} */
         portfolio: {
@@ -89,10 +93,16 @@ export default {
         </div>
         <div class="card__head-row">
             <!-- left -->
-            <nuxt-link class="card__action-title-value" v-if="titleLink" :to="titleLink">
-                {{ portfolio.title }}
-            </nuxt-link>
-            <div class="card__action-title-value" v-else>{{ portfolio.title }}</div>
+            <div class="u-flex u-flex--align-center">
+                <PortfolioNotificationButton class="card__portfolio-notify-button" :portfolioId="portfolio.id"/>
+                <component
+                    :is="titleLink ? 'nuxt-link' : 'div'"
+                    class="card__action-title-value"
+                    :to="titleLink"
+                >
+                    {{ portfolio.title }}
+                </component>
+            </div>
             <!-- right -->
             <div v-if="isConsumer" class="card__action-stats-value">{{ prettyUsd(portfolio.price) }}$</div>
             <div v-if="isTemplate" class="card__action-stats-value" :class="[profitColorClass]">

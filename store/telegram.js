@@ -1,4 +1,4 @@
-import {getAuth, getLegacyAuth, switchLegacyAuth} from '~/api/telegram.js';
+import {getAuth, getLegacyAuth, getUserPortfolioNotificationList, switchLegacyAuth} from '~/api/telegram.js';
 
 const LEGACY_TELEGRAM_SECRET_ID_STORAGE_KEY = 'telegram-auth-id';
 
@@ -6,6 +6,7 @@ export const state = () => ({
     legacySecretDeviceId: '',
     /** @type {TelegramAuthResponse} */
     auth: undefined,
+    userPortfolioNotificationMap: {},
 });
 
 export const getters = {
@@ -38,6 +39,19 @@ export const mutations = {
     },
     saveAuth(state, data) {
         state.auth = data;
+    },
+    setUserPortfolioNotificationList(state, data) {
+        state.userPortfolioNotificationMap = Object.freeze(Object.fromEntries(data.map((id) => [id, true])));
+    },
+    addUserPortfolioNotification(state, id) {
+        state.userPortfolioNotificationMap = Object.freeze({
+            ...state.userPortfolioNotificationMap,
+            [id]: true,
+        });
+    },
+    removeUserPortfolioNotification(state, id) {
+        const {[id]: idToDelete, ...newMap} = state.userPortfolioNotificationMap;
+        state.userPortfolioNotificationMap = Object.freeze(newMap);
     },
 };
 
@@ -75,6 +89,13 @@ export const actions = {
             .then(([data]) => {
                 // if switched from legacy auth - clean
                 commit('cleanLegacySecretId');
+                return data;
+            });
+    },
+    fetchUserPortfolioNotificationList({commit, rootGetters}) {
+        return getUserPortfolioNotificationList(rootGetters.privateKey)
+            .then((data) => {
+                commit('setUserPortfolioNotificationList', data);
                 return data;
             });
     },

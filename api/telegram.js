@@ -12,8 +12,8 @@ addToCamelInterceptor(instance);
 addEcdsaAuthInterceptor(instance);
 
 
-// 24 hr cache
-const tgUserCache = new Cache({ttl: 24 * 60 * 60 * 1000, max: 100});
+const userCacheTime = 60 * 60 * 1000;
+const tgUserCache = new Cache({ttl: userCacheTime, max: 100});
 /**
  * @return {Promise<TelegramAuthResponse>}
  */
@@ -32,7 +32,6 @@ export function getLegacyAuth(secretDeviceUuid) {
  */
 export function switchLegacyAuth(secretDeviceUuid, privateKey) {
     return instance.post(`users/auth-switch/${secretDeviceUuid}`, {}, {
-            cache: tgUserCache,
             ecdsaAuth: {
                 privateKey,
             },
@@ -50,11 +49,51 @@ export function getAuth(privateKey) {
             cache: tgUserCache,
             ecdsaAuth: {
                 privateKey,
+                timestampThrottle: userCacheTime,
             },
         })
         .then((response) => {
             return response.data;
         });
+}
+
+/**
+ * @param {number|string} id
+ * @param {privateKey} privateKey
+ * @return {Promise<AxiosResponse<any>>}
+ */
+export function portfolioNotificationSubscribe(id, privateKey) {
+    return instance.post(`users/portfolios/${id}`, {}, {
+        ecdsaAuth: {
+            privateKey,
+        },
+    });
+}
+/**
+ * @param {number|string} id
+ * @param {privateKey} privateKey
+ * @return {Promise<AxiosResponse<any>>}
+ */
+export function portfolioNotificationUnsubscribe(id, privateKey) {
+    return instance.delete(`users/portfolios/${id}`, {
+        ecdsaAuth: {
+            privateKey,
+        },
+    });
+}
+
+/**
+ * @param {string} privateKey
+ * @return {Promise<Array<number>>}
+ */
+export function getUserPortfolioNotificationList(privateKey) {
+    return instance.get('users/portfolios', {
+        ecdsaAuth: {
+            privateKey,
+            timestampThrottle: 1000,
+        },
+    })
+        .then((response) => response.data.data);
 }
 
 /**
