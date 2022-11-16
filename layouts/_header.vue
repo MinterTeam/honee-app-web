@@ -12,6 +12,7 @@ export default {
             type: String,
             default: 'Minter',
         },
+        /* @TODO deprecated */
         simple: {
             type: Boolean,
             default: false,
@@ -42,7 +43,7 @@ export default {
             return this.$route.path === this.$i18nGetPreferredPath('/premium');
         },
         isAuthorized() {
-            return !this.isAuthPage;
+            return this.$store.getters.isAuthorized;
         },
     },
     methods: {
@@ -82,6 +83,9 @@ export default {
                 <button v-if="isAuthorized && !simple" type="button" class="header__controls-link link u-semantic-button" @click="logout()">
                     <img src="/img/icon-logout.svg" width="24" height="24" alt="Logout">
                 </button>
+                <nuxt-link v-if="!isAuthorized && !simple && !isAuthPage" :to="$i18nGetPreferredPath('/auth')" type="button" class="header__controls-link">
+                    {{ $td('Sign in', 'index.sign-in') }}
+                </nuxt-link>
                 <div class="header__controls-language header__controls-link">
                     <Language/>
                 </div>
