@@ -13,6 +13,7 @@ export default {
     },
     props: {
         label: String,
+        reason: String,
     },
     emits: [
         'success',
@@ -40,7 +41,7 @@ export default {
             return getAuthString(this.timestamp, this.$store.getters.privateKey);
         },
         loginUrl() {
-            return `https://premium-bot.honee.app/login?timestamp=${this.timestamp}&auth=${this.authString}`;
+            return `https://premium-bot.honee.app/login?timestamp=${this.timestamp}&auth=${this.authString}&reason=${this.reason}`;
         },
     },
     destroyed() {

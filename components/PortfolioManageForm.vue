@@ -352,7 +352,7 @@ function getEmptyCoin() {
                 {{ $t('premium.activate-title') }}
             </nuxt-link>
             <p class="u-mt-10">{{ $td('or', 'common.or') }}</p>
-            <TelegramAuth class="u-mt-10"/>
+            <TelegramAuth class="u-mt-10" reason="create-portfolio"/>
         </div>
         <div class="card__content card__content--medium u-text-medium">
             <h3 class="u-h5 u-mb-05">{{ $td('Terms', 'common.terms') }}</h3>

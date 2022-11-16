@@ -102,6 +102,7 @@
 
 .splash-layout {}
 .splash-layout--battle {.battle-bg-gradient(); color: #fff;}
+.splash-layout--garden {background: url(../img/bg-garden.png); image-rendering: pixelated; color: #fff;}
 .splash-layout__wrap {min-height: 100vh; display: flex; flex-direction: column;}
 .splash-layout__inner {width: 100%; margin-top: auto; margin-bottom: auto;}
 
@@ -151,6 +152,10 @@
         & .form-row:first-child .information {
             margin-top: -12px;
         }
+        & .card__pop-item--20 {
+            margin-top: -20px;
+        }
+
     }
 }
 .card--invert {background: @c-black; color: #fff;}
@@ -508,6 +513,18 @@
 
 .battle__ranking-item {
     &+& {margin-top: 16px; padding-top: 16px; border-top: 1px solid @c-white-light;}
+}
+
+
+.footer-garden {
+    background: #6bd84b; padding-bottom: 32px;
+    &::before {
+        content: ''; display: block; margin-top: -18px; height: 84px;
+        background: url(../img/bg-garden-border.png) repeat-x;
+        // negative margin firefox fix
+        display: inline-block; width: 100%; vertical-align: top;
+    }
+
 }
 
 

@@ -45,7 +45,7 @@ export default {
             <template v-else-if="!portfolio">
                 <p>{{ $td('You’ve registered for the tournament. Now you need to login via Telegram and create your portfolio.', 'battle.begin-description') }}</p>
 
-                <TelegramAuth class="u-mt-10 u-mb-10"/>
+                <TelegramAuth class="u-mt-10 u-mb-10" reason="battle"/>
 
                 <component
                     :is="$store.getters['telegram/isAuthorized'] ? 'nuxt-link' : 'div'"

@@ -80,7 +80,7 @@ export default {
             <h2 class="u-h3 u-mb-05">{{ $td('Never miss a signal', 'portfolio.subscribe-notification-title') }}</h2>
             <p class="u-mb-10">{{ $td('Get instant notifications via our Telegram Bot whenever this portfolio is updated.', 'portfolio.subscribe-notification-description') }}</p>
 
-            <TelegramAuth @success="toggleNotification(); isModalVisible = false" :label="$td('Activate Honee Bot', 'portfolio.subscribe-notification-button')"/>
+            <TelegramAuth @success="toggleNotification(); isModalVisible = false" :label="$td('Activate Honee Bot', 'portfolio.subscribe-notification-button')" reason="subscribe-portfolio"/>
 
             <button type="button" class="button button--ghost button--full u-mt-10" @click="isModalVisible = false">Cancel</button>
         </Modal>
