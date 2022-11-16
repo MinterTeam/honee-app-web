@@ -19,7 +19,9 @@ export default {
             return error({status: 404, message: 'Page not found'});
         }
 
-        store.dispatch('portfolio/fetchConsumerPortfolioList');
+        if (store.getters.isAuthorized) {
+            store.dispatch('portfolio/fetchConsumerPortfolioList');
+        }
 
         return getPortfolio(route.params.id)
             .then((portfolio) => {

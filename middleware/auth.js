@@ -14,6 +14,8 @@ export default function({app, store, route, redirect, error}) {
         return pathRegex.test(route.path);
     });
     const urlHasPreview = [
+        /^(\/ru)?\/portfolio\/?$/,
+        /^(\/ru)?\/portfolio\/leaderboard\/?$/,
         /^(\/ru)?\/portfolio\/\d+\/?$/,
     ].some((pathRegex) => {
         return pathRegex.test(route.path);
