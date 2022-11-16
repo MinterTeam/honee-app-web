@@ -162,17 +162,18 @@ export function getPortfolioListByDates(start, end, params) {
 // leaderboard updates once 24h, so 1h cache is ok
 const leaderboardCache = new Cache({ttl: 60 * 60 * 1000, max: 100});
 /**
- * @param {PortfolioListParams} [params]
+ * @param {PortfolioListParams&{onlyProfitable?: boolean}} [params]
  * @return {Promise<ConsumerPortfolioList>}
  */
-export function getLeaderboard({limit, profitPeriod} = {}) {
+export function getLeaderboard({limit, profitPeriod, onlyProfitable} = {}) {
     return instance.get(`consumer/portfolio/${getLeaderboardDateParams(profitPeriod)}`, {
         cache: leaderboardCache,
     })
         .then((response) => {
-            if (limit) {
+            if (limit || onlyProfitable) {
                 return {
-                    list: response.data.list.slice(0, limit),
+                    list: response.data.list.slice(0, limit)
+                        .filter((item) => onlyProfitable ? item.profit > 0 : true),
                 };
             }
 

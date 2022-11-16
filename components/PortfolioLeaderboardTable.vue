@@ -31,6 +31,7 @@ export default {
         const page = this.page || 1;
         const listPromise = getLeaderboard({
             profitPeriod: this.profitPeriod,
+            onlyProfitable: true,
             limit: this.limit,
             // page,
         });
