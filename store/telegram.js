@@ -56,7 +56,16 @@ export const mutations = {
 };
 
 export const actions = {
-    fetchAuth({state, commit, dispatch, rootGetters}) {
+    /**
+     * @return {Promise<TelegramAuthResponse>}
+     */
+    fetchAuth({state, getters, commit, dispatch, rootGetters}) {
+        if (!rootGetters.privateKey) {
+            return Promise.reject(new Error('Minter user not logged in'));
+        }
+        if (getters.isAuthorized) {
+            return Promise.resolve(state.auth);
+        }
         if (!state.legacySecretDeviceId) {
             commit('loadLegacySecretId');
         }

@@ -267,6 +267,9 @@ const consumerCache = new Cache({ttl: 1 * 60 * 1000, max: 100});
  * @return {Promise<ConsumerPortfolioList>}
  */
 export function getConsumerPortfolioList(address) {
+    if (!address) {
+        return Promise.reject(new Error('Consumer address not specified'));
+    }
     return instance.get(`consumer/portfolio/${address}`, {
         cache: consumerCache,
     })
