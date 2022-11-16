@@ -121,7 +121,6 @@ module.exports = {
             'explorer',
             'portfolio',
             'balance',
-            'telegram',
         ],
     },
     env: envConfigParsed,
@@ -183,6 +182,7 @@ module.exports = {
         { src: '~/plugins/persisted-state.js', ssr: false },
         { src: '~/plugins/click-blur.js', ssr: false },
         { src: '~/plugins/referral.js', ssr: false },
+        { src: '~/plugins/telegram.js', ssr: false },
         { src: '~/plugins/goatcounter.js', ssr: false },
     ],
     content: {

@@ -108,4 +108,8 @@ export const actions = {
                 return data;
             });
     },
+    reset({commit}) {
+        commit('saveAuth', undefined);
+        commit('setUserPortfolioNotificationList', []);
+    },
 };
