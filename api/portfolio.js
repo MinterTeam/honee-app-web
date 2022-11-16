@@ -67,7 +67,7 @@ export function getPortfolio(id) {
 }
 
 /**
- * @param {PortfolioListParams&{owner?: string}} [params]
+ * @param {PortfolioListParams&{owner?: string, apyPeriod?: number}} [params]
  * @return {Promise<PortfolioList>}
  */
 export function getPortfolioList(params) {
@@ -333,5 +333,5 @@ export const PORTFOLIO_PROFIT_PERIOD = {
     // from monday to today (aka week to date)
     WTD: 'live',
     // change from last update and filtered for few hours (6hr) since update
-    RECOMMEND: 'recommend',
+    // RECOMMEND: 'recommend',
 };
