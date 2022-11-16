@@ -1,12 +1,14 @@
 <script>
 import {prettyUsd, shortHashFilter} from '~/assets/utils.js';
 import {PORTFOLIO_PROFIT_PERIOD} from '~/api/portfolio.js';
+import BaseTabs from '~/components/base/BaseTabs.vue';
 import PortfolioNotificationButton from '~/components/PortfolioNotificationButton.vue';
 
 export default {
     name: 'PortfolioHead',
     PORTFOLIO_PROFIT_PERIOD,
     components: {
+        BaseTabs,
         PortfolioNotificationButton,
     },
     props: {
@@ -25,10 +27,16 @@ export default {
         titleLink: {
             type: String,
         },
-        isCopy: {
+        // is single portfolio opened or is card list
+        isSingleView: {
             type: Boolean,
             default: false,
         },
+    },
+    data() {
+        return {
+            selectedProfitPeriod: this.profitPeriod,
+        };
     },
     computed: {
         isConsumer() {
@@ -37,9 +45,18 @@ export default {
         isTemplate() {
             return !this.isConsumer;
         },
+        isOwnManaged() {
+            return this.portfolio.owner === this.$store.getters.address;
+        },
+        showProfitTabs() {
+            return this.isTemplate && this.isSingleView && this.isOwnManaged;
+        },
+        currentProfitPeriod() {
+            return this.showProfitTabs ? this.selectedProfitPeriod : this.profitPeriod;
+        },
         profit() {
             const isPrimitive = typeof this.portfolio.profit === 'string' || typeof this.portfolio.profit === 'number';
-            return isPrimitive ? this.portfolio.profit : this.portfolio.profit?.[this.profitPeriod];
+            return isPrimitive ? this.portfolio.profit : this.portfolio.profit?.[this.currentProfitPeriod];
         },
         profitText() {
             if (!this.profit && this.profit !== 0) {
@@ -70,11 +87,23 @@ export default {
         <div class="card__head-row">
             <!-- left -->
             <div class="card__action-title-type">
-                <template v-if="isCopy">{{ $td('Copy of', 'portfolio.head-copy-of') }}</template>
+                <template v-if="isConsumer">{{ $td('Copy of', 'portfolio.head-copy-of') }}</template>
                 #{{ portfolio.id }}
             </div>
             <!-- right -->
-            <div class="card__action-stats-caption u-text-upper">
+            <BaseTabs
+                v-if="showProfitTabs"
+                v-model="selectedProfitPeriod"
+                item-class="card__action-stats-caption u-text-upper"
+                :tabs="[
+                    {value: $options.PORTFOLIO_PROFIT_PERIOD.WEEKLY, label: $td('1W', 'portfolio.tabs-label-short-weekly')},
+                    {value: $options.PORTFOLIO_PROFIT_PERIOD.DAILY7, label: $td('7D', 'portfolio.tabs-label-short-7d')},
+                    {value: $options.PORTFOLIO_PROFIT_PERIOD.WTD, label: $td('Live', 'portfolio.tabs-label-short-live')},
+                    {value: $options.PORTFOLIO_PROFIT_PERIOD.AWP, label: $td('AWP', 'portfolio.tabs-label-short-awp')},
+                    {value: $options.PORTFOLIO_PROFIT_PERIOD.APY, label: $td('APY', 'portfolio.tabs-label-short-apy')},
+                ]"
+            />
+            <div class="card__action-stats-caption u-text-upper" v-else>
                 <template v-if="profitCaption">{{ profitCaption }}</template>
                 <template v-else-if="isTemplate && profitPeriod === $options.PORTFOLIO_PROFIT_PERIOD.APY">
                     {{ $td('APY', 'common.apy') }}
@@ -94,7 +123,11 @@ export default {
         <div class="card__head-row">
             <!-- left -->
             <div class="u-flex u-flex--align-center">
-                <PortfolioNotificationButton class="card__portfolio-notify-button" :portfolioId="portfolio.id"/>
+                <PortfolioNotificationButton
+                    v-if="!(isOwnManaged && isSingleView)"
+                    class="card__portfolio-notify-button"
+                    :portfolioId="portfolio.id"
+                />
                 <component
                     :is="titleLink ? 'nuxt-link' : 'div'"
                     class="card__action-title-value"
