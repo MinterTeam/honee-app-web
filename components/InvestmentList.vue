@@ -181,7 +181,7 @@ export default {
 </script>
 
 <template>
-    <div>
+    <div v-if="portfolioList.length > 0 || stakeCardList.length > 0">
         <h2 class="u-h1 u-mb-15">
             {{ $td('My investments', `index.investments-title`) }}
         </h2>

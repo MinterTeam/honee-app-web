@@ -6,11 +6,13 @@ export default function({store}) {
     // don't wait
     store.dispatch('telegram/fetchAuth')
         .then(() => {
-            // don't wait
-            store.dispatch('telegram/fetchUserPortfolioNotificationList')
-                .catch((e) => {
-                    console.log(e);
-                });
+            if (store.getters['telegram/isAuthorized']) {
+                // don't wait
+                store.dispatch('telegram/fetchUserPortfolioNotificationList')
+                    .catch((e) => {
+                        console.log(e);
+                    });
+            }
         })
         .catch((e) => {
             console.log(e);
