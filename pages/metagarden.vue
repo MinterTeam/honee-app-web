@@ -23,15 +23,15 @@ export default {
 
             <template v-if="!$store.getters['telegram/isAuthorized']">
                 <h1 class="u-h3 u-mb-05">{{ $td('GARDEN tokens airdrop', 'garden.airdrop-title') }}</h1>
-                <p>{{ $td('Every BIP coins holder is eligible for GARDEN Airdrop which will take place in early December 2022. Register for the airdrop with your Telegram account.', 'garden.airdrop-description') }}</p>
+                <p>{{ $td('Every BIP coins holder is eligible for GARDEN tokens Airdrop which will take place on December 12th, 2022. Register for the airdrop with your Telegram account.', 'garden.airdrop-description') }}</p>
 
                 <TelegramAuth class="u-mt-15 u-mb-10" reason="garden"/>
 
-                <p class="u-text-medium">Airdrop participants can use only one address with BIP coins.</p>
+                <p class="u-text-medium">{{ $td('BIP holders can register only one address with BIP coins for this airdrop.', 'garden.airdrop-description-2') }}</p>
             </template>
             <template v-else>
-                <h1 class="u-h3 u-mb-05">{{ $td('You’ve registered for GARDEN tokens airdop', 'garden.airdrop-registered-title') }}</h1>
-                <p>{{ $td('Airdrop will take place in early December&nbsp;2022', 'garden.airdrop-registered-description') }}</p>
+                <h1 class="u-h3 u-mb-05">{{ $td('You’ve registered for GARDEN tokens airdop.', 'garden.airdrop-registered-title') }}</h1>
+                <p>{{ $td('Make sure your address has BIP coins. Airdrop will take place on December 12th, 2022.', 'garden.airdrop-registered-description') }}</p>
             </template>
         </div>
     </div>

@@ -626,4 +626,11 @@ export default {
         'week-results-button': 'Результаты',
         'week-profit-caption': 'Неделя #{week}',
     },
+    garden: {
+        'airdrop-title': 'Аирдроп токенов GARDEN',
+        'airdrop-description': 'Каждый держатель монет BIP имеет право на раздачу токенов GARDEN, которая состоится 12 декабря 2022 года. Зарегистрируйтесь для участия в раздаче с помощью своего Telegram-аккаунта.',
+        'airdrop-description-2': 'Держатели BIP могут зарегистрировать только один адрес с монетами BIP для этой раздачи.',
+        'airdrop-registered-title': 'Вы зарегистрированы на раздачу токенов GARDEN',
+        'airdrop-registered-description': 'Проверьте, чтобы на вашем адресе были монеты BIP. Аирдроп состоится 12 декабря 2022 года.',
+    },
 };
