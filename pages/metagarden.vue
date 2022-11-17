@@ -25,7 +25,11 @@ export default {
                 <h1 class="u-h3 u-mb-05">{{ $td('GARDEN tokens airdrop', 'garden.airdrop-title') }}</h1>
                 <p>{{ $td('Every BIP coins holder is eligible for GARDEN tokens Airdrop which will take place on December 12th, 2022. Register for the airdrop with your Telegram account.', 'garden.airdrop-description') }}</p>
 
-                <TelegramAuth class="u-mt-15 u-mb-10" reason="garden"/>
+                <TelegramAuth
+                    class="u-mt-15 u-mb-10"
+                    reason="garden"
+                    :label="$td('Register with Telegram', 'garden.airdrop-telegram-button')"
+                />
 
                 <p class="u-text-medium">{{ $td('BIP holders can register only one address with BIP coins for this airdrop.', 'garden.airdrop-description-2') }}</p>
             </template>

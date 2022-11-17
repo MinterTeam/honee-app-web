@@ -72,7 +72,7 @@ export default {
             type="button"
             @click="toggleNotification()"
         >
-            <InlineSvg :class="{'is-active': isSubscribed}" src="/img/icon-notify.svg" width="16" height="16" alt="" role="presentation"/>
+            <InlineSvg class="icon--notify" :class="{'is-active': isSubscribed}" src="/img/icon-notify.svg" width="16" height="16" alt="" role="presentation"/>
         </button>
 
         <Modal class="u-text-center" :isOpen.sync="isModalVisible" :disable-outside-click="true" :hide-close-button="true">
