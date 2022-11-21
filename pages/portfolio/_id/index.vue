@@ -113,11 +113,11 @@ export default {
                     <p class="u-text-muted">
                         {{ $td('APY - projected yearly yield based on last 10 updates', 'portfolio.legend-apy') }}
                         <br>
-                        {{ $td('AWP - average weekly profit for last 5 full calendar weeks', 'portfolio.legend-awp') }}
+                        {{ $td('AWP - average weekly profit for last 5 calendar weeks', 'portfolio.legend-awp') }}
                         <br>
-                        {{ $td('Live - profit from the start of the week', 'portfolio.legend-live') }}
+                        {{ $td('LIVE - profit from the start of the week', 'portfolio.legend-live') }}
                         <br>
-                        {{ $td('1W - profit for the last full calendar week', 'portfolio.legend-1w') }}
+                        {{ $td('1W - profit for the last calendar week', 'portfolio.legend-1w') }}
                         <br>
                         {{ $td('7D - profit for the last 7 days', 'portfolio.legend-7d') }}
                     </p>
