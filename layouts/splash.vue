@@ -1,28 +1,15 @@
 <script>
-import Language from '~/components/layout/Language.vue';
-import Snackbar from '~/components/layout/Snackbar.vue';
+import SplashLayout from '~/layouts/_splash.vue';
 
 export default {
     components: {
-        Language,
-        Snackbar,
-    },
-    head: {
-        bodyAttrs: {
-            class: 'splash-layout',
-        },
+        SplashLayout,
     },
 };
 </script>
 
 <template>
-    <div class="splash-layout__wrap">
-        <div class="u-container u-container--wide header__language-container">
-            <Language/>
-        </div>
-
-        <nuxt class="u-container"/>
-
-        <Snackbar/>
-    </div>
+    <SplashLayout>
+        <nuxt class="splash-layout__inner"/>
+    </SplashLayout>
 </template>

@@ -2,6 +2,7 @@
 import {getDateAmerican, getTimeDistance, pretty, prettyRound} from '~/assets/utils.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {getAddressLockList} from '~/api/staking.js';
+import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 
 export default {
@@ -12,6 +13,7 @@ export default {
             });
     },
     components: {
+        BaseCoinSymbol,
         BaseLoader,
     },
     data() {
@@ -89,7 +91,7 @@ export default {
                 <tr v-for="lockItem in lockList" :key="lockItem.key">
                     <td>
                         <img class="wallet__coin-icon" :src="getCoinIconUrl(lockItem.program.lockCoin.symbol)" width="24" height="24" alt="" role="presentation">
-                        <span class="wallet__coin-name">{{ lockItem.program.lockCoin.symbol }}</span>
+                        <BaseCoinSymbol class="wallet__coin-name">{{ lockItem.program.lockCoin.symbol }}</BaseCoinSymbol>
                     </td>
                     <td>
                         <div class="u-fw-600">
@@ -111,7 +113,7 @@ export default {
                     <div class="wallet__stake-row">
                         <div class="wallet__coin">
                             <img class="wallet__coin-icon" :src="getCoinIconUrl(lockItem.program.lockCoin.symbol)" width="24" height="24" alt="" role="presentation">
-                            <span class="wallet__coin-name">{{ lockItem.program.lockCoin.symbol }}</span>
+                            <BaseCoinSymbol class="wallet__coin-name">{{ lockItem.program.lockCoin.symbol }}</BaseCoinSymbol>
                         </div>
                         <div class="wallet__coin-balance">
                             {{ pretty(lockItem.amount) }}

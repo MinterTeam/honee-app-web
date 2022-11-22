@@ -1,8 +1,10 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
+import {differenceInCalendarUTCISOWeeks} from '~/assets/utils/date-fns.js';
 import format from 'date-fns/esm/format';
 import {PORTFOLIO_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
 import {toSnake} from '~/assets/utils/snake-case.js';
+import {arrayToMap} from '~/assets/utils/collection.js';
 import NotFoundError from '~/assets/utils/error-404.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import addEcdsaAuthInterceptor from '~/assets/axios-ecdsa-auth.js';
@@ -26,12 +28,16 @@ addEcdsaAuthInterceptor(instance);
 /**
  * @param {UpdatePortfolio} portfolio
  * @param {string} privateKey
+ * @param {string} [telegramAuthProof]
  * @return {Promise<Portfolio>}
  */
-export function createPortfolio(portfolio, privateKey) {
+export function createPortfolio(portfolio, privateKey, telegramAuthProof) {
     return instance.post('portfolio', portfolio, {
             ecdsaAuth: {
                 privateKey,
+            },
+            headers: {
+                'X-Telegram-Auth': telegramAuthProof,
             },
         })
         .then((response) => response.data);
@@ -61,13 +67,83 @@ export function getPortfolio(id) {
 }
 
 /**
- * @param {PortfolioListParams&{owner?: string}} [params]
+ * @param {PortfolioListParams&{owner?: string, apyPeriod?: number}} [params]
  * @return {Promise<PortfolioList>}
  */
 export function getPortfolioList(params) {
     // params.profitPeriod = params.profitPeriod || PORTFOLIO_PROFIT_PERIOD.AWP;
     return instance.get(`portfolio`, {
             params: toSnake(params),
+        })
+        .then((response) => response.data);
+}
+
+
+/**
+ * week numbers starting from BATTLE_START_DATE
+ * @param {number} week - week number
+ * @param {PaginationParams&{skipTotalProfit:boolean}} [params]
+ * @return {Promise<PortfolioList>}
+ */
+export function getPortfolioBattleWeek(week, params) {
+    const weekMonday = shiftDate(BATTLE_START_DATE, (week - 1) * 7);
+    const weekEnd = shiftDate(BATTLE_START_DATE, week * 7);
+
+    const weekPromise = getPortfolioListByDates(formatDate(weekMonday), formatDate(weekEnd), {
+        limit: 100,
+        ...params,
+    });
+    if (params.skipTotalProfit) {
+        return weekPromise;
+    }
+
+    // fill portfolio list with `totalProfit` field
+    if (Number(week) === 1) {
+        return weekPromise
+            .then((portfolioInfo) => {
+                portfolioInfo = JSON.parse(JSON.stringify(portfolioInfo));
+                portfolioInfo.list = portfolioInfo.list.map((portfolio) => {
+                    portfolio.totalProfit = portfolio.profit;
+                    return portfolio;
+                });
+                return portfolioInfo;
+            });
+    } else {
+        const totalPromise = getPortfolioListByDates(formatDate(BATTLE_START_DATE), formatDate(weekEnd), {
+            limit: 100000,
+        });
+        return Promise.all([weekPromise, totalPromise])
+            .then(([portfolioInfo, totalBattlePortfolioInfo]) => {
+                const totalBattleMap = arrayToMap(totalBattlePortfolioInfo.list, 'id');
+                portfolioInfo = JSON.parse(JSON.stringify(portfolioInfo));
+                portfolioInfo.list = portfolioInfo.list.map((portfolio) => {
+                    portfolio.totalProfit = totalBattleMap[portfolio.id]?.profit;
+                    return portfolio;
+                });
+                return portfolioInfo;
+            });
+    }
+}
+
+const portfolioByDatesCacheLong = new Cache({ttl: 24 * 60 * 60 * 1000, max: 1000});
+const portfolioByDatesCacheShort = new Cache({ttl: 5 * 60 * 1000, max: 1000});
+
+/**
+ * week numbers starting from BATTLE_START_DATE
+ * @param {string} start
+ * @param {string} end - end week number
+ * @param {PaginationParams} params
+ * @return {Promise<PortfolioList>}
+ */
+export function getPortfolioListByDates(start, end, params) {
+    const today = getToday();
+    const endDate = new Date(end + 'T00:00:00Z');
+    // check equal here, because 00:00:00 snapshot is considered as past day snapshot
+    const isPastDaySnapshot = endDate <= today;
+
+    return instance.get(`portfolio/${start}/${end}`, {
+            params,
+            cache: isPastDaySnapshot  ? portfolioByDatesCacheLong : portfolioByDatesCacheShort,
         })
         .then((response) => response.data);
 }
@@ -84,20 +160,20 @@ export function getPortfolioList(params) {
  */
 
 // leaderboard updates once 24h, so 1h cache is ok
-const leaderboardCache = new Cache({maxAge: 60 * 60 * 1000});
+const leaderboardCache = new Cache({ttl: 60 * 60 * 1000, max: 100});
 /**
- * @param {PortfolioListParams} [params]
+ * @param {PortfolioListParams&{onlyProfitable?: boolean}} [params]
  * @return {Promise<ConsumerPortfolioList>}
  */
-export function getLeaderboard({limit, profitPeriod} = {}) {
-    console.log(profitPeriod);
+export function getLeaderboard({limit, profitPeriod, onlyProfitable} = {}) {
     return instance.get(`consumer/portfolio/${getLeaderboardDateParams(profitPeriod)}`, {
         cache: leaderboardCache,
     })
         .then((response) => {
-            if (limit) {
+            if (limit || onlyProfitable) {
                 return {
-                    list: response.data.list.slice(0, limit),
+                    list: response.data.list.slice(0, limit)
+                        .filter((item) => onlyProfitable ? item.profit > 0 : true),
                 };
             }
 
@@ -106,62 +182,61 @@ export function getLeaderboard({limit, profitPeriod} = {}) {
 }
 function getLeaderboardDateParams(profitPeriod) {
     if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.DAILY7) {
-        const today = getToday();
+        const future = '2999-01-01';
         const weekAgo = shiftDate(today, -7);
-        return formatDate(weekAgo) + '/' + formatDate(today);
+        return formatDate(weekAgo) + '/' + future;
     }
     if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.WTD) {
-        const today = getToday();
+        const future = '2999-01-01';
         const monday = getLastMonday();
-        if (monday.getTime() === today.getTime()) {
-            // no data for today yet, so show last week
-            const weekAgo = shiftDate(today, -7);
-            return formatDate(weekAgo) + '/' + formatDate(today);
-        } else {
-            return formatDate(monday) + '/' + formatDate(today);
-        }
+        return formatDate(monday) + '/' + future;
     }
     if (profitPeriod === PORTFOLIO_PROFIT_PERIOD.WEEKLY) {
         const monday = getLastMonday();
         const weekAgo = shiftDate(monday, -7);
         return formatDate(weekAgo) + '/' + formatDate(monday);
     }
+}
 
-    /**
-     * @param {Date} date
-     * @return {string}
-     */
-    function formatDate(date) {
-        return format(date, 'yyyy-MM-dd');
-    }
+/**
+ * @param {Date} date
+ * @return {string}
+ */
+function formatDate(date) {
+    return format(date, 'yyyy-MM-dd');
+}
 
-    /**
-     * @return {Date}
-     */
-    function getToday() {
-        let now = new Date();
-        let today = new Date(0);
-        today.setUTCFullYear(now.getUTCFullYear());
-        today.setUTCMonth(now.getUTCMonth());
-        today.setUTCDate(now.getUTCDate());
-        return today;
-    }
+/**
+ * @return {Date}
+ */
+function getToday() {
+    let now = new Date();
+    let today = new Date(0);
+    today.setUTCFullYear(now.getUTCFullYear());
+    today.setUTCMonth(now.getUTCMonth());
+    today.setUTCDate(now.getUTCDate());
+    return today;
+}
 
-    function getLastMonday() {
-        const today = getToday();
-        return shiftDate(today, today.getDay() * -1 + 1);
+function getLastMonday() {
+    const today = getToday();
+    let todayDay = today.getDay();
+    // fix sunday
+    if (todayDay === 0) {
+        todayDay = 7;
     }
+    return shiftDate(today, todayDay * -1 + 1);
+}
 
-    /**
-     * @param {Date} targetDate
-     * @param {number} dayCount
-     * @return {Date}
-     */
-    function shiftDate(targetDate, dayCount) {
-        let result = new Date(targetDate);
-        result.setDate(targetDate.getDate() + dayCount);
-        return result;
-    }
+/**
+ * @param {Date} targetDate
+ * @param {number} dayCount
+ * @return {Date}
+ */
+function shiftDate(targetDate, dayCount) {
+    let result = new Date(targetDate);
+    result.setDate(targetDate.getDate() + dayCount);
+    return result;
 }
 
 
@@ -185,13 +260,16 @@ export function postConsumerPortfolio(type, id, address, privateKey) {
 }
 
 // consumer portfolio list can be cached, because we will update local state on init/buy/sell change manually
-const consumerCache = new Cache({maxAge: 1 * 60 * 1000});
+const consumerCache = new Cache({ttl: 1 * 60 * 1000, max: 100});
 
 /**
  * @param {string} address
  * @return {Promise<ConsumerPortfolioList>}
  */
 export function getConsumerPortfolioList(address) {
+    if (!address) {
+        return Promise.reject(new Error('Consumer address not specified'));
+    }
     return instance.get(`consumer/portfolio/${address}`, {
         cache: consumerCache,
     })
@@ -223,7 +301,7 @@ export function getConsumerPortfolio(address, id) {
         });
 }
 
-const coinsCache = new Cache({maxAge: 5 * 60 * 1000});
+const coinsCache = new Cache({ttl: 5 * 60 * 1000, max: 100});
 
 /**
  * @return {Promise<Array<CoinItem>>}
@@ -238,11 +316,18 @@ export function getCmcCoinList() {
         }));
 }
 
+// monday of 43 ISO week
+export const BATTLE_START_DATE = new Date('2022-10-24T00:00:00Z');
+// week number starting from 1
+export const BATTLE_CURRENT_WEEK_NUMBER = differenceInCalendarUTCISOWeeks(new Date(), BATTLE_START_DATE) + 1;
+
 
 /**
  * @enum {string}
  */
 export const PORTFOLIO_PROFIT_PERIOD = {
+    // profit for some last updates (5-10) compounded
+    APY: 'apy',
     // average weekly profit: average of last 4 full weeks (monday-sunday) (negative week bans metric)
     AWP: 'awp',
     // average of last full week (monday-sunday)
@@ -250,5 +335,7 @@ export const PORTFOLIO_PROFIT_PERIOD = {
     // average of last 7 days
     DAILY7: 'daily7',
     // from monday to today (aka week to date)
-    WTD: 'wtd',
+    WTD: 'live',
+    // change from last update and filtered for few hours (6hr) since update
+    // RECOMMEND: 'recommend',
 };

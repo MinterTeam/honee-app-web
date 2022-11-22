@@ -50,7 +50,7 @@ export default {
                     };
                 });
         },
-        isOwn() {
+        isOwnManaged() {
             return this.portfolio.owner === this.$store.getters.address;
         },
         consumerPortfolio() {
@@ -67,7 +67,7 @@ export default {
     <div class="u-section u-container u-container--small">
         <div class="card card--invert">
             <div class="card__content card__content--medium">
-                <PortfolioHead :portfolio="portfolio" :is-copy="true"/>
+                <PortfolioHead :portfolio="portfolio" :is-single-view="true"/>
                 <p class="card__action-description u-text-break" v-if="portfolio.description">{{ portfolio.description }}</p>
             </div>
 
@@ -93,7 +93,7 @@ export default {
                                     {{ $td('Buy more', 'portfolio.buy-more-button') }}
                                 </nuxt-link>
                             </div>
-                            <div class="u-cell u-cell--auto-grow" v-if="isOwn">
+                            <div class="u-cell u-cell--auto-grow" v-if="isOwnManaged">
                                 <nuxt-link class="button button--ghost-main button--full" :to="$i18nGetPreferredPath(`/portfolio/${portfolio.id}/edit`)">
                                     {{ $td('Edit', 'portfolio.manage-edit-button') }}
                                 </nuxt-link>

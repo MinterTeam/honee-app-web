@@ -32,7 +32,7 @@ addToCamelInterceptor(instance);
 
 
 // 1 min cache
-const farmCache = new Cache({maxAge: 1 * 60 * 1000});
+const farmCache = new Cache({ttl: 1 * 60 * 1000, max: 100});
 
 /**
  * @param {boolean} [onlyTrusted=false]

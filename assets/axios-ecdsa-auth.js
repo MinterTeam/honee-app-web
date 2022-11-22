@@ -12,26 +12,41 @@ const AUTH_HEADER_SCHEMA = 'secp256k1-signature';
 export default function addEcdsaAuthInterceptor(instance) {
     instance.interceptors.request.use(function(request) {
         if (request.ecdsaAuth?.privateKey) {
+            let dataToSign;
             // timestamp used as nonce to prevent replay attack
-            request.data.timestamp = (new Date()).toISOString();
+            const timestamp = getTimestamp(request.ecdsaAuth.timestampThrottle);
+            if (request.method === 'get' || request.method === 'delete') {
+                request.params ||= {};
+                request.params.timestamp = timestamp;
+                dataToSign = timestamp;
+            } else {
+                request.data.timestamp = timestamp;
+                dataToSign = request.data;
+            }
 
             const {privateKey, includePublicKey} = request.ecdsaAuth;
             request.headers ||= {};
-            request.headers.Authorization = `${AUTH_HEADER_SCHEMA} ${signRequest(request.data, privateKey, includePublicKey)}`;
+            request.headers.Authorization = `${AUTH_HEADER_SCHEMA} ${signRequest(dataToSign, privateKey, includePublicKey)}`;
         }
         return request;
     });
 }
 
+function getTimestamp(interval) {
+    const now = Date.now();
+    const offset = interval ? now % interval : 0;
+    return new Date(now - offset).toISOString();
+}
+
 /**
- * @param {object} data
+ * @param {object|string} data
  * @param {string} privateKey
  * @param {boolean} [includePublicKey=true]
  * @return {string}
  */
 export function signRequest(data, privateKey, includePublicKey = true) {
     const privateKeyBuffer = toBuffer(privateKey);
-    const dataHash = hashObject(data);
+    const dataHash = typeof data === 'string' ? keccakFromString(data) : hashObject(data);
     // recid is 0-3 number @see https://ethereum.stackexchange.com/a/118342
     const {signature, recid} = ecdsaSign(dataHash, privateKeyBuffer);
 

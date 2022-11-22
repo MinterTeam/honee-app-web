@@ -90,14 +90,19 @@ export default {
             <p class="u-mb-10">
                 <template v-if="!$store.state.referral.refId">
                     <template v-if="$i18n.locale === 'en'">
-                        Invite friends and get <strong>10% of their BEE</strong> staking rewards. You just need to activate a special referral link for your wallet.
+                        Invite friends and get <strong>instant rewards</strong> when they stake cryptos in the wallet. You just need to activate a special referral link for your wallet. <a href="https://honee.app/referral-program" class="link--default" target="_blank">Learn more about the referral program</a>.
                     </template>
                     <template v-if="$i18n.locale === 'ru'">
-                        Приглашай друзей и <strong>получай 10%</strong> от их наград за стейкинг BEE. Для этого просто активируй специальную реферальную ссылку для своего кошелька.
+                        Приглашайте друзей в Honee и <strong>получайте награды</strong> от сумм их стейкинга! Для этого просто активируйте специальную реферальную ссылку для своего кошелька. <a href="https://honee.app/ru/referral-program" class="link--default" target="_blank">Подробнее о реферальной программе</a>.
                     </template>
                 </template>
                 <template v-else>
-                    {{ $td('Invite friends and get 10% of their BEE staking. To share, just copy the link below or from the address bar in your browser on any page of Honee App.', 'referral.description-activated') }}
+                    <template v-if="$i18n.locale === 'en'">
+                        Invite friends and get instant rewards when they stake cryptos in the wallet (<a href="https://honee.app/referral-program" class="link--default" target="_blank">details</a>). To share, just copy the link below or from the address bar in your browser on any page of Honee.
+                    </template>
+                    <template v-if="$i18n.locale === 'ru'">
+                        Приглашайте друзей в Honee и получайте награды от сумм их стейкинга (<a href="https://honee.app/ru/referral-program" class="link--default" target="_blank">подробнее</a>). Скопируйте ссылку ниже или из адресной строки вашего браузера на любой странице Honee и поделитесь ею с друзьями.
+                    </template>
                 </template>
             </p>
 
@@ -146,7 +151,7 @@ export default {
             <template v-if="$store.state.referral.refId">
                 <img class="u-image u-mb-10" src="/img/icon-activated.svg" alt="" role="presentation" width="96" height="96">
                 <h2 class="u-h3 u-mb-05">{{ $td('Referral link activated', 'referral.success-title') }}</h2>
-                <p class="u-mb-15">{{ $td('To share, just copy the link from the address bar in your browser on any page of Honee App.', 'referral.success-description') }}</p>
+                <p class="u-mb-15">{{ $td('To share, just copy the link from the address bar in your browser on any page of Honee.', 'referral.success-description') }}</p>
             </template>
             <template v-else>
                 <h2 class="u-h3 u-mb-05">{{ $td('Referral link deactivated', 'referral.success-deactivate-title') }}</h2>

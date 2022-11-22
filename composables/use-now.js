@@ -4,6 +4,10 @@ import { toRef } from '@vue/composition-api';
 
 export default function useNow(period) {
     const instance = new Vue(VueNowMixinFactory(period));
+    /**
+     * Number of milliseconds
+     * @type {Ref<number>}
+     */
     const now = toRef(instance, '$now');
 
     return {

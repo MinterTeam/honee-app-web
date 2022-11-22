@@ -6,6 +6,7 @@ import {getChainIdByHubNetwork} from '~/api/web3.js';
 import Big from '~/assets/big.js';
 import {getExplorerTxUrl, getEvmTxUrl, getTimeDistance, getTimeStamp as getTime, shortHashFilter, pretty, isHubTransferFinished} from '~/assets/utils.js';
 import {HUB_CHAIN_DATA, HUB_TRANSFER_STATUS as WITHDRAW_STATUS} from '~/assets/variables.js';
+import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';
 import Loader from '~/components/base/BaseLoader.vue';
 
 
@@ -14,6 +15,7 @@ export default {
     WITHDRAW_STATUS,
     HUB_CHAIN_DATA,
     components: {
+        BaseCoinSymbol,
         Loader,
     },
     mixins: [
@@ -112,7 +114,8 @@ export default {
         <div class="form-row" v-for="withdraw in withdrawList" :key="withdraw.tx.hash">
             <div class="hub__preview-transaction-row u-text-overflow">
                 <div class="u-fw-700">
-                    {{ pretty(getAmount(withdraw)) }} {{ withdraw.tx.data.coin.symbol }}
+                    {{ pretty(getAmount(withdraw)) }}
+                    <BaseCoinSymbol>{{ withdraw.tx.data.coin.symbol }}</BaseCoinSymbol>
                 </div>
                 <div>
                     <a class="u-text-medium link--main" :href="getExplorerTxUrl(withdraw.tx.hash)" target="_blank">{{ formatHash(withdraw.tx.hash) }}</a>

@@ -14,6 +14,14 @@ export default {
         checkEmpty,
     },
     mixins: [validationMixin],
+    props: {
+        onboardingUrl: {
+            type: String,
+        },
+        fieldClass: {
+            type: String,
+        },
+    },
     data() {
         return {
             mnemonic: '',
@@ -38,8 +46,13 @@ export default {
         },
         authorize() {
             // redirect
-            const authRedirectPath = this.$store.state.authRedirectPath || '/';
-            this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
+            let authRedirectPath;
+            if (this.onboardingUrl) {
+                authRedirectPath = this.onboardingUrl;
+            } else {
+                authRedirectPath = this.$store.state.authRedirectPath || this.DASHBOARD_URL;
+                this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
+            }
             this.$router.push(this.$i18nGetPreferredPath({path: authRedirectPath}));
         },
     },
@@ -49,7 +62,7 @@ export default {
 <template>
     <form class="" @submit.prevent="addAddress()">
         <div class="form-row">
-            <div class="h-field" :class="{'is-error': $v.mnemonic.$error}">
+            <div class="h-field" :class="[{'is-error': $v.mnemonic.$error}, fieldClass]">
                 <textarea
                     class="h-field__input h-field__input--medium" rows="2" autocapitalize="off"
                     :placeholder="$td('Enter your seed phrase', 'index.enter-seed')"

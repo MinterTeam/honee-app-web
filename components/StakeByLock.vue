@@ -12,6 +12,7 @@ import {pretty, getDateAmerican, getTimeDistance} from '~/assets/utils.js';
 import {getStakingProgram} from '~/api/staking.js';
 import {getBlock} from '~/api/explorer.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
+import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';
 import TxSequenceWithSwapForm from '~/components/base/TxSequenceWithSwapForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
@@ -21,6 +22,7 @@ import FieldRange from '~/components/base/FieldRange.vue';
 export default {
     TX_TYPE,
     components: {
+        BaseCoinSymbol,
         TxSequenceWithSwapForm,
         BaseAmountEstimation,
         FieldCombined,
@@ -329,7 +331,7 @@ function yearToBlock(year) {
                         <div class="information__item">
                             <div class="information__coin">
                                 <img class="information__coin-icon" :src="$store.getters['explorer/getCoinIcon'](stakingProgram.rewardCoin.symbol)" width="20" height="20" alt="" role="presentation">
-                                <div class="information__coin-symbol">{{ stakingProgram.rewardCoin.symbol }}</div>
+                                <BaseCoinSymbol class="information__coin-symbol">{{ stakingProgram.rewardCoin.symbol }}</BaseCoinSymbol>
                             </div>
                             <div class="information__value">
                                 ≈{{ totalYieldAmount ? pretty(totalYieldAmount) : '' }}
@@ -381,7 +383,7 @@ function yearToBlock(year) {
                         <div class="information__item">
                             <div class="information__coin">
                                 <img class="information__coin-icon" :src="$store.getters['explorer/getCoinIcon'](stakingProgram.rewardCoin.symbol)" width="20" height="20" alt="" role="presentation">
-                                <div class="information__coin-symbol">{{ stakingProgram.rewardCoin.symbol }}</div>
+                                <BaseCoinSymbol class="information__coin-symbol">{{ stakingProgram.rewardCoin.symbol }}</BaseCoinSymbol>
                             </div>
                             <div class="information__value">
                                 ≈{{ totalYieldAmount ? pretty(totalYieldAmount) : '' }}

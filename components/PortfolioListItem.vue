@@ -3,11 +3,13 @@ import {PORTFOLIO_PROFIT_PERIOD} from '~/api/portfolio.js';
 import PortfolioHead from '~/components/PortfolioHead.vue';
 
 /**
- * @enum {string}
+ * @enum {string|PORTFOLIO_PROFIT_PERIOD}
  */
 export const PORTFOLIO_LIST_TYPE = {
-    TOP: 'top',
-    ALL: 'all',
+    ...PORTFOLIO_PROFIT_PERIOD,
+    RECOMMEND: 'recommended',
+    // TOP: 'top',
+    // ALL: 'all',
     MANAGED: 'managed',
     COPIED: 'copied',
 };
@@ -26,18 +28,23 @@ export default {
         /** @type {PORTFOLIO_LIST_TYPE}*/
         type: {
             type: String,
-            default: PORTFOLIO_LIST_TYPE.TOP,
+            default: PORTFOLIO_LIST_TYPE.APY,
         },
     },
     computed: {
         profitPeriod() {
+            if (this.type === PORTFOLIO_LIST_TYPE.RECOMMEND) {
+                return PORTFOLIO_PROFIT_PERIOD.APY;
+            }
+            /*
             if (this.type === PORTFOLIO_LIST_TYPE.TOP) {
                 return PORTFOLIO_PROFIT_PERIOD.AWP;
             }
             if (this.type === PORTFOLIO_LIST_TYPE.ALL) {
                 return PORTFOLIO_PROFIT_PERIOD.DAILY7;
             }
-            return undefined;
+            */
+            return Object.values(PORTFOLIO_PROFIT_PERIOD).includes(this.type) ? this.type : undefined;
         },
     },
     methods: {
@@ -49,10 +56,10 @@ export default {
             }
         },
         getLinkCaption() {
-            if (this.type === PORTFOLIO_LIST_TYPE.TOP || this.type === PORTFOLIO_LIST_TYPE.ALL) {
-                return this.$td('Buy', 'portfolio.buy-button');
-            } else {
+            if (this.type === PORTFOLIO_LIST_TYPE.MANAGED || this.type === PORTFOLIO_LIST_TYPE.COPIED) {
                 return this.$td('View', 'portfolio.view-button');
+            } else {
+                return this.$td('Buy', 'portfolio.buy-button');
             }
         },
     },

@@ -1,6 +1,6 @@
 <script>
-import {getAddressLockList} from '~/api/staking.js';
-import {fillCardWithCoin, flatCardList} from '~/content/card-list.js';
+import {getAddressLockList, getPremiumLevel} from '~/api/staking.js';
+import {fillCardWithCoin, flatCardList} from '~/data/cards.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {PREMIUM_STAKE_PROGRAM_ID} from '~/assets/variables.js';
 import {pretty} from '~/assets/utils.js';
@@ -157,24 +157,6 @@ export default {
             };
         },
         getEmptyDelegationCard(coinSymbol) {
-            console.log(fillCardWithCoin({
-                amount: 0,
-                coin: coinSymbol,
-                // dummy action to fill correct actionType
-                action: `/delegate/${coinSymbol}`,
-                caption: 'Delegate',
-                stats: {
-                    caption: 'Total delegated',
-                    value: 0,
-                },
-                ru: {
-                    caption: 'Делегирование',
-                    stats: {
-                        caption: 'Всего',
-                    },
-                },
-                buttonLabel: this.$td('Delegate more', 'index.delegate-more'),
-            }));
             return fillCardWithCoin({
                 amount: 0,
                 coin: coinSymbol,
@@ -196,26 +178,10 @@ export default {
         },
     },
 };
-
-function getPremiumLevel(amount) {
-    if (amount >= 1000000) {
-        return 4;
-    }
-    if (amount >= 100000) {
-        return 3;
-    }
-    if (amount >= 10000) {
-        return 2;
-    }
-    if (amount >= 1000) {
-        return 1;
-    }
-    return 0;
-}
 </script>
 
 <template>
-    <div>
+    <div v-if="portfolioList.length > 0 || stakeCardList.length > 0">
         <h2 class="u-h1 u-mb-15">
             {{ $td('My investments', `index.investments-title`) }}
         </h2>

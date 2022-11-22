@@ -91,12 +91,23 @@
 
 
 
+.layout--hide-header-logo {
+    .header__logo-link {display: none;}
+}
+.layout--transparent-header {
+    .header {background: none; box-shadow: none; color: inherit;}
+}
+
+.battle-bg-gradient() {background: linear-gradient(180deg, #E73C3C -3.15%, #FFB800 100%);}
 
 .splash-layout {}
+.splash-layout--battle {.battle-bg-gradient(); color: #fff;}
+.splash-layout--garden {background: url(../img/bg-garden.png); image-rendering: pixelated; color: #fff;}
 .splash-layout__wrap {min-height: 100vh; display: flex; flex-direction: column;}
-.splash-layout__inner {width: 100%;}
+.splash-layout__inner {width: 100%; margin-top: auto; margin-bottom: auto;}
 
 .simple-layout {background: #fff;}
+.embed-layout {background: transparent;}
 
 .default-layout {overflow-y: scroll;}
 
@@ -104,7 +115,7 @@
 .auth__body {}
 //.auth__bg {position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin-top: 40px; margin-left: -3px; z-index: -1;}
 .auth__bee {position: absolute; bottom: 100%; right: 10px; margin-bottom: 8px;}
-.auth__logo {display: block; margin-inline: auto; margin-bottom: 24px; margin-top: 60px;}
+.auth__logo {display: block; margin-inline: auto; margin-bottom: 24px;}
 .auth__subtitle {text-align: center; margin-bottom: 40px; font-size: 16px;}
 /*@media (min-width: @breakpoint-medium-up) {
     .auth__body {background-image: url(../img/auth-bg.svg); background-position: 50% 10%; background-repeat: no-repeat;}
@@ -141,12 +152,17 @@
         & .form-row:first-child .information {
             margin-top: -12px;
         }
+        & .card__pop-item--20 {
+            margin-top: -20px;
+        }
+
     }
 }
 .card--invert {background: @c-black; color: #fff;}
-.card--light-grey {
-    background: @c-white-light;
-}
+.card--light-grey {background: @c-white-light;}
+.card--simple-border {border: 1px solid @c-border;}
+.card--battle {.battle-bg-gradient();}
+.card--twitter {background: url(../img/bg-share-to-earn.svg) no-repeat 20px 0 #1DA1F2;}
 .card--action {display: flex; flex-direction: column; flex-grow: 2; min-width: 0; /* prevent flex item to overflow parent */}
 .card-content-base-padding() {
     padding: 16px;
@@ -181,7 +197,11 @@
 .card__action-title-type {text-transform: uppercase; font-size: 12px; font-weight: 700; opacity: 0.5; line-height: 15px; margin-bottom: 1px;}
 .card__action-title-value {font-size: 20px; font-weight: 700; line-height: 24px;}
 .card__action-stats {margin-left: auto; text-align: right;}
-.card__action-stats-caption {text-transform: uppercase; font-size: 12px; font-weight: 700; opacity: 0.5; line-height: 15px; margin-bottom: 1px;}
+.card__action-stats-caption {
+    text-transform: uppercase; font-size: 12px; font-weight: 700; opacity: 0.5; line-height: 15px; margin-bottom: 1px;
+    &.is-active {opacity: 1;}
+    &+& {margin-left: 8px;}
+}
 .card__action-stats-value {font-size: 20px; font-weight: 700; line-height: 24px;}
 .card__action-meta {.u-text-medium(); margin-top: 8px;}
 .card__action-description {.u-text-medium(); margin-top: 16px; margin-bottom: auto;}
@@ -216,7 +236,7 @@
 // header
 @header-height: 56px;
 @header-height-large: 80px;
-.header {background: #ffffff; box-shadow: 0 4px 4px rgba(0,0,0,0.05);}
+.header {background: #ffffff; box-shadow: 0 4px 4px rgba(0,0,0,0.05); color: @c-black;}
 .header__container {
     display: flex; align-items: center; justify-content: space-between; top: 0; height: @header-height;
     &+& {border-top: 1px solid @c-white-light;}
@@ -468,12 +488,59 @@
 .topup__vertical-center {margin: auto 0;}
 
 
-.portfolio__leaderboard-icon {.u-text-muted(); width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 50%; font-size: 14px; font-weight: 600;}
-.portfolio__leaderboard-icon--1 {color: #fff; background: linear-gradient(180deg, #A57C01 0%, #F2C028 100%);}
-.portfolio__leaderboard-icon--2 {color: #fff; background: linear-gradient(180deg, #929292 0%, #D9D9D9 100%);}
-.portfolio__leaderboard-icon--3 {color: #fff; background: linear-gradient(180deg, #D56C31 0%, #FF9558 100%);}
+.portfolio__leaderboard-rank {.u-text-muted(); min-width: 24px; line-height: 22px; font-size: 14px; font-weight: 600; text-align: center; display: inline-block;}
+.portfolio__leaderboard-icon--1, .portfolio__leaderboard-icon--2, .portfolio__leaderboard-icon--3 {width: 24px; height: 24px; line-height: 24px; border-radius: 50%; color: #fff;}
+.portfolio__leaderboard-icon--1 {background: linear-gradient(180deg, #A57C01 0%, #F2C028 100%);}
+.portfolio__leaderboard-icon--2 {background: linear-gradient(180deg, #929292 0%, #D9D9D9 100%);}
+.portfolio__leaderboard-icon--3 {background: linear-gradient(180deg, #D56C31 0%, #FF9558 100%);}
+.portfolio__leaderboard-address-cell {}
 .portfolio__leaderboard-address {display: flex; align-items: center;}
 .portfolio__leaderboard-address-value {margin-left: 16px;}
+@media (min-width: @breakpoint-large-up) {
+    .portfolio__leaderboard-address-cell {width: 30%;}
+}
+
+.card__portfolio-notify-button {height: 16px; margin-right: 8px;}
+.card__portfolio-notify-loader {width: 16px; height: 16px;}
+
+.icon--notify, .icon-notify-bg, .icon-notify-bell {transition: 0.1s}
+.icon--notify {
+    .card--invert & {
+        & .icon-notify-bg {fill: @c-black-light;}
+        & .icon-notify-bell {fill: @c-black;}
+    }
+    &.is-active, &:hover, &:focus {
+        & > .icon-notify-bg {fill: @c-yellow-light;}
+        & > .icon-notify-bell {fill: @c-yolk;}
+    }
+    &:hover, &:focus {
+        opacity: 0.7;
+    }
+
+
+}
+
+
+.battle__body {background: url(../img/battle-bg-left.svg) 0 0 no-repeat, url(../img/battle-bg-right.svg) 100% 0  no-repeat;}
+.battle__splash-top-image {vertical-align: top; margin-top: 6px; margin-bottom: 46px; margin-left: -50px;}
+.battle__splash-title {display: block; margin-bottom: 25px; max-width: 100%; height: auto;}
+.battle__splash-bottom-image {margin-left: -27px; margin-top: 25px;}
+
+.battle__ranking-item {
+    &+& {margin-top: 16px; padding-top: 16px; border-top: 1px solid @c-white-light;}
+}
+
+
+.footer-garden {
+    background: #6bd84b; color: #fff; padding-bottom: 32px;
+    &::before {
+        content: ''; display: block; margin-top: -18px; height: 84px;
+        background: url(../img/bg-garden-border.png) repeat-x;
+        // negative margin firefox fix
+        display: inline-block; width: 100%; vertical-align: top;
+    }
+
+}
 
 
 

@@ -1,5 +1,5 @@
 <script>
-import {flatCardList} from '~/content/card-list.js';
+import {flatCardList} from '~/data/cards.js';
 import {pretty} from '~/assets/utils.js';
 import {BASE_COIN} from '~/assets/variables.js';
 import {clearActionQuery} from '~/components/Action.vue';
@@ -17,7 +17,7 @@ const ACTION_LIST_CONDITIONAL = {
 const MAX_PAGE = 3;
 
 export default {
-    layout: 'onboarding',
+    layout: 'splash',
     components: {
         Card,
     },

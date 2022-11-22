@@ -13,6 +13,9 @@ export default {
             type: Boolean,
             default: false,
         },
+        itemClass: {
+            type: String,
+        },
     },
     emits: [
         'input',
@@ -37,8 +40,8 @@ export default {
         <button
             v-for="tabItem in tabs"
             :key="tabItem.value"
-            class="tabs__item u-h u-h3 u-semantic-button" type="button"
-            :class="{'is-active': value === tabItem.value}"
+            class="u-semantic-button" type="button"
+            :class="[itemClass || 'tabs__item u-h u-h3', {'is-active': value === tabItem.value}]"
             @click="handleClick(tabItem.value)"
         >
             {{ tabItem.label || tabItem.value }}
