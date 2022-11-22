@@ -1,7 +1,10 @@
 <script>
-import {prettyRound} from '~/assets/utils.js';
+import BasePriceImpact from '~/components/base/BasePriceImpact.vue';
 
 export default {
+    components: {
+        BasePriceImpact,
+    },
     props: {
         estimationViewUsd: {
             type: Array,
@@ -23,34 +26,9 @@ export default {
             return (totalSpendUsd - totalResultUsd) / totalSpendUsd * 100;
         },
     },
-    methods: {
-        prettyRound,
-    },
 };
 </script>
 
 <template>
-    <div class="information information--warning form-row" v-if="priceImpact > 5 || priceUnavailable">
-        <template v-if="priceImpact > 5">
-            <div class="information__item">
-                ⚠️ {{ $td('High price impact!', 'portfolio.warning-price-impact') }}
-                <div class="information__value">{{ prettyRound(priceImpact) }}%</div>
-            </div>
-            <div class="information__item information__item--content information__muted u-text-medium">
-                {{ $t('portfolio.warning-price-impact-description', {impact: prettyRound(priceImpact)}) }}
-            </div>
-        </template>
-        <template v-else-if="priceUnavailable">
-            <div class="information__item">
-                ⚠️ {{ $td('Can\'t calculate price impact', 'portfolio.warning-price-impact-unavailable') }}
-            </div>
-            <div class="information__item information__item--content information__muted u-text-medium">
-                {{ $td('Please double check resulting amounts. You may lose part of coins because of low liquidity pools involved in swaps', 'portfolio.warning-price-impact-unavailable-description') }}
-            </div>
-        </template>
-    </div>
+    <BasePriceImpact :price-impact="priceImpact" :price-unavailable="priceUnavailable"/>
 </template>
-
-<style scoped>
-
-</style>

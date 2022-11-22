@@ -83,7 +83,7 @@ const currentStep = computed(() => {
  * @param {PostTxOptions} [options]
  * @return {Promise<PostTxResponse>}
  */
-function sendMinterTx(txParams, options= {}) {
+function sendMinterTx(txParams, options = {}) {
     txParams = {
         // default params
         chainId: MINTER_CHAIN_ID,

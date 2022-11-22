@@ -1,19 +1,14 @@
 <script>
-import {VueNowMixinFactory} from 'vue-now';
 import Big from '~/assets/big.js';
 import {web3Utils} from '~/api/web3.js';
-import {getOraclePriceList, getGasPriceGwei} from '~/api/hub.js';
 import {pretty, getEvmTxUrl, shortHashFilter} from '~/assets/utils.js';
-import {HUB_BUY_STAGE as LOADING_STAGE} from '~/assets/variables.js';
+import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+import useNow from '~/composables/use-now.js';
+import useHubOracle from '~/composables/use-hub-oracle.js';
 
-
-let timer;
 
 export default {
     LOADING_STAGE,
-    mixins: [
-        VueNowMixinFactory(1000),
-    ],
     props: {
         /** @type {Array<SequenceStepItem>} */
         stepsOrdered: {
@@ -24,14 +19,24 @@ export default {
     emits: [
         'speedup',
     ],
+    setup() {
+        const {now} = useNow();
+        const {networkGasPrice, setHubOracleProps} = useHubOracle();
+
+        return {
+            now,
+
+            networkGasPrice,
+            setHubOracleProps,
+        };
+    },
     data() {
         return {
-            priceList: [],
         };
     },
     computed: {
         ethGasPriceGwei() {
-            return getGasPriceGwei(this.priceList);
+            return this.networkGasPrice;
         },
         slowStep() {
             const item = this.stepsOrdered.slice().reverse().find((item) => {
@@ -42,7 +47,7 @@ export default {
                 const isEthTx = tx.hash.indexOf('0x') === 0;
                 const isError = tx.error;
                 const isMined = tx.blockHash;
-                const isSlow = new Date(this.$now) - new Date(tx.timestamp) > 6 * 1000;
+                const isSlow = new Date(this.now) - new Date(tx.timestamp) > 6 * 1000;
                 const canSpeedup = Number(tx.params.gasPrice) < Number(this.ethGasPriceGwei);
 
                 return isEthTx && !isError && !isMined && isSlow && canSpeedup;
@@ -55,16 +60,15 @@ export default {
             return undefined;
         },
     },
-    mounted() {
-        timer = setInterval(() => {
-            getOraclePriceList()
-                .then((priceList) => {
-                    this.priceList = Object.freeze(priceList);
-                });
-        }, 15 * 1000);
-    },
-    destroyed() {
-        clearInterval(timer);
+    created() {
+        // hubTokenProps
+        this.$watch(
+            () => ({
+                hubNetworkSlug: HUB_CHAIN_BY_ID[this.slowStep?.tx.chainId]?.hubNetworkSlug,
+            }),
+            (newVal) => this.setHubOracleProps(newVal),
+            {deep: true, immediate: true},
+        );
     },
     methods: {
         pretty,

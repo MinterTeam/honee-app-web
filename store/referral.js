@@ -54,7 +54,9 @@ export const actions = {
                     commit('setRefId', refId);
                 })
                 .catch((error) => {
-                    console.log(error);
+                    if (error.response?.status !== 404) {
+                        console.error(error);
+                    }
                     commit('setRefId', false);
                 })
                 .then(() => {

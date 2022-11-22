@@ -66,11 +66,11 @@ export default {
         },
     },
     setup() {
-        const {fee, feeProps} = useFee();
+        const {fee, setFeeProps} = useFee();
 
         return {
             fee,
-            feeProps,
+            setFeeProps,
         };
     },
     data() {
@@ -127,8 +127,19 @@ export default {
         payloadLength() {
             return new Blob([this.payload]).size;
         },
-        feeBusParams() {
-            return {
+    },
+    watch: {
+        form: {
+            handler(newVal) {
+                this.$emit('update:txForm', newVal);
+            },
+            deep: true,
+        },
+    },
+    created() {
+        // feeBusParams
+        this.$watch(
+            () => ({
                 txParams: {
                     payload: this.payload,
                     type: this.txType,
@@ -136,23 +147,10 @@ export default {
                 },
                 baseCoinAmount: this.$store.getters.baseCoinAamount,
                 fallbackToCoinToSpend: true,
-            };
-        },
-    },
-    watch: {
-        feeBusParams: {
-            handler(newVal) {
-                Object.assign(this.feeProps, newVal);
-            },
-            deep: true,
-            immediate: true,
-        },
-        form: {
-            handler(newVal) {
-                this.$emit('update:txForm', newVal);
-            },
-            deep: true,
-        },
+            }),
+            (newVal) => this.setFeeProps(newVal),
+            {deep: true, immediate: true},
+        );
     },
     methods: {
         pretty: (val) => pretty(val, undefined, true),

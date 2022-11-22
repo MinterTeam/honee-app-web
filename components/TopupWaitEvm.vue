@@ -1,22 +1,22 @@
 <script>
 import stripZeros from 'pretty-num/src/strip-zeros.js';
-import {findNativeCoinSymbol} from '~/api/hub.js';
-import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_ID} from '~/assets/variables.js';
+import Big from '~/assets/big.js';
+import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_CHAIN_ID} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {wait} from '~/assets/utils/wait.js';
 import {pretty} from '~/assets/utils.js';
+import useHubDiscount from '~/composables/use-hub-discount.js';
+import useHubOracle from '~/composables/use-hub-oracle.js';
+import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useWeb3Deposit from '~/composables/use-web3-deposit.js';
 import useTxService from '~/composables/use-tx-service.js';
-import useHubTokenData from '~/composables/use-hub-token-data.js';
 import {TOP_UP_NETWORK} from '~/components/Topup.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 import HubBuyTxListItem from '~/components/HubBuyTxListItem.vue';
 import HubFeeImpact from '~/components/HubFeeImpact.vue';
-import Big from '~/assets/big.js';
-import useHubDiscount from '~/composables/use-hub-discount.js';
 
 export default {
     LOADING_STAGE,
@@ -44,15 +44,26 @@ export default {
     ],
     setup() {
         const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
-        const {initPromise: hubInfoInitPromise, hubTokenList, hubPriceList} = useHubTokenData({subscribePriceList: true});
 
+        const {
+            initPromise: hubInfoInitPromise,
+            networkNativeCoin,
+            setHubOracleProps,
+        } = useHubOracle({
+            subscribeTokenList: true,
+            subscribePriceList: true,
+        });
         const {
             tokenData,
             isNativeToken,
+            setHubTokenProps,
+        } = useHubToken();
+
+        const {
             nativeBalance,
             wrappedBalance,
             balance,
-            setTokenProps,
+            setWeb3TokenProps,
             waitEnoughTokenBalance,
         } = useWeb3TokenBalance();
 
@@ -73,16 +84,18 @@ export default {
             discountUpsidePercent,
             setDiscountProps,
 
-            hubInfoInitPromise,
-            hubTokenList,
-            hubPriceList,
+            networkNativeCoin,
+            setHubOracleProps,
 
+            hubInfoInitPromise,
             tokenData,
             isNativeToken,
+            setHubTokenProps,
+
             nativeBalance,
             wrappedBalance,
             balance,
-            setTokenProps,
+            setWeb3TokenProps,
             waitEnoughTokenBalance,
 
             setDepositProps, depositFromEthereum, amountToUnwrap, isUnwrapRequired, evmGasPriceGwei, evmTotalFee, depositAmountAfterGas,
@@ -110,7 +123,7 @@ export default {
             return HUB_CHAIN_DATA[this.networkSlug];
         },
         tokenSymbol() {
-            return findNativeCoinSymbol(this.hubTokenList, this.networkSlug);
+            return this.networkNativeCoin?.symbol;
         },
         hubFeeRate() {
             const discountModifier = 1 - this.discount;
@@ -145,53 +158,54 @@ export default {
             // has any step except WAIT_ETH
             return Object.keys(this.txServiceState.steps).some((key) => key !== LOADING_STAGE.WAIT_ETH);
         },
-        depositProps() {
-            return {
+    },
+    watch: {
+    },
+    created() {
+        // depositProps
+        // tokenProps
+        this.$watch(
+            () => ({
                 destinationMinterAddress: this.$store.getters.address,
                 accountAddress: this.$store.getters.evmAddress,
                 chainId: this.hubChainData.chainId,
                 // @TODO don't unwrap micro WETH balance
                 amount: this.balance,
                 tokenSymbol: this.tokenSymbol,
-                /** @type Array<HubCoinItem> */
-                hubCoinList: this.hubTokenList,
-                priceList: this.hubPriceList,
-            };
-        },
-        txServiceProps() {
-            return {
+                // disable updating gasPriceGwei > coinAmountAfterBridge, which will triggers watchEstimation
+                freezeGasPrice: false,
+            }),
+            (newVal) => {
+                this.setDepositProps(newVal);
+                this.setHubOracleProps({
+                    hubNetworkSlug: HUB_CHAIN_BY_ID[newVal.chainId]?.hubNetworkSlug,
+                });
+                this.setHubTokenProps(newVal);
+                this.setWeb3TokenProps(newVal);
+            },
+            {deep: true, immediate: true},
+        );
+
+        // txServiceProps
+        this.$watch(
+            () => ({
                 privateKey: this.$store.getters.privateKey,
                 accountAddress: this.$store.getters.evmAddress,
                 chainId: this.hubChainData.chainId,
-            };
-        },
-    },
-    watch: {
-        depositProps: {
-            handler(newVal) {
-                // disable updating priceList > gasPriceGwei > coinAmountAfterBridge, which will triggers watchEstimation
-                if (newVal.isDisableUpdateProps) {
-                    return;
-                }
-                this.setDepositProps(newVal);
-                this.setTokenProps(newVal);
-            },
-            deep: true,
-            immediate: true,
-        },
-        txServiceProps: {
-            handler(newVal) {
-                this.setTxServiceProps(newVal);
-            },
-            deep: true,
-            immediate: true,
-        },
-    },
-    mounted() {
-        this.setDiscountProps({
-            minterAddress: this.$store.getters.address,
-            ethAddress: this.$store.getters.evmAddress,
-        });
+            }),
+            (newVal) => this.setTxServiceProps(newVal),
+            {deep: true, immediate: true},
+        );
+
+        // discountProps
+        this.$watch(
+            () => ({
+                minterAddress: this.$store.getters.address,
+                ethAddress: this.$store.getters.evmAddress,
+            }),
+            (newVal) => this.setDiscountProps(newVal),
+            {deep: true, immediate: true},
+        );
     },
     destroyed() {
         this.evmWaitCanceler();

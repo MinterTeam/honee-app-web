@@ -88,31 +88,31 @@ export default {
         };
     },
     computed: {
-        feeBusParams() {
-            const sequenceParamsArray = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
-            const txParamsList = sequenceParamsArray.map((item) => item.feeTxParams ?? item.txParams);
-
-            return {
-                txParamsList,
-                baseCoinAmount: this.$store.getters.baseCoinAmount,
-                fallbackToCoinToSpend: true,
-                isLocked: this.isFormSending || txParamsList.length === 0,
-            };
-        },
     },
     watch: {
-        feeBusParams: {
-            handler(newVal) {
-                this.setFeeProps(newVal);
-            },
-            deep: true,
-            immediate: true,
-        },
         fee: {
             handler(newVal) {
                 this.$emit('update:fee', newVal);
             },
         },
+    },
+    created() {
+        // feeBusParams
+        this.$watch(
+            () => {
+                const sequenceParamsArray = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
+                const txParamsList = sequenceParamsArray.map((item) => item.feeTxParams ?? item.txParams);
+
+                return {
+                    txParamsList,
+                    baseCoinAmount: this.$store.getters.baseCoinAmount,
+                    fallbackToCoinToSpend: true,
+                    isLocked: this.isFormSending || txParamsList.length === 0,
+                };
+            },
+            (newVal) => this.setFeeProps(newVal),
+            {deep: true, immediate: true},
+        );
     },
     methods: {
         handleProgressModalClose() {
