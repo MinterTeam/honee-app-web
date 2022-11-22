@@ -3,7 +3,7 @@ import getTitle from '~/assets/get-title.js';
 import Topup, {TOP_UP_NETWORK} from '~/components/Topup.vue';
 
 export default {
-    layout: 'onboarding',
+    layout: 'splash',
     components: {
         Topup,
     },
@@ -39,7 +39,13 @@ export default {
     },
     methods: {
         handleTopup(balance) {
-            this.$router.push(this.$i18nGetPreferredPath('/onboarding') + getTopupFinishQuery(balance.coinSymbol, balance.amount));
+            //@TODO success window not showed here
+            if (this.$store.state.authRedirectPath) {
+                this.$router.push(this.$i18nGetPreferredPath(this.$store.state.authRedirectPath));
+                this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
+            } else {
+                this.$router.push(this.$i18nGetPreferredPath('/onboarding') + getTopupFinishQuery(balance.coinSymbol, balance.amount));
+            }
         },
     },
 };

@@ -1,8 +1,10 @@
 <script>
-import cardList from '~/content/card-list.js';
+import cardList from '~/data/cards.js';
 import Card from '~/components/Card.vue';
+import CardHead from '~/components/CardHead.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
 import InvestmentList from '~/components/InvestmentList.vue';
+import PortfolioBattleTable from '~/components/PortfolioBattleTable.vue';
 import PortfolioLeaderboard from '~/components/PortfolioLeaderboard.vue';
 import PortfolioList from '~/components/PortfolioList.vue';
 
@@ -13,13 +15,32 @@ const BASE_CARD = {
     // LOTTERY: 'lottery',
 };
 
+/** @type {CardListItemRaw} */
+const TWITTER_CARD_HEAD = {
+    icon: '/img/logo-twitter.svg',
+    caption: 'Share to earn',
+    title: 'BEE',
+    stats: {
+        caption: 'Per action',
+        value: '1-500 BEE',
+    },
+    ru: {
+        stats: {
+            caption: 'За действие',
+        },
+    },
+};
+
 export default {
     BASE_CARD,
+    TWITTER_CARD_HEAD,
     cardList,
     components: {
         Card,
+        CardHead,
         AddressAssets,
         InvestmentList,
+        PortfolioBattleTable,
         PortfolioLeaderboard,
         PortfolioList,
     },
@@ -66,8 +87,6 @@ export default {
 <template>
     <div class="u-container--large">
         <AddressAssets/>
-
-        <PortfolioLeaderboard class="u-mt-25 u-hidden" limit="5"/>
 
         <PortfolioList class="u-mt-25" limit="3"/>
         <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio')">
@@ -134,6 +153,29 @@ export default {
                         </a>
                     </div>-->
                 </div>
+
+                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
+                    <div class="card card--action card--invert card--twitter card__content--small">
+                        <CardHead :card="$options.TWITTER_CARD_HEAD"/>
+                        <p class="card__action-description">{{ $td('Earn BEE by retweeting and liking on Twitter! Proceed to Telegram-bot for further instructions.', 'index.card-twitter-description') }}</p>
+                        <a class="button button--full u-mt-10" href="https://t.me/MinterContestBot" target="_blank">{{ $td('Share to earn', 'index.card-twitter-button') }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <PortfolioLeaderboard class="u-mt-25" limit="5"/>
+
+        <h2 class="u-h1 u-mt-25 u-mb-15">
+            {{ $td('Portfolio battle', `portfolio.battle-title`) }}
+        </h2>
+        <div class="card card__content">
+            <PortfolioBattleTable limit="5"/>
+
+            <div class="u-text-right u-mt-15">
+                <nuxt-link class="link--default" :to="$i18nGetPreferredPath('/portfolio/battle')">
+                    {{ $td('View all', 'portfolio.leaderboard-view-all') }}
+                </nuxt-link>
             </div>
         </div>
 

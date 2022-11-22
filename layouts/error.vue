@@ -36,7 +36,7 @@ export default {
 </script>
 
 <template>
-    <div class="error__container u-container--small">
+    <div class="error__container u-container u-container--small">
         <div class="error__section u-section">
             <h1 class="error__title">{{ $td('Error', 'error.title-error') }} {{ statusCode }}</h1>
             <p class="error__description" v-if="statusCode === 404 && !error.useMessage">{{ $td('Page not found', 'error.message-404') }}</p>

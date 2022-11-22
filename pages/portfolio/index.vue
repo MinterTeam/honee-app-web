@@ -4,13 +4,18 @@ import PortfolioList, {PORTFOLIO_LIST_TYPE} from '~/components/PortfolioList.vue
 
 export default {
     PORTFOLIO_LIST_TYPE,
+    layout(context) {
+        return context.store.getters.isAuthorized ? 'default' : 'splash-index';
+    },
     components: {
         BaseTabs,
         PortfolioList,
     },
     data() {
+        const queryTab = Object.values(PORTFOLIO_LIST_TYPE).includes(this.$route.query.tab) ? this.$route.query.tab : '';
+
         return {
-            selectedType: PORTFOLIO_LIST_TYPE.TOP,
+            selectedType: queryTab || PORTFOLIO_LIST_TYPE.DAILY7,
         };
     },
 };
@@ -26,8 +31,9 @@ export default {
             class="u-mb-15"
             v-model="selectedType"
             :tabs="[
-                {value: $options.PORTFOLIO_LIST_TYPE.TOP, label: $td('Top', 'portfolio.tabs-label-top')},
-                {value: $options.PORTFOLIO_LIST_TYPE.ALL, label: $td('All', 'portfolio.tabs-label-all')},
+                {value: $options.PORTFOLIO_LIST_TYPE.DAILY7, label: $td('Last 7 days', 'portfolio.tabs-label-7d')},
+                {value: $options.PORTFOLIO_LIST_TYPE.AWP, label: $td('Average weekly profit', 'portfolio.tabs-label-awp')},
+                {value: $options.PORTFOLIO_LIST_TYPE.APY, label: $td('APY', 'portfolio.tabs-label-apy')},
             ]"
             :reset-pages="true"
         />

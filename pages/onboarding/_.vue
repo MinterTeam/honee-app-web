@@ -3,7 +3,7 @@ import getTitle from '~/assets/get-title.js';
 import TheAction from '~/components/Action.vue';
 
 export default {
-    layout: 'onboarding',
+    layout: 'splash',
     components: {
         TheAction,
     },

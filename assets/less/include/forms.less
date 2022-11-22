@@ -14,7 +14,7 @@
 }
 .button--large {padding-top: 16px; padding-bottom: 16px;}
 .button--narrow {padding-inline: 12px;}
-//.button--medium {min-width: auto; width: 100%;}
+.button--medium {min-width: auto; width: 100%;}
 //.button--small {padding: 2px 8px; border-radius: 4px;}
 //.button--icon {padding-left: 48px;}
 //.button__icon {position: absolute; left: 28px; top: 50%; transform: translate(-50%, -50%);}
@@ -23,8 +23,11 @@
 /*.button__content {transition: 0.1s;}*/
 //.button--small {padding-left: 14px; padding-right: 14px;}
 @media (max-width: @breakpoint-small-down) {
-    .button--medium-mobile {min-width: auto; width: 100%;}
+    //.button--medium-mobile {min-width: auto; width: 100%;}
     .button--full-mobile {display: flex; width: 100%;}
+}
+@media (min-width: @breakpoint-small-up) {
+    .button--medium {min-width: 312px; width: auto;}
 }
 .button--main {
     color: #fff; background: @c-main; /*box-shadow: 0 2px 4px rgba(0,0,0,0.5);*/
@@ -50,8 +53,8 @@
 */
 .button--white {
     color: @c-main; background: #fff;
-    &:hover, &:focus {background: fade(@c-main, 20%);}
-    &:active {background: fade(@c-main, 40%);}
+    &:hover, &:focus {background: tint(@c-main, 80%);}
+    &:active {background: tint(@c-main, 60%);}
 }
 .button--gradient {
     @offset: 15px;
@@ -60,6 +63,14 @@
     &::before {content: ''; background: linear-gradient(100deg, #FF8A00 -@offset, #FF6C63 27%, #4099DA 66%, #FFB0C8 99%); position: absolute; z-index: -1; left: -@offset; top: 0; right: 0; bottom: 0; transition: 0.1s;}
     &:hover::before, &:focus::before {transform: translate(@offset, 0);}
     &:active::before {transform: translate(6px, 0);}
+}
+.button--garden {
+    @offset: 15px;
+    color: #fff; position: relative; z-index: 0; padding: 10px 20px; border: none;
+    &, &:hover, &:focus, &:active {background: none;}
+    &::before {content: ''; background: linear-gradient(93.67deg, #3B1A99 2.7%, #1F9AA2 32.65%, #4099DA 68.99%, #372D9A 100.39%); position: absolute; z-index: -1; left: 0; top: 0; right: 0; bottom: 0; transition: 0.15s;}
+    &:hover::before, &:focus::before {transform: scaleX(1.2);}
+    &:active::before {transform: scaleX(1.1);}
 }
 //.button--black {
 //    color: #fff; background: @c-black;
@@ -97,6 +108,12 @@
 //    &:hover, &:focus {color: @c-black; background: #fff;}
 //    &:active {color: @c-black; background: shade(#fff, 10%);}
 //}
+.button--telegram {
+    @color-tg: #68a9e5;
+    color: #fff; background: @color-tg;
+    &:hover, &:focus {background: tint(@color-tg, 15%);}
+    &:active {background: shade(@color-tg, 6%);}
+}
 
 .button-group {
     display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; margin-top: -10px; margin-left: -16px;
@@ -163,7 +180,7 @@
     &[disabled] {cursor: default;}
 }
 .h-field__select-icon {margin-right: 8px; border-radius: 50%;}
-.h-field__select-value {.h-field-input-text(); line-height: 20px; min-height: 24px; overflow: hidden; overflow-wrap: break-word;}
+.h-field__select-value {.h-field-input-text(); line-height: 20px; /*min-height: 24px;*/ overflow: hidden; overflow-wrap: break-word;}
 .h-field__select-icon-arrow {margin-left: 8px;}
 .h-field__input {
     .h-field-input-text(); /* fix line-height for fake-inputs (e.g. address) */ /*line-height: 20px; min-height: @h-field-input-height;*/ width: 100%; color: currentColor; padding: 0; background: transparent; border: none; overflow-wrap: break-word;

@@ -27,7 +27,7 @@ const minterApi = new MinterApi({
 
 export const postTx = PostTx(minterApi);
 
-const estimateCache = new Cache({maxAge: 5 * 1000});
+const estimateCache = new Cache({ttl: 5 * 1000, max: 100});
 const _estimateCoinSell = (params, axiosOptions) => params.sellAll
     ? EstimateCoinSellAll(minterApi, {cache: estimateCache})(params, axiosOptions)
     : EstimateCoinSell(minterApi, {cache: estimateCache})(params, axiosOptions);
@@ -89,7 +89,7 @@ export function estimateCoinBuy(params, axiosOptions) {
     }
 }
 
-const coinCache = new Cache({maxAge: 1 * 60 * 1000});
+const coinCache = new Cache({ttl: 1 * 60 * 1000, max: 100});
 
 export const estimateTxCommission = new EstimateTxCommission(minterApi, {cache: estimateCache}, {cache: coinCache});
 

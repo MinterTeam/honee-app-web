@@ -22,7 +22,12 @@ export default ({ app, route, store }) => {
                 // don't return because no need to await it, follow in the background
                 followReferrer(foreignRefId, store.getters.privateKey)
                     .catch((error) => {
-                        console.log(error);
+                        // address not eligible to follow
+                        if (error.response.data.code === 'NEW_ADDRESS_ERROR') {
+                            store.commit('referral/clearForeignRefId');
+                        } else {
+                            console.log(error);
+                        }
                     });
             }
             // always clear after first authorization

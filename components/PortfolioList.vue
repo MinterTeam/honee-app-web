@@ -18,7 +18,7 @@ export default {
         /** @type {PORTFOLIO_LIST_TYPE}*/
         type: {
             type: String,
-            default: PORTFOLIO_LIST_TYPE.TOP,
+            default: PORTFOLIO_LIST_TYPE.RECOMMEND,
         },
         limit: {
             type: [Number, String],
@@ -51,11 +51,24 @@ export default {
         const address = this.$store.getters.address;
         const page = this.page || 1;
         const limit = this.limit;
+        let profitPeriod = Object.values(PORTFOLIO_PROFIT_PERIOD).includes(this.type) ? this.type : undefined;
+        let apyPeriod;
+        // if (this.type === PORTFOLIO_LIST_TYPE.TOP) {
+        //     profitPeriod = PORTFOLIO_PROFIT_PERIOD.AWP;
+        // }
+        // if (this.type === PORTFOLIO_LIST_TYPE.ALL) {
+        //     profitPeriod = PORTFOLIO_PROFIT_PERIOD.DAILY7;
+        // }
+        if (this.type === PORTFOLIO_LIST_TYPE.RECOMMEND) {
+            profitPeriod = PORTFOLIO_PROFIT_PERIOD.APY;
+            apyPeriod = 6;
+        }
         const listPromise = this.type === PORTFOLIO_LIST_TYPE.COPIED
             ? this.$store.dispatch('portfolio/fetchConsumerPortfolioList')
             : getPortfolioList({
                 owner: this.type === PORTFOLIO_LIST_TYPE.MANAGED ? address : undefined,
-                profitPeriod: this.type === PORTFOLIO_LIST_TYPE.ALL ? PORTFOLIO_PROFIT_PERIOD.DAILY7 : undefined,
+                profitPeriod,
+                apyPeriod,
                 limit,
                 page,
             });
@@ -90,11 +103,16 @@ export default {
             <template v-else-if="type === $options.PORTFOLIO_LIST_TYPE.COPIED">
                 {{ $td('Copied portfolios', `portfolio.list-copied-title`) }}
             </template>
+            <!--
             <template v-else-if="type === $options.PORTFOLIO_LIST_TYPE.ALL">
                 {{ $td('All portfolios', `portfolio.list-all-title`) }}
             </template>
-            <template v-else>
+            <template v-else-if="type === $options.PORTFOLIO_LIST_TYPE.TOP">
                 {{ $td('Top portfolios', `portfolio.list-top-title`) }}
+            </template>
+            -->
+            <template v-else-if="type === $options.PORTFOLIO_LIST_TYPE.RECOMMEND">
+                {{ $td('Recommended portfolios', `portfolio.list-recommend-title`) }}
             </template>
         </h2>
         <div v-if="$fetchState.pending" class="u-text-center">
@@ -107,6 +125,9 @@ export default {
         <div v-else-if="portfolioList.length === 0">
             <template v-if="type === $options.PORTFOLIO_LIST_TYPE.MANAGED || type === $options.PORTFOLIO_LIST_TYPE.COPIED">
                 {{ $td('You don\'t have any portfolios yet', 'portfolio.list-managed-empty') }}
+            </template>
+            <template v-else-if="type === $options.PORTFOLIO_LIST_TYPE.RECOMMEND">
+                {{ $td('Here will be shown recently updated profitable portfolios', 'portfolio.list-recommend-empty') }}
             </template>
             <template v-else>
                 Empty list

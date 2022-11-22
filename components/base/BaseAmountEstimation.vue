@@ -1,5 +1,6 @@
 <script>
 import {pretty, prettyExact, prettyPrecise} from '~/assets/utils.js';
+import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 
 const FORMAT_TYPE = {
@@ -9,7 +10,10 @@ const FORMAT_TYPE = {
 };
 
 export default {
-    components: {BaseLoader},
+    components: {
+        BaseCoinSymbol,
+        BaseLoader,
+    },
     FORMAT_TYPE,
     props: {
         amount: {
@@ -90,7 +94,7 @@ export default {
     <component :is="tag" class="information__item">
         <div class="information__coin">
             <img class="information__coin-icon" v-if="coinIconUrl" :src="coinIconUrl" width="20" height="20" alt="" role="presentation">
-            <div class="information__coin-symbol">{{ coin }}</div>
+            <BaseCoinSymbol class="information__coin-symbol">{{ coin }}</BaseCoinSymbol>
         </div>
         <div class="information__value">
             <BaseLoader class="information__loader" :is-loading="isLoading"/>

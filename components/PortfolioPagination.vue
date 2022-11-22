@@ -23,10 +23,13 @@ export default {
     },
     data() {
         return {
-            currentPage: this.paginationInfo.currentPage,
+            // currentPage: this.paginationInfo.currentPage,
         };
     },
     computed: {
+        currentPage() {
+            return this.paginationInfo.currentPage;
+        },
         hasPrev() {
             return this.currentPage > 1;
         },

@@ -1,10 +1,6 @@
 export default function({store}) {
-    if (process.server) {
+    if (process.server || !store.state.onLine) {
         return Promise.resolve();
-    }
-
-    if (!store.state.onLine) {
-        return;
     }
 
     // don't wait

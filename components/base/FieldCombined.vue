@@ -1,11 +1,13 @@
 <script>
 import checkEmpty from '~/assets/v-check-empty.js';
 import {COIN_TYPE} from '~/assets/variables.js';
+import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';
 import FieldCombinedBaseAmount from '~/components/base/FieldCombinedBaseAmount.vue';
 import FieldCombinedCoinDropdown from '~/components/base/FieldCombinedCoinDropdown.vue';
 
 export default {
     components: {
+        BaseCoinSymbol,
         FieldCombinedBaseAmount,
         FieldCombinedCoinDropdown,
     },
@@ -148,7 +150,7 @@ export default {
             <div class="h-field__title">{{ label }}</div>
             <button class="h-field__select-button u-semantic-button" type="button" @click="openDropdown()" :disabled="isSelectDisabled">
                 <img class="h-field__select-icon" :src="getIconUrl(coin)" width="24" height="24" alt="" role="presentation" v-if="coin">
-                <span class="h-field__select-value">{{ coin || $td('Select coin', 'form.select-coin') }}</span>
+                <BaseCoinSymbol class="h-field__select-value">{{ coin || $td('Select coin', 'form.select-coin') }}</BaseCoinSymbol>
                 <img class="h-field__select-icon-arrow" src="/img/icon-dropdown.svg" alt="" role="presentation" width="24" height="24" v-if="!isSelectDisabled">
             </button>
         </div>

@@ -6,13 +6,17 @@ import maxLength from 'vuelidate/src/validators/maxLength.js';
 import maxValue from 'vuelidate/src/validators/maxValue.js';
 import minValue from 'vuelidate/src/validators/minValue.js';
 import autosize from 'v-autosize';
+import {getOracleCoinList} from '~/api/hub.js';
 import {createPortfolio, updatePortfolio} from '~/api/portfolio.js';
+import {getAddressPremiumLevel} from '~/api/staking.js';
+import {NETWORK, MAINNET} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
+import customTokenList from '~/data/tokens.js';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
-import {getOracleCoinList} from '~/api/hub.js';
+import TelegramAuth from '~/components/TelegramAuth.vue';
 
 const MIN_COUNT = 2;
 const MAX_COUNT = 10;
@@ -24,7 +28,10 @@ const disabledTokens = [
     'HUBABUBA',
     'SQD',
 ];
-const disabledTokenMap = Object.fromEntries(disabledTokens.map((coinSymbol) => [coinSymbol, true]));
+const customDisabledTokenEntries = Object.entries(customTokenList)
+    .filter(([coinSymbol, tokenData]) => tokenData.hide)
+    .map(([coinSymbol, tokenData]) => [coinSymbol, true]);
+const disabledTokenMap = Object.fromEntries(customDisabledTokenEntries);
 
 export default {
     MIN_COUNT,
@@ -35,7 +42,7 @@ export default {
         BaseLoader,
         Modal,
         FieldCombined,
-
+        TelegramAuth,
     },
     directives: {
         autosize,
@@ -50,6 +57,7 @@ export default {
     data() {
         const initialCoins = this.portfolio?.coins.map((item) => {
             return {
+                //@TODO not loaded yet
                 symbol: this.$store.state.explorer.coinMapId[item.id]?.symbol,
                 allocation: item.allocation,
             };
@@ -71,6 +79,7 @@ export default {
             },
             // tokens available to use in portfolio
             tokenList: [],
+            premiumLevel: 0,
         };
     },
     validations() {
@@ -109,18 +118,40 @@ export default {
         isNew() {
             return !this.portfolio;
         },
+        hasAccess() {
+            if (!this.isNew) {
+                return true;
+            }
+            return this.premiumLevel > 0 || this.$store.getters['telegram/isAuthorized'];
+        },
         allocationSum() {
             return this.form.coinList.reduce((accumulator, item) => accumulator + Number(item.allocation), 0);
         },
     },
     fetch() {
-        return getOracleCoinList()
-            .then((tokenList) => {
-                tokenList = tokenList
-                    .map((item) => item.symbol)
-                    .filter((coinSymbol) => !disabledTokenMap[coinSymbol]);
-                this.tokenList = Object.freeze(tokenList);
-            });
+        const promiseList = [];
+        if (this.isNew) {
+            promiseList.push(this.$store.dispatch('telegram/fetchAuth'));
+            promiseList.push(
+                getAddressPremiumLevel(this.$store.getters.address)
+                    .then((level) => {
+                        this.premiumLevel = level;
+                    }),
+            );
+
+        }
+
+        if (NETWORK === MAINNET) {
+            const tokenListPromise = getOracleCoinList()
+                .then((tokenList) => {
+                    tokenList = tokenList
+                        .map((item) => item.symbol)
+                        .filter((coinSymbol) => !disabledTokenMap[coinSymbol]);
+                    this.tokenList = Object.freeze(tokenList);
+                });
+            promiseList.push(tokenListPromise);
+        }
+        return Promise.all(promiseList);
     },
     methods: {
         /**
@@ -128,7 +159,7 @@ export default {
          */
         managePortfolio(portfolio) {
             if (this.isNew) {
-                return createPortfolio(portfolio, this.$store.getters.privateKey);
+                return createPortfolio(portfolio, this.$store.getters.privateKey, this.$store.getters['telegram/authProof']);
             } else {
                 return updatePortfolio(this.portfolio.id, portfolio, this.$store.getters.privateKey);
             }
@@ -212,8 +243,15 @@ function getEmptyCoin() {
 </script>
 
 <template>
-    <div>
-        <form novalidate @submit.prevent="openConfirmation()">
+    <div class="card card--light-grey" :class="{'card--pop': hasAccess}">
+        <div class="card__content card__content--medium u-text-center" v-if="$fetchState.pending">
+            <BaseLoader :is-loading="true"/>
+        </div>
+        <form
+            class="card__content card__content--medium" novalidate
+            v-else-if="hasAccess"
+            @submit.prevent="openConfirmation()"
+        >
             <div class="form-row" v-for="(v$coin, index) in $v.form.coinList.$each.$iter" :key="index">
                 <FieldCombined
                     placeholder="0%"
@@ -307,6 +345,28 @@ function getEmptyCoin() {
             </div>
             <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the disclaimer in the footer.', 'form.read-understood') }}</p>
         </form>
+        <div class="card__content card__content--medium u-text-center" v-else>
+            <p>{{ $td('You need to be a Premium user or be logged in via Telegram to create your portfolio.', 'portfolio.create-requirements-description') }}</p>
+            <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath('/premium')">
+                <img class="button__icon" src="/img/icon-premium.svg" alt="" role="presentation" width="24" height="24">
+                {{ $t('premium.activate-title') }}
+            </nuxt-link>
+            <p class="u-mt-10">{{ $td('or', 'common.or') }}</p>
+            <TelegramAuth class="u-mt-10" reason="create-portfolio"/>
+        </div>
+        <div class="card__content card__content--medium u-text-medium">
+            <h3 class="u-h5 u-mb-05">{{ $td('Terms', 'common.terms') }}</h3>
+            <ul v-if="$i18n.locale === 'en'" class="list-simple list-simple--small">
+                <li>You can create only 1 portfolio</li>
+                <li>You can edit portfolio once a day</li>
+                <li>You will accrue success fee from users exiting your portfolio with profit (only for portfolio managers with Premium accounts)</li>
+            </ul>
+            <ul v-if="$i18n.locale === 'ru'" class="list-simple list-simple--small">
+                <li>Вы можете создать только 1 портфель</li>
+                <li>Вы можете редактировать портфель раз в сутки</li>
+                <li>Вы будете получать награду от прибыли пользователей, выходящих из вашего портфеля (только для управляющих с Premium-аккаунтами)</li>
+            </ul>
+        </div>
 
 
         <!-- Confirm Modal -->
@@ -367,7 +427,7 @@ function getEmptyCoin() {
                 </template>
             </p>
 
-            <nuxt-link class="button button--main button--full" :to="$i18nGetPreferredPath(`/portfolio/${serverSuccess.id}`)" target="_blank" v-if="serverSuccess">
+            <nuxt-link class="button button--main button--full" :to="$i18nGetPreferredPath(`/portfolio/${serverSuccess.id}`)" v-if="serverSuccess">
                 {{ $td('View portfolio', 'portfolio.manage-success-view') }}
             </nuxt-link>
             <button class="button button--ghost-main button--full" type="button" @click="isSuccessModalVisible = false">

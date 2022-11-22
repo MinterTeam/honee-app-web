@@ -2,11 +2,16 @@
 import {getPortfolio} from '~/api/portfolio.js';
 import {shortHashFilter} from '~/assets/utils.js';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
+import AuthButtons from '~/components/layout/AuthButtons.vue';
 import PortfolioHead from '~/components/PortfolioHead.vue';
 
 export default {
+    layout(context) {
+        return context.store.getters.isAuthorized ? 'default' : 'splash-index';
+    },
     components: {
         BaseAmountEstimation,
+        AuthButtons,
         PortfolioHead,
     },
     asyncData({route, store, error}) {
@@ -14,7 +19,9 @@ export default {
             return error({status: 404, message: 'Page not found'});
         }
 
-        store.dispatch('portfolio/fetchConsumerPortfolioList');
+        if (store.getters.isAuthorized) {
+            store.dispatch('portfolio/fetchConsumerPortfolioList');
+        }
 
         return getPortfolio(route.params.id)
             .then((portfolio) => {
@@ -38,8 +45,11 @@ export default {
                 };
             });
         },
-        isOwn() {
+        isOwnManaged() {
             return this.portfolio.owner === this.$store.getters.address;
+        },
+        showProfitTabs() {
+            return !this.portfolio.isolatedAddress && this.isOwnManaged;
         },
         consumerPortfolio() {
             return this.$store.getters['portfolio/consumerPortfolioMap'][this.portfolio?.id];
@@ -52,10 +62,10 @@ export default {
 </script>
 
 <template>
-    <div class="u-section u-container u-container--small">
-        <div class="card card--invert">
+    <div class="u-section--only u-container u-container--small">
+        <div class="card card--invert" v-if="portfolio">
             <div class="card__content card__content--medium">
-                <PortfolioHead :portfolio="portfolio"/>
+                <PortfolioHead :portfolio="portfolio" :is-single-view="true"/>
                 <p class="card__action-description u-text-break" v-if="portfolio.description">{{ portfolio.description }}</p>
             </div>
 
@@ -76,13 +86,13 @@ export default {
                     </div>
 
                     <div class="form-row">
-                        <div class="u-grid u-grid--vertical-margin">
+                        <div class="u-grid u-grid--vertical-margin" v-if="$store.getters.isAuthorized">
                             <div class="u-cell">
                                 <nuxt-link class="button button--main button--full" :to="$i18nGetPreferredPath(`/portfolio/${portfolio.id}/buy`)">
                                     {{ $td('Buy', 'portfolio.buy-button') }}
                                 </nuxt-link>
                             </div>
-                            <div class="u-cell u-cell--auto-grow" v-if="isOwn">
+                            <div class="u-cell u-cell--auto-grow" v-if="isOwnManaged">
                                 <nuxt-link class="button button--ghost-main button--full" :to="$i18nGetPreferredPath(`/portfolio/${portfolio.id}/edit`)">
                                     {{ $td('Edit', 'portfolio.manage-edit-button') }}
                                 </nuxt-link>
@@ -93,16 +103,25 @@ export default {
                                 </nuxt-link>
                             </div>
                         </div>
+                        <AuthButtons v-else button-class="button--main"/>
                     </div>
                 </div>
 
 
-                <!--
-                <div class="card__content card__content&#45;&#45;medium u-text-medium">
-                    <h3 class="u-h5 u-mb-05">Terms & Conditions</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Massa pellentesque donec in mus mi massa fusce netus. Nec gravida faucibus pellentesque aliquam consequat sed. Dignissim suspendisse blandit lacinia amet. Cras tincidunt nec maecenas eleifend nisl tristique volutpat enim habitant.</p>
+                <div class="card__content card__content--medium u-text-medium" v-if="showProfitTabs">
+                    <h3 class="u-h5 u-mb-05">{{ $td('Portfolio metrics', 'portfolio.legend-title') }}</h3>
+                    <p class="u-text-muted">
+                        {{ $td('APY - projected yearly yield based on last 10 updates', 'portfolio.legend-apy') }}
+                        <br>
+                        {{ $td('AWP - average weekly profit for last 5 calendar weeks', 'portfolio.legend-awp') }}
+                        <br>
+                        {{ $td('LIVE - profit from the start of the week', 'portfolio.legend-live') }}
+                        <br>
+                        {{ $td('1W - profit for the last calendar week', 'portfolio.legend-1w') }}
+                        <br>
+                        {{ $td('7D - profit for the last 7 days', 'portfolio.legend-7d') }}
+                    </p>
                 </div>
-                -->
             </div>
         </div>
     </div>

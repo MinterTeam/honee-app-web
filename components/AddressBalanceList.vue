@@ -1,11 +1,13 @@
 <script>
 import {pretty} from '~/assets/utils.js';
+import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';
 
 const SHORT_COUNT = 5;
 
 export default {
     SHORT_COUNT,
     components: {
+        BaseCoinSymbol,
     },
     data() {
         return {
@@ -39,7 +41,7 @@ export default {
             <div class="wallet__coin-row" v-for="coinItem in visibleCoinList" :key="coinItem.coin.id">
                 <div class="wallet__coin">
                     <img class="wallet__coin-icon" :src="getCoinIconUrl(coinItem.coin.symbol)" width="24" height="24" alt="" role="presentation">
-                    <span class="wallet__coin-name">{{ coinItem.coin.symbol }}</span>
+                    <BaseCoinSymbol class="wallet__coin-name">{{ coinItem.coin.symbol }}</BaseCoinSymbol>
                     <img class="wallet__coin-verified" src="/img/icon-verified.svg" width="12" height="12" alt="" role="presentation" v-if="coinItem.coin.verified">
                 </div>
                 <div class="wallet__coin-balance">

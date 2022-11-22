@@ -3,6 +3,7 @@ export const TESTNET = 'testnet';
 export const NETWORK = process.env.APP_ENV === MAINNET ? MAINNET : TESTNET;
 export const BASE_TITLE = 'Honee';
 export const BASE_DESCRIPTION = '';
+export const BASE_URL_PREFIX = '';
 export const ACCOUNTS_API_URL = process.env.APP_ACCOUNTS_API_URL;
 export const GATE_API_URL = process.env.APP_GATE_API_URL;
 export const EXPLORER_API_URL = process.env.APP_EXPLORER_API_URL;
@@ -13,6 +14,8 @@ export const CHAINIK_API_URL = 'https://chainik.io/json/';
 export const FARM_API_URL = 'https://yf.chainik.io/api/v1/';
 export const CARD_TO_MINTER_HOST = process.env.APP_CARD_TO_MINTER_HOST;
 export const CARD_TO_MINTER_API_URL = 'https://card-api.minter.trade/v1/';
+export const TELEGRAM_LEGACY_AUTH_API_URL = 'https://telegram-auth.honee.app/api/v1/';
+export const TELEGRAM_AUTH_API_URL = 'https://premium-bot.honee.app/api/v1/';
 export const STAKING_API_URL = process.env.APP_STAKING_API_URL;
 export const REFERRAL_API_URL = process.env.APP_REFERRAL_API_URL;
 export const PORTFOLIO_API_URL = process.env.APP_PORTFOLIO_API_URL;
@@ -37,6 +40,10 @@ export const CHAIN_ID = NETWORK === MAINNET ? 1 : 2;
 export const LANGUAGE_COOKIE_KEY = 'minter-language';
 export const I18N_ROUTE_NAME_SEPARATOR = '___';
 
+export const PREMIUM_STAKE_PROGRAM_ID = 23;
+export const PREMIUM_STAKE_LOCK_DURATION = 31536000; // 5 years
+export const SUCCESS_FEE_TEAM_ADDRESS = 'Mx5a67a1f59138609f502a0e16e210d70bad03a745';
+export const SUCCESS_FEE_FUND_ADDRESS = 'Mx2d347ede679b8c6b91d272c9aade5a716bda4b2f';
 export const STAKE_RECALCULATE_BLOCK_COUNT = 720;
 export const DASHBOARD_URL = '/';
 

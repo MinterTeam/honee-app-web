@@ -1,7 +1,11 @@
 <script>
 import {EXPLORER_HOST} from '~/assets/variables.js';
+import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';
 
 export default {
+    components: {
+        BaseCoinSymbol,
+    },
     props: {
         pool: {
             type: Object,
@@ -28,6 +32,8 @@ export default {
 
 <template>
     <nuxt-link class="link--default" :to="poolUrl">
-        {{ getCoinSymbol(pool.coin0) }} / {{ getCoinSymbol(pool.coin1) }}
+        <BaseCoinSymbol>{{ getCoinSymbol(pool.coin0) }}</BaseCoinSymbol>
+        /
+        <BaseCoinSymbol>{{ getCoinSymbol(pool.coin1) }}</BaseCoinSymbol>
     </nuxt-link>
 </template>
