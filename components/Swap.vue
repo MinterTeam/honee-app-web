@@ -9,6 +9,7 @@ import BaseLoader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import SwapEstimation from '~/components/base/SwapEstimation.vue';
+import SwapPriceImpact from '~/components/SwapPriceImpact.vue';
 
 export default {
     components: {
@@ -17,6 +18,7 @@ export default {
         Modal,
         FieldCombined,
         SwapEstimation,
+        SwapPriceImpact,
     },
     emits: [
         'success',
@@ -289,6 +291,14 @@ export default {
                 </template>
             </div>
 
+            <SwapPriceImpact
+                class="form-row"
+                :coin-to-sell="form.coinFrom"
+                :value-to-sell="form.sellAmount"
+                :coin-to-buy="form.coinTo"
+                :value-to-buy="form.buyAmount"
+            />
+
             <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('The final amount depends on&nbsp;the&nbsp;exchange rate at&nbsp;the&nbsp;moment of&nbsp;transaction.', 'form.swap-confirm-note') }}</p>
 
             <div class="form-row">
@@ -358,6 +368,14 @@ export default {
                 <div class="u-mt-10 u-fw-700" v-if="fee.isHighFee"><span class="u-emoji">⚠️</span> {{ $td('Transaction requires high fee.', 'form.tx-fee-high') }}</div>
                 -->
             </div>
+
+            <SwapPriceImpact
+                class="form-row"
+                :coin-to-sell="form.coinFrom"
+                :value-to-sell="form.sellAmount"
+                :coin-to-buy="form.coinTo"
+                :value-to-buy="form.buyAmount"
+            />
 
             <div class="form-row u-text-muted u-text-small u-text-center">
                 * {{ $td('The final amount depends on&nbsp;the&nbsp;exchange rate at&nbsp;the&nbsp;moment of&nbsp;transaction.', 'form.swap-confirm-note') }}

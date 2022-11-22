@@ -5,16 +5,10 @@ import minLength from 'vuelidate/src/validators/minLength';
 import maxLength from 'vuelidate/src/validators/maxLength';
 import minValue from 'vuelidate/src/validators/minValue.js';
 import maxValue from 'vuelidate/src/validators/maxValue.js';
-import autosize from 'v-autosize';
-import {FEE_PRECISION_SETTING} from 'minter-js-sdk/src/api/estimate-tx-commission.js';
-import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import {convertToPip} from 'minterjs-util/src/converter.js';
 import Big from '~/assets/big.js';
-import checkEmpty from '~/assets/v-check-empty.js';
-import {getBlock} from '~/api/explorer.js';
 import {getTokenSymbolForNetwork} from '~/api/hub.js';
-import {pretty, getDateAmerican, getTimeDistance} from '~/assets/utils.js';
-import {HUB_NETWORK, HUB_CHAIN_DATA, HUB_MINTER_MULTISIG_ADDRESS, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
+import {pretty} from '~/assets/utils.js';
+import {HUB_NETWORK, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
@@ -23,18 +17,15 @@ import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAm
 import TxSequenceWithSwapForm from '~/components/base/TxSequenceWithSwapForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
+import SwapPriceImpact from '~/components/SwapPriceImpact.vue';
 
 
 export default {
-    TX_TYPE,
     components: {
         TxSequenceWithSwapForm,
         BaseAmountEstimation,
         FieldCombined,
-    },
-    directives: {
-        checkEmpty,
-        autosize,
+        SwapPriceImpact,
     },
     mixins: [validationMixin],
     emits: [
@@ -382,6 +373,14 @@ export default {
                     />
                 </div>
 
+                <SwapPriceImpact
+                    class="form-row"
+                    :coin-to-sell="form.coinToSell"
+                    :value-to-sell="form.valueToSell"
+                    :coin-to-buy="form.coinToBuy"
+                    :value-to-buy="depositAmountToReceive"
+                />
+
 
 
             </template>
@@ -397,11 +396,19 @@ export default {
                 </h2>
             </template>
 
-<!--            <template v-slot:confirm-modal-body>-->
-<!--                <div class="information form-row">-->
-<!--                    -->
-<!--                </div>-->
-<!--            </template>-->
+            <template v-slot:confirm-modal-body>
+                <!--<div class="information form-row">-->
+                <!--    -->
+                <!--</div>-->
+
+                <SwapPriceImpact
+                    class="form-row"
+                    :coin-to-sell="form.coinToSell"
+                    :value-to-sell="form.valueToSell"
+                    :coin-to-buy="form.coinToBuy"
+                    :value-to-buy="depositAmountToReceive"
+                />
+            </template>
         </TxSequenceWithSwapForm>
     </div>
 </template>

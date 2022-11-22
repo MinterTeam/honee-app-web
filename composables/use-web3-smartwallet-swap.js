@@ -69,6 +69,8 @@ export default function useWeb3SmartWalletSwap() {
                     state.toTokenAmount = '';
                     state.isSmartWalletSwapParamsLoading = false;
                 });
+        } else {
+            state.toTokenAmount = '';
         }
     });
 
