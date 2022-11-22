@@ -1,43 +1,32 @@
-import { ref, reactive, computed, watch } from '@vue/composition-api';
-import {findTokenInfo} from '~/api/hub.js';
+import { reactive, computed, watch } from '@vue/composition-api';
 import Big from '~/assets/big.js';
-import {BSC_CHAIN_ID, ETHEREUM_CHAIN_ID, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+import {BSC_CHAIN_ID, ETHEREUM_CHAIN_ID} from '~/assets/variables.js';
 import {wait} from '~/assets/utils/wait.js';
 import CancelError from '~/assets/utils/error-cancel.js';
 import useWeb3Balance from '~/composables/use-web3-balance.js';
+import useHubToken from '~/composables/use-hub-token.js';
 
 const { web3Balance, web3Allowance, getBalance, getAllowance} = useWeb3Balance();
 
 export default function useWeb3TokenBalance() {
+    const {tokenData, tokenContractAddress, tokenDecimals, isNativeToken, setHubTokenProps} = useHubToken();
+
     const props = reactive({
         accountAddress: '',
         chainId: 0,
         tokenSymbol: '',
-        /** @type Array<HubCoinItem> */
-        hubCoinList: [],
     });
 
     /**
-     * @param {{tokenSymbol?: string, accountAddress?: string, chainId?: number, hubCoinList?: Array<HubCoinItem>}} newProps
+     * @param {{tokenSymbol?: string, accountAddress?: string, chainId?: number}} newProps
      */
     function setProps(newProps) {
         Object.assign(props, newProps);
+        setHubTokenProps(newProps);
     }
 
 
-    function getWrappedNativeContractAddress() {
-        return HUB_CHAIN_BY_ID[props.chainId]?.wrappedNativeContractAddress;
-    }
 
-    /**
-     * @type {import('@vue/composition-api').ComputedRef<TokenInfo.AsObject>}
-     */
-    const tokenData = computed(() => {
-        return findTokenInfo(props.hubCoinList, props.tokenSymbol, props.chainId);
-    });
-    const tokenContractAddress = computed(() => tokenData.value?.externalTokenId.toLowerCase() || '');
-    const tokenDecimals = computed(() => tokenData.value ? Number(tokenData.value.externalDecimals) : undefined);
-    const isNativeToken = computed(() => tokenContractAddress.value === getWrappedNativeContractAddress());
     const nativeBalance = computed(() => {
         if (isNativeToken.value) {
             return web3Balance[props.chainId]?.[0] || 0;
@@ -188,16 +177,12 @@ export default function useWeb3TokenBalance() {
 
     return {
         // computed
-        tokenData,
-        tokenContractAddress,
-        tokenDecimals,
-        isNativeToken,
         nativeBalance,
         wrappedBalance,
         balance,
         tokenAllowance,
 
-        setTokenProps: setProps,
+        setWeb3TokenProps: setProps,
         updateTokenBalance,
         updateTokenAllowance,
         waitEnoughTokenBalance,

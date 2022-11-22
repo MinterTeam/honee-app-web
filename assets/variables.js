@@ -23,6 +23,7 @@ export const HUB_ETHEREUM_CONTRACT_ADDRESS = process.env.APP_HUB_ETHEREUM_CONTRA
 export const HUB_BSC_CONTRACT_ADDRESS = process.env.APP_HUB_BSC_CONTRACT_ADDRESS;
 export const HUB_MINTER_MULTISIG_ADDRESS = process.env.APP_HUB_MINTER_MULTISIG_ADDRESS;
 export const HUB_API_URL = process.env.APP_HUB_API_URL;
+export const HUB_DEPOSIT_PROXY_API_URL = process.env.APP_HUB_API_URL + 'deposit-proxy/';
 export const ETHEREUM_API_URL = process.env.APP_ETHEREUM_API_URL;
 export const BSC_API_URL = process.env.APP_BSC_API_URL;
 export const ETHEREUM_CHAIN_ID = NETWORK === MAINNET ? 1 : 3;
@@ -31,8 +32,12 @@ export const ETHERSCAN_API_URL = NETWORK === MAINNET ? 'https://api.etherscan.io
 export const ETHERSCAN_API_KEY = 'I3VTWM2AX8BXS2ZX1FYRXINCWHQVVGEBJM';
 export const ETHERSCAN_HOST = NETWORK === MAINNET ? 'https://etherscan.io' : 'https://ropsten.etherscan.io';
 export const BSCSCAN_HOST = NETWORK === MAINNET ? 'https://bscscan.com' : 'https://testnet.bscscan.com';
+export const ONE_INCH_API_URL = 'https://api.1inch.io/v5.0/';
 export const WETH_CONTRACT_ADDRESS = NETWORK === MAINNET ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' : '0x0a180a76e4466bf68a7f86fb029bed3cccfaaac5';// '0xc778417e063141139fce010982780140aa0cd5ab';
 export const WBNB_CONTRACT_ADDRESS = NETWORK === MAINNET ? '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c' : '0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd';
+export const HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS = '0x0C9B820C0877340333E874AE70395Da7353E7cA3';
+export const SMART_WALLET_FACTORY_CONTRACT_ADDRESS = "0x7F3C8d5363B44875001Fa2A63A7dB6FCb8BEE989";
+export const SMART_WALLET_RELAY_MINTER_ADDRESS = "Mxc9b1b39f4c94b1bcbf68c1beba97ab84f7763cf0";
 export const BASE_COIN = NETWORK === MAINNET ? 'BIP' : 'MNT';
 export const COIN_NAME = BASE_COIN;
 export const CHAIN_ID = NETWORK === MAINNET ? 1 : 2;
@@ -68,16 +73,20 @@ export const COIN_TYPE = {
  * @readonly
  * @enum {string}
  */
-export const HUB_CHAIN_ID = {
+export const HUB_NETWORK = {
     ETHEREUM: 'ethereum',
     BSC: 'bsc',
     MINTER: 'minter',
 };
 
-export const HUB_NETWORK = HUB_CHAIN_ID;
+/**
+ * @deprecated
+ * @type {HUB_NETWORK}
+ */
+export const HUB_CHAIN_ID = HUB_NETWORK;
 
 /**
- * @typedef {{coinSymbol: string, name: string, shortName: string, chainId: number, hubChainId: HUB_CHAIN_ID, apiUrl: string, explorerHost: string, hubContractAddress: string, wrappedNativeContractAddress: string}} HubChainDataItem
+ * @typedef {{coinSymbol: string, name: string, shortName: string, chainId: number, hubChainId: HUB_CHAIN_ID, hubNetworkSlug: HUB_CHAIN_ID, apiUrl: string, explorerHost: string, hubContractAddress: string, wrappedNativeContractAddress: string}} HubChainDataItem
  */
 
 /**
@@ -85,23 +94,25 @@ export const HUB_NETWORK = HUB_CHAIN_ID;
  * @type {Object.<string, HubChainDataItem>}
  */
 export const HUB_CHAIN_DATA = {
-    [HUB_CHAIN_ID.ETHEREUM]: {
+    [HUB_NETWORK.ETHEREUM]: {
         name: 'Ethereum',
         shortName: 'Ethereum',
         coinSymbol: 'ETH',
         chainId: ETHEREUM_CHAIN_ID,
-        hubChainId: HUB_CHAIN_ID.ETHEREUM,
+        hubChainId: HUB_NETWORK.ETHEREUM,
+        hubNetworkSlug: HUB_NETWORK.ETHEREUM,
         apiUrl: ETHEREUM_API_URL,
         explorerHost: ETHERSCAN_HOST,
         hubContractAddress: HUB_ETHEREUM_CONTRACT_ADDRESS.toLowerCase(),
         wrappedNativeContractAddress: WETH_CONTRACT_ADDRESS.toLowerCase(),
     },
-    [HUB_CHAIN_ID.BSC]: {
+    [HUB_NETWORK.BSC]: {
         name: 'Binance Smart Chain',
         shortName: 'BSC',
         coinSymbol: 'BNB',
         chainId: BSC_CHAIN_ID,
-        hubChainId: HUB_CHAIN_ID.BSC,
+        hubChainId: HUB_NETWORK.BSC,
+        hubNetworkSlug: HUB_NETWORK.BSC,
         apiUrl: BSC_API_URL,
         explorerHost: BSCSCAN_HOST,
         hubContractAddress: HUB_BSC_CONTRACT_ADDRESS.toLowerCase(),
@@ -140,6 +151,25 @@ export const HUB_DEPOSIT_TX_PURPOSE = {
     OTHER: 'Other',
 };
 
+export const HUB_COIN_DATA = {
+    ETH: {
+        testnetSymbol: 'TESTETH',
+        smallAmount: 0.0001,
+    },
+    BNB: {
+        testnetSymbol: 'TESTBNB',
+        smallAmount: 0.001,
+    },
+    USDTE: {
+        testnetSymbol: 'USDC',
+        smallAmount: 0.1,
+    },
+    HUB: {
+        testnetSymbol: 'TESTHUB',
+        smallAmount: 0.01,
+    },
+};
+
 /**
  * Order matters
  * @enum {string}
@@ -154,6 +184,14 @@ export const HUB_BUY_STAGE = {
     WAIT_BRIDGE: 'wait_bridge',
     SWAP_MINTER: 'swap_minter',
     FINISH: 'finish',
+};
+
+/**
+ * @enum {string}
+ */
+export const HUB_WITHDRAW_SPEED = {
+    MIN: 'min',
+    FAST: 'fast',
 };
 
 /**

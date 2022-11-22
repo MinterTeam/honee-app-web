@@ -12,6 +12,7 @@ export default {
         'title-swap-combined': 'Swap {coin0} {conjunction} {coin1}',
         'title-swap-coin0-empty': 'coins',
         'title-swap-conjunction': 'for',
+        'title-swap-bsc': 'Swap via BSC',
         'title-send': 'Send coins',
         'title-win': 'Win',
         'title-farm': 'Yield farm',
@@ -26,7 +27,7 @@ export default {
         'activate-title': 'Become a Premium user',
     },
     portfolio: {
-        'warning-price-impact-description': 'You will lose ≈{impact}% of coins because pools involved in swaps have low liquidity. Try to lower the spending amount.',
+        'warning-price-impact-description': 'You will lose ≈{impact}% of coins because of fees and/or low liquidity pools involved in swaps. Try to change the spending amount.',
     },
     form: {
         'delegation-delegate-confirm-note': 'Note: in case of unbond, your coins will return to your address in approximately <strong>30&nbsp;days</strong> (518&#x202F;400 blocks) and will not be generating rewards during this&nbsp;period.',
