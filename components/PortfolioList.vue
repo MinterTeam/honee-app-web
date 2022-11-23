@@ -50,7 +50,7 @@ export default {
     fetch() {
         const address = this.$store.getters.address;
         const page = this.page || 1;
-        const limit = this.limit;
+        let limit = this.limit;
         let profitPeriod = Object.values(PORTFOLIO_PROFIT_PERIOD).includes(this.type) ? this.type : undefined;
         let apyPeriod;
         // if (this.type === PORTFOLIO_LIST_TYPE.TOP) {
@@ -59,6 +59,9 @@ export default {
         // if (this.type === PORTFOLIO_LIST_TYPE.ALL) {
         //     profitPeriod = PORTFOLIO_PROFIT_PERIOD.DAILY7;
         // }
+        if (this.type === PORTFOLIO_LIST_TYPE.APY) {
+            limit = 100;
+        }
         if (this.type === PORTFOLIO_LIST_TYPE.RECOMMEND) {
             profitPeriod = PORTFOLIO_PROFIT_PERIOD.APY;
             apyPeriod = 6;
