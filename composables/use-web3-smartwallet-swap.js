@@ -2,6 +2,7 @@ import {reactive, computed, watch, toRefs} from '@vue/composition-api';
 import {fromErcDecimals, toErcDecimals} from '~/api/web3.js';
 // import {buildTxForSwap, getQuoteForSwap} from '~/api/1inch.js';
 import {buildTxForSwap} from '~/api/hub-deposit-proxy.js';
+import {getErrorText} from '~/assets/server-error.js';
 import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
 import useHubToken from '~/composables/use-hub-token.js';
 
@@ -34,6 +35,7 @@ export default function useWeb3SmartWalletSwap() {
 
     const state = reactive({
         isSmartWalletSwapParamsLoading: false,
+        smartWalletSwapParamsError: '',
         toTokenAmount: '',
     });
 
@@ -58,6 +60,7 @@ export default function useWeb3SmartWalletSwap() {
             // console.log('oneInchSwapParams', oneInchSwapParams.value);
             // prepareTxParams();
             state.isSmartWalletSwapParamsLoading = true;
+            state.smartWalletSwapParamsError = '';
             buildTxForSwap(props.chainId, oneInchSwapParams.value)
                 .then((result) => {
                     state.isSmartWalletSwapParamsLoading = false;
@@ -68,6 +71,7 @@ export default function useWeb3SmartWalletSwap() {
                 .catch((error) => {
                     state.toTokenAmount = '';
                     state.isSmartWalletSwapParamsLoading = false;
+                    state.smartWalletSwapParamsError = getErrorText(error);
                 });
         } else {
             state.toTokenAmount = '';

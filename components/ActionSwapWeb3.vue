@@ -52,7 +52,7 @@ export default {
         });
         const {hubCoin: coinItem, tokenPrice: coinPrice, tokenData: externalToken, setHubTokenProps} = useHubToken();
         const {discountUpsidePercent, destinationFeeInCoin: coinFee, hubFeeRate, hubFeeRatePercent, hubFee, amountToReceive: withdrawAmountToReceive, minAmountToSend: minAmount, txParams: withdrawTxParams, feeTxParams: withdrawFeeTxParams, setWithdrawProps} = useWeb3Withdraw();
-        const {toTokenAmount: depositAmountToReceive, isSmartWalletSwapParamsLoading, smartWalletAddress, oneInchSwapParams, feeTxParams: smartWalletTxParams, prepareTxParams: prepareSmartWalletTxParams, setSmartWalletSwapProps} = useWeb3SmartWalletSwap();
+        const {toTokenAmount: depositAmountToReceive, isSmartWalletSwapParamsLoading, smartWalletSwapParamsError, smartWalletAddress, feeTxParams: smartWalletTxParams, prepareTxParams: prepareSmartWalletTxParams, setSmartWalletSwapProps} = useWeb3SmartWalletSwap();
 
         return {
             networkHubCoinList,
@@ -77,6 +77,7 @@ export default {
 
             depositAmountToReceive,
             isSmartWalletSwapParamsLoading,
+            smartWalletSwapParamsError,
             smartWalletAddress,
             // oneInchSwapParams,
             smartWalletTxParams,
@@ -123,6 +124,9 @@ export default {
                 // validAmount: isValidAmount,
                 minValue: (value) => minValue(this.minAmount)(value),
                 // maxValue: maxValue(this.maxAmount || 0),
+            },
+            depositAmountToReceive: {
+                required,
             },
         };
     },
@@ -321,8 +325,9 @@ export default {
                     />
 
                     <span class="form-field__error" v-if="v$estimation.coinToBuy.$dirty && !v$estimation.coinToBuy.required">{{ $td('Enter coin', 'form.coin-error-required') }}</span>
-                    <span class="form-field__error" v-if="v$estimation.valueToBuy.$dirty && !v$estimation.valueToBuy.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
+                    <span class="form-field__error" v-else-if="v$estimation.valueToBuy.$dirty && !v$estimation.valueToBuy.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
                     <span class="form-field__error" v-else-if="v$estimation.valueToBuy.$dirty && !v$estimation.valueToBuy.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
+                    <span class="form-field__error" v-else-if="smartWalletSwapParamsError">{{ smartWalletSwapParamsError }}</span>
                 </div>
 
                 <div class="information form-row" v-if="form.coinToSell && form.coinToBuy && form.valueToSell">
