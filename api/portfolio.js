@@ -7,12 +7,15 @@ import {toSnake} from '~/assets/utils/snake-case.js';
 import {arrayToMap} from '~/assets/utils/collection.js';
 import NotFoundError from '~/assets/utils/error-404.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
-import addEcdsaAuthInterceptor from '~/assets/axios-ecdsa-auth.js';
+import addEcdsaAuthInterceptor, {authHeaderKeyGenerator} from '~/assets/axios-ecdsa-auth.js';
 
 
 const instance = axios.create({
     baseURL: PORTFOLIO_API_URL,
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
+    adapter: cacheAdapterEnhancer(axios.defaults.adapter, {
+        enabledByDefault: false,
+        cacheKeyGenerator: authHeaderKeyGenerator,
+    }),
     // timeout: 5,
 });
 addToCamelInterceptor(instance);

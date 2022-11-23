@@ -56,6 +56,7 @@ export default {
 
             this.isModalVisible = true;
             timer = setInterval(() => {
+                // @TODO
                 this.$store.dispatch('telegram/fetchAuth')
                     .then(() => {
                         if (this.$store.getters['telegram/isAuthorized']) {
