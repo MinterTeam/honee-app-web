@@ -1,6 +1,5 @@
 import {waitCondition} from '~/assets/utils/wait.js';
-
-const GOATCOUNTER_HOST = 'https://counter-api.minter.network';
+import {GOATCOUNTER_HOST, GOATCOUNTER_SCRIPT_HASH} from '~/assets/variables.js';
 
 export default ({ app }) => {
     if (process.env.NODE_ENV !== 'production' || window.location.host !== 'my.honee.app') {
@@ -18,7 +17,7 @@ export default ({ app }) => {
 
     let script = document.createElement('script');
     script.async = true;
-    script.integrity = 'sha384-Y8F5Ua/zQ+NPBrMSdg9H3WezYaB49Qf3WJsv3LLUntxBwBV2r8pOWJWJ7X7l8DXX';
+    script.integrity = GOATCOUNTER_SCRIPT_HASH;
     script.crossOrigin = 'anonymous';
     script.src = `${GOATCOUNTER_HOST}/count.js`;
     document.body.appendChild(script);
