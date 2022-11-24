@@ -38,9 +38,15 @@ export default {
             return new Date(this.now).toISOString();
         },
         authString() {
+            if (!this.$store.getters.privateKey) {
+                return '';
+            }
             return getAuthString(this.timestamp, this.$store.getters.privateKey);
         },
         loginUrl() {
+            if (!this.$store.getters.privateKey) {
+                return '';
+            }
             return `https://premium-bot.honee.app/login?timestamp=${this.timestamp}&auth=${this.authString}&reason=${this.reason}`;
         },
     },
@@ -56,7 +62,6 @@ export default {
 
             this.isModalVisible = true;
             timer = setInterval(() => {
-                // @TODO
                 this.$store.dispatch('telegram/fetchAuth')
                     .then(() => {
                         if (this.$store.getters['telegram/isAuthorized']) {
