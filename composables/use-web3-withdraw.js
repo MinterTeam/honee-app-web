@@ -21,6 +21,8 @@ export default function useWeb3Withdraw(destinationAddress) {
         accountAddress: '',
         destinationAddress: destinationAddress || '',
         speed: HUB_WITHDRAW_SPEED.FAST,
+        // hash of some data of smart wallet tx (hashed by relay service)
+        smartWalletTx: '',
     });
 
 
@@ -155,6 +157,7 @@ export default function useWeb3Withdraw(destinationAddress) {
                 type: 'send_to_' + props.hubNetworkSlug,
                 // fee for destination network
                 fee: convertToPip(destinationFeeInCoin.value),
+                ...(props.smartWalletTx ? {smartWalletTx: props.smartWalletTx} : {}),
             }),
         };
     });

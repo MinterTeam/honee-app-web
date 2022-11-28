@@ -237,6 +237,19 @@ module.exports = {
                 include: /node_modules/,
                 type: "javascript/auto",
             });
+
+            // add ts support
+            config.resolve.extensions.push('.d.ts');
+            const babelLoaderIndex = config.module.rules.findIndex((item) => item.use?.[0].loader.includes('/babel-loader/'));
+            config.module.rules[babelLoaderIndex].test = /\.(js|mjs|jsx|ts|tsx)$/i;
+            // ts-loader doesn't work because of https://github.com/vuejs/vue-cli/issues/2132
+            // config.module.rules.push({
+            //     test: /\.tsx?$/,
+            //     loader: 'ts-loader',
+            //     options: {
+            //         transpileOnly: true,
+            //     },
+            // });
         },
         plugins: [
             new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
@@ -256,6 +269,12 @@ module.exports = {
             ],
             plugins: [
                 // '@babel/plugin-proposal-optional-chaining',
+                [
+                    "@babel/plugin-transform-typescript",
+                    {
+                        optimizeConstEnums: true,
+                    },
+                ],
             ],
             // prevent @babel/plugin-transform-runtime from inserting `import` statement into commonjs files (bc. it breaks webpack)
             sourceType: 'unambiguous',

@@ -52,7 +52,7 @@ export default {
         });
         const {hubCoin: coinItem, tokenPrice: coinPrice, tokenData: externalToken, setHubTokenProps} = useHubToken();
         const {discountUpsidePercent, destinationFeeInCoin: coinFee, hubFeeRate, hubFeeRatePercent, hubFee, amountToReceive: withdrawAmountToReceive, minAmountToSend: minAmount, txParams: withdrawTxParams, feeTxParams: withdrawFeeTxParams, setWithdrawProps} = useWeb3Withdraw();
-        const {toTokenAmount: depositAmountToReceive, isSmartWalletSwapParamsLoading, smartWalletSwapParamsError, smartWalletAddress, feeTxParams: smartWalletTxParams, prepareTxParams: prepareSmartWalletTxParams, setSmartWalletSwapProps} = useWeb3SmartWalletSwap();
+        const {amountEstimationLimitForRelayRewards: smartWalletRelayReward, amountToSellForSwapToHub, amountEstimationAfterSwapToHub: depositAmountToReceive, isSmartWalletSwapParamsLoading, smartWalletSwapParamsError, smartWalletAddress, /*feeTxParams: smartWalletTxParams,*/ buildTxListAndCallSmartWallet, setSmartWalletSwapProps} = useWeb3SmartWalletSwap();
 
         return {
             networkHubCoinList,
@@ -75,14 +75,16 @@ export default {
             withdrawFeeTxParams,
             setWithdrawProps,
 
+            smartWalletRelayReward,
+            amountToSellForSwapToHub,
             depositAmountToReceive,
             isSmartWalletSwapParamsLoading,
             smartWalletSwapParamsError,
             smartWalletAddress,
             // oneInchSwapParams,
-            smartWalletTxParams,
+            // smartWalletTxParams,
             setSmartWalletSwapProps,
-            prepareSmartWalletTxParams,
+            buildTxListAndCallSmartWallet,
         };
     },
     data() {
@@ -138,24 +140,17 @@ export default {
         externalTokenMainnetSymbol() {
             return this.hubChainData?.coinSymbol;
         },
-        externalTokenSymbol() {
+        externalNativeCoinSymbol() {
             return getTokenSymbolForNetwork(this.externalTokenMainnetSymbol);
         },
         isSelectedWithdrawCoin() {
-            return this.form.coinToSell === this.withdrawCoin;
+            return this.suggestionList.includes(this.form.coinToSell);
         },
         withdrawCoin() {
-            return this.externalTokenSymbol;
+            return this.isSelectedWithdrawCoin ? this.form.coinToSell : this.externalNativeCoinSymbol;
         },
         withdrawValue() {
-            const amount = this.isSelectedWithdrawCoin ? this.form.valueToSell : this.estimation;
-            return new Big(amount || 0).minus(this.smartWalletTotalFee).toString();
-        },
-        smartWalletTotalFee() {
-            //@TODO consider sending smartWalletTx before withdraw to know actual precise fee value
-            // 1 - minter swap, 2 - withdraw to smartWallet, 3 - send from smartWallet
-            const smartWalletTxIndex = 3 - 1;
-            return new Big(this.smartWalletTxParams.data.value).plus(this.fee.resultList?.[smartWalletTxIndex]?.value || 0).toString();
+            return this.isSelectedWithdrawCoin ? this.form.valueToSell : this.estimation;
         },
         sequenceParams() {
             const prepareWithdrawTxParams = this.isSelectedWithdrawCoin && !this.isUseMax ? undefined : (swapTx, prevPrepareGasCoin) => {
@@ -175,24 +170,37 @@ export default {
 
                 return {
                     data: {
-                        value: new Big(value).minus(this.smartWalletTotalFee).toString(),
+                        //@TODO withdrawValue (which is used to calculate smart-walet params) may be outdated and differ from this value
+                        value,
                     },
                 };
+            };
+
+            const prepareSmartWalletTx = () => {
+                return this.buildTxListAndCallSmartWallet()
+                    .then((result) => {
+                        const newPayload = JSON.parse(this.withdrawTxParams.payload);
+                        newPayload.smartWalletTx = result.hash;
+
+                        return {
+                            payload: JSON.stringify(newPayload),
+                        };
+                    });
             };
 
             return [
                 {
                     // refineFee is not needed if no 'prepare'
                     prepareGasCoinPosition: prepareWithdrawTxParams ? 'start' : 'skip',
-                    prepare: prepareWithdrawTxParams,
+                    prepare: [prepareWithdrawTxParams, prepareSmartWalletTx],
                     txParams: this.withdrawTxParams,
                     feeTxParams: this.withdrawFeeTxParams,
                 },
-                {
-                    prepareGasCoinPosition: 'skip',
-                    prepare: this.prepareSmartWalletTxParams,
-                    txParams: this.smartWalletTxParams,
-                },
+                // {
+                //     prepareGasCoinPosition: 'skip',
+                //     prepare: this.prepareSmartWalletTxParams,
+                //     txParams: this.smartWalletTxParams,
+                // },
             ];
         },
         suggestionList() {
@@ -227,6 +235,7 @@ export default {
                 accountAddress: this.$store.getters.address,
                 destinationAddress: this.smartWalletAddress,
                 speed: HUB_WITHDRAW_SPEED.FAST,
+                smartWalletTx: Array.from({length: 64}).fill('0').join(''),
             }),
             (newVal) => this.setWithdrawProps(newVal),
             {deep: true, immediate: true},
@@ -342,14 +351,6 @@ export default {
                         />
                     </template>
 
-                    <h3 class="information__title">Smart-wallet fee</h3>
-                    <BaseAmountEstimation
-                        :coin="withdrawCoin"
-                        :amount="smartWalletTotalFee"
-                        :hide-usd="true"
-                        format="pretty"
-                    />
-
                     <h3 class="information__title">Amount to withdraw to BSC</h3>
                     <BaseAmountEstimation
                         :coin="withdrawCoin"
@@ -359,10 +360,18 @@ export default {
                         format="pretty"
                     />
 
+                    <h3 class="information__title">Smart-wallet fee</h3>
+                    <BaseAmountEstimation
+                        :coin="withdrawCoin"
+                        :amount="smartWalletRelayReward"
+                        :hide-usd="true"
+                        format="pretty"
+                    />
+
                     <h3 class="information__title">Amount to sell in BSC</h3>
                     <BaseAmountEstimation
                         :coin="withdrawCoin"
-                        :amount="withdrawAmountToReceive"
+                        :amount="amountToSellForSwapToHub"
                         :hide-usd="true"
                         :is-loading="!v$estimation.isEstimationWaiting.finished"
                         format="pretty"

@@ -15,7 +15,7 @@ addToCamelInterceptor(instance);
  * build tx to proxy contract which will swap on 1inch and deposit result to Minter via Hub
  * @param {number|string} chainId
  * @param {OneInchExchangeControllerGetSwapParams&{destination: string, refundTo?: string}} swapParams
- * @return {Promise<Partial<OneInchSwapResponseDto>>}
+ * @return {Promise<{toTokenAmount: string, txList: Array<OneInchTx>, steps: object}>}
  */
 export function buildTxForSwap(chainId, swapParams) {
     return instance.get(`new/swap`, {
@@ -28,7 +28,7 @@ export function buildTxForSwap(chainId, swapParams) {
         .then((response) => {
             return {
                 ...response.data,
-                tx: response.data.steps[0].tx,
+                txList: response.data.steps.map((item) => item.tx),
             };
         });
 }

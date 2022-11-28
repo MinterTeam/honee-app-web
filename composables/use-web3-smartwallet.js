@@ -1,16 +1,16 @@
 import {reactive, computed} from '@vue/composition-api';
-import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import {PAYLOAD_MAX_LENGTH} from 'minterjs-util/src/variables.js';
+// import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
+// import {PAYLOAD_MAX_LENGTH} from 'minterjs-util/src/variables.js';
 import {web3Utils, web3Abi, getProviderByChain} from '~/api/web3.js';
-import {getTokenSymbolForNetwork} from '~/api/hub.js';
-import {postTx} from '~/api/gate.js';
+// import {getTokenSymbolForNetwork} from '~/api/hub.js';
+import {submitRelayTx} from '~/api/smart-wallet-relay.js';
 import smartWalletABI from '~/assets/abi-smartwallet.js';
 import smartWalletBin from '~/assets/abi-smartwallet-bin.js';
 import smartWalletFactoryABI from '~/assets/abi-smartwallet-factory.js';
-
-
+import Big from '~/assets/big.js';
 import {SMART_WALLET_RELAY_MINTER_ADDRESS, SMART_WALLET_FACTORY_CONTRACT_ADDRESS} from '~/assets/variables.js';
 
+export const RELAY_REWARD_AMOUNT = 0.01;
 
 export default function useWeb3SmartWallet() {
     const props = reactive({
@@ -25,6 +25,7 @@ export default function useWeb3SmartWallet() {
 
     const smartWalletAddress = computed(() => getSmartWalletAddress(props.evmAccountAddress));
     // tx params suitable for fee estimation (fake payload, need to prepare later)
+    /*
     const feeTxParams = computed(() => {
         const coin = getTokenSymbolForNetwork('BNB');
         return {
@@ -34,7 +35,7 @@ export default function useWeb3SmartWallet() {
                 to: SMART_WALLET_RELAY_MINTER_ADDRESS,
                 // @TODO 0.005 if wallet exists
                 // @TODO estimate precise value
-                value: '0.01',
+                value: RELAY_REWARD_AMOUNT,
                 coin,
             },
             gasCoin: coin,
@@ -42,7 +43,14 @@ export default function useWeb3SmartWallet() {
             payload: Array.from({length: PAYLOAD_MAX_LENGTH}).fill('0').join(''),
         };
     });
+    */
 
+    /**
+     * @param {Array<string>} txToList - list of recipients
+     * @param {Array<string>} txDataList - list of tx data
+     * @param {Array<string>} txValueList - list of wei values
+     * @return {Promise<SmartWalletRelaySubmitTxPayload>}
+     */
     async function preparePayload(txToList, txDataList, txValueList) {
         const web3Eth = getProviderByChain(props.chainId);
         const smartWalletFactoryContract = new web3Eth.Contract(smartWalletFactoryABI);
@@ -74,11 +82,15 @@ export default function useWeb3SmartWallet() {
         console.log('value', txValueList);
         console.log(callPayload);
 
-        return JSON.stringify({
-            "a": callDestination,
-            "d": hexToBase64(callPayload.slice(2)),
-            "gp": "5000000000", // gas price
-        });
+        const gasPrice = web3Utils.toWei('5', 'gwei');
+        const gasLimit = new Big(web3Utils.toWei(RELAY_REWARD_AMOUNT.toString(), 'ether')).div(gasPrice).round().toNumber();
+
+        return {
+            a: callDestination,
+            d: hexToBase64(callPayload.slice(2)),
+            gp: gasPrice,
+            gl: gasLimit,
+        };
 
         function hexToBase64(str) {
             return Buffer.from(str, 'hex').toString('base64');
@@ -91,48 +103,40 @@ export default function useWeb3SmartWallet() {
         }
     }
 
-    async function callSmartWallet(txToList, txDataList, txValueList) {
-        const payload = await preparePayload(txToList, txDataList, txValueList);
-        return postTx({
-            ...feeTxParams.value,
-                chainId: 1,
-                gasPrice: 1,
-                payload,
-            }, {privateKey: props.privateKey})
-            .then(async (tx) => {
-                console.log("Crosschain Call", tx);
-
-                return tx;
-
-
-                // wait for tx to execute
-                // let waiter = async function() {
-                //     if ((await web3Eth.getCode(smartWalletAddress.value)) !== '0x') {
-                //         if ((await smartWalletContract.methods.nonce().call()) > walletNonce) {
-                //             that.loading = false;
-                //             refresh();
-                //             return;
-                //         }
-                //     }
-                //
-                //     setTimeout(waiter, 1000);
-                // };
-                //
-                // waiter();
-
-            }).catch((error) => {
-            console.error(error);
-            // alert(error.response.data.error.message);
-            // that.loading = false;
-                throw error;
+    /**
+     * @param {Array<SmartWalletTxParams>} txList
+     * @return {Promise<SmartWalletRelaySubmitTxPayload>}
+     */
+    function preparePayloadFromTxList(txList) {
+        const toList = [];
+        const dataList = [];
+        const valueList = [];
+        txList.forEach((tx, index) => {
+            toList[index] = tx.to;
+            dataList[index] = tx.data;
+            valueList[index] = tx.value;
         });
+
+        return preparePayload(toList, dataList, valueList);
+    }
+
+    /**
+     * @param {Array<SmartWalletTxParams>} txList
+     * @return {Promise<SmartWalletRelaySubmitTxResult>}
+     */
+    function callSmartWallet(txList) {
+        return preparePayloadFromTxList(txList)
+            .then((payload) => {
+                return submitRelayTx(payload);
+            });
     }
 
     return {
         setSmartWalletProps: setProps,
         smartWalletAddress,
-        feeTxParams,
+        // feeTxParams,
         preparePayload,
+        preparePayloadFromTxList,
         callSmartWallet,
     };
 }
@@ -172,5 +176,10 @@ function getSmartWalletAddress(evmAccountAddress) {
     }
 }
 
-
+/**
+ * @typedef {object} SmartWalletTxParams
+ * @property {string} to
+ * @property {string} data
+ * @property {string} value
+ */
 
