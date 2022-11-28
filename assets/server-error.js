@@ -66,15 +66,15 @@ export function getValidationError(error, startErrorText = 'Error: ') {
 export function getErrorText(error, startErrorText = 'Error: ') {
     if (error.response?.data?.error || error.response?.data?.message) {
         // server error
-        let errorText = error.response.data.error?.message || error.response.data.message;
-        if (errorText.toLowerCase() === 'not possible to exchange') {
+        let errorText = error.response.data.error?.message || error.response.data.message || error.response.data.error;
+        if (errorText?.toLowerCase() === 'not possible to exchange') {
             const reason = error.response.data.error.data;
             errorText = `${errorText}. By reserves: ${reason.bancor}. By pools: ${reason.pool}`;
         }
         // don't add startErrorText if errorText contains 'error'
         let bothHasError;
         if (typeof startErrorText === 'string' && startErrorText.toLowerCase().indexOf('error') >= 0) {
-            if (errorText.toLowerCase().indexOf('error') >= 0) {
+            if (errorText?.toLowerCase().indexOf('error') >= 0) {
                 bothHasError = true;
             }
         }

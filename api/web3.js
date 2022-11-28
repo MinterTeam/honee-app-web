@@ -355,6 +355,34 @@ export function getTokenDecimals(tokenContractAddress, chainId, hubCoinList = []
 }
 
 /**
+ * @param {number} chainId
+ * @param {string} tokenContractAddress
+ * @param {string} accountAddress
+ * @param {string} spenderContractAddress
+ * @return {Promise<string>}
+ */
+export function getAllowance(chainId, tokenContractAddress, accountAddress, spenderContractAddress) {
+    const web3Eth = getProviderByChain(chainId);
+    return new web3Eth.Contract(erc20ABI, tokenContractAddress).methods.allowance(accountAddress, spenderContractAddress).call();
+}
+
+/**
+ * @param {string} tokenContractAddress
+ * @param {string} spenderContractAddress
+ * @return {{data: string, to, value: string}}
+ */
+export function buildApproveTx(tokenContractAddress, spenderContractAddress) {
+    const amountToUnlock = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+    const data = AbiEncoder(erc20ABI)('approve', spenderContractAddress, amountToUnlock);
+
+    return {
+        to: tokenContractAddress,
+        data,
+        value: '0',
+    };
+}
+
+/**
  * May be no transactions depending on the eth node settings
  * @param {string} address
  * @param {number} chainId
