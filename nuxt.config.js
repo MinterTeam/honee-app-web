@@ -94,6 +94,7 @@ module.exports = {
                     font-src 'self' data:;
                     base-uri 'none';
                     form-action 'none';
+                    object-src 'none';
                     frame-ancestors https://honee.app;
                     report-uri https://csp-report-collector.minter.network https://1ba68dd21788a2dfc5522a62c6674f25.report-uri.com/r/d/csp/enforce;
                     report-to default;

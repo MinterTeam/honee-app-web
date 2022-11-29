@@ -17,7 +17,7 @@ const instance = axios.create({
 const cache = new Cache({ttl: 10 * 60 * 1000, max: 100});
 /**
  * @param {Partial<ParaSwapPricesListParams & ParaSwapTransactionsRequestPayload>} swapParams
- * @return {Promise<{txList: Array<ParaSwapTransactionsBuildResponse>, swapLimit: string}>}
+ * @return {Promise<ParaSwapTransactionsBuildCombined>}
  */
 export async function buildTxForSwap(swapParams) {
     const {srcToken, srcDecimals, destToken, destDecimals, amount, side, network} = swapParams;
@@ -47,7 +47,7 @@ export async function buildTxForSwap(swapParams) {
     txList.push(swapTx);
 
     return {
-        swapLimit: getEstimationLimit(priceRoute, swapParams.side, swapParams.slippage),
+        swapLimit: calculateEstimationLimit(priceRoute, swapParams.side, swapParams.slippage),
         txList,
     };
 }
@@ -117,3 +117,8 @@ export function buildTransaction(chainId, txRequest) {
             return response.data;
         });
 }
+
+
+/**
+ * @typedef {{txList: Array<ParaSwapTransactionsBuildResponse>, swapLimit: string}} ParaSwapTransactionsBuildCombined
+ */
