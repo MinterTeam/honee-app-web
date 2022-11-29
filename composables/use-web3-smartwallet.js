@@ -1,14 +1,16 @@
 import {reactive, computed} from '@vue/composition-api';
 // import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 // import {PAYLOAD_MAX_LENGTH} from 'minterjs-util/src/variables.js';
-import {web3Utils, web3Abi, getProviderByChain} from '~/api/web3.js';
+import {web3Utils, web3Abi, getProviderByChain, toErcDecimals} from '~/api/web3.js';
+import {ParaSwapSwapSide} from '~/api/paraswap-models.d.ts';
+import {buildTxForSwap as buildTxForParaSwap} from '~/api/paraswap.js';
 // import {getTokenSymbolForNetwork} from '~/api/hub.js';
 import {submitRelayTx} from '~/api/smart-wallet-relay.js';
 import smartWalletABI from '~/assets/abi-smartwallet.js';
 import smartWalletBin from '~/assets/abi-smartwallet-bin.js';
 import smartWalletFactoryABI from '~/assets/abi-smartwallet-factory.js';
 import Big from '~/assets/big.js';
-import {SMART_WALLET_RELAY_MINTER_ADDRESS, SMART_WALLET_FACTORY_CONTRACT_ADDRESS} from '~/assets/variables.js';
+import {SMART_WALLET_RELAY_MINTER_ADDRESS, SMART_WALLET_FACTORY_CONTRACT_ADDRESS, SMART_WALLET_RELAY_BROADCASTER_ADDRESS, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
 
 export const RELAY_REWARD_AMOUNT = 0.01;
 
@@ -17,6 +19,8 @@ export default function useWeb3SmartWallet() {
         privateKey: '',
         evmAccountAddress: '',
         chainId: 0,
+        gasTokenAddress: '',
+        gasTokenDecimals: '',
     });
 
     function setProps(newProps) {
@@ -24,6 +28,27 @@ export default function useWeb3SmartWallet() {
     }
 
     const smartWalletAddress = computed(() => getSmartWalletAddress(props.evmAccountAddress));
+
+    // gas token will be used to reward relay service
+    const swapToRelayRewardParams = computed(() => {
+        // paraswap params
+        return {
+            network: props.chainId,
+            srcToken: props.gasTokenAddress,
+            srcDecimals: props.gasTokenDecimals,
+            // address recognized by 1inch/paraswap as native coin
+            destToken: NATIVE_COIN_ADDRESS,
+            // destToken: HUB_CHAIN_BY_ID[props.chainId]?.wrappedNativeContractAddress,
+            destDecimals: 18,
+            amount: toErcDecimals(RELAY_REWARD_AMOUNT, 18),
+            side: ParaSwapSwapSide.BUY,
+            slippage: 3 * 100, // 3%
+            maxImpact: 30, // 30% (default 15% can be exceeded on "bipx to 0.01bnb swap" despite it has 10k liquidity)
+            userAddress: smartWalletAddress.value,
+            txOrigin: SMART_WALLET_RELAY_BROADCASTER_ADDRESS,
+            receiver: SMART_WALLET_RELAY_BROADCASTER_ADDRESS,
+        };
+    });
     // tx params suitable for fee estimation (fake payload, need to prepare later)
     /*
     const feeTxParams = computed(() => {
@@ -44,6 +69,25 @@ export default function useWeb3SmartWallet() {
         };
     });
     */
+
+    /**
+     *
+     * @return {Promise<ParaSwapTransactionsBuildCombined>}
+     */
+    function buildTxForRelayReward() {
+        if (props.gasTokenAddress === NATIVE_COIN_ADDRESS) {
+            return Promise.resolve({
+                swapLimit: RELAY_REWARD_AMOUNT,
+                txList: [{
+                    to: SMART_WALLET_RELAY_BROADCASTER_ADDRESS,
+                    value: toErcDecimals(RELAY_REWARD_AMOUNT, 18),
+                    data: '0x',
+                }],
+            });
+        } else {
+            return buildTxForParaSwap(swapToRelayRewardParams.value);
+        }
+    }
 
     /**
      * @param {Array<string>} txToList - list of recipients
@@ -113,8 +157,8 @@ export default function useWeb3SmartWallet() {
         const valueList = [];
         txList.forEach((tx, index) => {
             toList[index] = tx.to;
-            dataList[index] = tx.data;
-            valueList[index] = tx.value;
+            dataList[index] = tx.data || '0x';
+            valueList[index] = tx.value || '0';
         });
 
         return preparePayload(toList, dataList, valueList);
@@ -134,7 +178,9 @@ export default function useWeb3SmartWallet() {
     return {
         setSmartWalletProps: setProps,
         smartWalletAddress,
+        swapToRelayRewardParams,
         // feeTxParams,
+        buildTxForRelayReward,
         preparePayload,
         preparePayloadFromTxList,
         callSmartWallet,

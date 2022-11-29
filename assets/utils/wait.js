@@ -1,7 +1,7 @@
 /**
  * @template {any} T
  * @param {number} time
- * @param {T} result - result of resolved promise
+ * @param {T} [result] - result of resolved promise
  * @return {Promise<T>}
  */
 export function wait(time, result) {

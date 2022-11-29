@@ -1,4 +1,4 @@
-import {reactive, computed, watch, toRefs} from '@vue/composition-api';
+import {reactive, computed, watch, watchEffect, toRefs} from '@vue/composition-api';
 import {fromErcDecimals, toErcDecimals} from '~/api/web3.js';
 // import {buildTxForSwap as buildTxForOneInchSwap, getQuoteForSwap} from '~/api/1inch.js';
 import {buildTxForSwap as buildTxForParaSwap, getEstimationLimit as getParaSwapEstimationLimit} from '~/api/paraswap.js';
@@ -12,7 +12,7 @@ import useWeb3SmartWallet, {RELAY_REWARD_AMOUNT} from '~/composables/use-web3-sm
 import useHubToken from '~/composables/use-hub-token.js';
 
 export default function useWeb3SmartWalletSwap() {
-    const {setSmartWalletProps, smartWalletAddress, callSmartWallet} = useWeb3SmartWallet();
+    const {setSmartWalletProps, smartWalletAddress, swapToRelayRewardParams, buildTxForRelayReward, callSmartWallet} = useWeb3SmartWallet();
     const { tokenDecimals: tokenToSellDecimals, tokenContractAddressFixNative: tokenToSellAddress, setHubTokenProps: setHubTokenToSellProps } = useHubToken();
     const { tokenDecimals: tokenToBuyDecimals, tokenContractAddressFixNative: tokenToBuyAddress, setHubTokenProps: setHubTokenToBuyProps } = useHubToken();
 
@@ -27,7 +27,8 @@ export default function useWeb3SmartWalletSwap() {
 
     function setProps(newProps) {
         Object.assign(props, newProps);
-        setSmartWalletProps(newProps);
+        // moved to watchEffect
+        // setSmartWalletProps(newProps);
         setHubTokenToSellProps({
             tokenSymbol: newProps.coinToSell,
             chainId: newProps.chainId,
@@ -37,6 +38,14 @@ export default function useWeb3SmartWalletSwap() {
             chainId: newProps.chainId,
         });
     }
+
+    watchEffect(() => setSmartWalletProps({
+        privateKey: props.privateKey,
+        evmAccountAddress: props.evmAccountAddress,
+        chainId: props.chainId,
+        gasTokenAddress: tokenToSellAddress.value,
+        gasTokenDecimals: tokenToSellDecimals.value,
+    }));
 
     const state = reactive({
         isEstimationLimitForRelayRewardsLoading: false,
@@ -60,26 +69,6 @@ export default function useWeb3SmartWalletSwap() {
         return new Big(props.valueToSell || 0).minus(state.amountEstimationLimitForRelayRewards || 0).toString();
     });
 
-    const swapToRelayRewardsParams = computed(() => {
-        // paraswap params
-        return {
-            network: props.chainId,
-            srcToken: tokenToSellAddress.value,
-            srcDecimals: tokenToSellDecimals.value,
-            // address recognized by 1inch/paraswap as native coin
-            destToken: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-            // destToken: HUB_CHAIN_BY_ID[props.chainId]?.wrappedNativeContractAddress,
-            destDecimals: 18,
-            amount: toErcDecimals(RELAY_REWARD_AMOUNT, 18),
-            side: ParaSwapSwapSide.BUY,
-            slippage: 3 * 100, // 3%
-            maxImpact: 30, // 30% (default 15% can be exceeded on "bipx to 0.01bnb swap" despite it has 10k liquidity)
-            userAddress: smartWalletAddress.value,
-            txOrigin: SMART_WALLET_RELAY_BROADCASTER_ADDRESS,
-            receiver: SMART_WALLET_RELAY_BROADCASTER_ADDRESS,
-        };
-    });
-
     const swapToHubParams = computed(() => {
         // 1inch + hubDepositProxy params
         return {
@@ -97,9 +86,9 @@ export default function useWeb3SmartWalletSwap() {
         };
     });
 
-    watch(swapToRelayRewardsParams, () => {
+    watch(swapToRelayRewardParams, () => {
         //@TODO maybe wait until whole form will be filled by user
-        if (swapToRelayRewardsParams.value.srcToken && swapToRelayRewardsParams.value.destToken) {
+        if (swapToRelayRewardParams.value.srcToken && swapToRelayRewardParams.value.destToken) {
             state.isEstimationLimitForRelayRewardsLoading = true;
             state.estimationLimitForRelayRewardsError = '';
             estimateSpendLimitForRelayRewards()
@@ -148,27 +137,7 @@ export default function useWeb3SmartWalletSwap() {
         if (tokenToSellAddress.value === NATIVE_COIN_ADDRESS) {
             return Promise.resolve(RELAY_REWARD_AMOUNT);
         } else {
-            return getParaSwapEstimationLimit(swapToRelayRewardsParams.value);
-        }
-    }
-
-    /**
-     * @return {Promise<ParaSwapTransactionsBuildResponse>}
-     */
-    function buildTxForRelayRewards() {
-        if (tokenToSellAddress.value === NATIVE_COIN_ADDRESS) {
-            return Promise.resolve({
-                to: SMART_WALLET_RELAY_BROADCASTER_ADDRESS,
-                value: toErcDecimals(RELAY_REWARD_AMOUNT, 18),
-                data: '0x',
-            });
-        } else {
-            return buildTxForParaSwap(swapToRelayRewardsParams.value)
-                .then((result) => {
-                    state.amountEstimationLimitForRelayRewards = result.swapLimit;
-                    // wait for computed to recalculate amountToSellForSwapToHub
-                    return wait(50, result.txList);
-                });
+            return getParaSwapEstimationLimit(swapToRelayRewardParams.value);
         }
     }
 
@@ -176,11 +145,14 @@ export default function useWeb3SmartWalletSwap() {
      * @return {Promise<SmartWalletRelaySubmitTxResult>}
      */
     async function buildTxListAndCallSmartWallet() {
-        const txListForRelayRewards = await buildTxForRelayRewards();
+        const {txList: txListForRelayReward, swapLimit: relayRewardSwapLimit} = await buildTxForRelayReward();
+        state.amountEstimationLimitForRelayRewards = relayRewardSwapLimit;
+        // wait for computed to recalculate amountToSellForSwapToHub
+        await wait(50);
         const resultForSwapToHub = await buildTxForSwapToHub(props.chainId, swapToHubParams.value);
-        console.log(txListForRelayRewards);
+        console.log(txListForRelayReward);
         console.log(resultForSwapToHub);
-        return callSmartWallet([].concat(txListForRelayRewards, resultForSwapToHub.txList))
+        return callSmartWallet([].concat(txListForRelayReward, resultForSwapToHub.txList))
             .then((result) => {
                 console.log(result);
                 return result;
@@ -193,7 +165,7 @@ export default function useWeb3SmartWalletSwap() {
         smartWalletSwapParamsError,
         amountToSellForSwapToHub,
         smartWalletAddress,
-        swapToRelayRewardsParams,
+        swapToRelayRewardsParams: swapToRelayRewardParams,
         swapToHubParams,
         // feeTxParams,
 

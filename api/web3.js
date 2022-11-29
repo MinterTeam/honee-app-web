@@ -383,6 +383,22 @@ export function buildApproveTx(tokenContractAddress, spenderContractAddress) {
 }
 
 /**
+ * @param {string} tokenContractAddress
+ * @param {string} recipientAddress
+ * @param {string} amount - in wei
+ * @return {{data: string, to, value: string}}
+ */
+export function buildTransferTx(tokenContractAddress, recipientAddress, amount) {
+    const data = AbiEncoder(erc20ABI)('approve', recipientAddress, amount);
+
+    return {
+        to: tokenContractAddress,
+        data,
+        value: '0',
+    };
+}
+
+/**
  * May be no transactions depending on the eth node settings
  * @param {string} address
  * @param {number} chainId
