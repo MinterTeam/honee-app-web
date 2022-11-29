@@ -8,6 +8,22 @@ export default {
         title: 'Earning options',
         cards: [
             {
+                caption: 'Stake & Earn',
+                coin: `METAGARDEN`,
+                description: 'Stake METAGARDEN for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
+                stats: {
+                    apr: {
+                        percent: '5-20',
+                    },
+                },
+                tags: ['Staking'],
+                action: `/stake/27`,
+                ru: {
+                    description: 'Стейкуйте METAGARDEN на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
+                    caption: 'Стейкинг',
+                },
+            },
+            {
                 caption: 'Liquidity mining',
                 coin: ['BEE', 'MUSD'],
                 description: 'Put your BEE and MUSD into a liquidity pool. Then stake received LP-656 tokens for getting extra daily rewards.',
