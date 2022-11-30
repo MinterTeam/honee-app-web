@@ -1,6 +1,5 @@
 import axios from 'axios';
-import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
-import {ParaSwapSwapSide} from '~/api/paraswap-models.d.ts';
+import {ParaSwapSwapSide} from '~/api/swap-paraswap-models.d.ts';
 import {fromErcDecimals, getAllowance, buildApproveTx} from '~/api/web3.js';
 import Big from '~/assets/big.js';
 // import addToCamelInterceptor from '~/assets/axios-to-camel.js';
@@ -9,12 +8,9 @@ import {PARASWAP_API_URL, NETWORK, MAINNET, SMART_WALLET_RELAY_BROADCASTER_ADDRE
 
 const instance = axios.create({
     baseURL: PARASWAP_API_URL,
-    // adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
 });
 // addToCamelInterceptor(instance);
 
-// 10 min cache
-const cache = new Cache({ttl: 10 * 60 * 1000, max: 100});
 /**
  * @param {Partial<ParaSwapPricesListParams & ParaSwapTransactionsRequestPayload>} swapParams
  * @return {Promise<ParaSwapTransactionsBuildCombined>}

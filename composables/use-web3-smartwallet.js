@@ -2,8 +2,8 @@ import {reactive, computed} from '@vue/composition-api';
 // import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 // import {PAYLOAD_MAX_LENGTH} from 'minterjs-util/src/variables.js';
 import {web3Utils, web3Abi, getProviderByChain, toErcDecimals} from '~/api/web3.js';
-import {ParaSwapSwapSide} from '~/api/paraswap-models.d.ts';
-import {buildTxForSwap as buildTxForParaSwap} from '~/api/paraswap.js';
+import {ParaSwapSwapSide} from '~/api/swap-paraswap-models.d.ts';
+import {buildTxForSwap as buildTxForParaSwap, getEstimationLimit as getParaSwapEstimationLimit} from '~/api/swap-paraswap.js';
 // import {getTokenSymbolForNetwork} from '~/api/hub.js';
 import {submitRelayTx} from '~/api/smart-wallet-relay.js';
 import smartWalletABI from '~/assets/abi-smartwallet.js';
@@ -69,6 +69,17 @@ export default function useWeb3SmartWallet() {
         };
     });
     */
+
+    /**
+     * @return {Promise<string|number>}
+     */
+    function estimateSpendLimitForRelayReward() {
+        if (props.gasTokenAddress === NATIVE_COIN_ADDRESS) {
+            return Promise.resolve(RELAY_REWARD_AMOUNT);
+        } else {
+            return getParaSwapEstimationLimit(swapToRelayRewardParams.value);
+        }
+    }
 
     /**
      *
@@ -180,6 +191,7 @@ export default function useWeb3SmartWallet() {
         smartWalletAddress,
         swapToRelayRewardParams,
         // feeTxParams,
+        estimateSpendLimitForRelayReward,
         buildTxForRelayReward,
         preparePayload,
         preparePayloadFromTxList,

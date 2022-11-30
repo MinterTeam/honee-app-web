@@ -1,9 +1,7 @@
 import {reactive, computed, watch, watchEffect, toRefs} from '@vue/composition-api';
 import {fromErcDecimals, toErcDecimals} from '~/api/web3.js';
 // import {buildTxForSwap as buildTxForOneInchSwap, getQuoteForSwap} from '~/api/1inch.js';
-import {buildTxForSwap as buildTxForParaSwap, getEstimationLimit as getParaSwapEstimationLimit} from '~/api/paraswap.js';
-import {ParaSwapSwapSide} from '~/api/paraswap-models.d.ts';
-import {buildTxForSwap as buildTxForSwapToHub} from '~/api/hub-deposit-proxy.js';
+import {buildTxForSwap as buildTxForSwapToHub} from '~/api/swap-hub-deposit-proxy.js';
 import Big from '~/assets/big.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {wait} from '~/assets/utils/wait.js';
@@ -12,7 +10,7 @@ import useWeb3SmartWallet, {RELAY_REWARD_AMOUNT} from '~/composables/use-web3-sm
 import useHubToken from '~/composables/use-hub-token.js';
 
 export default function useWeb3SmartWalletSwap() {
-    const {setSmartWalletProps, smartWalletAddress, swapToRelayRewardParams, buildTxForRelayReward, callSmartWallet} = useWeb3SmartWallet();
+    const {setSmartWalletProps, smartWalletAddress, swapToRelayRewardParams, estimateSpendLimitForRelayReward, buildTxForRelayReward, callSmartWallet} = useWeb3SmartWallet();
     const { tokenDecimals: tokenToSellDecimals, tokenContractAddressFixNative: tokenToSellAddress, setHubTokenProps: setHubTokenToSellProps } = useHubToken();
     const { tokenDecimals: tokenToBuyDecimals, tokenContractAddressFixNative: tokenToBuyAddress, setHubTokenProps: setHubTokenToBuyProps } = useHubToken();
 
@@ -91,7 +89,7 @@ export default function useWeb3SmartWalletSwap() {
         if (swapToRelayRewardParams.value.srcToken && swapToRelayRewardParams.value.destToken) {
             state.isEstimationLimitForRelayRewardsLoading = true;
             state.estimationLimitForRelayRewardsError = '';
-            estimateSpendLimitForRelayRewards()
+            estimateSpendLimitForRelayReward()
                 .then((spendLimit) => {
                     state.isEstimationLimitForRelayRewardsLoading = false;
                     state.amountEstimationLimitForRelayRewards = spendLimit;
@@ -129,17 +127,6 @@ export default function useWeb3SmartWalletSwap() {
             state.amountEstimationAfterSwapToHub = '';
         }
     });
-
-    /**
-     * @return {Promise<string|number>}
-     */
-    function estimateSpendLimitForRelayRewards() {
-        if (tokenToSellAddress.value === NATIVE_COIN_ADDRESS) {
-            return Promise.resolve(RELAY_REWARD_AMOUNT);
-        } else {
-            return getParaSwapEstimationLimit(swapToRelayRewardParams.value);
-        }
-    }
 
     /**
      * @return {Promise<SmartWalletRelaySubmitTxResult>}

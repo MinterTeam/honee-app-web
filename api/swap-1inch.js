@@ -1,17 +1,13 @@
 import axios from 'axios';
-import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
 import {ONE_INCH_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {fromErcDecimals} from '~/api/web3.js';
 
 const instance = axios.create({
     baseURL: ONE_INCH_API_URL,
-    // adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
 });
 // addToCamelInterceptor(instance);
 
-// 10 min cache
-const cache = new Cache({ttl: 10 * 60 * 1000, max: 100});
 /**
  * @param {number|string} chainId
  * @param {OneInchExchangeControllerGetSwapParams} swapParams
