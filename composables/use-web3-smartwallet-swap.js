@@ -5,8 +5,7 @@ import {buildTxForSwap as buildTxForSwapToHub} from '~/api/swap-hub-deposit-prox
 import Big from '~/assets/big.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {wait} from '~/assets/utils/wait.js';
-import {NATIVE_COIN_ADDRESS, SMART_WALLET_RELAY_BROADCASTER_ADDRESS} from '~/assets/variables.js';
-import useWeb3SmartWallet, {RELAY_REWARD_AMOUNT} from '~/composables/use-web3-smartwallet.js';
+import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
 import useHubToken from '~/composables/use-hub-token.js';
 
 export default function useWeb3SmartWalletSwap() {
@@ -64,7 +63,10 @@ export default function useWeb3SmartWalletSwap() {
     });
 
     const amountToSellForSwapToHub = computed(() => {
-        return new Big(props.valueToSell || 0).minus(state.amountEstimationLimitForRelayRewards || 0).toString();
+        if (!state.amountEstimationLimitForRelayRewards || state.amountEstimationLimitForRelayRewards <= 0) {
+            return 0;
+        }
+        return new Big(props.valueToSell || 0).minus(state.amountEstimationLimitForRelayRewards).toString();
     });
 
     const swapToHubParams = computed(() => {
@@ -86,7 +88,7 @@ export default function useWeb3SmartWalletSwap() {
 
     watch(swapToRelayRewardParams, () => {
         //@TODO maybe wait until whole form will be filled by user
-        if (swapToRelayRewardParams.value.srcToken && swapToRelayRewardParams.value.destToken) {
+        if (tokenToSellAddress.value && tokenToSellDecimals.value) {
             state.isEstimationLimitForRelayRewardsLoading = true;
             state.estimationLimitForRelayRewardsError = '';
             estimateSpendLimitForRelayReward()
@@ -152,7 +154,6 @@ export default function useWeb3SmartWalletSwap() {
         smartWalletSwapParamsError,
         amountToSellForSwapToHub,
         smartWalletAddress,
-        swapToRelayRewardsParams: swapToRelayRewardParams,
         swapToHubParams,
         // feeTxParams,
 

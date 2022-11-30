@@ -3,6 +3,7 @@ import stripZeros from 'pretty-num/src/strip-zeros.js';
 
 export const BIG_ROUND_DOWN = 0;
 export const BIG_ROUND_HALF_EVEN = 2;
+export const BIG_ROUND_UP = 3;
 
 // support division of 15 whole digits and 18 decimal
 export const COMPUTATION_PRECISION = 15 + 18 + 1; // minter node precision is 34

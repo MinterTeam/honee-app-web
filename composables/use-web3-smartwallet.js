@@ -1,9 +1,10 @@
 import {reactive, computed} from '@vue/composition-api';
 // import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 // import {PAYLOAD_MAX_LENGTH} from 'minterjs-util/src/variables.js';
-import {web3Utils, web3Abi, getProviderByChain, toErcDecimals} from '~/api/web3.js';
+import {web3Utils, web3Abi, getProviderByChain, toErcDecimals, fromErcDecimals} from '~/api/web3.js';
 import {ParaSwapSwapSide} from '~/api/swap-paraswap-models.d.ts';
-import {buildTxForSwap as buildTxForParaSwap, getEstimationLimit as getParaSwapEstimationLimit} from '~/api/swap-paraswap.js';
+// import {buildTxForSwap as buildTxForParaSwap, getEstimationLimit as getParaSwapEstimationLimit} from '~/api/swap-paraswap.js';
+import {buildTxForSwap as buildTxForZeroXSwap, getEstimationLimit as getZeroXEstimationLimit} from '~/api/swap-0x.js';
 // import {getTokenSymbolForNetwork} from '~/api/hub.js';
 import {submitRelayTx} from '~/api/smart-wallet-relay.js';
 import smartWalletABI from '~/assets/abi-smartwallet.js';
@@ -31,24 +32,42 @@ export default function useWeb3SmartWallet() {
 
     // gas token will be used to reward relay service
     const swapToRelayRewardParams = computed(() => {
-        // paraswap params
+        return swapZeroXParams.value;
+        // return swapParaSwapParams.value;
+    });
+    const swapZeroXParams = computed(() => {
+        return {
+            sellToken: props.gasTokenAddress,
+            // sellTokenDecimals: props.gasTokenDecimals,
+            buyToken: NATIVE_COIN_ADDRESS,
+            // destToken: HUB_CHAIN_BY_ID[props.chainId]?.wrappedNativeContractAddress,
+            // buyTokenDecimals: 18,
+            buyAmount: toErcDecimals(RELAY_REWARD_AMOUNT, 18),
+            slippagePercentage: 0.05, // 5%
+            skipValidation: true,
+            intentOnFilling: false,
+            takerAddress: smartWalletAddress.value,
+            receiver: SMART_WALLET_RELAY_BROADCASTER_ADDRESS,
+        };
+    });
+    const swapParaSwapParams = computed(() => {
         return {
             network: props.chainId,
             srcToken: props.gasTokenAddress,
             srcDecimals: props.gasTokenDecimals,
-            // address recognized by 1inch/paraswap as native coin
             destToken: NATIVE_COIN_ADDRESS,
             // destToken: HUB_CHAIN_BY_ID[props.chainId]?.wrappedNativeContractAddress,
             destDecimals: 18,
             amount: toErcDecimals(RELAY_REWARD_AMOUNT, 18),
             side: ParaSwapSwapSide.BUY,
-            slippage: 3 * 100, // 3%
-            maxImpact: 30, // 30% (default 15% can be exceeded on "bipx to 0.01bnb swap" despite it has 10k liquidity)
+            slippage: 5 * 100, // 5%
+            maxImpact: 50, // 50% (default 15% can be exceeded on "bipx to 0.01bnb swap" despite it has 10k liquidity)
             userAddress: smartWalletAddress.value,
             txOrigin: SMART_WALLET_RELAY_BROADCASTER_ADDRESS,
             receiver: SMART_WALLET_RELAY_BROADCASTER_ADDRESS,
         };
     });
+
     // tx params suitable for fee estimation (fake payload, need to prepare later)
     /*
     const feeTxParams = computed(() => {
@@ -70,6 +89,14 @@ export default function useWeb3SmartWallet() {
     });
     */
 
+    function getEstimationLimit() {
+        return getZeroXEstimationLimit(props.chainId, swapToRelayRewardParams.value)
+            .then((swapLimit) => {
+                return fromErcDecimals(swapLimit, props.gasTokenDecimals);
+            });
+        // return getParaSwapEstimationLimit(swapToRelayRewardParams.value);
+    }
+
     /**
      * @return {Promise<string|number>}
      */
@@ -77,8 +104,19 @@ export default function useWeb3SmartWallet() {
         if (props.gasTokenAddress === NATIVE_COIN_ADDRESS) {
             return Promise.resolve(RELAY_REWARD_AMOUNT);
         } else {
-            return getParaSwapEstimationLimit(swapToRelayRewardParams.value);
+            return getEstimationLimit();
         }
+    }
+
+    function buildTxForSwap() {
+        return buildTxForZeroXSwap(props.chainId, swapToRelayRewardParams.value)
+            .then((result) => {
+                return {
+                    txList: result.txList,
+                    swapLimit: fromErcDecimals(result.swapLimit, props.gasTokenDecimals),
+                };
+            });
+        // return buildTxForParaSwap(props.chainId, swapToRelayRewardParams.value);
     }
 
     /**
@@ -96,7 +134,7 @@ export default function useWeb3SmartWallet() {
                 }],
             });
         } else {
-            return buildTxForParaSwap(swapToRelayRewardParams.value);
+            return buildTxForSwap();
         }
     }
 

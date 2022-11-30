@@ -35,9 +35,10 @@ export const ETHERSCAN_HOST = NETWORK === MAINNET ? 'https://etherscan.io' : 'ht
 export const BSCSCAN_HOST = NETWORK === MAINNET ? 'https://bscscan.com' : 'https://testnet.bscscan.com';
 export const ONE_INCH_API_URL = 'https://api.1inch.io/v5.0/';
 export const PARASWAP_API_URL = 'https://apiv5.paraswap.io/';
+export const ZERO_X_API_URL = 'https://bsc.api.0x.org/';
 export const WETH_CONTRACT_ADDRESS = NETWORK === MAINNET ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' : '0x0a180a76e4466bf68a7f86fb029bed3cccfaaac5';// '0xc778417e063141139fce010982780140aa0cd5ab';
 export const WBNB_CONTRACT_ADDRESS = NETWORK === MAINNET ? '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c' : '0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd';
-// recognized by 1inch and other third parties as native coin
+// recognized by 1inch/paraswap/0x and other third parties as native coin
 export const NATIVE_COIN_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 export const HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS = '0x0C9B820C0877340333E874AE70395Da7353E7cA3';
 export const SMART_WALLET_FACTORY_CONTRACT_ADDRESS = "0x7F3C8d5363B44875001Fa2A63A7dB6FCb8BEE989";

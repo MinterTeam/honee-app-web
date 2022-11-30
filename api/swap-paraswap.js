@@ -2,6 +2,7 @@ import axios from 'axios';
 import {ParaSwapSwapSide} from '~/api/swap-paraswap-models.d.ts';
 import {fromErcDecimals, getAllowance, buildApproveTx} from '~/api/web3.js';
 import Big from '~/assets/big.js';
+import {getMaxEstimationLimit, getMinEstimationLimit} from '~/assets/utils/swap-limit.js';
 // import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {PARASWAP_API_URL, NETWORK, MAINNET, SMART_WALLET_RELAY_BROADCASTER_ADDRESS, HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS, NATIVE_COIN_ADDRESS} from "~/assets/variables.js";
 
@@ -76,7 +77,6 @@ export function getEstimationLimit(swapParams) {
 }
 
 /**
- *
  * @param {ParaSwapPriceRoute} priceRoute
  * @param {ParaSwapSwapSide} side
  * @param {ParaSwapTransactionsRequestPayload.slippage} slippage
@@ -85,16 +85,13 @@ export function getEstimationLimit(swapParams) {
 function calculateEstimationLimit(priceRoute, side, slippage) {
     // normalize slippage to percent, then to part
     const slippagePart = new Big(slippage).div(100).div(100);
+
     if (side === ParaSwapSwapSide.SELL) {
-        const estimation = fromErcDecimals(priceRoute.destAmount, priceRoute.destDecimals);
-        const slippageAmount = slippagePart.times(estimation);
-        // minDestAmount to receive
-        return new Big(estimation).minus(slippageAmount).toString();
+        const limitWei = getMinEstimationLimit(priceRoute.destAmount, slippagePart);
+        return fromErcDecimals(limitWei, priceRoute.destDecimals);
     } else {
-        const estimation = fromErcDecimals(priceRoute.srcAmount, priceRoute.srcDecimals);
-        const slippageAmount = slippagePart.times(estimation);
-        // maxSrcAmount to spend
-        return new Big(estimation).plus(slippageAmount).toString();
+        const limitWei = getMaxEstimationLimit(priceRoute.srcAmount, slippagePart);
+        return fromErcDecimals(limitWei, priceRoute.srcDecimals);
     }
 }
 
