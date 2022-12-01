@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {HUB_DEPOSIT_PROXY_API_URL, HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS, NETWORK, MAINNET} from "~/assets/variables.js";
+import {HUB_DEPOSIT_PROXY_API_URL, HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS, NATIVE_COIN_ADDRESS, HUB_CHAIN_BY_ID} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 
 const instance = axios.create({
@@ -18,6 +18,8 @@ export function buildTxForSwap(chainId, swapParams) {
         params: {
             // destReceiver: HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS,
             ...swapParams,
+            // HubDepositProxy contract can't handle native coin in output, so replace with wrapped
+            toTokenAddress: swapParams.toTokenAddress === NATIVE_COIN_ADDRESS ? HUB_CHAIN_BY_ID[chainId].wrappedNativeContractAddress : swapParams.toTokenAddress,
             refundTo: swapParams.refundTo || swapParams.destination,
         },
     })
