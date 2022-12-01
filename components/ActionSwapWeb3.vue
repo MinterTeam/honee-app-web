@@ -8,6 +8,7 @@ import maxValue from 'vuelidate/src/validators/maxValue.js';
 import Big from '~/assets/big.js';
 import {getTokenSymbolForNetwork} from '~/api/hub.js';
 import {pretty} from '~/assets/utils.js';
+import {wait} from '~/assets/utils/wait.js';
 import {HUB_NETWORK, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
@@ -153,9 +154,11 @@ export default {
             return this.isSelectedWithdrawCoin ? this.form.valueToSell : this.estimation;
         },
         sequenceParams() {
-            const prepareWithdrawTxParams = this.isSelectedWithdrawCoin && !this.isUseMax ? undefined : (swapTx, prevPrepareGasCoin) => {
+            const isWithdrawMaxWithoutSwap = this.isSelectedWithdrawCoin && this.isUseMax;
+            const isWithdrawAfterSwap = !this.isSelectedWithdrawCoin;
+            const prepareWithdrawTxParams = !isWithdrawMaxWithoutSwap && !isWithdrawAfterSwap ? undefined : (swapTx, prevPrepareGasCoin) => {
                 let balanceItem;
-                if (this.isSelectedWithdrawCoin) {
+                if (isWithdrawMaxWithoutSwap) {
                     balanceItem = this.$store.getters.getBalanceItem(this.form.coinToSell);
                 } else {
                     const coinToBuy = swapTx.data.coin_to_buy || swapTx.data.coins.find((item) => item.id === swapTx.tags['tx.coin_to_buy']);
@@ -167,6 +170,16 @@ export default {
                 }
 
                 const value = getAvailableSelectedBalance(balanceItem, prevPrepareGasCoin.extra.fee);
+                console.debug('getAvailableSelectedBalance', JSON.parse(JSON.stringify(balanceItem)), JSON.parse(JSON.stringify(prevPrepareGasCoin.extra.fee)));
+                console.debug('value: prev, new', this.withdrawTxParams.data.value, value);
+                console.debug('withdrawValue, withdrawAmountToReceive', this.withdrawValue, this.withdrawAmountToReceive);
+
+                // update withdrawValue
+                if (isWithdrawMaxWithoutSwap) {
+                    this.form.valueToSell = value;
+                }else if (isWithdrawAfterSwap) {
+                    this.estimation = value;
+                }
 
                 return {
                     data: {
@@ -177,7 +190,9 @@ export default {
             };
 
             const prepareSmartWalletTx = () => {
-                return this.buildTxListAndCallSmartWallet()
+                // wait for computed depended on withdrawValue to recalculate
+                return wait(50)
+                    .then(() => this.buildTxListAndCallSmartWallet())
                     .then((result) => {
                         const newPayload = JSON.parse(this.withdrawTxParams.payload);
                         newPayload.smartWalletTx = result.hash;
@@ -394,9 +409,6 @@ export default {
                     :coin-to-buy="form.coinToBuy"
                     :value-to-buy="depositAmountToReceive"
                 />
-
-
-
             </template>
 
 <!--            <template v-slot:submit-title>-->
