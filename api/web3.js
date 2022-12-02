@@ -389,7 +389,7 @@ export function buildApproveTx(tokenContractAddress, spenderContractAddress) {
  * @return {{data: string, to, value: string}}
  */
 export function buildTransferTx(tokenContractAddress, recipientAddress, amount) {
-    const data = AbiEncoder(erc20ABI)('approve', recipientAddress, amount);
+    const data = AbiEncoder(erc20ABI)('transfer', recipientAddress, amount);
 
     return {
         to: tokenContractAddress,
