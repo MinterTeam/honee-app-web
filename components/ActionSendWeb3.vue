@@ -135,7 +135,7 @@ export default {
             }
             this.callSmartWallet([].concat(relayRewardData.txList, tx))
                 .then((result) => {
-                    window.alert(JSON.stringify(result));
+                    window.alert(`https://explorer.minter.network/smart-wallet-relay/${result.hash}`);
                     this.clearForm();
                 })
                 .catch((error) => {
