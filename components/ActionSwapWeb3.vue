@@ -52,8 +52,27 @@ export default {
             // no need to subscribe here, because already subscribed in useHubToken and useWeb3Withdraw
         });
         const {hubCoin: coinItem, tokenPrice: coinPrice, tokenData: externalToken, setHubTokenProps} = useHubToken();
-        const {discountUpsidePercent, destinationFeeInCoin: coinFee, hubFeeRate, hubFeeRatePercent, hubFee, amountToReceive: withdrawAmountToReceive, minAmountToSend: minAmount, txParams: withdrawTxParams, feeTxParams: withdrawFeeTxParams, setWithdrawProps} = useWeb3Withdraw();
-        const {amountEstimationLimitForRelayRewards: smartWalletRelayReward, amountToSellForSwapToHub, amountEstimationAfterSwapToHub: depositAmountToReceive, isSmartWalletSwapParamsLoading, smartWalletSwapParamsError, smartWalletAddress, /*feeTxParams: smartWalletTxParams,*/ buildTxListAndCallSmartWallet, setSmartWalletSwapProps} = useWeb3SmartWalletSwap();
+        const {
+            discountUpsidePercent,
+            destinationFeeInCoin,
+            hubFeeRate,
+            hubFeeRatePercent,
+            hubFee,
+            withdrawAmountToReceive,
+            minAmountToWithdraw,
+            withdrawTxParams,
+            withdrawFeeTxParams,
+
+            amountEstimationLimitForRelayRewards: smartWalletRelayReward,
+            amountToSellForSwapToHub,
+            amountEstimationAfterSwapToHub: depositAmountToReceive,
+            isSmartWalletSwapParamsLoading,
+            smartWalletSwapParamsError,
+            smartWalletAddress,
+            /*feeTxParams: smartWalletTxParams,*/
+            buildTxListAndCallSmartWallet,
+            setSmartWalletSwapProps,
+        } = useWeb3SmartWalletSwap();
 
         return {
             networkHubCoinList,
@@ -66,15 +85,14 @@ export default {
             setHubTokenProps,
 
             discountUpsidePercent,
-            coinFee,
+            destinationFeeInCoin,
             hubFeeRate,
             hubFeeRatePercent,
             hubFee,
             withdrawAmountToReceive,
-            minAmount,
+            minAmountToWithdraw,
             withdrawTxParams,
             withdrawFeeTxParams,
-            setWithdrawProps,
 
             smartWalletRelayReward,
             amountToSellForSwapToHub,
@@ -125,7 +143,7 @@ export default {
             withdrawValue: {
                 required,
                 // validAmount: isValidAmount,
-                minValue: (value) => minValue(this.minAmount)(value),
+                minValue: (value) => minValue(this.minAmountToWithdraw)(value),
                 // maxValue: maxValue(this.maxAmount || 0),
             },
             depositAmountToReceive: {
@@ -233,26 +251,11 @@ export default {
                 privateKey: this.$store.getters.privateKey,
                 evmAccountAddress: this.$store.getters.evmAddress,
                 chainId: this.hubChainData.chainId,
-                valueToSell: this.withdrawAmountToReceive,
+                valueToSell: this.withdrawValue,
                 coinToSell: this.withdrawCoin,
                 coinToBuy: this.form.coinToBuy,
             }),
             (newVal) => this.setSmartWalletSwapProps(newVal),
-            {deep: true, immediate: true},
-        );
-
-        // withdrawProps
-        this.$watch(
-            () => ({
-                hubNetworkSlug: this.hubChainData.hubNetworkSlug,
-                amountToSend: this.withdrawValue,
-                tokenSymbol: this.withdrawCoin,
-                accountAddress: this.$store.getters.address,
-                destinationAddress: this.smartWalletAddress,
-                speed: HUB_WITHDRAW_SPEED.FAST,
-                smartWalletTx: Array.from({length: 64}).fill('0').join(''),
-            }),
-            (newVal) => this.setWithdrawProps(newVal),
             {deep: true, immediate: true},
         );
 
@@ -330,7 +333,7 @@ export default {
                     <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && !v$estimation.valueToSell.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
                     <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && v$estimation.maxAmount.$invalid">{{ $td('Not enough coins', 'form.not-enough-coins') }}</span>
                     <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && v$estimation.maxAmountAfterFee.$invalid">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol }}</span>
-                    <span class="form-field__error" v-else-if="$v.withdrawValue.$dirty && !$v.withdrawValue.minValue">{{ $td(`Minimum ${minAmount}`, 'form.amount-error-min', {min: minAmount}) }}</span>
+                    <span class="form-field__error" v-else-if="$v.withdrawValue.$dirty && !$v.withdrawValue.minValue">{{ $td(`Minimum ${minAmountToWithdraw}`, 'form.amount-error-min', {min: minAmountToWithdraw}) }}</span>
                 </div>
 
                 <div class="form-row">

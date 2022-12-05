@@ -4,14 +4,17 @@ import {fromErcDecimals, toErcDecimals} from '~/api/web3.js';
 import {buildTxForSwap as buildTxForSwapToHub} from '~/api/swap-hub-deposit-proxy.js';
 import Big from '~/assets/big.js';
 import {getErrorText} from '~/assets/server-error.js';
+import {HUB_WITHDRAW_SPEED, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import {wait} from '~/assets/utils/wait.js';
 import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
 import useHubToken from '~/composables/use-hub-token.js';
+import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
 
 export default function useWeb3SmartWalletSwap() {
     const {setSmartWalletProps, smartWalletAddress, swapToRelayRewardParams, estimateSpendLimitForRelayReward, buildTxForRelayReward, callSmartWallet} = useWeb3SmartWallet();
     const { tokenDecimals: tokenToSellDecimals, tokenContractAddressFixNative: tokenToSellAddress, setHubTokenProps: setHubTokenToSellProps } = useHubToken();
     const { tokenDecimals: tokenToBuyDecimals, tokenContractAddressFixNative: tokenToBuyAddress, setHubTokenProps: setHubTokenToBuyProps } = useHubToken();
+    const {discountUpsidePercent, destinationFeeInCoin, hubFeeRate, hubFeeRatePercent, hubFee, amountToReceive: withdrawAmountToReceive, minAmountToSend: minAmountToWithdraw, txParams: withdrawTxParams, feeTxParams: withdrawFeeTxParams, setWithdrawProps} = useWeb3Withdraw();
 
     const props = reactive({
         privateKey: '',
@@ -19,6 +22,7 @@ export default function useWeb3SmartWalletSwap() {
         chainId: 0,
         coinToSell: '',
         coinToBuy: '',
+        // amount to withdraw
         valueToSell: 0,
     });
 
@@ -44,6 +48,18 @@ export default function useWeb3SmartWalletSwap() {
         gasTokenDecimals: tokenToSellDecimals.value,
     }));
 
+    const dummySmartWalletTxHash = Array.from({length: 64}).fill('0').join('');
+    watchEffect(() => setWithdrawProps({
+        hubNetworkSlug: HUB_CHAIN_BY_ID[props.chainId]?.hubNetworkSlug,
+        amountToSend: props.valueToSell,
+        tokenSymbol: props.coinToSell,
+        accountAddress: props.evmAccountAddress?.replace('0x', 'Mx'),
+        destinationAddress: smartWalletAddress.value,
+        speed: HUB_WITHDRAW_SPEED.FAST,
+        // placeholder for minter tx paylaod
+        smartWalletTx: dummySmartWalletTxHash,
+    }));
+
     const state = reactive({
         isEstimationLimitForRelayRewardsLoading: false,
         estimationLimitForRelayRewardsError: '',
@@ -66,7 +82,7 @@ export default function useWeb3SmartWalletSwap() {
         if (!state.amountEstimationLimitForRelayRewards || state.amountEstimationLimitForRelayRewards <= 0) {
             return 0;
         }
-        return new Big(props.valueToSell || 0).minus(state.amountEstimationLimitForRelayRewards).toString();
+        return new Big(withdrawAmountToReceive.value || 0).minus(state.amountEstimationLimitForRelayRewards).toString();
     });
 
     const swapToHubParams = computed(() => {
@@ -107,6 +123,8 @@ export default function useWeb3SmartWalletSwap() {
     });
 
     // @TODO throttle
+    // @TODO Watch triggered even if value is not changed
+    // https://github.com/vuejs/core/issues/2231 it should be fixed here but looks like not backported to vue/composition-api
     watch(swapToHubParams, () => {
         if (swapToHubParams.value.fromTokenAddress && swapToHubParams.value.toTokenAddress && swapToHubParams.value.amount > 0) {
             // console.log('swapToHubParams', swapToHubParams.value);
@@ -149,6 +167,17 @@ export default function useWeb3SmartWalletSwap() {
     }
 
     return {
+        // from withdraw
+        discountUpsidePercent,
+        destinationFeeInCoin,
+        hubFeeRate,
+        hubFeeRatePercent,
+        hubFee,
+        withdrawAmountToReceive,
+        minAmountToWithdraw,
+        withdrawTxParams,
+        withdrawFeeTxParams,
+
         ...toRefs(state),
         isSmartWalletSwapParamsLoading,
         smartWalletSwapParamsError,
