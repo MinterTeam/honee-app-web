@@ -185,6 +185,9 @@ export default {
                 coin1: params.coinToBuy ? params.coinToBuy.toUpperCase() : undefined,
             });
         }
+        if (actionType === 'buy' && params.coinToGet) {
+            title = this.$t('action.title-buy-coin', {coin: params.coinToGet});
+        }
 
         // card
         const pathMatch = this.$route.params.pathMatch.replace(/\/$/, '').toLowerCase();
