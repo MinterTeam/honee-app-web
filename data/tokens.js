@@ -300,4 +300,9 @@ export default {
         name: 'STORJ',
         network: 'ETH',
     },
+    SHEKEL: {
+        name: 'SHEKEL',
+        network: 'BSC',
+        hide: true,
+    },
 };
