@@ -122,6 +122,19 @@ export default {
                     caption: 'Делегирование',
                 },
             },
+            {
+                caption: 'Buy',
+                coin: 'DETFAPY',
+                description: 'Decentralized Trading Fund based on top 10 expert portfolios.',
+                stats: {
+                },
+                tags: ['Exchange'],
+                action: '/swap/DETFAPY',
+                ru: {
+                    description: 'Децентрализованный торговый фонд на основе Топ-10 портфелей экспертов.',
+                    caption: 'Купить',
+                },
+            },
         ],
     },
     swap: {
