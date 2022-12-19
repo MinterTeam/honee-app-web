@@ -116,7 +116,7 @@ export default {
         },
     },
     mounted() {
-        if (this.isSelectDisabled && this.coinList[0]) {
+        if (this.isSelectDisabled && this.coinList[0] && !this.coin) {
             this.handleSelect(this.coinList[0]);
         }
     },
