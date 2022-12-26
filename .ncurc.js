@@ -15,7 +15,5 @@ module.exports = {
       'beeper',
       'camelcase-keys',
       'del',
-      'gulp-imagemin',
-      'imagemin-mozjpeg',
   ],
 };
