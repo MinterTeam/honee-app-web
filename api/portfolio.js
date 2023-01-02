@@ -322,7 +322,7 @@ export function getCmcCoinList() {
 // monday of 43 ISO week
 export const BATTLE_START_DATE = new Date('2022-10-24T00:00:00Z');
 // week number starting from 1
-export const BATTLE_CURRENT_WEEK_NUMBER = differenceInCalendarUTCISOWeeks(new Date(), BATTLE_START_DATE) + 1;
+export const BATTLE_CURRENT_WEEK_NUMBER = differenceInCalendarUTCISOWeeks(new Date(), BATTLE_START_DATE);
 
 
 /**
