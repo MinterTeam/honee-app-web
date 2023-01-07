@@ -54,7 +54,7 @@ export async function buildTxForSwap(chainId, swapParams) {
     if (swapParams.receiver) {
         txList.push({
             to: swapParams.receiver,
-            //@TODO if buyToken is erc20 token use transferToken method of erc20 contract
+            //@TODO if buyToken is erc20 token use transferToken method of erc20 contract (now only works with native coin)
             value: swapTx.buyAmount,
             data: '0x',
         });

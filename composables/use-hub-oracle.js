@@ -1,4 +1,5 @@
 import {ref, computed, reactive, set, watch} from '@vue/composition-api';
+import isEqual from 'lodash-es/isEqual.js';
 import Big from '~/assets/big.js';
 import {findNativeCoin, getOracleCoinList, getOracleFee, getOraclePriceList} from '~/api/hub.js';
 import {HUB_NETWORK, HUB_WITHDRAW_SPEED, MAINNET, NETWORK} from '~/assets/variables.js';
@@ -48,7 +49,10 @@ const gasPriceMap = computed(() => {
 function fetchTokenList() {
     return getOracleCoinList()
         .then((result) => {
-            tokenList.value = Object.freeze(result);
+            // check isEqual to not trigger computed recalculation
+            if (!isEqual(tokenList.value, result)) {
+                tokenList.value = Object.freeze(result);
+            }
             return tokenList.value;
         });
 }
@@ -56,7 +60,10 @@ function fetchTokenList() {
 function fetchPriceList() {
     return getOraclePriceList()
         .then((result) => {
-            priceList.value = Object.freeze(result);
+            // check isEqual to not trigger computed recalculation
+            if (!isEqual(priceList.value, result)) {
+                priceList.value = Object.freeze(result);
+            }
             return priceList.value;
         });
 }
@@ -73,7 +80,11 @@ function fetchDestinationFee(hubNetwork) {
         .then((result) => {
             const oldFee = destinationFeeMap[hubNetwork]?.[HUB_WITHDRAW_SPEED.FAST];
             const isIncreased = oldFee && Number(result[HUB_WITHDRAW_SPEED.FAST]) > Number(oldFee);
-            set(destinationFeeMap, hubNetwork, Object.freeze({...result, isIncreased}));
+            result = {...result, isIncreased};
+            // check isEqual to not trigger computed recalculation
+            if (!isEqual(destinationFeeMap[hubNetwork], result)) {
+                set(destinationFeeMap, hubNetwork, Object.freeze(result));
+            }
         });
 }
 
