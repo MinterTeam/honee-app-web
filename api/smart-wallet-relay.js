@@ -64,6 +64,7 @@ export const SMART_WALLET_RELAY_TX_STATUS = {
  */
 
 /**
+ * Hash of some fields of smart-wallet tx
  * @typedef {object} SmartWalletRelaySubmitTxResult
  * @property {string} hash - 64 symbol hex string (32 bytes)
  */

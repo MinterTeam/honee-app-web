@@ -1,18 +1,22 @@
 <script>
 import {validationMixin} from 'vuelidate/src/index.js';
-import required from 'vuelidate/src/validators/required';
-import minLength from 'vuelidate/src/validators/minLength';
+import required from 'vuelidate/src/validators/required.js';
+import minLength from 'vuelidate/src/validators/minLength.js';
+import minValue from 'vuelidate/src/validators/minValue.js';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import Big, {BIG_ROUND_DOWN} from '~/assets/big.js';
 import {pretty} from '~/assets/utils.js';
 import {wait} from '~/assets/utils/wait.js';
+import {HUB_CHAIN_DATA, HUB_NETWORK} from '~/assets/variables.js';
 import {postConsumerPortfolio} from '~/api/portfolio.js';
 import usePortfolioWallet from '~/composables/use-portfolio-wallet.js';
+import useWeb3SmartWalletPortfolioBuy from '~/composables/use-web3-smartwallet-portfolio-buy.js';
 import SwapEstimation from '~/components/base/SwapEstimation.vue';
 import TxSequenceForm from '~/components/base/TxSequenceForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import PortfolioPriceImpact from '~/components/PortfolioPriceImpact.vue';
+
 
 
 
@@ -39,9 +43,40 @@ export default {
     },
     setup(props, context) {
         const {getWallet} = usePortfolioWallet(context.root.$store.getters.mnemonic);
+        const {
+            amountToWithdraw,
+            minAmountToWithdraw,
+            withdrawTxParams,
+            withdrawFeeTxParams,
+            withdrawAmountToReceiveDistribution,
+
+            list,
+            valueDistribution: smartWalletValueDistribution,
+            amountEstimationBeforeRelayRewardList,
+            amountEstimationToReceiveAfterDepositList,
+            relayRewardDistribution,
+            amountToSellForSwapToHubDistribution,
+            setSmartWalletPortfolioBuyProps,
+            buildTxListAndCallSmartWallet,
+        } = useWeb3SmartWalletPortfolioBuy();
 
         return {
             portfolioWallet: getWallet(props.portfolio.id),
+
+            amountToWithdraw,
+            minAmountToWithdraw,
+            withdrawTxParams,
+            withdrawFeeTxParams,
+            withdrawAmountToReceiveDistribution,
+
+            list,
+            smartWalletValueDistribution,
+            amountEstimationBeforeRelayRewardList,
+            amountEstimationToReceiveAfterDepositList,
+            relayRewardDistribution,
+            amountToSellForSwapToHubDistribution,
+            setSmartWalletPortfolioBuyProps,
+            buildTxListAndCallSmartWallet,
         };
     },
     data() {
@@ -75,6 +110,9 @@ export default {
 
         return {
             form,
+            amountToWithdraw: {
+                minValue: (value) => minValue(this.minAmountToWithdraw)(value),
+            },
             valueDistribution: {
                 valid: (value) => value.reduce((accumulator, item) => accumulator.plus(item), new Big(0)).lte(this.form.value || 0),
             },
@@ -87,13 +125,23 @@ export default {
         };
     },
     computed: {
+        /** @type {HubChainDataItem} */
+        hubChainData() {
+            return HUB_CHAIN_DATA[HUB_NETWORK.BSC];
+        },
         coinList() {
             return this.portfolio.coins.map((item) => {
+                const symbol = this.$store.state.explorer.coinMapId[item.id]?.symbol || '';
                 return {
                     ...item,
-                    symbol: this.$store.state.explorer.coinMapId[item.id]?.symbol || '',
+                    allocationPart: new Big(item.allocation).div(100).toString(),
+                    symbol,
+                    price: this.$store.state.portfolio.coinMap[symbol]?.price || 0,
                 };
             });
+        },
+        amountToSend() {
+            return new Big(this.form.value || 0).minus(this.amountToWithdraw).toString();
         },
         valueDistribution() {
             return this.coinList.map((item) => {
@@ -141,9 +189,17 @@ export default {
                 const error = this.estimationFetchStateList[index]?.error;
                 const enoughToPayFee = Number(this.valueDistributionToSpend[index]) > 0;
 
+                const minterEstimation = this.estimationList[index] || 0;
+                const smartWalletEstimation = this.amountEstimationToReceiveAfterDepositList[index] || 0;
+                const isSmartWalletSwapBetter = new Big(smartWalletEstimation).gt(minterEstimation);
+                const finalEstimation = isSmartWalletSwapBetter ? smartWalletEstimation : minterEstimation;
+
                 return {
                     ...result,
-                    amount: this.estimationList[index] ?? '',
+                    amountMinter: minterEstimation ?? '',
+                    amountSmartWallet: smartWalletEstimation ?? '',
+                    amount: finalEstimation ?? '',
+                    isSmartWalletSwapBetter,
                     isLoading,
                     error,
                     disabled: !!error || (!isLoading && !enoughToPayFee),
@@ -173,8 +229,8 @@ export default {
             const swapSequence = this.coinList.map((coinItem, index) => {
                 const coinSymbol = coinItem.symbol;
                 const needSwap = this.checkNeedSwapEqual(coinSymbol);
-                const isDisabled = this.estimationView.find((item) => item.coin === coinSymbol)?.disabled;
-                const skip = !needSwap || isDisabled;
+                const estimationViewItem = this.estimationView.find((item) => item.coin === coinSymbol);
+                const skip = !needSwap || estimationViewItem?.isDisabled || estimationViewItem?.isSmartWalletSwapBetter;
                 return {
                     // pass null to txParams to not perform fee calculation
                     txParams: needSwap ? {
@@ -208,12 +264,35 @@ export default {
                 };
             });
 
+            const prepareSmartWalletTx = () => {
+                // wait for computed depended on withdrawValue to recalculate
+                return wait(50)
+                    .then(() => this.buildTxListAndCallSmartWallet())
+                    .then((result) => {
+                        const newPayload = JSON.parse(this.withdrawTxParams.payload);
+                        newPayload.smartWalletTx = result.hash;
+
+                        return {
+                            payload: JSON.stringify(newPayload),
+                        };
+                    });
+            };
+            const withdraw = {
+                // refineFee is not needed if no 'prepare'
+                // prepareGasCoinPosition: prepareWithdrawTxParams ? 'start' : 'skip',
+                // prepare: [prepareWithdrawTxParams, prepareSmartWalletTx],
+                prepareGasCoinPosition: 'skip',
+                prepare: prepareSmartWalletTx,
+                txParams: this.withdrawTxParams,
+                feeTxParams: this.withdrawFeeTxParams,
+            };
+
             const send = {
                 txParams: {
                     type: TX_TYPE.SEND,
                     data: {
                         to: this.portfolioWallet.address,
-                        value: this.form.value,
+                        value: this.amountToSend,
                         coin: this.form.coin,
                     },
                     payload: JSON.stringify({
@@ -224,7 +303,10 @@ export default {
                 },
             };
 
-            return [send].concat(swapSequence);
+            return [
+                withdraw,
+                send,
+            ].concat(swapSequence);
         },
         sendFeeData() {
             const feeItem = this.fee?.resultList?.[0];
@@ -241,6 +323,23 @@ export default {
                 this.coinBalance = this.$store.getters.getBalanceAmount(this.form.coin);
             },
         },
+    },
+    created() {
+        // smartWalletSwapProps
+        this.$watch(
+            () => ({
+                privateKey: this.$store.getters.privateKey,
+                evmAccountAddress: this.$store.getters.evmAddress,
+                depositDestination: this.portfolioWallet.address,
+                chainId: this.hubChainData.chainId,
+                valueToSell: this.form.value,
+                coinToSell: this.form.coin,
+                coinToBuyList: this.coinList,
+                coinToBuyEstimationList: this.estimationList,
+            }),
+            (newVal) => this.setSmartWalletPortfolioBuyProps(newVal),
+            {deep: true, immediate: true},
+        );
     },
     methods: {
         pretty,

@@ -91,6 +91,7 @@ export default {
                 chainId: this.hubChainData.chainId,
                 gasTokenAddress: this.form.token === 'BNB' ? NATIVE_COIN_ADDRESS : this.form.token,
                 gasTokenDecimals: 18,
+                estimationSkip: true,
             }),
             (newVal) => this.setSmartWalletProps(newVal),
             {deep: true, immediate: true},
