@@ -286,7 +286,8 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
         console.log('to', txToList);
         console.log('data', txDataList);
         console.log('value', txValueList);
-        console.log(callPayload);
+        console.log('callDestination', callDestination);
+        console.log('callPayload', callPayload);
 
         const gasPrice = web3Utils.toWei('5', 'gwei');
         const gasLimit = new Big(web3Utils.toWei(relayRewardAmount.value.toString(), 'ether')).div(gasPrice).round().toNumber();
