@@ -54,6 +54,8 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         coinToBuyList: [],
         /** @type {Array<string|number>} */
         coinToBuyEstimationList: [],
+        minterFeeToDeduct: 0,
+        isLocked: false,
 
     });
 
@@ -103,22 +105,22 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         });
     });
     const amountToWithdraw = computed(() => {
-        return valueDistribution.value.reduce((accumulator, amountItem, index) => {
-            if (swsSelectedIndices.value.includes(index.toString())) {
-                return new Big(accumulator).plus(amountItem).toString();
-            } else {
-                return accumulator;
-            }
-        }, 0);
+        return getAmountToWithdraw(valueDistribution.value, swsSelectedIndices.value);
+    });
+    const minterFeeDistribution = computed(() => {
+        const allocationDistribution = expandAllocation(prepareAllocationList(swsSelectedIndices.value));
+        return allocationDistribution.map((allocationPart) => {
+            return new Big(props.minterFeeToDeduct || 0).times(allocationPart).toString(undefined, BIG_ROUND_UP);
+        });
     });
     const withdrawAmountToReceiveDistribution = computed(() => {
         return recalculateWithdrawAmountToReceiveDistribution(valueDistribution.value, swsSelectedIndices.value);
     });
     const relayRewardDistribution = computed(() => getRelayRewardDistribution(swsSelectedIndices.value));
-    const amountToSellForSwapToHubDistribution = computed(() => getAmountToSellForSwapToHubDistribution(relayRewardDistribution.value));
-    function getAmountToSellForSwapToHubDistribution(relayRewardDistribution) {
-        return withdrawAmountToReceiveDistribution.value.map((withdrawAmountToReceiveItem, index) => {
-            const amountEstimationLimitForRelayRewardItem = relayRewardDistribution[index];
+    const amountToSellForSwapToHubDistribution = computed(() => getAmountToSellForSwapToHubDistribution(relayRewardDistribution.value, withdrawAmountToReceiveDistribution.value));
+    function getAmountToSellForSwapToHubDistribution(relayRewardDistributionList, withdrawAmountToReceiveDistributionList) {
+        return withdrawAmountToReceiveDistributionList.map((withdrawAmountToReceiveItem, index) => {
+            const amountEstimationLimitForRelayRewardItem = relayRewardDistributionList[index];
             if (!amountEstimationLimitForRelayRewardItem || amountEstimationLimitForRelayRewardItem <= 0) {
                 return 0;
             }
@@ -191,11 +193,15 @@ export default function useWeb3SmartWalletPortfolioBuy() {
     watchThrottled([
         () => props.coinToBuyList,
         () => props.coinToBuyEstimationList,
+        () => props.minterFeeToDeduct,
         maxAmountEstimationLimitForRelayReward,
         valueDistribution,
         estimationBeforeRelayRewardList,
         withdrawAmountToReceive,
     ], () => {
+        if (props.isLocked) {
+            return;
+        }
         // list of indexes taking part in sws
         const swsIndices = filterSameTokenIndex(getIndicesOfPositiveValues(estimationBeforeRelayRewardList.value));
         console.log('swsIndices', swsIndices, estimationBeforeRelayRewardList.value);
@@ -291,6 +297,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
                     withdraw: valueDistribution.value,
                     receiveAfterWithdraw: recalculateWithdrawAmountToReceiveDistribution(valueDistribution.value,  swsToTry),
                     relayRewardDistribution: getRelayRewardDistribution(swsToTry),
+                    sellDistribution: getAmountToSellForSwapToHubDistribution(getRelayRewardDistribution(swsToTry), recalculateWithdrawAmountToReceiveDistribution(valueDistribution.value,  swsToTry)),
                     worst: worstEstimationList,
                     best: bestEstimationList,
                     currentIterationBeforeRelayReward: estimationBeforeRelayRewardList.value,
@@ -316,10 +323,11 @@ export default function useWeb3SmartWalletPortfolioBuy() {
                 coin: props.coinToBuyList.map((item) => item.symbol),
                 withdraw: valueDistribution.value,
                 receiveAfterWithdraw: recalculateWithdrawAmountToReceiveDistribution(valueDistribution.value, swsFinal),
+                finalRelayRewardDistribution: getRelayRewardDistribution(swsFinal),
+                sellDistribution: getAmountToSellForSwapToHubDistribution(getRelayRewardDistribution(swsFinal), recalculateWithdrawAmountToReceiveDistribution(valueDistribution.value, swsFinal)),
                 worst: worstEstimationList,
                 best: bestEstimationList,
                 final: amountEstimationToReceiveAfterDepositList.value,
-                finalRelayRewardDistribution: getRelayRewardDistribution(swsFinal),
                 minter: props.coinToBuyEstimationList,
             });
         }
@@ -388,18 +396,30 @@ export default function useWeb3SmartWalletPortfolioBuy() {
     /**
      * @param {Array<number|string>} valueDistributionList
      * @param {Array<string>} pickIndices
+     * @return {string|number}
+     */
+    function getAmountToWithdraw(valueDistributionList, pickIndices) {
+        const sum = getSum(filterByPickIndices(valueDistributionList, pickIndices), false);
+        return sum.minus(props.minterFeeToDeduct).toString();
+    }
+
+    /**
+     * @param {Array<number|string>} valueDistributionList
+     * @param {Array<string>} pickIndices
      * @returns {Array<string|number>}
      */
     function recalculateWithdrawAmountToReceiveDistribution(valueDistributionList, pickIndices) {
-        const currentAmountToWithdraw = getSum(filterByPickIndices(valueDistributionList, pickIndices));
+        const currentAmountToWithdraw = getAmountToWithdraw(valueDistributionList, pickIndices);
         const currentWithdrawAmountToReceive = recalculateAmountToReceive(currentAmountToWithdraw);
         // console.log('recalculateWithdrawAmountToReceiveDistribution', valueDistributionList, pickIndices, currentAmountToWithdraw, currentWithdrawAmountToReceive);
         return valueDistributionList.map((valueItem, index) => {
             if (isExcludeByIndex(index, pickIndices) || currentAmountToWithdraw <= 0) {
                 return 0;
             }
+            const minterFeePart = minterFeeDistribution.value[index];
+            const valueAfterMinterFee = new Big(valueItem).minus(minterFeePart).toString();
             const part = new Big(currentWithdrawAmountToReceive || 0).div(currentAmountToWithdraw);
-            return part.times(valueItem).toString();
+            return part.times(valueAfterMinterFee).toString();
         });
     }
 
@@ -533,7 +553,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
     async function buildTxListAndCallSmartWallet() {
         const {txList: txListForRelayReward} = await buildTxForRelayReward();
         const relayRewardDistributionFinal = getRelayRewardDistribution(swsSelectedIndices.value, true);
-        const amountToSellForSwapToHubDistributionFinal = getAmountToSellForSwapToHubDistribution(relayRewardDistributionFinal);
+        const amountToSellForSwapToHubDistributionFinal = getAmountToSellForSwapToHubDistribution(relayRewardDistributionFinal, withdrawAmountToReceiveDistribution.value);
 
         const buildSwapPromiseList = [];
         swsSelectedIndices.value.forEach((indexString) => {
@@ -560,7 +580,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         withdrawFeeTxParams,
         withdrawAmountToReceiveDistribution,
 
-        list: swsList,
+        swsList,
         swsSelectedIndices,
         valueDistribution,
         // usedAllocationPartDistribution,
@@ -570,6 +590,8 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         amountEstimationToReceiveAfterDepositList,
 
         setSmartWalletPortfolioBuyProps: setProps,
+        getSum,
+        expandAllocation,
         buildTxListAndCallSmartWallet,
     };
 }
