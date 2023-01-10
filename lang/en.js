@@ -8,6 +8,7 @@ export default {
     },
     action: {
         'title-buy': 'Buy BIP, HUB, & BEE',
+        'title-buy-coin': 'Buy {coin}',
         'title-swap': 'Swap coins',
         'title-swap-combined': 'Swap {coin0} {conjunction} {coin1}',
         'title-swap-coin0-empty': 'coins',

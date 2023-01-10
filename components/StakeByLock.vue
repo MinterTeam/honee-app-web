@@ -115,7 +115,7 @@ export default {
             if (!this.stakingProgram || !this.$store.state.explorer.status) {
                 return false;
             }
-            return this.stakingProgram.joinEndAtBlock - this.$store.state.explorer.status.latestBlockHeight <= BLOCKS_IN_DAY;
+            return this.stakingProgram.joinEndAtBlock - this.$store.state.explorer.status.latestBlockHeight <= 12;
         },
         maxValueToLock() {
             if (!this.stakingProgram?.limit) {

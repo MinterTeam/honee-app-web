@@ -156,7 +156,7 @@ function isSelectedCoinSameAsFeeCoin(selectedCoinItem, feeCoinIdOrSymbol) {
     if (isFeeSymbol && selectedCoinItem.symbol === feeCoinIdOrSymbol) {
         return true;
     }
-    if (isFeeId && selectedCoinItem.id === feeCoinIdOrSymbol) {
+    if (isFeeId && Number(selectedCoinItem.id) === Number(feeCoinIdOrSymbol)) {
         return true;
     }
     return false;

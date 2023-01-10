@@ -191,7 +191,7 @@ export default {
             {deep: true, immediate: true},
         );
 
-        // withdrawProps
+        // hubOracleProps
         this.$watch(
             () => ({
                 hubNetworkSlug: this.form.networkTo,

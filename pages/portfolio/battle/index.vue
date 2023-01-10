@@ -13,6 +13,9 @@ export default {
     PORTFOLIO_PROFIT_PERIOD,
     BATTLE_TAB,
     BATTLE_CURRENT_WEEK_NUMBER,
+    layout(context) {
+        return context.store.getters.isAuthorized ? 'default' : 'splash-index';
+    },
     components: {
         BaseTabs,
         PortfolioBattleTable,

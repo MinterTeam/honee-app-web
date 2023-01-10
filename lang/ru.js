@@ -231,6 +231,8 @@ export default {
         'activate-description': 'Для активации премиум аккаунта отправьте в блокировку от 1000 BEE. Срок блокировки 5 лет. После окончания этого срока ваши монеты будут снова доступны для использования.',
         'card-update-button': 'Повысить уровень',
         'levels-title': 'Уровни премиума',
+        'levels-more': 'подробнее',
+        'levels-more-url': 'https://honee.app/ru/bee',
     },
     portfolio: {
         'manage-create-title': 'Создание портфеля',
@@ -288,6 +290,11 @@ export default {
         'tabs-label-weekly': 'Последняя неделя',
         'tabs-label-live': 'Лайв',
 
+        'subscribe-notification-title': 'Не пропускайте сигналы',
+        'subscribe-notification-description': 'Получайте мгновенные уведомления через Telegram-бота каждый раз, когда этот портфель обновляется.',
+        'subscribe-notification-button': 'Активировать Honee Bot',
+        'subscribe-notification-сancel': 'Отменить',
+
         'legend-title': 'Описание метрик',
         'legend-apy': 'APY - прогнозируемая годовая доходность на основе последних 10 обновлений',
         'legend-awp': 'AWP - средненедельная доходность за последние 5 календарных недель',
@@ -316,6 +323,7 @@ export default {
     },
     action: {
         'title-buy': 'Купите BIP, HUB и BEE',
+        'title-buy-coin': 'Купите {coin}',
         'title-swap': 'Обменяйте монеты',
         'title-swap-combined': '@:action.title-swap {coin0} {conjunction} {coin1}',
         'title-swap-coin0-empty': '',

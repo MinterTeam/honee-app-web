@@ -96,3 +96,14 @@ export function bufferToString(buf) {
     return '0x' + toBuffer(buf).toString('hex');
 }
 
+/**
+ * Cache key generator for axios-extensions cacheAdapter to bust cache based on auth header
+ * @param {AxiosRequestConfig} config
+ * @param {string} defaultKey
+ * @return {string}
+ */
+export function authHeaderKeyGenerator(config, defaultKey) {
+    const authHeader = config.headers.Authorization || config.headers.authorization;
+    const authSuffix = authHeader ? '#' + authHeader.replace(/\s/g, '') : '';
+    return defaultKey + authSuffix;
+}

@@ -8,6 +8,7 @@ import maxValue from 'vuelidate/src/validators/maxValue.js';
 import Big from '~/assets/big.js';
 import {getTokenSymbolForNetwork} from '~/api/hub.js';
 import {pretty} from '~/assets/utils.js';
+import {wait} from '~/assets/utils/wait.js';
 import {HUB_NETWORK, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
@@ -51,8 +52,27 @@ export default {
             // no need to subscribe here, because already subscribed in useHubToken and useWeb3Withdraw
         });
         const {hubCoin: coinItem, tokenPrice: coinPrice, tokenData: externalToken, setHubTokenProps} = useHubToken();
-        const {discountUpsidePercent, destinationFeeInCoin: coinFee, hubFeeRate, hubFeeRatePercent, hubFee, amountToReceive: withdrawAmountToReceive, minAmountToSend: minAmount, txParams: withdrawTxParams, feeTxParams: withdrawFeeTxParams, setWithdrawProps} = useWeb3Withdraw();
-        const {toTokenAmount: depositAmountToReceive, isSmartWalletSwapParamsLoading, smartWalletAddress, oneInchSwapParams, feeTxParams: smartWalletTxParams, prepareTxParams: prepareSmartWalletTxParams, setSmartWalletSwapProps} = useWeb3SmartWalletSwap();
+        const {
+            discountUpsidePercent,
+            destinationFeeInCoin,
+            hubFeeRate,
+            hubFeeRatePercent,
+            hubFee,
+            withdrawAmountToReceive,
+            minAmountToWithdraw,
+            withdrawTxParams,
+            withdrawFeeTxParams,
+
+            amountEstimationLimitForRelayRewards: smartWalletRelayReward,
+            amountToSellForSwapToHub,
+            amountEstimationAfterSwapToHub: depositAmountToReceive,
+            isSmartWalletSwapParamsLoading,
+            smartWalletSwapParamsError,
+            smartWalletAddress,
+            /*feeTxParams: smartWalletTxParams,*/
+            buildTxListAndCallSmartWallet,
+            setSmartWalletSwapProps,
+        } = useWeb3SmartWalletSwap();
 
         return {
             networkHubCoinList,
@@ -65,23 +85,25 @@ export default {
             setHubTokenProps,
 
             discountUpsidePercent,
-            coinFee,
+            destinationFeeInCoin,
             hubFeeRate,
             hubFeeRatePercent,
             hubFee,
             withdrawAmountToReceive,
-            minAmount,
+            minAmountToWithdraw,
             withdrawTxParams,
             withdrawFeeTxParams,
-            setWithdrawProps,
 
+            smartWalletRelayReward,
+            amountToSellForSwapToHub,
             depositAmountToReceive,
             isSmartWalletSwapParamsLoading,
+            smartWalletSwapParamsError,
             smartWalletAddress,
             // oneInchSwapParams,
-            smartWalletTxParams,
+            // smartWalletTxParams,
             setSmartWalletSwapProps,
-            prepareSmartWalletTxParams,
+            buildTxListAndCallSmartWallet,
         };
     },
     data() {
@@ -121,8 +143,11 @@ export default {
             withdrawValue: {
                 required,
                 // validAmount: isValidAmount,
-                minValue: (value) => minValue(this.minAmount)(value),
+                minValue: (value) => minValue(this.minAmountToWithdraw)(value),
                 // maxValue: maxValue(this.maxAmount || 0),
+            },
+            depositAmountToReceive: {
+                required,
             },
         };
     },
@@ -134,29 +159,24 @@ export default {
         externalTokenMainnetSymbol() {
             return this.hubChainData?.coinSymbol;
         },
-        externalTokenSymbol() {
+        externalNativeCoinSymbol() {
             return getTokenSymbolForNetwork(this.externalTokenMainnetSymbol);
         },
         isSelectedWithdrawCoin() {
-            return this.form.coinToSell === this.withdrawCoin;
+            return this.suggestionList.includes(this.form.coinToSell);
         },
         withdrawCoin() {
-            return this.externalTokenSymbol;
+            return this.isSelectedWithdrawCoin ? this.form.coinToSell : this.externalNativeCoinSymbol;
         },
         withdrawValue() {
-            const amount = this.isSelectedWithdrawCoin ? this.form.valueToSell : this.estimation;
-            return new Big(amount || 0).minus(this.smartWalletTotalFee).toString();
-        },
-        smartWalletTotalFee() {
-            //@TODO consider sending smartWalletTx before withdraw to know actual precise fee value
-            // 1 - minter swap, 2 - withdraw to smartWallet, 3 - send from smartWallet
-            const smartWalletTxIndex = 3 - 1;
-            return new Big(this.smartWalletTxParams.data.value).plus(this.fee.resultList?.[smartWalletTxIndex]?.value || 0).toString();
+            return this.isSelectedWithdrawCoin ? this.form.valueToSell : this.estimation;
         },
         sequenceParams() {
-            const prepareWithdrawTxParams = this.isSelectedWithdrawCoin && !this.isUseMax ? undefined : (swapTx, prevPrepareGasCoin) => {
+            const isWithdrawMaxWithoutSwap = this.isSelectedWithdrawCoin && this.isUseMax;
+            const isWithdrawAfterSwap = !this.isSelectedWithdrawCoin;
+            const prepareWithdrawTxParams = !isWithdrawMaxWithoutSwap && !isWithdrawAfterSwap ? undefined : (swapTx, prevPrepareGasCoin) => {
                 let balanceItem;
-                if (this.isSelectedWithdrawCoin) {
+                if (isWithdrawMaxWithoutSwap) {
                     balanceItem = this.$store.getters.getBalanceItem(this.form.coinToSell);
                 } else {
                     const coinToBuy = swapTx.data.coin_to_buy || swapTx.data.coins.find((item) => item.id === swapTx.tags['tx.coin_to_buy']);
@@ -168,27 +188,52 @@ export default {
                 }
 
                 const value = getAvailableSelectedBalance(balanceItem, prevPrepareGasCoin.extra.fee);
+                console.debug('getAvailableSelectedBalance', JSON.parse(JSON.stringify(balanceItem)), JSON.parse(JSON.stringify(prevPrepareGasCoin.extra.fee)));
+                console.debug('value: prev, new', this.withdrawTxParams.data.value, value);
+                console.debug('withdrawValue, withdrawAmountToReceive', this.withdrawValue, this.withdrawAmountToReceive);
+
+                // update withdrawValue
+                if (isWithdrawMaxWithoutSwap) {
+                    this.form.valueToSell = value;
+                }else if (isWithdrawAfterSwap) {
+                    this.estimation = value;
+                }
 
                 return {
                     data: {
-                        value: new Big(value).minus(this.smartWalletTotalFee).toString(),
+                        //@TODO withdrawValue (which is used to calculate smart-walet params) may be outdated and differ from this value
+                        value,
                     },
                 };
+            };
+
+            const prepareSmartWalletTx = () => {
+                // wait for computed depended on withdrawValue to recalculate
+                return wait(50)
+                    .then(() => this.buildTxListAndCallSmartWallet())
+                    .then((result) => {
+                        const newPayload = JSON.parse(this.withdrawTxParams.payload);
+                        newPayload.smartWalletTx = result.hash;
+
+                        return {
+                            payload: JSON.stringify(newPayload),
+                        };
+                    });
             };
 
             return [
                 {
                     // refineFee is not needed if no 'prepare'
                     prepareGasCoinPosition: prepareWithdrawTxParams ? 'start' : 'skip',
-                    prepare: prepareWithdrawTxParams,
+                    prepare: [prepareWithdrawTxParams, prepareSmartWalletTx],
                     txParams: this.withdrawTxParams,
                     feeTxParams: this.withdrawFeeTxParams,
                 },
-                {
-                    prepareGasCoinPosition: 'skip',
-                    prepare: this.prepareSmartWalletTxParams,
-                    txParams: this.smartWalletTxParams,
-                },
+                // {
+                //     prepareGasCoinPosition: 'skip',
+                //     prepare: this.prepareSmartWalletTxParams,
+                //     txParams: this.smartWalletTxParams,
+                // },
             ];
         },
         suggestionList() {
@@ -206,25 +251,11 @@ export default {
                 privateKey: this.$store.getters.privateKey,
                 evmAccountAddress: this.$store.getters.evmAddress,
                 chainId: this.hubChainData.chainId,
-                valueToSell: this.withdrawAmountToReceive,
+                valueToSell: this.withdrawValue,
                 coinToSell: this.withdrawCoin,
                 coinToBuy: this.form.coinToBuy,
             }),
             (newVal) => this.setSmartWalletSwapProps(newVal),
-            {deep: true, immediate: true},
-        );
-
-        // withdrawProps
-        this.$watch(
-            () => ({
-                hubNetworkSlug: this.hubChainData.hubNetworkSlug,
-                amountToSend: this.withdrawValue,
-                tokenSymbol: this.withdrawCoin,
-                accountAddress: this.$store.getters.address,
-                destinationAddress: this.smartWalletAddress,
-                speed: HUB_WITHDRAW_SPEED.FAST,
-            }),
-            (newVal) => this.setWithdrawProps(newVal),
             {deep: true, immediate: true},
         );
 
@@ -302,7 +333,7 @@ export default {
                     <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && !v$estimation.valueToSell.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
                     <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && v$estimation.maxAmount.$invalid">{{ $td('Not enough coins', 'form.not-enough-coins') }}</span>
                     <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && v$estimation.maxAmountAfterFee.$invalid">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol }}</span>
-                    <span class="form-field__error" v-else-if="$v.withdrawValue.$dirty && !$v.withdrawValue.minValue">{{ $td(`Minimum ${minAmount}`, 'form.amount-error-min', {min: minAmount}) }}</span>
+                    <span class="form-field__error" v-else-if="$v.withdrawValue.$dirty && !$v.withdrawValue.minValue">{{ $td(`Minimum ${minAmountToWithdraw}`, 'form.amount-error-min', {min: minAmountToWithdraw}) }}</span>
                 </div>
 
                 <div class="form-row">
@@ -321,8 +352,9 @@ export default {
                     />
 
                     <span class="form-field__error" v-if="v$estimation.coinToBuy.$dirty && !v$estimation.coinToBuy.required">{{ $td('Enter coin', 'form.coin-error-required') }}</span>
-                    <span class="form-field__error" v-if="v$estimation.valueToBuy.$dirty && !v$estimation.valueToBuy.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
+                    <span class="form-field__error" v-else-if="v$estimation.valueToBuy.$dirty && !v$estimation.valueToBuy.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
                     <span class="form-field__error" v-else-if="v$estimation.valueToBuy.$dirty && !v$estimation.valueToBuy.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
+                    <span class="form-field__error" v-else-if="smartWalletSwapParamsError">{{ smartWalletSwapParamsError }}</span>
                 </div>
 
                 <div class="information form-row" v-if="form.coinToSell && form.coinToBuy && form.valueToSell">
@@ -337,14 +369,6 @@ export default {
                         />
                     </template>
 
-                    <h3 class="information__title">Smart-wallet fee</h3>
-                    <BaseAmountEstimation
-                        :coin="withdrawCoin"
-                        :amount="smartWalletTotalFee"
-                        :hide-usd="true"
-                        format="pretty"
-                    />
-
                     <h3 class="information__title">Amount to withdraw to BSC</h3>
                     <BaseAmountEstimation
                         :coin="withdrawCoin"
@@ -354,10 +378,18 @@ export default {
                         format="pretty"
                     />
 
+                    <h3 class="information__title">Smart-wallet fee</h3>
+                    <BaseAmountEstimation
+                        :coin="withdrawCoin"
+                        :amount="smartWalletRelayReward"
+                        :hide-usd="true"
+                        format="pretty"
+                    />
+
                     <h3 class="information__title">Amount to sell in BSC</h3>
                     <BaseAmountEstimation
                         :coin="withdrawCoin"
-                        :amount="withdrawAmountToReceive"
+                        :amount="amountToSellForSwapToHub"
                         :hide-usd="true"
                         :is-loading="!v$estimation.isEstimationWaiting.finished"
                         format="pretty"
@@ -380,9 +412,6 @@ export default {
                     :coin-to-buy="form.coinToBuy"
                     :value-to-buy="depositAmountToReceive"
                 />
-
-
-
             </template>
 
 <!--            <template v-slot:submit-title>-->

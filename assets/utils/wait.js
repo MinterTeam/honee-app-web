@@ -1,10 +1,12 @@
 /**
+ * @template {any} T
  * @param {number} time
- * @return {Promise<void>}
+ * @param {T} [result] - result of resolved promise
+ * @return {Promise<T>}
  */
-export function wait(time) {
+export function wait(time, result) {
     return new Promise((resolve) => {
-        setTimeout(resolve, time);
+        setTimeout(() => resolve(result), time);
     });
 }
 

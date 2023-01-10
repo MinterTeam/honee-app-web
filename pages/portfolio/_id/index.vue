@@ -117,9 +117,9 @@ export default {
                         <br>
                         {{ $td('LIVE - profit from the start of the week', 'portfolio.legend-live') }}
                         <br>
-                        {{ $td('1W - profit for the last calendar week', 'portfolio.legend-1w') }}
-                        <br>
                         {{ $td('7D - profit for the last 7 days', 'portfolio.legend-7d') }}
+                        <br>
+                        {{ $td('1W - profit for the last calendar week', 'portfolio.legend-1w') }}
                     </p>
                 </div>
             </div>

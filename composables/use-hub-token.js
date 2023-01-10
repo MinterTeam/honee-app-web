@@ -1,6 +1,6 @@
 import {reactive, computed} from '@vue/composition-api';
 import {findHubCoinItem, findTokenInfo} from '~/api/hub.js';
-import {HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+import {HUB_CHAIN_BY_ID, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 
 /**
@@ -43,10 +43,11 @@ export default function useHubToken() {
         return findTokenInfo(hubTokenList.value, props.tokenSymbol, props.chainId);
     });
     const tokenContractAddress = computed(() => tokenData.value?.externalTokenId.toLowerCase() || '');
+    // fixed for 1inch and swapAndDepositToHubProxy
     const tokenContractAddressFixNative = computed(() => {
         const isNative = HUB_CHAIN_BY_ID[props.chainId] && props.tokenSymbol === HUB_CHAIN_BY_ID[props.chainId].coinSymbol;
         if (isNative) {
-            return '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+            return NATIVE_COIN_ADDRESS;
         } else {
             return tokenContractAddress.value;
         }

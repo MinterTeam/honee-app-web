@@ -1,5 +1,5 @@
 import {reactive, set} from '@vue/composition-api';
-import {getProviderByChain, web3Utils, fromErcDecimals} from '~/api/web3.js';
+import {getProviderByChain, getAllowance as _getAllowance, web3Utils, fromErcDecimals} from '~/api/web3.js';
 import erc20ABI from '~/assets/abi-erc20.js';
 import {HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from '~/assets/variables.js';
 
@@ -127,7 +127,7 @@ function getAllowance(accountAddress, chainId, tokenAddress, tokenDecimals) {
     }
 
     const hubAddress = HUB_CHAIN_BY_ID[chainId]?.hubContractAddress;
-    const allowancePromise = new web3Eth.Contract(erc20ABI, tokenAddress).methods.allowance(accountAddress, hubAddress).call()
+    const allowancePromise = _getAllowance(chainId, tokenAddress, accountAddress, hubAddress)
         .then((allowanceValue) => {
             set(web3Allowance[chainId], tokenAddress, fromErcDecimals(allowanceValue, tokenDecimals));
             allowanceRequestData[chainId][tokenAddress] = {

@@ -15,6 +15,7 @@ import TxStakeUnbondForm from '~/components/TxStakeUnbondForm.vue';
 import StakeByLock from '~/components/StakeByLock.vue';
 import ActionFarmWithLock from '~/components/ActionFarmWithLock.vue';
 import ActionSwapWeb3 from '~/components/ActionSwapWeb3.vue';
+import ActionSendWeb3 from '~/components/ActionSendWeb3.vue';
 import Modal from '~/components/base/Modal.vue';
 import CardHead from '~/components/CardHead.vue';
 
@@ -58,6 +59,10 @@ const actionList = {
     send: {
         params: ['address', 'coin', 'amount'],
         component: TxSendForm,
+    },
+    'smart-wallet-send': {
+        params: [],
+        component: ActionSendWeb3,
     },
     'add-liquidity': addLiquidityAction,
     win: {
@@ -179,6 +184,9 @@ export default {
                 conjunction: params.coinToBuy ? this.$t('action.title-swap-conjunction') : undefined,
                 coin1: params.coinToBuy ? params.coinToBuy.toUpperCase() : undefined,
             });
+        }
+        if (actionType === 'buy' && params.coinToGet) {
+            title = this.$t('action.title-buy-coin', {coin: params.coinToGet});
         }
 
         // card

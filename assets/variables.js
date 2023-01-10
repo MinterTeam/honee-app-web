@@ -24,6 +24,7 @@ export const HUB_BSC_CONTRACT_ADDRESS = process.env.APP_HUB_BSC_CONTRACT_ADDRESS
 export const HUB_MINTER_MULTISIG_ADDRESS = process.env.APP_HUB_MINTER_MULTISIG_ADDRESS;
 export const HUB_API_URL = process.env.APP_HUB_API_URL;
 export const HUB_DEPOSIT_PROXY_API_URL = process.env.APP_HUB_API_URL + 'deposit-proxy/';
+export const SMART_WALLET_RELAY_API_URL = process.env.APP_HUB_API_URL + 'smart-wallet-relay/';
 export const ETHEREUM_API_URL = process.env.APP_ETHEREUM_API_URL;
 export const BSC_API_URL = process.env.APP_BSC_API_URL;
 export const ETHEREUM_CHAIN_ID = NETWORK === MAINNET ? 1 : 3;
@@ -33,11 +34,18 @@ export const ETHERSCAN_API_KEY = 'I3VTWM2AX8BXS2ZX1FYRXINCWHQVVGEBJM';
 export const ETHERSCAN_HOST = NETWORK === MAINNET ? 'https://etherscan.io' : 'https://ropsten.etherscan.io';
 export const BSCSCAN_HOST = NETWORK === MAINNET ? 'https://bscscan.com' : 'https://testnet.bscscan.com';
 export const ONE_INCH_API_URL = 'https://api.1inch.io/v5.0/';
+export const PARASWAP_API_URL = 'https://apiv5.paraswap.io/';
+export const ZERO_X_API_URL = 'https://bsc.api.0x.org/';
 export const WETH_CONTRACT_ADDRESS = NETWORK === MAINNET ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' : '0x0a180a76e4466bf68a7f86fb029bed3cccfaaac5';// '0xc778417e063141139fce010982780140aa0cd5ab';
 export const WBNB_CONTRACT_ADDRESS = NETWORK === MAINNET ? '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c' : '0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd';
+// recognized by 1inch/paraswap/0x and other third parties as native coin
+export const NATIVE_COIN_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 export const HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS = '0x0C9B820C0877340333E874AE70395Da7353E7cA3';
 export const SMART_WALLET_FACTORY_CONTRACT_ADDRESS = "0x7F3C8d5363B44875001Fa2A63A7dB6FCb8BEE989";
+export const SMART_WALLET_RELAY_BROADCASTER_ADDRESS = '0x64e51D5930CDBbf99f3cB27654A03b18f7060C5E';
 export const SMART_WALLET_RELAY_MINTER_ADDRESS = "Mxc9b1b39f4c94b1bcbf68c1beba97ab84f7763cf0";
+export const GOATCOUNTER_HOST = 'https://counter-api.minter.network';
+export const GOATCOUNTER_SCRIPT_HASH = 'sha384-Y8F5Ua/zQ+NPBrMSdg9H3WezYaB49Qf3WJsv3LLUntxBwBV2r8pOWJWJ7X7l8DXX';
 export const BASE_COIN = NETWORK === MAINNET ? 'BIP' : 'MNT';
 export const COIN_NAME = BASE_COIN;
 export const CHAIN_ID = NETWORK === MAINNET ? 1 : 2;

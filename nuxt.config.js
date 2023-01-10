@@ -8,23 +8,27 @@ const envConfigParsed = envConfig.error ? {} : envConfig.parsed;
 
 import langEn from './lang/en.js';
 import langRu from './lang/ru.js';
-import {BASE_TITLE, BASE_DESCRIPTION, I18N_ROUTE_NAME_SEPARATOR, LANGUAGE_COOKIE_KEY} from "./assets/variables.js";
+import {BASE_TITLE, BASE_DESCRIPTION, I18N_ROUTE_NAME_SEPARATOR, LANGUAGE_COOKIE_KEY, GOATCOUNTER_HOST, GOATCOUNTER_SCRIPT_HASH} from "./assets/variables.js";
 import * as varsConfig from "./assets/variables.js";
 
 const NUXT_LOADING_INLINE_SCRIPT_SHA = process.env.NODE_ENV === 'production'
     ? [
         // loader (minified)
-        'tempUn1btibnrWwQxEk37lMGV1Nf8FO/GXxNhLEsPdg=',
+        'sha256-tempUn1btibnrWwQxEk37lMGV1Nf8FO/GXxNhLEsPdg=',
         // module (minified)
-        'yX/iyX7D+2AX+qF0YUk4EXLqu5fIbl/NS5QXjj9BX4M=',
+        'sha256-yX/iyX7D+2AX+qF0YUk4EXLqu5fIbl/NS5QXjj9BX4M=',
         // window.___NUXT___ (prod)
-        'YvYJ5WVzt8kOVVuSB9YcyVJLN4a6HcbOgQpzrg0BLUI=',
+        'sha256-YvYJ5WVzt8kOVVuSB9YcyVJLN4a6HcbOgQpzrg0BLUI=',
+        // @TODO firefox doesn't support hashes for external resources so use GOATCOUNTER_HOST for now
+        // @see https://bugzilla.mozilla.org/show_bug.cgi?id=1409200
+        // @see https://bugzilla.mozilla.org/show_bug.cgi?id=1730668
+        GOATCOUNTER_SCRIPT_HASH,
     ]
     : [
         // loader (not minified)
-        '9VDmhXS8/iybLLyD3tql7v7NU5hn5+qvu9RRG41mugM=',
+        'sha256-9VDmhXS8/iybLLyD3tql7v7NU5hn5+qvu9RRG41mugM=',
         // window.___NUXT___ (dev)
-        'uMkuBZ4FQVVBqzs6NHOoGr/1vOLA1h9acPURz3E39HA=',
+        'sha256-uMkuBZ4FQVVBqzs6NHOoGr/1vOLA1h9acPURz3E39HA=',
     ];
 
 /**
@@ -64,7 +68,7 @@ const imageCSP = prepareCSP(varsConfig, (item) => {
     return item === 'APP_ACCOUNTS_API_URL';
 });
 const scriptCSP = NUXT_LOADING_INLINE_SCRIPT_SHA.map((item) => {
-    return `'sha256-${item}'`;
+    return `'${item}'`;
 }).join(' ');
 
 
@@ -84,12 +88,13 @@ module.exports = {
             // unsafe-eval polluted by 'setimmediate' package
             { 'http-equiv': 'Content-Security-Policy', content: `
                     default-src 'self' ${connectCSP};
-                    script-src 'self' ${scriptCSP} 'unsafe-eval';
+                    script-src 'self' ${scriptCSP} ${GOATCOUNTER_HOST} 'unsafe-eval';
                     style-src 'self' 'unsafe-inline';
                     img-src 'self' ${imageCSP} *.minter.network data:;
                     font-src 'self' data:;
                     base-uri 'none';
                     form-action 'none';
+                    object-src 'none';
                     frame-ancestors https://honee.app;
                     report-uri https://csp-report-collector.minter.network https://1ba68dd21788a2dfc5522a62c6674f25.report-uri.com/r/d/csp/enforce;
                     report-to default;
@@ -233,6 +238,19 @@ module.exports = {
                 include: /node_modules/,
                 type: "javascript/auto",
             });
+
+            // add ts support
+            config.resolve.extensions.push('.d.ts');
+            const babelLoaderIndex = config.module.rules.findIndex((item) => item.use?.[0].loader.includes('/babel-loader/'));
+            config.module.rules[babelLoaderIndex].test = /\.(js|mjs|jsx|ts|tsx)$/i;
+            // ts-loader doesn't work because of https://github.com/vuejs/vue-cli/issues/2132
+            // config.module.rules.push({
+            //     test: /\.tsx?$/,
+            //     loader: 'ts-loader',
+            //     options: {
+            //         transpileOnly: true,
+            //     },
+            // });
         },
         plugins: [
             new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
@@ -252,6 +270,12 @@ module.exports = {
             ],
             plugins: [
                 // '@babel/plugin-proposal-optional-chaining',
+                [
+                    "@babel/plugin-transform-typescript",
+                    {
+                        optimizeConstEnums: true,
+                    },
+                ],
             ],
             // prevent @babel/plugin-transform-runtime from inserting `import` statement into commonjs files (bc. it breaks webpack)
             sourceType: 'unambiguous',

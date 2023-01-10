@@ -224,7 +224,20 @@ export default {
             this.watchForm();
         },
         valueToSell: function(newVal, oldVal) {
-            this.watchForm();
+            // wait computed to recalculate
+            setTimeout(() => {
+                if (this.isTypeSell) {
+                    this.watchForm();
+                }
+            }, 0);
+        },
+        valueToBuy: function(newVal, oldVal) {
+            // wait computed to recalculate
+            setTimeout(() => {
+                if (this.isTypeBuy) {
+                    this.watchForm();
+                }
+            }, 0);
         },
         $v: {
             handler(newVal) {

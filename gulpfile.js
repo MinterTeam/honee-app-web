@@ -17,9 +17,11 @@ import del from 'del';
 import path from 'path';
 import cache from 'gulp-cache';
 import imagemin from 'gulp-imagemin';
-import mozjpeg from 'imagemin-mozjpeg';
-import jpegtran from 'imagemin-jpegtran';
-//const pngquant = require('imagemin-pngquant');
+import imageminMozjpeg from 'imagemin-mozjpeg';
+import imageminJpegtran from 'imagemin-jpegtran';
+import imageminPngquant from 'imagemin-pngquant';
+import imageminOptipng from 'imagemin-optipng';
+import imageminSvgo from 'imagemin-svgo';
 
 
 let paths = {
@@ -89,12 +91,15 @@ gulp.task('imagemin', function() {
         .pipe(plumber({errorHandler: onError}))
         .pipe(cache(
             imagemin([
-                imagemin.gifsicle({interlaced: true}),
-                mozjpeg({quality: 90}),
-                jpegtran({progressive: true}),
-                //pngquant(),
-                imagemin.optipng({optimizationLevel: 5}),
-                imagemin.svgo({plugins: [{removeViewBox: false}]}),
+                // imagemin.gifsicle({interlaced: true}),
+                imageminMozjpeg({quality: 90}),
+                imageminJpegtran({progressive: true}),
+                imageminPngquant(),
+                imageminOptipng({optimizationLevel: 5}),
+                imageminSvgo({plugins: [{
+                        name: 'removeViewBox',
+                        active: false,
+                    }]}),
             ], {
                 verbose: true,
             }), {
