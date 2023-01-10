@@ -13,6 +13,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
     const {
         setSmartWalletProps,
         amountEstimationLimitForRelayReward,
+        maxAmountEstimationLimitForRelayReward,
         smartWalletAddress,
         swapToRelayRewardParams,
         estimateSpendLimitForRelayReward,
@@ -114,15 +115,16 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         return recalculateWithdrawAmountToReceiveDistribution(valueDistribution.value, swsSelectedIndices.value);
     });
     const relayRewardDistribution = computed(() => getRelayRewardDistribution(swsSelectedIndices.value));
-    const amountToSellForSwapToHubDistribution = computed(() => {
+    const amountToSellForSwapToHubDistribution = computed(() => getAmountToSellForSwapToHubDistribution(relayRewardDistribution.value));
+    function getAmountToSellForSwapToHubDistribution(relayRewardDistribution) {
         return withdrawAmountToReceiveDistribution.value.map((withdrawAmountToReceiveItem, index) => {
-            const amountEstimationLimitForRelayRewardItem = relayRewardDistribution.value[index];
+            const amountEstimationLimitForRelayRewardItem = relayRewardDistribution[index];
             if (!amountEstimationLimitForRelayRewardItem || amountEstimationLimitForRelayRewardItem <= 0) {
                 return 0;
             }
             return new Big(withdrawAmountToReceiveItem || 0).minus(amountEstimationLimitForRelayRewardItem).toString();
         });
-    });
+    }
 
     //@TODO combine loaders from swsList and postpone swsSelectedIndices recalculation while isSmartWalletSwapParamsLoading
     // const isSmartWalletSwapParamsLoading = computed(() => {
@@ -189,7 +191,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
     watchThrottled([
         () => props.coinToBuyList,
         () => props.coinToBuyEstimationList,
-        amountEstimationLimitForRelayReward,
+        maxAmountEstimationLimitForRelayReward,
         valueDistribution,
         estimationBeforeRelayRewardList,
         withdrawAmountToReceive,
@@ -403,13 +405,14 @@ export default function useWeb3SmartWalletPortfolioBuy() {
 
     /**
      * @param {Array<string>} [pickIndices]
+     * @param {boolean} [useDirectRelayReward]
      * @returns {Array<number|string>}
      */
-    function getRelayRewardDistribution(pickIndices) {
+    function getRelayRewardDistribution(pickIndices, useDirectRelayReward) {
         // cast portfolio coinToBuy allocation to smart-wallet valueToSell allocation (e.g. if buying only 3 items of 10 coin portfolio)
         const expandedAllocationPartDistribution = expandAllocation(prepareAllocationList(pickIndices));
         const complexity = expandedAllocationPartDistribution.filter((allocationPart) => allocationPart > 0).length;
-        const amountEstimationLimitForRelayRewardRecalculated = recalculateAmountEstimationLimit(complexity);
+        const amountEstimationLimitForRelayRewardRecalculated = recalculateAmountEstimationLimit(complexity, useDirectRelayReward);
         // console.log('expandedAllocationPartDistribution', expandedAllocationPartDistribution)
         // console.log('amountEstimationLimitForRelayReward', amountEstimationLimitForRelayReward.value, amountEstimationLimitForRelayRewardRecalculated, complexity);
         return expandedAllocationPartDistribution.map((allocationPart) => {
@@ -529,9 +532,12 @@ export default function useWeb3SmartWalletPortfolioBuy() {
      */
     async function buildTxListAndCallSmartWallet() {
         const {txList: txListForRelayReward} = await buildTxForRelayReward();
+        const relayRewardDistributionFinal = getRelayRewardDistribution(swsSelectedIndices.value, true);
+        const amountToSellForSwapToHubDistributionFinal = getAmountToSellForSwapToHubDistribution(relayRewardDistributionFinal);
+
         const buildSwapPromiseList = [];
         swsSelectedIndices.value.forEach((indexString) => {
-            const overrideAmount = amountToSellForSwapToHubDistribution.value[indexString];
+            const overrideAmount = amountToSellForSwapToHubDistributionFinal[indexString];
             buildSwapPromiseList.push(swsList.value[indexString].buildTxForSwapToHub({overrideAmount}));
         });
         if (buildSwapPromiseList.length < 1) {
@@ -555,6 +561,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         withdrawAmountToReceiveDistribution,
 
         list: swsList,
+        swsSelectedIndices,
         valueDistribution,
         // usedAllocationPartDistribution,
         relayRewardDistribution,

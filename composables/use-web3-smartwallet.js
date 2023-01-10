@@ -17,8 +17,13 @@ import {getErrorText} from '~/assets/server-error.js';
 import {wait} from '~/assets/utils/wait.js';
 
 
+// (fees in BNB)
+// base extra fee added for each tx (to cover unexpected costs)
+export const RELAY_REWARD_AMOUNT_BASE = 0.0025;
+// fee for smart-wallet contract creation via factory
 export const RELAY_REWARD_AMOUNT_CREATE = 0.005;
-export const RELAY_REWARD_AMOUNT_SWAP = 0.005;
+// fee for each swap inside combined tx
+export const RELAY_REWARD_AMOUNT_SWAP = 0.0025;
 
 
 export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
@@ -42,6 +47,8 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
         isEstimationLimitForRelayRewardsLoading: false,
         estimationLimitForRelayRewardsError: '',
         amountEstimationLimitForRelayReward: 0,
+        // used only in estimationComplexity mode
+        maxAmountEstimationLimitForRelayReward: 0,
     });
 
     const smartWalletAddress = computed(() => getSmartWalletAddress(props.evmAccountAddress));
@@ -53,11 +60,15 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
     function getRelayRewardAmount(complexity = 1) {
         // @TODO fee for swap via zeroEx for relay reward not taken into account
         // @TODO exclude createReward if wallet already created
+        const baseReward = RELAY_REWARD_AMOUNT_BASE;
         const createReward = RELAY_REWARD_AMOUNT_CREATE;
         const swapReward = complexity * RELAY_REWARD_AMOUNT_SWAP;
-        return createReward + swapReward;
+        return baseReward + createReward + swapReward;
     }
-    function recalculateAmountEstimationLimit(complexity) {
+    function recalculateAmountEstimationLimit(complexity, useDirectRelayReward) {
+        if (useDirectRelayReward) {
+            return state.amountEstimationLimitForRelayReward;
+        }
         if (props.estimationSkip) {
             return 0;
         }
@@ -65,13 +76,15 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
             return getRelayRewardAmount(complexity);
         }
         if (complexity === estimationComplexity.value) {
-            return state.amountEstimationLimitForRelayReward;
+            return state.maxAmountEstimationLimitForRelayReward;
         }
+        const baseRewardPart = new Big(RELAY_REWARD_AMOUNT_BASE).div(maxRelayRewardAmount.value);
         const createRewardPart = new Big(RELAY_REWARD_AMOUNT_CREATE).div(maxRelayRewardAmount.value);
         const swapRewardPart = new Big(RELAY_REWARD_AMOUNT_SWAP).div(maxRelayRewardAmount.value);
-        const createReward = createRewardPart.times(state.amountEstimationLimitForRelayReward);
-        const swapReward = swapRewardPart.times(complexity).times(state.amountEstimationLimitForRelayReward);
-        return createReward.plus(swapReward).toNumber();
+        const baseReward = baseRewardPart.times(state.maxAmountEstimationLimitForRelayReward);
+        const createReward = createRewardPart.times(state.maxAmountEstimationLimitForRelayReward);
+        const swapReward = swapRewardPart.times(complexity).times(state.maxAmountEstimationLimitForRelayReward);
+        return baseReward.plus(createReward).plus(swapReward).toNumber();
     }
 
     // gas token will be used to reward relay service
@@ -150,21 +163,33 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
             estimateSpendLimitForRelayReward()
                 .then((spendLimit) => {
                     state.isEstimationLimitForRelayRewardsLoading = false;
-                    state.amountEstimationLimitForRelayReward = spendLimit;
+                    setAmountEstimationLimitForRelayReward(spendLimit);
                 })
                 .catch((error) => {
-                    state.amountEstimationLimitForRelayReward = 0;
+                    setAmountEstimationLimitForRelayReward(0);
                     state.isEstimationLimitForRelayRewardsLoading = false;
                     state.estimationLimitForRelayRewardsError = getErrorText(error);
                 });
         } else {
-            state.amountEstimationLimitForRelayReward = 0;
+            setAmountEstimationLimitForRelayReward(0);
         }
     }, {
         throttle: estimationThrottle,
         leading: false,
         trailing: true,
     });
+
+    /**
+     * maxAmountEstimationLimitForRelayReward is only used in estimationComplexity mode
+     * @param value
+     */
+    function setAmountEstimationLimitForRelayReward(value) {
+        if (props.estimationComplexity > props.complexity) {
+            state.maxAmountEstimationLimitForRelayReward = value;
+        } else {
+            state.amountEstimationLimitForRelayReward = value;
+        }
+    }
 
     function getEstimationLimit() {
         return getZeroXEstimationLimit(props.chainId, swapToRelayRewardEstimationParams.value)
