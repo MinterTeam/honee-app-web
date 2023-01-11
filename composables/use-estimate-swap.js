@@ -95,6 +95,7 @@ export default function useEstimateSwap({idPreventConcurrency, $td} = {}) {
                 if (error.isCanceled) {
                     return;
                 }
+                state.estimation = null;
                 state.isEstimationLoading = false;
                 state.estimationError = getErrorText(error, $td('Estimation error', 'form.estimation-error') + ': ');
                 if (throwOnError) {
