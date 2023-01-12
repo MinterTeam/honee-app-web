@@ -20,6 +20,7 @@ export default {
         'update:estimation',
         'update:v$estimation',
         'validation-touch',
+        'update:fetch-state',
     ],
     props: {
         coinToSell: {
@@ -201,6 +202,7 @@ export default {
                 @update:estimation="estimation = $event"
                 @update:tx-data="txData = $event"
                 @update:v$estimation="v$estimation = $event; $emit('update:v$estimation', $event)"
+                @update:fetch-state="$emit('update:fetch-state', $event)"
             />
         </template>
 

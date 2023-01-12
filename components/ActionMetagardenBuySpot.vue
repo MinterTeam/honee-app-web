@@ -78,6 +78,9 @@ export default {
             estimation: 0,
             estimationSpendForMetagarden: 0,
             estimationSpendForUsd: 0,
+            estimationFetchState: null,
+            estimationFetchStateMetagarden: null,
+            estimationFetchStateUsd: null,
         };
     },
     //@TODO check both txs fees (maybe with extra, because first tx may affect cost of second tx and second may fail)
@@ -98,6 +101,7 @@ export default {
             estimation: {
                 minValue: (value) => this.isModeBuy ? value > 0 : true,
                 maxValue: (value) => this.isModeBuy ? maxValue(this.selectedBalance)(value) : true,
+                finished: (value) => !this.isEstimationLoading,
             },
         };
     },
@@ -118,6 +122,7 @@ export default {
         isModeBuy() {
             return this.currentMode === MODE.BUY_METAGARDEN || this.currentMode === MODE.BUY_USD;
         },
+        // coin in 'SEND' tx
         sendTokenSymbol() {
             if (this.currentMode === MODE.SEND_METAGARDEN || this.currentMode === MODE.BUY_METAGARDEN) {
                 return METAGARDEN_SYMBOL;
@@ -125,6 +130,7 @@ export default {
                 return USD_SYMBOL;
             }
         },
+        // value in 'SEND' tx
         sendAmount() {
             if (this.currentMode === MODE.SEND_METAGARDEN || this.currentMode === MODE.BUY_METAGARDEN) {
                 return this.spotsPriceMetagarden;
@@ -132,8 +138,13 @@ export default {
                 return this.spotsPriceUsd;
             }
         },
+        // spend from balance
         spendAmount() {
-            return this.isModeBuy ? this.estimation : this.spotsPriceMetagarden;
+            if (this.isModeBuy) {
+                return this.estimation;
+            } else {
+                return this.currentMode === MODE.SEND_METAGARDEN ? this.spotsPriceMetagarden : this.spotsPriceUsd;
+            }
         },
         spotsPriceMetagarden() {
             return this.form.spotAmount * SPOT_PRICE_METAGARDEN;
@@ -151,6 +162,9 @@ export default {
         // availableSpotsDirect() {
         //     return Math.floor(this.metagardenBalance / SPOT_PRICE_METAGARDEN);
         // },
+        isEstimationLoading() {
+            return this.estimationFetchState?.loading || this.estimationFetchStateMetagarden?.loading || this.estimationFetchStateUsd?.loading;
+        },
 
 
         sequenceParams() {
@@ -250,7 +264,7 @@ export default {
                         :fallbackToFullList="false"
                         :amount="spendAmount"
                         :is-estimation="true"
-                        :isLoading="isEstimationWaiting"
+                        :isLoading="isEstimationLoading"
                         :label="$td('Coin to spend', 'form.you-spend')"
                     />
                     <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
@@ -271,22 +285,24 @@ export default {
                     ref="estimationMetagarden"
                     id-prevent-concurrency="swapFormMetagarden"
                     :coin-to-sell="form.coin"
-                    :coin-to-buy="checkNeedSwapEqual($options.METAGARDEN_SYMBOL) ? $options.METAGARDEN_SYMBOL : ''"
+                    :coin-to-buy="isModeBuy ? $options.METAGARDEN_SYMBOL : ''"
                     :value-to-buy="spotsPriceMetagarden"
                     :is-use-max="false"
                     :fee="null"
                     @update:estimation="estimationSpendForMetagarden = $event"
+                    @update:fetch-state="estimationFetchStateMetagarden = $event"
                 />
                 <SwapEstimation
                     class="u-text-medium form-row u-hidden"
                     ref="estimationUsd"
                     id-prevent-concurrency="swapFormUsd"
                     :coin-to-sell="form.coin"
-                    :coin-to-buy="checkNeedSwapEqual($options.USD_SYMBOL) ? $options.USD_SYMBOL : ''"
+                    :coin-to-buy="isModeBuy ? $options.USD_SYMBOL : ''"
                     :value-to-buy="spotsPriceUsd"
                     :is-use-max="false"
                     :fee="null"
                     @update:estimation="estimationSpendForUsd = $event"
+                    @update:fetch-state="estimationFetchStateUsd = $event"
                 />
             </template>
 
