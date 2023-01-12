@@ -315,7 +315,7 @@ export default {
             </template>
 
             <template v-slot:submit-title>
-                {{ $td('Stake', `stake-by-lock.submit-button`) }}
+                {{ $td('Buy', `form.buy-button`) }}
             </template>
 
             <template v-slot:confirm-modal-header>
