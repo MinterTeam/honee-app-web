@@ -103,6 +103,9 @@ export default {
                 maxValue: (value) => this.isModeBuy ? maxValue(this.selectedBalance)(value) : true,
                 finished: (value) => !this.isEstimationLoading,
             },
+            sendAmount: {
+                required: (value) => value > 0,
+            },
         };
     },
     computed: {
@@ -191,8 +194,12 @@ export default {
         },
     },
     watch: {
-        apr() {
-            this.$emit('override-stats-value', pretty(this.apr) + '%');
+        'form.spotAmount': {
+            handler() {
+                if (!(this.form.spotAmount > 0)) {
+                    this.estimation = 0;
+                }
+            },
         },
     },
     methods: {
@@ -236,6 +243,7 @@ export default {
             :v$sequence-params="$v"
             :before-post-sequence="fetchLatestBlock"
             @update:estimation="estimation = $event"
+            @update:fetch-state="estimationFetchState = $event"
             @clear-form="clearForm()"
             @success="$emit('success')"
             @success-modal-close="$emit('success-modal-close')"

@@ -155,6 +155,7 @@ export default {
             ];
         },
     },
+    /* update with same estimation will not fire, and not update parent values set to 0 after invalid props
     watch: {
         estimation: {
             handler(newVal) {
@@ -162,6 +163,7 @@ export default {
             },
         },
     },
+    */
     methods: {
         pretty,
         clearForm() {
@@ -199,7 +201,7 @@ export default {
                 :value-to-buy="valueToBuy"
                 :is-use-max="isUseMax"
                 :fee="swapFee"
-                @update:estimation="estimation = $event"
+                @update:estimation="estimation = $event; $emit('update:estimation', $event);"
                 @update:tx-data="txData = $event"
                 @update:v$estimation="v$estimation = $event; $emit('update:v$estimation', $event)"
                 @update:fetch-state="$emit('update:fetch-state', $event)"
