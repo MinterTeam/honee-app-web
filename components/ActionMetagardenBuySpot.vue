@@ -230,7 +230,7 @@ export default {
                 <div class="form-row">
                     <div class="h-field" :class="{'is-error': $v.form.spotAmount.$error}">
                         <div class="h-field__content">
-                            <div class="h-field__title">{{ $td('Spots amount', 'metagarden-spot.spot-amount-label') }}</div>
+                            <div class="h-field__title">{{ $td('Spots amount', 'metagarden.spot-amount-label') }}</div>
                             <InputMaskedAmount
                                 class="h-field__input h-field__input--medium"
                                 scale="0"
@@ -255,8 +255,8 @@ export default {
                     />
                     <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.coin.$dirty && !$v.form.coin.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
-                    <span class="form-field__error" v-else-if="$v.estimation.$dirty && !$v.estimation.minValue">{{ $td('Can\'t swap', 'form.todo') }}</span>
-                    <span class="form-field__error" v-else-if="!$v.estimation.maxValue">{{ $td('Not enough coin balance to buy spots', 'form.todo') }}</span>
+                    <span class="form-field__error" v-else-if="$v.estimation.$dirty && !$v.estimation.minValue">{{ $td('Can\'t swap', 'form.swap-error') }}</span>
+                    <span class="form-field__error" v-else-if="!$v.estimation.maxValue">{{ $td('Not enough coin balance to buy spots', 'form.spots-error-balance') }}</span>
                 </div>
 
                 <!--<div class="information form-row">-->
@@ -296,7 +296,7 @@ export default {
 
             <template v-slot:confirm-modal-header>
                 <h2 class="u-h3 u-mb-10">
-                    {{ $td('Confirm purchase', `metagarden-spot.confirm-title`) }}
+                    {{ $td('Confirm purchase', `metagarden.confirm-title`) }}
                 </h2>
             </template>
 

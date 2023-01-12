@@ -18,9 +18,9 @@ export default {
     <div class="u-section u-container u-container--small">
         <div class="card card--invert">
             <div class="card__content card__content--medium">
-                <h1 class="card__action-title-value">{{ $td('Buy Metagarden mining spot', 'metagarden-spot.title') }}</h1>
+                <h1 class="card__action-title-value">{{ $td('Buy metagarden mining spots', 'metagarden.title') }}</h1>
                 <p class="card__action-description u-mt-05">
-                    {{ $td('Buy spot to earn yield', 'metagarden-spot.description') }}
+                    {{ $td('One spot costs 1000 METAGARDEN tokens', 'metagarden.description') }}
                 </p>
             </div>
 
