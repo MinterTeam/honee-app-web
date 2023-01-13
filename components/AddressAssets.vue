@@ -52,10 +52,10 @@ export default {
                     </div>
                     <div class="wallet__balance-control-items">
                         <nuxt-link class="wallet__balance-control-item button button--ghost-gray" :to="getDashboardUrl('topup')">
-                            {{ $td('+ Deposit', 'index.topup') }}
+                            {{ $td('&#43; Deposit', 'index.topup') }}
                         </nuxt-link>
                         <nuxt-link class="wallet__balance-control-item button button--ghost-gray" :to="getDashboardUrl('withdraw')">
-                            {{ $td('↗︎ Withdraw', 'index.withdraw') }}
+                            {{ $td('&#8599; Withdraw', 'index.withdraw') }}
                         </nuxt-link>
                         <!--<nuxt-link class="wallet__balance-buy-link button button--yellow-light button--full-mobile u-text-nowrap" :to="getDashboardUrl('buy')">
                             <img class="button__icon" src="/img/icon-category-buy.svg" width="24" height="24" alt="" role="presentation">

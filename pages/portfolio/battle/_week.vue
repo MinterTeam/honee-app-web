@@ -19,8 +19,8 @@ export default {
 
 <template>
     <div class="u-section u-container u-container--large">
-        <h2 class="u-h1 u-mb-15">
-            {{ $td(`Week #${$route.params.week} results`, `battle.week-results-title`, {week: $route.params.week}) }}
+        <h2 class="u-h2 u-mb-15">
+            {{ $td(`Week #${$route.params.week} Results`, `battle.week-results-title`, {week: $route.params.week}) }}
         </h2>
 
         <PortfolioBattleTable

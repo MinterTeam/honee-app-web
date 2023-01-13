@@ -182,8 +182,8 @@ export default {
 
 <template>
     <div v-if="portfolioList.length > 0 || stakeCardList.length > 0">
-        <h2 class="u-h1 u-mb-15">
-            {{ $td('My investments', `index.investments-title`) }}
+        <h2 class="u-h2 u-mb-15">
+            {{ $td('My Investments', `index.investments-title`) }}
         </h2>
         <div v-if="$fetchState.pending" class="u-text-center">
             <BaseLoader class="" :is-loading="true"/>

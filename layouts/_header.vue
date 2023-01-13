@@ -76,7 +76,7 @@ export default {
                         {{ $t('premium.activate-title-short') }}
                     </nuxt-link>
                     <hr class="header__controls-link header__controls-divider u-hidden-large-down"/>
-                    <ReferralCard class="header__controls-link u-hidden-large-down"/>
+                    <ReferralCard class="header__controls-link u-hidden-large-down" style="font-weight: 400;"/>
                     <hr class="header__controls-link header__controls-divider u-hidden-large-down"/>
                 </template>
 
@@ -102,7 +102,7 @@ export default {
                     {{ $t('premium.activate-title-short') }}
                 </nuxt-link>
                 <hr class="header__controls-link header__controls-divider"/>
-                <ReferralCard class="header__controls-link u-hidden-large-up"/>
+                <ReferralCard class="header__controls-link u-hidden-large-up" style="font-weight: 400;"/>
             </div>
         </div>
     </header>

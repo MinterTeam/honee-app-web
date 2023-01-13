@@ -5,7 +5,7 @@ import {BASE_COIN} from '~/assets/variables.js';
  */
 export default {
     earn: {
-        title: 'Earning options',
+        title: 'Earning Options',
         cards: [
             {
                 style: 'metagarden',
@@ -154,6 +154,23 @@ export default {
                     stats: {
                         caption: 'Приз до',
                     },
+                },
+            },
+            {
+                style: 'portfolio-battle',
+                caption: 'Contest',
+                title: 'PORTFOLIO BATTLE',
+                icon: '/img/icon-portfolio-battle.png',
+                description: 'Join the Portfolio Battle and win crypto prizes every week.',
+                buttonLabel: 'Learn More',
+                tags: [],
+                action: `/portfolio/battle`,
+                ru: {
+                    caption: 'Конкурс',
+                    title: 'БИТВА ПОРТФЕЛЕЙ',
+                    description: 'Присоединяйтесь к битве портфелей и выигрывайте крипто-призы каждую неделю.',
+                    buttonLabel: 'Подробнее',
+
                 },
             },
         ],
