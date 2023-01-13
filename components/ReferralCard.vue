@@ -78,10 +78,11 @@ export default {
     <div>
         <button
             type="button"
-            class="button button--full-mobile button--gradient"
+            class="button button--in-menu"
             @click="isConfirmModalVisible = true"
         >
-            {{ $td('Invite friends and get rewards!', 'referral.invite-friend') }}
+            <img class="header__controls-premium-icon" src="/img/icon-share-earn.svg" alt="" role="presentation" width="24" height="24">
+            {{ $td('Share & Earn', 'referral.invite-friend') }}
         </button>
 
         <Modal class="u-text-center u-text-medium" :isOpen.sync="isConfirmModalVisible">

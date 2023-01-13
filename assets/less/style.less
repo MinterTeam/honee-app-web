@@ -350,13 +350,14 @@
 
 // index
 .wallet__balance-wrap {
-    @margin: 16px;
-    margin-top: (8px - @margin); margin-inline: (-@margin / 2); display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap;
+    @margin: 8px;
+    margin-top: (8px - @margin); margin-inline: (-@margin / 2); display: flex; justify-content: space-around; align-items: flex-start; flex-wrap: wrap;
     & > * {margin-inline: (@margin / 2); margin-top: @margin;}
 }
 .wallet__balance {margin-right: auto;}
 .wallet__balance-value {font-size: 30px; line-height: 36px; font-weight: 700; font-feature-settings: "zero" on;}
 .wallet__balance-control-item {}
+.wallet__balance-control-items {margin: 8px 0 0 0;}
 .wallet__balance-buy-link {}
 .wallet__action-button {}
 .wallet__controls {display: flex; flex-direction: column; align-items: center;}
@@ -367,9 +368,8 @@
 }
 @media (max-width: @breakpoint-medium-down) {
     .wallet__action-button {
-        padding: 48px 0 0; min-width: 72px; position: relative;
+        padding: 40px 0 0; min-width: 72px; position: relative;
         &, &:hover, &:active, &:focus {background: none; color: @c-main;}
-        &:before {content: ''; background: @c-main; width: 40px; height: 40px; border-radius: 50%; position: absolute; left: 50%; top: 0; margin-left: -20px;}
         .button__icon {margin: 0; position: absolute; left: 50%; top: ((40px - 24px) / 2); margin-left: -12px;}
     }
     .wallet__controls-fancy-button {width: 100%; text-align: center;}
@@ -384,7 +384,7 @@
     .wallet__controls-fancy-button {}
 }
 
-.wallet__asset-list-tx-link {margin-left: auto; margin-top: 1px;}
+.wallet__asset-list-tx-link {margin-left: auto;}
 
 .wallet__coin-row {
     display: flex; justify-content: space-between;

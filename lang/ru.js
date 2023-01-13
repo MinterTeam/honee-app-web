@@ -91,8 +91,8 @@ export default {
         'total-balance': 'Общий баланс',
         'balance': 'Баланс',
         'wallet-balance-links': 'Купить BIP, HUB & BEE',
-        'topup': 'Пополнить',
-        'withdraw': 'Вывести',
+        'topup': '+ Пополнить',
+        'withdraw': '↗︎ Вывести',
         'swap': 'Купить',
         'swap-wallet-button': 'Обменять',
         'send': 'Отправить',
@@ -195,6 +195,7 @@ export default {
         'hide-qr': 'Скрыть QR',
     },
     referral: {
+        'header-button': 'Реф. ссылка',
         'invite-friend': 'Реферальная ссылка',
         'title': 'Зарабатывай с Honee',
         'activate-button': 'Активировать реферальную ссылку',
@@ -228,6 +229,7 @@ export default {
     },
     premium: {
         'activate-title': 'Стань премиум пользователем',
+        'activate-title-short': 'Премиум',
         'activate-description': 'Для активации премиум аккаунта отправьте в блокировку от 1000 BEE. Срок блокировки 5 лет. После окончания этого срока ваши монеты будут снова доступны для использования.',
         'card-update-button': 'Повысить уровень',
         'levels-title': 'Уровни премиума',

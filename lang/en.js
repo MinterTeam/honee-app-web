@@ -26,6 +26,7 @@ export default {
     },
     premium: {
         'activate-title': 'Become a Premium user',
+        'activate-title-short': 'Get Premium',
     },
     portfolio: {
         'warning-price-impact-description': 'You will lose ≈{impact}% of coins because of fees and/or low liquidity pools involved in swaps. Try to change the spending amount.',

@@ -1,11 +1,13 @@
 <script>
 import InlineSvg from 'vue-inline-svg';
 import Language from '~/components/layout/Language.vue';
+import ReferralCard from '~/components/ReferralCard.vue';
 
 export default {
     components: {
         InlineSvg,
         Language,
+        ReferralCard,
     },
     props: {
         title: {
@@ -69,10 +71,12 @@ export default {
 
             <div class="header__controls">
                 <template v-if="!isPremiumPage && isAuthorized && !simple">
-                    <nuxt-link class="header__controls-link header__controls-premium u-hidden-medium-down" :to="$i18nGetPreferredPath('/premium')">
+                    <nuxt-link class="header__controls-link header__controls-premium u-hidden-large-down" :to="$i18nGetPreferredPath('/premium')">
                         <img class="header__controls-premium-icon" src="/img/icon-premium-fancy.svg" alt="" role="presentation" width="64" height="42">
-                        {{ $t('premium.activate-title') }}
+                        {{ $t('premium.activate-title-short') }}
                     </nuxt-link>
+                    <hr class="header__controls-link header__controls-divider u-hidden-large-down"/>
+                    <ReferralCard class="header__controls-link u-hidden-large-down"/>
                     <hr class="header__controls-link header__controls-divider u-hidden-large-down"/>
                 </template>
 
@@ -91,12 +95,14 @@ export default {
                 </div>
             </div>
         </div>
-        <div class="header__container--premium header__container u-container u-hidden-medium-up" v-if="!isPremiumPage && isAuthorized && !simple">
+        <div class="header__container--premium header__container u-container u-hidden-large-up" v-if="!isPremiumPage && isAuthorized && !simple">
             <div class="header__controls">
                 <nuxt-link class="header__controls-link header__controls-premium" :to="$i18nGetPreferredPath('/premium')">
                     <img class="header__controls-premium-icon" src="/img/icon-premium.svg" alt="" role="presentation" width="24" height="24">
-                    {{ $t('premium.activate-title') }}
+                    {{ $t('premium.activate-title-short') }}
                 </nuxt-link>
+                <hr class="header__controls-link header__controls-divider"/>
+                <ReferralCard class="header__controls-link u-hidden-large-up"/>
             </div>
         </div>
     </header>
