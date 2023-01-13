@@ -4,7 +4,6 @@ import Card from '~/components/Card.vue';
 import CardHead from '~/components/CardHead.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
 import InvestmentList from '~/components/InvestmentList.vue';
-import PortfolioBattleTable from '~/components/PortfolioBattleTable.vue';
 import PortfolioLeaderboard from '~/components/PortfolioLeaderboard.vue';
 import PortfolioList from '~/components/PortfolioList.vue';
 
@@ -40,7 +39,6 @@ export default {
         CardHead,
         AddressAssets,
         InvestmentList,
-        PortfolioBattleTable,
         PortfolioLeaderboard,
         PortfolioList,
     },

@@ -46,7 +46,7 @@ export default {
                 <p>Contest participants create their portfolios with 100 virtual dollars, choosing the coins they think are the most promising. Every week, the top 3 best portfolios receive fixed prizes. In addition, the Top 20 receive a guaranteed airdrop. <a href="https://honee.app/portfolio-battle" target="_blank" class="link--default">Learn more about the portfolio battle</a>.</p>
             </template>
             <template v-if="$i18n.locale === 'ru'">
-                <p>Участники конкурса на 100 виртуальных долларов создают свои портфели, выбрав наиболее перспективные на их взгляд монеты. Каждую неделю выбирается Топ-3 лучших портфеля, которые получают фиксированные призы. Кроме того, Топ-20 получают гарантированный аирдроп. <a href="https://honee.app/portfolio-battle" target="_blank" class="link--default">Подробнее о битве портфелей</a>.</p>
+                <p>Участники конкурса на 100 виртуальных долларов создают свои портфели, выбрав наиболее перспективные на их взгляд монеты. Каждую неделю выбирается Топ-3 лучших портфеля, которые получают фиксированные призы. Кроме того, Топ-20 получают гарантированный аирдроп. <a href="https://honee.app/ru/portfolio-battle" target="_blank" class="link--default">Подробнее о битве портфелей</a>.</p>
             </template>
         </div>
         <div class="card card__content">
