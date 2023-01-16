@@ -119,7 +119,7 @@ export default {
         'delegate': 'Делегировать',
         'participate': 'Участвовать',
         'withdraw-unbond': 'Отозвать',
-        'stake': 'Застейковать',
+        'stake': 'Застейкать',
         'portfolio-list-empty': 'Портфелей еще нет',
 
         'investments-title': 'Мои инвестиции',
@@ -127,7 +127,7 @@ export default {
         'investments-tabs-label-portfolio': 'Портфели',
         'investments-tabs-label-stake': 'Стейки',
         'investments-list-empty': 'У вас еще нет инвестиций',
-        'stake-more': 'Застейковать еще',
+        'stake-more': 'Застейкать еще',
         'total-delegated': 'Делегировано',
         'delegate-more': 'Делегировать',
 
@@ -217,7 +217,7 @@ export default {
         'error-program-not-found': 'Не удаётся загрузить программу стейкинга',
         'error-program-disabled': 'Текущая программа стейкинга отключена',
         'error-program-timeout': 'Истекло время действия программы стейкинга',
-        'submit-button': 'Застейковать',
+        'submit-button': 'Застейкать',
     },
     onboarding: {
         'skip': 'Пропустить',
@@ -600,6 +600,9 @@ export default {
         'hub-reduce-fee': 'Как уменьшить комиссию до',
         'hub-reduce-fee-url': 'https://www.minter.network/ru/howto/cross-chain-discounts',
         'amount-error-not-enough': 'Недостаточно',
+
+        'swap-error': 'Невозможно обменять',
+        'spots-error-balance': 'Недостаточно монет на балансе для покупки спотов',
     },
     hub: {
         'withdraw-title': 'Вывод',
@@ -641,5 +644,11 @@ export default {
         'airdrop-telegram-button': 'Зарегистрироваться',
         'airdrop-registered-title': 'Вы зарегистрированы на раздачу токенов GARDEN',
         'airdrop-registered-description': 'Проверьте, чтобы на вашем адресе были монеты BIP. Аирдроп состоится 12 декабря 2022 года.',
+    },
+    metagarden: {
+        'title': 'Майнинг-споты metagarden',
+        'description': 'Один спот стоит 1000 токенов METAGARDEN',
+        'spot-amount-label': 'Количество спотов',
+        'confirm-title': 'Подтвердите покупку',
     },
 };

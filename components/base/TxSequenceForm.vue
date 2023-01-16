@@ -24,6 +24,7 @@ export default {
         'clear-form',
         'validation-touch',
         'update:fee',
+        'update:is-sequence-processing',
     ],
     props: {
         /** @type {SendSequenceItem|Array<SendSequenceItem>} */
@@ -93,6 +94,11 @@ export default {
         fee: {
             handler(newVal) {
                 this.$emit('update:fee', newVal);
+            },
+        },
+        isFormSending: {
+            handler(newVal) {
+                this.$emit('update:is-sequence-processing', newVal);
             },
         },
     },
@@ -170,6 +176,7 @@ export default {
                             : (item.prepare ? [item.prepare] : []);
                         const prepareGasCoinPosition = item.prepareGasCoinPosition || 'start';
 
+                        //@TODO ensure correct prepare array is formed
                         return {
                             ...item,
                             prepare: arrayInsertAtPosition(itemPrepare, prepareGasCoin, prepareGasCoinPosition),
@@ -191,7 +198,7 @@ export default {
                     this.clearForm();
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.error(error);
                     this.isFormSending = false;
                     this.serverError = getErrorText(error);
                 });

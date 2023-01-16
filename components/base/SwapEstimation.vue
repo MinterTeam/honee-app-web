@@ -272,7 +272,7 @@ export default {
         },
         getEstimation(force, throwOnError, overrideParams = {}) {
             if (this.$v.propsGroup.$invalid) {
-                return Promise.reject('get swap estimation: Invalid props passed');
+                return Promise.reject(new Error('get swap estimation: Invalid props passed'));
             }
 
             return this.estimateSwap({

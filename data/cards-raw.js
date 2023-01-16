@@ -8,6 +8,23 @@ export default {
         title: 'Earning options',
         cards: [
             {
+                style: 'metagarden',
+                caption: 'Mining',
+                title: 'Buy mining spots',
+                coin: `METAGARDEN`,
+                description: 'metagarden — a play-to-earn platform with mini games. Become the platform miner to earn crypto.',
+                buttonLabel: 'Buy spot',
+                tags: [],
+                action: `/metagarden-buy-spot`,
+                ru: {
+                    caption: 'Майнинг',
+                    title: 'Майнинг-споты',
+                    description: 'metagarden — play-to-earn платформа с мини-играми. Станьте майнером платформы, чтобы зарабатывать криптовалюту.',
+                    buttonLabel: 'Купить спот',
+
+                },
+            },
+            {
                 caption: 'Liquidity mining',
                 coin: ['BEE', 'MUSD'],
                 description: 'Put your BEE and MUSD into a liquidity pool. Then stake received LP-656 tokens for getting extra daily rewards.',
@@ -284,6 +301,7 @@ export default {
  * @property {string|Array<string>} [icon]
  * @property {CardDataStats} [stats]
  * @property {string[]} [tags]
+ * @property {string} [style] - class to apply to card to style it
  * @property {CardDataText} [ru]
  */
 

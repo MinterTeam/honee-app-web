@@ -79,13 +79,27 @@ export default function useWeb3Withdraw(destinationAddress) {
         return new Big(amountToSend || 0).times(hubFeeRate).toString();
     }
     // amount to receive from Hub bridge
-    const amountToReceive = computed(() => {
-        const amount = new Big(props.amountToSend || 0).minus(destinationFeeInCoin.value).minus(hubFee.value).toString();
+    const amountToReceive = computed(() => calculateAmountToReceive(props.amountToSend));
+    /**
+     * @param {string|number} amountToSend
+     * @param {boolean} [recalculateFee]
+     * @returns {string|number}
+     */
+    function calculateAmountToReceive(amountToSend, recalculateFee) {
+        const hubFeeValue = recalculateFee ? getHubFeeFromSendAmount(hubFeeRate.value, amountToSend) : hubFee.value;
+        const amount = new Big(amountToSend || 0).minus(destinationFeeInCoin.value).minus(hubFeeValue).toString();
         if (amount < 0) {
             return 0;
         }
         return amount;
-    });
+    }
+    /**
+     * @param {string|number} amountToSend
+     * @returns {string|number}
+     */
+    function recalculateAmountToReceive(amountToSend) {
+        return calculateAmountToReceive(amountToSend, true);
+    }
     // amount to send to Hub bridge
     /*
     const amountToSend = computed(() => {
@@ -182,5 +196,6 @@ export default function useWeb3Withdraw(destinationAddress) {
         feeTxParams,
         // methods
         setWithdrawProps: setProps,
+        recalculateAmountToReceive,
     };
 }

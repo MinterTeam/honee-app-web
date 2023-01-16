@@ -116,7 +116,7 @@ export default {
                 return this.estimation;
             }
         },
-        // based on that value rewards will be calcualated
+        // based on that value rewards will be calculated
         lockValueToReward() {
             if (!this.program) {
                 return 0;

@@ -1,19 +1,22 @@
 import axios from 'axios';
+import {Cache, cacheAdapterEnhancer} from 'axios-extensions';
 import {NATIVE_COIN_ADDRESS, ZERO_X_API_URL} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {getMaxEstimationLimit, getMinEstimationLimit} from '~/assets/utils/swap-limit.js';
 import {buildApproveTx, getAllowance} from '~/api/web3.js';
 import Big from '~/assets/big.js';
 
+
 const instance = axios.create({
     baseURL: ZERO_X_API_URL,
+    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
 });
 // addToCamelInterceptor(instance);
 
 /**
  * @param {number|string} chainId
- * @param {ZeroXSwapParams} swapParams
- * @return {Promise<ZeroXSwapResponse>}
+ * @param {ZeroExSwapParams} swapParams
+ * @return {Promise<ZeroExSwapResponse>}
  */
 export function _buildTxForSwap(chainId, swapParams) {
     return instance.get('swap/v1/quote', {
@@ -26,7 +29,7 @@ export function _buildTxForSwap(chainId, swapParams) {
 
 /**
  * @param {number|string} chainId
- * @param {ZeroXSwapParams&{receiver?: string}} swapParams
+ * @param {ZeroExSwapParams&{receiver?: string}} swapParams
  * @return {Promise<{txList: Array<OneInchTx>, swapLimit: string}>}
  */
 export async function buildTxForSwap(chainId, swapParams) {
@@ -54,7 +57,7 @@ export async function buildTxForSwap(chainId, swapParams) {
     if (swapParams.receiver) {
         txList.push({
             to: swapParams.receiver,
-            //@TODO if buyToken is erc20 token use transferToken method of erc20 contract
+            //@TODO if buyToken is erc20 token use transferToken method of erc20 contract (now only works with native coin)
             value: swapTx.buyAmount,
             data: '0x',
         });
@@ -66,14 +69,17 @@ export async function buildTxForSwap(chainId, swapParams) {
     };
 }
 
+const fastCache = new Cache({ttl: 5 * 1000, max: 100});
+
 /**
  * @param {number|string} chainId
- * @param {ZeroXSwapParams} swapParams
- * @return {Promise<ZeroXPriceResponse>}
+ * @param {ZeroExSwapParams} swapParams
+ * @return {Promise<ZeroExPriceResponse>}
  */
 export function getPrice(chainId, swapParams) {
     return instance.get('swap/v1/price', {
             params: swapParams,
+            cache: fastCache,
         })
         .then((response) => {
             return response.data;
@@ -82,7 +88,7 @@ export function getPrice(chainId, swapParams) {
 
 /**
  * @param {number} chainId
- * @param {ZeroXSwapParams} swapParams
+ * @param {ZeroExSwapParams} swapParams
  * @return {Promise<string|number>}
  */
 export function getEstimationLimit(chainId, swapParams) {
@@ -93,8 +99,8 @@ export function getEstimationLimit(chainId, swapParams) {
 }
 
 /**
- * @param {ZeroXSwapParams} swapParams
- * @param {ZeroXPriceResponse} priceData
+ * @param {ZeroExSwapParams} swapParams
+ * @param {ZeroExPriceResponse} priceData
  * @return {string}
  */
 function calculateEstimationLimit(swapParams, priceData) {
@@ -104,7 +110,7 @@ function calculateEstimationLimit(swapParams, priceData) {
 }
 
 /**
- * @typedef {object} ZeroXSwapParams
+ * @typedef {object} ZeroExSwapParams
  * @property {string} buyToken - token address the taker wants to buy
  * @property {string} sellToken - token address the taker wants to sell
  * @property {string} [buyAmount] - amount of the buy token, if the taker is requesting to buy
@@ -119,13 +125,13 @@ function calculateEstimationLimit(swapParams, priceData) {
  */
 
 /**
- * @typedef {object} ZeroXPriceResponse
+ * @typedef {object} ZeroExPriceResponse
  * @property {string} buyAmount
  * @property {string} sellAmount
  */
 
 /**
- * @typedef {ZeroXPriceResponse & OneInchTx} ZeroXSwapResponse
+ * @typedef {ZeroExPriceResponse & OneInchTx} ZeroExSwapResponse
  * @property {string} allowanceTarget
  */
 

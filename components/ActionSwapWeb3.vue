@@ -63,7 +63,7 @@ export default {
             withdrawTxParams,
             withdrawFeeTxParams,
 
-            amountEstimationLimitForRelayRewards: smartWalletRelayReward,
+            amountEstimationLimitForRelayReward: smartWalletRelayReward,
             amountToSellForSwapToHub,
             amountEstimationAfterSwapToHub: depositAmountToReceive,
             isSmartWalletSwapParamsLoading,
@@ -195,7 +195,7 @@ export default {
                 // update withdrawValue
                 if (isWithdrawMaxWithoutSwap) {
                     this.form.valueToSell = value;
-                }else if (isWithdrawAfterSwap) {
+                } else if (isWithdrawAfterSwap) {
                     this.estimation = value;
                 }
 
