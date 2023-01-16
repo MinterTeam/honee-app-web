@@ -1,11 +1,16 @@
 import axios from 'axios';
+import {Cache, cacheAdapterEnhancer} from 'axios-extensions';
 import {HUB_DEPOSIT_PROXY_API_URL, HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS, NATIVE_COIN_ADDRESS, HUB_CHAIN_BY_ID} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 
+//@TODO exclude limit orders https://api.1inch.io/v5.0/56/liquidity-sources
 const instance = axios.create({
     baseURL: HUB_DEPOSIT_PROXY_API_URL,
+    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
 });
 addToCamelInterceptor(instance);
+
+const fastCache = new Cache({ttl: 2 * 1000, max: 100});
 
 /**
  * build tx to proxy contract which will swap on 1inch and deposit result to Minter via Hub
@@ -22,6 +27,7 @@ export function buildTxForSwap(chainId, swapParams) {
             toTokenAddress: swapParams.toTokenAddress === NATIVE_COIN_ADDRESS ? HUB_CHAIN_BY_ID[chainId].wrappedNativeContractAddress : swapParams.toTokenAddress,
             refundTo: swapParams.refundTo || swapParams.destination,
         },
+        cache: fastCache,
     })
         .then((response) => {
             return {

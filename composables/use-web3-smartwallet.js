@@ -1,11 +1,11 @@
 import {reactive, computed, toRefs} from '@vue/composition-api';
-import {watchThrottled} from '@vueuse/core';
+import {watchThrottled, watchDebounced} from '@vueuse/core';
 // import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 // import {PAYLOAD_MAX_LENGTH} from 'minterjs-util/src/variables.js';
 import {web3Utils, web3Abi, getProviderByChain, toErcDecimals, fromErcDecimals} from '~/api/web3.js';
 import {ParaSwapSwapSide} from '~/api/swap-paraswap-models.d.ts';
 // import {buildTxForSwap as buildTxForParaSwap, getEstimationLimit as getParaSwapEstimationLimit} from '~/api/swap-paraswap.js';
-import {buildTxForSwap as buildTxForZeroXSwap, getEstimationLimit as getZeroXEstimationLimit} from '~/api/swap-0x.js';
+import {buildTxForSwap as buildTxForZeroExSwap, getEstimationLimit as getZeroExEstimationLimit} from '~/api/swap-0x.js';
 // import {getTokenSymbolForNetwork} from '~/api/hub.js';
 import {submitRelayTx} from '~/api/smart-wallet-relay.js';
 import smartWalletABI from '~/assets/abi-smartwallet.js';
@@ -26,7 +26,7 @@ export const RELAY_REWARD_AMOUNT_CREATE = 0.005;
 export const RELAY_REWARD_AMOUNT_SWAP = 0.0025;
 
 
-export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
+export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
     const props = reactive({
         privateKey: '',
         evmAccountAddress: '',
@@ -44,6 +44,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
     }
 
     const state = reactive({
+        isSmartWalletExists: false,
         isEstimationLimitForRelayRewardsLoading: false,
         estimationLimitForRelayRewardsError: '',
         amountEstimationLimitForRelayReward: 0,
@@ -58,12 +59,11 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
     });
     const maxRelayRewardAmount = computed(() => getRelayRewardAmount(estimationComplexity.value));
     function getRelayRewardAmount(complexity = 1) {
-        // @TODO fee for swap via zeroEx for relay reward not taken into account
-        // @TODO exclude createReward if wallet already created
         const baseReward = RELAY_REWARD_AMOUNT_BASE;
-        const createReward = RELAY_REWARD_AMOUNT_CREATE;
+        const createReward = state.isSmartWalletExists ? 0 : RELAY_REWARD_AMOUNT_CREATE;
+        const gasSwapReward = props.gasTokenAddress === NATIVE_COIN_ADDRESS ? 0 : RELAY_REWARD_AMOUNT_SWAP;
         const swapReward = complexity * RELAY_REWARD_AMOUNT_SWAP;
-        return baseReward + createReward + swapReward;
+        return baseReward + createReward + gasSwapReward + swapReward;
     }
     function recalculateAmountEstimationLimit(complexity, useDirectRelayReward) {
         if (useDirectRelayReward) {
@@ -79,17 +79,21 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
             return state.maxAmountEstimationLimitForRelayReward;
         }
         const baseRewardPart = new Big(RELAY_REWARD_AMOUNT_BASE).div(maxRelayRewardAmount.value);
-        const createRewardPart = new Big(RELAY_REWARD_AMOUNT_CREATE).div(maxRelayRewardAmount.value);
+        const createRewardPart = state.isSmartWalletExists ? new Big(0) : new Big(RELAY_REWARD_AMOUNT_CREATE).div(maxRelayRewardAmount.value);
+        const gasSwapRewardPart = props.gasTokenAddress === NATIVE_COIN_ADDRESS ? new Big(0) : new Big(RELAY_REWARD_AMOUNT_SWAP).div(maxRelayRewardAmount.value);
         const swapRewardPart = new Big(RELAY_REWARD_AMOUNT_SWAP).div(maxRelayRewardAmount.value);
+
         const baseReward = baseRewardPart.times(state.maxAmountEstimationLimitForRelayReward);
         const createReward = createRewardPart.times(state.maxAmountEstimationLimitForRelayReward);
+        const gasSwapReward = gasSwapRewardPart.times(state.maxAmountEstimationLimitForRelayReward);
         const swapReward = swapRewardPart.times(complexity).times(state.maxAmountEstimationLimitForRelayReward);
-        return baseReward.plus(createReward).plus(swapReward).toNumber();
+
+        return baseReward.plus(createReward).plus(gasSwapReward).plus(swapReward).toNumber();
     }
 
     // gas token will be used to reward relay service
     const swapToRelayRewardParams = computed(() => {
-        return swapZeroXParams.value;
+        return swapZeroExParams.value;
         // return swapParaSwapParams.value;
     });
     const swapToRelayRewardEstimationParams = computed(() => {
@@ -98,7 +102,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
             buyAmount: toErcDecimals(maxRelayRewardAmount.value, 18),
         };
     });
-    const swapZeroXParams = computed(() => {
+    const swapZeroExParams = computed(() => {
         return {
             sellToken: props.gasTokenAddress,
             // sellTokenDecimals: props.gasTokenDecimals,
@@ -152,7 +156,8 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
     */
 
 
-    watchThrottled(swapToRelayRewardEstimationParams, () => {
+    //@TODO maybe check isEqual
+    watchDebounced(swapToRelayRewardEstimationParams, (newVal, oldVal) => {
         if (props.estimationSkip) {
             return;
         }
@@ -174,9 +179,22 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
             setAmountEstimationLimitForRelayReward(0);
         }
     }, {
-        throttle: estimationThrottle,
-        leading: false,
-        trailing: true,
+        debounce: estimationThrottle,
+        maxWait: estimationThrottle,
+        // throttle: estimationThrottle,
+        // leading: false,
+        // trailing: true,
+    });
+
+    // @TODO watchDebounced because watchThrottled not working https://github.com/vueuse/vueuse/pull/2620
+    watchDebounced([
+        smartWalletAddress,
+        () => props.chainId,
+    ], async () => {
+        state.isSmartWalletExists = await checkSmartWalletExists(props.chainId, smartWalletAddress.value, false);
+    }, {
+        debounce: 50,
+        maxWait: 50,
     });
 
     /**
@@ -192,13 +210,14 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
     }
 
     function getEstimationLimit() {
-        return getZeroXEstimationLimit(props.chainId, swapToRelayRewardEstimationParams.value)
+        return getZeroExEstimationLimit(props.chainId, swapToRelayRewardEstimationParams.value)
             .then((swapLimit) => {
                 return fromErcDecimals(swapLimit, props.gasTokenDecimals);
             });
         // return getParaSwapEstimationLimit(swapToRelayRewardEstimationParams.value);
     }
 
+    //@TODO sometimes goes to infinite loop
     /**
      * @return {Promise<string|number>}
      */
@@ -211,7 +230,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
     }
 
     function buildTxForSwap() {
-        return buildTxForZeroXSwap(props.chainId, swapToRelayRewardParams.value)
+        return buildTxForZeroExSwap(props.chainId, swapToRelayRewardParams.value)
             .then((result) => {
                 return {
                     txList: result.txList,
@@ -252,6 +271,27 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
     }
 
     /**
+     * @param {number} chainId
+     * @param {string} address
+     * @param {boolean} [throwOnError]
+     * @returns {Promise<boolean>}
+     */
+    function checkSmartWalletExists(chainId, address, throwOnError) {
+        const web3Eth = getProviderByChain(props.chainId);
+        return web3Eth.getCode(address)
+            .then((code) => {
+                return code !== '0x';
+            })
+            .catch((error) => {
+                if (throwOnError) {
+                    throw error;
+                } else {
+                    return false;
+                }
+            });
+    }
+
+    /**
      * @param {Array<string>} txToList - list of recipients
      * @param {Array<string>} txDataList - list of tx data
      * @param {Array<string>} txValueList - list of wei values
@@ -261,7 +301,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
         const web3Eth = getProviderByChain(props.chainId);
         const smartWalletFactoryContract = new web3Eth.Contract(smartWalletFactoryABI);
         const smartWalletContract = new web3Eth.Contract(smartWalletABI, smartWalletAddress.value);
-        let walletExists = (await web3Eth.getCode(smartWalletAddress.value)) !== '0x';
+        const walletExists = await checkSmartWalletExists(props.chainId, smartWalletAddress.value, true);
 
         // @TODO cache block
         const timeout = (await web3Eth.getBlockNumber()) + 1000;
@@ -358,6 +398,8 @@ export default function useWeb3SmartWallet({estimationThrottle = 50} = {}) {
 const SMART_WALLET_INDEX = 0;
 
 /**
+ * @pure
+ * @nosideeffects
  * @param {string} evmAccountAddress
  * @return {string}
  */
