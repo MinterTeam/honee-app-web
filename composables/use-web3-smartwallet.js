@@ -45,6 +45,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
 
     const state = reactive({
         isSmartWalletExists: false,
+        isSmartWalletExistenceLoading: false,
         isEstimationLimitForRelayRewardsLoading: false,
         estimationLimitForRelayRewardsError: '',
         amountEstimationLimitForRelayReward: 0,
@@ -157,8 +158,15 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
 
 
     //@TODO maybe check isEqual
-    watchDebounced(swapToRelayRewardEstimationParams, (newVal, oldVal) => {
+    watchDebounced([
+        swapToRelayRewardEstimationParams,
+        smartWalletAddress,
+        () => state.isSmartWalletExistenceLoading,
+    ], (newVal, oldVal) => {
         if (props.estimationSkip) {
+            return;
+        }
+        if (!smartWalletAddress.value || state.isSmartWalletExistenceLoading) {
             return;
         }
         //@TODO maybe wait until whole form will be filled by user
@@ -191,7 +199,9 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         smartWalletAddress,
         () => props.chainId,
     ], async () => {
+        state.isSmartWalletExistenceLoading = true;
         state.isSmartWalletExists = await checkSmartWalletExists(props.chainId, smartWalletAddress.value, false);
+        state.isSmartWalletExistenceLoading = false;
     }, {
         debounce: 50,
         maxWait: 50,

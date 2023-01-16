@@ -1,5 +1,5 @@
 import {ref, reactive, computed, watch, watchEffect, toRefs, set} from '@vue/composition-api';
-import {watchThrottled} from '@vueuse/core';
+import {watchDebounced} from '@vueuse/core';
 import Big, {BIG_ROUND_DOWN, BIG_ROUND_UP} from '~/assets/big.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {HUB_WITHDRAW_SPEED, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
@@ -47,13 +47,13 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         depositDestination: '',
         chainId: 0,
         coinToSell: '',
-        // amount to withdraw
+        // amount used to withdraw (before sell to hub)
         // must be provided value for all portfolio coins, despite how many of them supposed to trade via cross-chain (to ensure, that valueDistribution is aligned with coin to buy allocation)
         valueToSell: 0,
-        /** @type {Array<{symbol: string, allocationPart: string|number, price: string|number}>} */
+        /** @type {Array<{symbol: string, allocationPart: string|number}>} */
         coinToBuyList: [],
         /** @type {Array<string|number>} */
-        coinToBuyEstimationList: [],
+        minterEstimationList: [],
         minterFeeToDeduct: 0,
         isLocked: false,
 
@@ -190,9 +190,9 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         });
     });
 
-    watchThrottled([
+    watchDebounced([
         () => props.coinToBuyList,
-        () => props.coinToBuyEstimationList,
+        () => props.minterEstimationList,
         () => props.minterFeeToDeduct,
         maxAmountEstimationLimitForRelayReward,
         valueDistribution,
@@ -243,7 +243,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
             return estimationList[indexString];
         });
         worstEstimationList.forEach((worstEstimation, index) => {
-            if (props.coinToBuyEstimationList[index] && new Big(worstEstimation).gt(props.coinToBuyEstimationList[index])) {
+            if (props.minterEstimationList[index] && new Big(worstEstimation).gt(props.minterEstimationList[index])) {
                 swsBetterDefinitely.push(index.toString());
             }
         });
@@ -260,7 +260,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
                 swsIndices,
             );
             bestEstimationList.forEach((bestEstimation, index) => {
-                if (new Big(bestEstimation).lte(props.coinToBuyEstimationList[index] || 0)) {
+                if (new Big(bestEstimation).lte(props.minterEstimationList[index] || 0)) {
                     swsNotBetterDefinitely.push(index.toString());
                 }
             });
@@ -284,7 +284,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
                 swsProbably, // not swsToTry, to exclude swsBetterDefinitely from unnecessary calculations
             );
             iterationEstimationList.forEach((estimation, index) => {
-                if (new Big(estimation).lte(props.coinToBuyEstimationList[index] || 0)) {
+                if (new Big(estimation).lte(props.minterEstimationList[index] || 0)) {
                     swsToExclude.push(index.toString());
                 }
             });
@@ -302,7 +302,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
                     best: bestEstimationList,
                     currentIterationBeforeRelayReward: estimationBeforeRelayRewardList.value,
                     currentIteration: iterationEstimationList,
-                    minter: props.coinToBuyEstimationList,
+                    minter: props.minterEstimationList,
                 });
                 console.log(swsBetterDefinitely, swsNotBetterDefinitely, swsProbably, swsToExclude);
             }
@@ -328,7 +328,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
                 worst: worstEstimationList,
                 best: bestEstimationList,
                 final: amountEstimationToReceiveAfterDepositList.value,
-                minter: props.coinToBuyEstimationList,
+                minter: props.minterEstimationList,
             });
         }
 
@@ -356,9 +356,8 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         */
     }, {
         deep: true,
-        throttle: 500,
-        leading: false,
-        trailing: true,
+        debounce: 500,
+        maxWait: 2000,
     });
 
     /**

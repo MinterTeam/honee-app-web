@@ -107,6 +107,7 @@ export default {
         this.$watch(
             () => {
                 const sequenceParamsArray = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
+                // check only nullish, because 'false' feeTxParams mean 'skip estimation'
                 const txParamsList = sequenceParamsArray.map((item) => item.feeTxParams ?? item.txParams);
 
                 return {
@@ -164,10 +165,11 @@ export default {
                         }
 
                         // fill txParams with gasCoin
-                        const prepareGasCoin = item.prepareGasCoinPosition === 'skip' && index === 0
-                            ? () => ({gasCoin: this.fee.resultList?.[0]?.coin})
+                        const isGasCoinSet = !!item.txParams.gasCoin || item.txParams.gasCoin === 0;
+                        const prepareGasCoin = item.prepareGasCoinPosition === 'skip'
+                            ? (isGasCoinSet ? undefined : () => ({gasCoin: this.fee.resultList?.[0]?.coin}))
                             : () => this.refineByIndex(index).then((fee) => ({
-                                gasCoin: fee?.coin,
+                                ...(isGasCoinSet || {gasCoin: fee?.coin}),
                                 // extra data to pass to next `prepare`
                                 extra: {fee},
                             }));
@@ -222,6 +224,9 @@ export default {
  * @return {Array<function>}
  */
 function arrayInsertAtPosition(target, item, position) {
+    if (!item) {
+        return target;
+    }
     target = target.slice();
     if (position === 'start') {
         target.unshift(item);

@@ -141,12 +141,10 @@ export default {
         },
         coinList() {
             return this.portfolio.coins.map((item) => {
-                const symbol = this.$store.state.explorer.coinMapId[item.id]?.symbol || '';
                 return {
                     ...item,
                     allocationPart: new Big(item.allocation).div(100).toString(),
-                    symbol,
-                    price: this.$store.state.portfolio.coinMap[symbol]?.price || 0,
+                    symbol: this.$store.state.explorer.coinMapId[item.id]?.symbol || '',
                 };
             });
         },
@@ -280,15 +278,16 @@ export default {
             const swapSequence = this.coinList.map((coinItem, index) => {
                 const coinSymbol = coinItem.symbol;
                 const needSwap = this.checkNeedSwapEqual(coinSymbol);
-                const estimationViewItem = this.estimationView.find((item) => item.coin === coinSymbol);
-                const skip = !needSwap || estimationViewItem?.isDisabled || estimationViewItem?.isSmartWalletSwapBetter;
+                const estimationViewItem = this.estimationView[index];
+                const skip = !needSwap || estimationViewItem?.disabled || estimationViewItem?.isSmartWalletSwapBetter;
                 return {
-                    // pass null to txParams to not perform fee calculation
-                    txParams: needSwap ? {
+
+                    txParams: {
                         type: this.getEstimationRef(index)?.getTxType(),
                         data: this.estimationTxDataList[index],
                         gasCoin: this.form.coin,
-                    } : null,
+                    },
+                    // pass false to not perform fee calculation
                     feeTxParams: needSwap ? {
                         type: TX_TYPE.SELL_SWAP_POOL,
                         data: {
@@ -296,7 +295,7 @@ export default {
                             valueToSell: 1,
                         },
                         gasCoin: this.form.coin,
-                    } : undefined,
+                    } : false,
                     privateKey: this.portfolioWallet.privateKey,
                     // pass skip to not send tx in sequence
                     skip,
@@ -451,7 +450,7 @@ export default {
                 valueToSell: this.form.value,
                 coinToSell: this.form.coin,
                 coinToBuyList: this.coinList,
-                coinToBuyEstimationList: this.estimationList,
+                minterEstimationList: this.estimationList,
                 minterFeeToDeduct: this.withdrawFeeToDeduct,
                 isLocked: this.isSequenceProcessing && !this.isWithdrawProcessing,
             }),
