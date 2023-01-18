@@ -30,6 +30,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
     const props = reactive({
         privateKey: '',
         evmAccountAddress: '',
+        extraNonce: 0, // add to nonce for consequential txs
         chainId: 0,
         gasTokenAddress: '',
         gasTokenDecimals: '',
@@ -40,7 +41,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
     });
 
     function setProps(newProps) {
-        Object.assign(props, newProps);
+        Object.assign(props, newProps, {extraNonce: newProps.extraNonce > 0 ? newProps.extraNonce : 0});
     }
 
     const state = reactive({
@@ -316,17 +317,18 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         // @TODO cache block
         const timeout = (await web3Eth.getBlockNumber()) + 1000;
         const walletNonce = walletExists ? (await smartWalletContract.methods.nonce().call()) : 0;
+        const finalNonce = Number(walletNonce) + props.extraNonce;
 
         let msg = web3Utils.keccak256(web3Abi.encodeParameters(
             ["address", "uint256", "address[]", "bytes[]", "uint256[]", "uint256"],
-            [smartWalletAddress.value, walletNonce, txToList, txDataList, txValueList, timeout],
+            [smartWalletAddress.value, finalNonce, txToList, txDataList, txValueList, timeout],
         ));
         let sign = web3Eth.accounts.sign(msg, props.privateKey);
 
         let callDestination;
         let callPayload;
 
-        if (walletExists) {
+        if (walletExists || props.extraNonce > 0) {
             callDestination = smartWalletAddress.value;
             callPayload = smartWalletContract.methods.call(txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s).encodeABI();
         } else {
@@ -336,7 +338,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         console.log('to', txToList);
         console.log('data', txDataList);
         console.log('value', txValueList);
-        console.log('callDestination', callDestination);
+        console.log({walletNonce, finalNonce, walletExists, callDestination});
         console.log('callPayload', callPayload);
 
         const gasPrice = web3Utils.toWei('5', 'gwei');
