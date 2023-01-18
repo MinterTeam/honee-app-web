@@ -39,6 +39,7 @@ export default function useWeb3SmartWalletSwap() {
     const props = reactive({
         privateKey: '',
         evmAccountAddress: '',
+        extraNonce: undefined,
         depositDestination: '', // destination address to deposit via Hub after swap (should be specified with 0x prefix, however it is address of Minter account)
         chainId: 0,
         coinToSell: '',
@@ -66,6 +67,7 @@ export default function useWeb3SmartWalletSwap() {
     watchEffect(() => setSmartWalletProps({
         privateKey: props.privateKey,
         evmAccountAddress: props.evmAccountAddress,
+        extraNonce: props.extraNonce,
         chainId: props.chainId,
         gasTokenAddress: tokenToSellAddress.value,
         gasTokenDecimals: tokenToSellDecimals.value,
@@ -174,14 +176,19 @@ export default function useWeb3SmartWalletSwap() {
             ...swapToHubParams.value,
             amount: toErcDecimals(overrideAmount, tokenToSellDecimals.value),
         } : swapToHubParams.value;
+        console.log('overrideAmount', overrideAmount);
+        console.log('amountToSellForSwapToHub', props.valueToSell, withdrawAmountToReceive.value, '-', amountEstimationLimitForRelayReward.value, '=', amountToSellForSwapToHub.value);
+        console.log('_buildTxForSwapToHub', props.chainId, txParams);
         return _buildTxForSwapToHub(props.chainId, txParams)
             .then((result) => result.txList);
     }
 
     /**
+     * @param {object} [options]
+     * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxResult>}
      */
-    async function buildTxListAndCallSmartWallet() {
+    async function buildTxListAndCallSmartWallet({overrideExtraNonce} = {}) {
         if (props.skipRelayReward) {
             throw new Error('Can\'t call smart-wallet with disabled relay reward. Use build and call manually');
         }
@@ -189,7 +196,7 @@ export default function useWeb3SmartWalletSwap() {
         const swapTxList = await buildTxForSwapToHub();
         console.log(txListForRelayReward);
         console.log(swapTxList);
-        return callSmartWallet([].concat(txListForRelayReward, swapTxList))
+        return callSmartWallet([].concat(txListForRelayReward, swapTxList), {overrideExtraNonce})
             .then((result) => {
                 console.log(result);
                 return result;

@@ -30,6 +30,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
     const props = reactive({
         privateKey: '',
         evmAccountAddress: '',
+        extraNonce: 0, // add to nonce for consequential txs
         chainId: 0,
         gasTokenAddress: '',
         gasTokenDecimals: '',
@@ -40,11 +41,12 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
     });
 
     function setProps(newProps) {
-        Object.assign(props, newProps);
+        Object.assign(props, newProps, {extraNonce: newProps.extraNonce > 0 ? newProps.extraNonce : 0});
     }
 
     const state = reactive({
         isSmartWalletExists: false,
+        isSmartWalletExistenceLoading: false,
         isEstimationLimitForRelayRewardsLoading: false,
         estimationLimitForRelayRewardsError: '',
         amountEstimationLimitForRelayReward: 0,
@@ -157,8 +159,15 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
 
 
     //@TODO maybe check isEqual
-    watchDebounced(swapToRelayRewardEstimationParams, (newVal, oldVal) => {
+    watchDebounced([
+        swapToRelayRewardEstimationParams,
+        smartWalletAddress,
+        () => state.isSmartWalletExistenceLoading,
+    ], (newVal, oldVal) => {
         if (props.estimationSkip) {
+            return;
+        }
+        if (!smartWalletAddress.value || state.isSmartWalletExistenceLoading) {
             return;
         }
         //@TODO maybe wait until whole form will be filled by user
@@ -191,7 +200,9 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         smartWalletAddress,
         () => props.chainId,
     ], async () => {
+        state.isSmartWalletExistenceLoading = true;
         state.isSmartWalletExists = await checkSmartWalletExists(props.chainId, smartWalletAddress.value, false);
+        state.isSmartWalletExistenceLoading = false;
     }, {
         debounce: 50,
         maxWait: 50,
@@ -295,9 +306,11 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
      * @param {Array<string>} txToList - list of recipients
      * @param {Array<string>} txDataList - list of tx data
      * @param {Array<string>} txValueList - list of wei values
+     * @param {object} [options]
+     * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxPayload>}
      */
-    async function preparePayload(txToList, txDataList, txValueList) {
+    async function preparePayload(txToList, txDataList, txValueList, {overrideExtraNonce} = {}) {
         const web3Eth = getProviderByChain(props.chainId);
         const smartWalletFactoryContract = new web3Eth.Contract(smartWalletFactoryABI);
         const smartWalletContract = new web3Eth.Contract(smartWalletABI, smartWalletAddress.value);
@@ -306,17 +319,19 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         // @TODO cache block
         const timeout = (await web3Eth.getBlockNumber()) + 1000;
         const walletNonce = walletExists ? (await smartWalletContract.methods.nonce().call()) : 0;
+        const extraNonce = overrideExtraNonce ?? props.extraNonce;
+        const finalNonce = Number(walletNonce) + extraNonce;
 
         let msg = web3Utils.keccak256(web3Abi.encodeParameters(
             ["address", "uint256", "address[]", "bytes[]", "uint256[]", "uint256"],
-            [smartWalletAddress.value, walletNonce, txToList, txDataList, txValueList, timeout],
+            [smartWalletAddress.value, finalNonce, txToList, txDataList, txValueList, timeout],
         ));
         let sign = web3Eth.accounts.sign(msg, props.privateKey);
 
         let callDestination;
         let callPayload;
 
-        if (walletExists) {
+        if (walletExists || props.extraNonce > 0) {
             callDestination = smartWalletAddress.value;
             callPayload = smartWalletContract.methods.call(txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s).encodeABI();
         } else {
@@ -326,7 +341,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         console.log('to', txToList);
         console.log('data', txDataList);
         console.log('value', txValueList);
-        console.log('callDestination', callDestination);
+        console.log({walletNonce, finalNonce, walletExists, callDestination});
         console.log('callPayload', callPayload);
 
         const gasPrice = web3Utils.toWei('5', 'gwei');
@@ -352,9 +367,11 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
 
     /**
      * @param {Array<SmartWalletTxParams>} txList
+     * @param {object} [options]
+     * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxPayload>}
      */
-    function preparePayloadFromTxList(txList) {
+    function preparePayloadFromTxList(txList, {overrideExtraNonce} = {}) {
         const toList = [];
         const dataList = [];
         const valueList = [];
@@ -364,17 +381,25 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
             valueList[index] = tx.value || '0';
         });
 
-        return preparePayload(toList, dataList, valueList);
+        return preparePayload(toList, dataList, valueList, {overrideExtraNonce});
     }
 
     /**
      * @param {Array<SmartWalletTxParams>} txList
+     * @param {object} [options]
+     * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxResult>}
      */
-    function callSmartWallet(txList) {
-        return preparePayloadFromTxList(txList)
+    function callSmartWallet(txList, {overrideExtraNonce} = {}) {
+        return preparePayloadFromTxList(txList, {overrideExtraNonce})
             .then((payload) => {
                 return submitRelayTx(payload);
+            })
+            .then(({hash}) => {
+                return {
+                    hash,
+                    callCount: txList.length,
+                };
             });
     }
 
