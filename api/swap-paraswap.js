@@ -14,6 +14,9 @@ const instance = axios.create({
 });
 // addToCamelInterceptor(instance);
 
+// exclude RFQ liquidity (it is considered not stable and can be expired during long smart-wallet withdrawals)
+const EXCLUDE_PROTOCOLS = '0xRFQt,OMM1';
+
 /**
  * @param {Partial<ParaSwapPricesListParams & ParaSwapTransactionsRequestPayload>} swapParams
  * @return {Promise<ParaSwapTransactionsBuildCombined>}
@@ -42,6 +45,7 @@ export async function buildTxForSwap(swapParams) {
         txOrigin: swapParams.txOrigin,
         receiver: swapParams.receiver,
         priceRoute,
+        excludeDEXS: EXCLUDE_PROTOCOLS,
     });
     txList.push(swapTx);
 
@@ -58,6 +62,10 @@ const fastCache = new Cache({ttl: 2 * 1000, max: 100});
  * @return {Promise<ParaSwapPriceRoute>}
  */
 export function getPriceRoute(swapParams) {
+    swapParams = {
+        ...swapParams,
+        excludeDEXS: EXCLUDE_PROTOCOLS,
+    };
     return instance.get('prices', {
             params: swapParams,
             cache: fastCache,

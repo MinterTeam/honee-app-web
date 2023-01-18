@@ -254,6 +254,7 @@ export default {
                 valueToSell: this.withdrawValue,
                 coinToSell: this.withdrawCoin,
                 coinToBuy: this.form.coinToBuy,
+                idPreventConcurrency: 'estimateSwsSwap',
             }),
             (newVal) => this.setSmartWalletSwapProps(newVal),
             {deep: true, immediate: true},

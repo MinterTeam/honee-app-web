@@ -13,12 +13,19 @@ const instance = axios.create({
 });
 // addToCamelInterceptor(instance);
 
+// exclude RFQ liquidity (it is considered not stable and can be expired during long smart-wallet withdrawals)
+const EXCLUDE_PROTOCOLS = '0x';
+
 /**
  * @param {number|string} chainId
  * @param {ZeroExSwapParams} swapParams
  * @return {Promise<ZeroExSwapResponse>}
  */
 export function _buildTxForSwap(chainId, swapParams) {
+    swapParams = {
+        ...swapParams,
+        excludedSources: EXCLUDE_PROTOCOLS,
+    };
     return instance.get('swap/v1/quote', {
         params: swapParams,
     })
@@ -77,6 +84,10 @@ const fastCache = new Cache({ttl: 5 * 1000, max: 100});
  * @return {Promise<ZeroExPriceResponse>}
  */
 export function getPrice(chainId, swapParams) {
+    swapParams = {
+        ...swapParams,
+        excludedSources: EXCLUDE_PROTOCOLS,
+    };
     return instance.get('swap/v1/price', {
             params: swapParams,
             cache: fastCache,

@@ -2,11 +2,19 @@ import axios from 'axios';
 import {Cache, cacheAdapterEnhancer} from 'axios-extensions';
 import {HUB_DEPOSIT_PROXY_API_URL, HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS, NATIVE_COIN_ADDRESS, HUB_CHAIN_BY_ID} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
+import preventConcurrencyAdapter from '~/assets/axios-prevent-concurrency.js';
+import {prepareProtocolsCached} from '~/api/swap-1inch.js';
 
-//@TODO exclude limit orders https://api.1inch.io/v5.0/56/liquidity-sources
+
+const adapter = (($ = axios.defaults.adapter) => {
+    $ = cacheAdapterEnhancer($, { enabledByDefault: false});
+    $ = preventConcurrencyAdapter($);
+    return $;
+})();
+
 const instance = axios.create({
     baseURL: HUB_DEPOSIT_PROXY_API_URL,
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
+    adapter,
 });
 addToCamelInterceptor(instance);
 
@@ -16,9 +24,16 @@ const fastCache = new Cache({ttl: 2 * 1000, max: 100});
  * build tx to proxy contract which will swap on 1inch and deposit result to Minter via Hub
  * @param {number|string} chainId
  * @param {OneInchExchangeControllerGetSwapParams&{destination: string, refundTo?: string}} swapParams
+ * @param {object} [axiosOptions]
+ * @param {string} [axiosOptions.idPreventConcurrency]
  * @return {Promise<{toTokenAmount: string, txList: Array<OneInchTx>, steps: object}>}
  */
-export function buildTxForSwap(chainId, swapParams) {
+export async function buildTxForSwap(chainId, swapParams, {idPreventConcurrency} = {}) {
+    const protocols = await prepareProtocolsCached(chainId);
+    swapParams = {
+        ...swapParams,
+        protocols,
+    };
     return instance.get(`new/swap`, {
         params: {
             // destReceiver: HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS,
@@ -28,6 +43,7 @@ export function buildTxForSwap(chainId, swapParams) {
             refundTo: swapParams.refundTo || swapParams.destination,
         },
         cache: fastCache,
+        idPreventConcurrency,
     })
         .then((response) => {
             return {
