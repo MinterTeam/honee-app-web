@@ -306,9 +306,11 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
      * @param {Array<string>} txToList - list of recipients
      * @param {Array<string>} txDataList - list of tx data
      * @param {Array<string>} txValueList - list of wei values
+     * @param {object} [options]
+     * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxPayload>}
      */
-    async function preparePayload(txToList, txDataList, txValueList) {
+    async function preparePayload(txToList, txDataList, txValueList, {overrideExtraNonce} = {}) {
         const web3Eth = getProviderByChain(props.chainId);
         const smartWalletFactoryContract = new web3Eth.Contract(smartWalletFactoryABI);
         const smartWalletContract = new web3Eth.Contract(smartWalletABI, smartWalletAddress.value);
@@ -317,7 +319,8 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         // @TODO cache block
         const timeout = (await web3Eth.getBlockNumber()) + 1000;
         const walletNonce = walletExists ? (await smartWalletContract.methods.nonce().call()) : 0;
-        const finalNonce = Number(walletNonce) + props.extraNonce;
+        const extraNonce = overrideExtraNonce ?? props.extraNonce;
+        const finalNonce = Number(walletNonce) + extraNonce;
 
         let msg = web3Utils.keccak256(web3Abi.encodeParameters(
             ["address", "uint256", "address[]", "bytes[]", "uint256[]", "uint256"],
@@ -364,9 +367,11 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
 
     /**
      * @param {Array<SmartWalletTxParams>} txList
+     * @param {object} [options]
+     * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxPayload>}
      */
-    function preparePayloadFromTxList(txList) {
+    function preparePayloadFromTxList(txList, {overrideExtraNonce} = {}) {
         const toList = [];
         const dataList = [];
         const valueList = [];
@@ -376,17 +381,25 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
             valueList[index] = tx.value || '0';
         });
 
-        return preparePayload(toList, dataList, valueList);
+        return preparePayload(toList, dataList, valueList, {overrideExtraNonce});
     }
 
     /**
      * @param {Array<SmartWalletTxParams>} txList
+     * @param {object} [options]
+     * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxResult>}
      */
-    function callSmartWallet(txList) {
-        return preparePayloadFromTxList(txList)
+    function callSmartWallet(txList, {overrideExtraNonce} = {}) {
+        return preparePayloadFromTxList(txList, {overrideExtraNonce})
             .then((payload) => {
                 return submitRelayTx(payload);
+            })
+            .then(({hash}) => {
+                return {
+                    hash,
+                    callCount: txList.length,
+                };
             });
     }
 

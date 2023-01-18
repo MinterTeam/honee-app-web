@@ -184,9 +184,11 @@ export default function useWeb3SmartWalletSwap() {
     }
 
     /**
+     * @param {object} [options]
+     * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxResult>}
      */
-    async function buildTxListAndCallSmartWallet() {
+    async function buildTxListAndCallSmartWallet({overrideExtraNonce} = {}) {
         if (props.skipRelayReward) {
             throw new Error('Can\'t call smart-wallet with disabled relay reward. Use build and call manually');
         }
@@ -194,7 +196,7 @@ export default function useWeb3SmartWalletSwap() {
         const swapTxList = await buildTxForSwapToHub();
         console.log(txListForRelayReward);
         console.log(swapTxList);
-        return callSmartWallet([].concat(txListForRelayReward, swapTxList))
+        return callSmartWallet([].concat(txListForRelayReward, swapTxList), {overrideExtraNonce})
             .then((result) => {
                 console.log(result);
                 return result;

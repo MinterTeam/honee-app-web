@@ -108,6 +108,7 @@ export default function useWeb3SmartWalletPortfolioSell() {
         });
     }, {deep: true});
 
+    /* extraNonce should be number of calls, not number of txs (so using overrideExtraNonce in PortfolioSellForm)
     watch(swsSelectedIndices, () => {
         swsList.value.forEach((swsItem, index) => {
             const positionInSequence = swsSelectedIndices.value.indexOf(index.toString());
@@ -117,6 +118,7 @@ export default function useWeb3SmartWalletPortfolioSell() {
             });
         });
     });
+    */
 
     watchDebounced([
         amountEstimationAfterSwapToHubList,

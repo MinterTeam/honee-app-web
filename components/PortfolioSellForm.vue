@@ -253,6 +253,7 @@ export default {
             const coinToReturn = this.form.coin;
             const privateKey = this.portfolioWallet.privateKey;
 
+            let swsExtraNonce = 0;
             // const swapReturnList = [];
             let swapTotalReturn = 0;
             let swapServiceFeeReturn = 0;
@@ -265,6 +266,7 @@ export default {
             let premiumFeeTotalGas = 0;
 
             const swsSequence = this.coinList.map((coinItem, index) => {
+                // ? maybe use swsSelectedIndices ?
                 const isSwsBetter = this.estimationView[index]?.isSmartWalletSwapBetter;
 
                 return {
@@ -283,8 +285,10 @@ export default {
                     prepare: () => {
                         // wait for computed depended on withdrawFee and withdrawValue to recalculate
                         return wait(50)
-                            .then(() => this.swsList[index].buildTxListAndCallSmartWallet())
+                            .then(() => this.swsList[index].buildTxListAndCallSmartWallet({overrideExtraNonce: swsExtraNonce}))
                             .then((result) => {
+                                swsExtraNonce += result.callCount;
+
                                 const newPayload = JSON.parse(this.withdrawTxParamsList[index].payload);
                                 newPayload.smartWalletTx = result.hash;
 
