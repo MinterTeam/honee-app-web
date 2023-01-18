@@ -1,4 +1,5 @@
 import axios from 'axios';
+import buildSortedURL from 'axios-extensions/esm/utils/buildSortedURL.js';
 
 const CANCEL_MESSAGE = 'Cancel previous request';
 /**
@@ -23,8 +24,7 @@ export default function preventConcurrencyAdapter(adapter) {
             return adapter(config);
         }
 
-        //@TODO handle unsorted query params and duplicate slashes (maybe use buildSortedUrl from axios-extensions)
-        const url = config.baseURL + config.url;
+        const url = buildSortedURL(config.url, config.params, config.paramsSerializer);
         // do nothing for sequential duplicates, they will get response from the cache (anyway if 3rd request will come, this 2nd will be canceled with original request, because 2nd will be same as 1st cached)
         if (activeList[id]?.url === url) {
             return adapter(config);

@@ -1,4 +1,5 @@
 import {reactive, computed, watch, watchEffect, toRefs} from '@vue/composition-api';
+import {watchDebounced} from '@vueuse/core';
 import {fromErcDecimals, toErcDecimals} from '~/api/web3.js';
 // import {buildTxForSwap as buildTxForOneInchSwap, getQuoteForSwap} from '~/api/1inch.js';
 import {buildTxForSwap as _buildTxForSwapToHub} from '~/api/swap-hub-deposit-proxy.js';
@@ -48,6 +49,7 @@ export default function useWeb3SmartWalletSwap() {
         valueToSell: 0,
         // disable relay reward
         skipRelayReward: false,
+        idPreventConcurrency: '',
     });
 
     function setProps(newProps) {
@@ -130,10 +132,9 @@ export default function useWeb3SmartWalletSwap() {
         };
     });
 
-    // @TODO throttle
     // @TODO Watch triggered even if value is not changed
     // https://github.com/vuejs/core/issues/2231 it should be fixed here but looks like not backported to vue/composition-api
-    watch(swapToHubParams, () => {
+    watchDebounced(swapToHubParams, () => {
         const sameTokens = swapToHubParams.value.fromTokenAddress === swapToHubParams.value.toTokenAddress;
         const hasProps = swapToHubParams.value.fromTokenAddress && swapToHubParams.value.toTokenAddress && swapToHubParams.value.amount > 0;
         if (hasProps && !sameTokens) {
@@ -156,13 +157,18 @@ export default function useWeb3SmartWalletSwap() {
         } else {
             state.amountEstimationAfterSwapToHub = '';
         }
+    }, {
+        debounce: 500,
+        maxWait: 2000,
     });
 
     /**
      * @return {Promise<string>}
      */
     function estimateSwapToHub() {
-        return _buildTxForSwapToHub(props.chainId, swapToHubParams.value)
+        return _buildTxForSwapToHub(props.chainId, swapToHubParams.value, {
+            idPreventConcurrency: props.idPreventConcurrency,
+        })
             .then((result) => result.toTokenAmount);
     }
 
@@ -179,7 +185,8 @@ export default function useWeb3SmartWalletSwap() {
         console.log('overrideAmount', overrideAmount);
         console.log('amountToSellForSwapToHub', props.valueToSell, withdrawAmountToReceive.value, '-', amountEstimationLimitForRelayReward.value, '=', amountToSellForSwapToHub.value);
         console.log('_buildTxForSwapToHub', props.chainId, txParams);
-        return _buildTxForSwapToHub(props.chainId, txParams)
+        // don't pass idPreventConcurrency (to ensure it will not cancelled by estimate)
+        return _buildTxForSwapToHub(props.chainId, txParams, {idPreventConcurrency: false})
             .then((result) => result.txList);
     }
 

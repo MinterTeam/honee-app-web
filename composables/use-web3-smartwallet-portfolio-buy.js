@@ -178,6 +178,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
                 coinToSell: props.coinToSell,
                 coinToBuy: item.symbol,
                 skipRelayReward: true,
+                idPreventConcurrency: `estimateSwsBuy${index}`,
             });
         });
     }, {deep: true});
