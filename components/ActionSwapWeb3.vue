@@ -63,7 +63,7 @@ export default {
             withdrawTxParams,
             withdrawFeeTxParams,
 
-            amountEstimationLimitForRelayRewards: smartWalletRelayReward,
+            amountEstimationLimitForRelayReward: smartWalletRelayReward,
             amountToSellForSwapToHub,
             amountEstimationAfterSwapToHub: depositAmountToReceive,
             isSmartWalletSwapParamsLoading,
@@ -195,7 +195,7 @@ export default {
                 // update withdrawValue
                 if (isWithdrawMaxWithoutSwap) {
                     this.form.valueToSell = value;
-                }else if (isWithdrawAfterSwap) {
+                } else if (isWithdrawAfterSwap) {
                     this.estimation = value;
                 }
 
@@ -254,6 +254,7 @@ export default {
                 valueToSell: this.withdrawValue,
                 coinToSell: this.withdrawCoin,
                 coinToBuy: this.form.coinToBuy,
+                idPreventConcurrency: 'estimateSwsSwap',
             }),
             (newVal) => this.setSmartWalletSwapProps(newVal),
             {deep: true, immediate: true},

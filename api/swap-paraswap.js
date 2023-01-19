@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {Cache, cacheAdapterEnhancer} from 'axios-extensions';
 import {ParaSwapSwapSide} from '~/api/swap-paraswap-models.d.ts';
 import {fromErcDecimals, getAllowance, buildApproveTx} from '~/api/web3.js';
 import Big from '~/assets/big.js';
@@ -9,8 +10,12 @@ import {PARASWAP_API_URL, NETWORK, MAINNET, SMART_WALLET_RELAY_BROADCASTER_ADDRE
 
 const instance = axios.create({
     baseURL: PARASWAP_API_URL,
+    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
 });
 // addToCamelInterceptor(instance);
+
+// exclude RFQ liquidity (it is considered not stable and can be expired during long smart-wallet withdrawals)
+const EXCLUDE_PROTOCOLS = '0xRFQt,OMM1';
 
 /**
  * @param {Partial<ParaSwapPricesListParams & ParaSwapTransactionsRequestPayload>} swapParams
@@ -40,6 +45,7 @@ export async function buildTxForSwap(swapParams) {
         txOrigin: swapParams.txOrigin,
         receiver: swapParams.receiver,
         priceRoute,
+        excludeDEXS: EXCLUDE_PROTOCOLS,
     });
     txList.push(swapTx);
 
@@ -49,13 +55,20 @@ export async function buildTxForSwap(swapParams) {
     };
 }
 
+const fastCache = new Cache({ttl: 2 * 1000, max: 100});
+
 /**
  * @param {ParaSwapPricesListParams} swapParams
  * @return {Promise<ParaSwapPriceRoute>}
  */
 export function getPriceRoute(swapParams) {
+    swapParams = {
+        ...swapParams,
+        excludeDEXS: EXCLUDE_PROTOCOLS,
+    };
     return instance.get('prices', {
             params: swapParams,
+            cache: fastCache,
         })
         .then((response) => {
             /** @type {ParaSwapPriceRoute} */

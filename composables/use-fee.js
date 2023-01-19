@@ -367,15 +367,24 @@ async function estimateFee(txParams, precision, idDebounce) {
  */
 async function estimateFeeWithFallback(txParams, fallbackToCoinToSpend, baseCoinAmount, precision, idDebouncePrimary, idDebounceSecondary) {
     // console.debug('estimateFeeWithFallback', JSON.parse(JSON.stringify(txParams)), {fallbackToCoinToSpend, baseCoinAmount, precision});
-    const primaryCoinToCheck = getPrimaryCoinToCheck(txParams);
+    const isGasCoinDefined = isCoinDefined(txParams.gasCoin);
+    const primaryCoinToCheck = isGasCoinDefined ? txParams.gasCoin : BASE_COIN;
     const secondaryCoinToCheck = getSecondaryCoinToCheck(txParams, fallbackToCoinToSpend);
 
-    let feeData = await estimateFee({...txParams, gasCoin: primaryCoinToCheck}, precision, idDebouncePrimary);
+    const isFallbackMode = !isGasCoinDefined;
+    const hasBaseCoinAmount = baseCoinAmount > 0;
+    const skipFallbackToBaseCoin = isFallbackMode && !hasBaseCoinAmount && secondaryCoinToCheck;
 
-    const isBaseCoinEnough = new Big(baseCoinAmount || 0).gte(feeData.baseCoinCommission || 0);
+    let feeData;
+    if (!skipFallbackToBaseCoin) {
+        feeData = await estimateFee({...txParams, gasCoin: primaryCoinToCheck}, precision, idDebouncePrimary);
+    }
+
+    const isBaseCoinEnough = new Big(baseCoinAmount || 0).gte(feeData?.baseCoinCommission || 0);
     // select between primary fallback and secondary fallback
     // secondaryFeeData may be defined only if primary is fallback base coin
-    const isSecondarySelected = !isBaseCoinEnough && secondaryCoinToCheck && secondaryCoinToCheck !== primaryCoinToCheck;
+    const isSecondaryFallbackBetter = isFallbackMode && !isBaseCoinEnough && secondaryCoinToCheck && secondaryCoinToCheck !== primaryCoinToCheck;
+    const isSecondarySelected = skipFallbackToBaseCoin || isSecondaryFallbackBetter;
 
     if (isSecondarySelected) {
         feeData = await estimateFee({...txParams, gasCoin: secondaryCoinToCheck}, precision, idDebounceSecondary)

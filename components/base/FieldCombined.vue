@@ -52,6 +52,10 @@ export default {
             type: [String, Number],
             default: undefined,
         },
+        disableMaxValueWatch: {
+            type: Boolean,
+            default: false,
+        },
         fallbackToFullList: {
             type: Boolean,
             default: true,
@@ -163,6 +167,7 @@ export default {
             :selected-coin-symbol="coin"
             :fee="fee"
             :max-value="maxValue"
+            :disable-max-value-watch="disableMaxValueWatch"
             :is-estimation="isEstimation"
             :is-loading="isLoading"
             @input="$emit('update:amount', $event)"

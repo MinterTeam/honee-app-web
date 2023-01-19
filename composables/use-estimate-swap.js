@@ -104,7 +104,7 @@ export default function useEstimateSwap({idPreventConcurrency, $td} = {}) {
             });
     }
 
-    const debouncedGetEstimation = debounce(getEstimation, 1000);
+    const debouncedGetEstimation = debounce(getEstimation, 1000, {throwOnCancel: false});
 
     function handleInputBlur() {
         // force estimation after blur if estimation was delayed

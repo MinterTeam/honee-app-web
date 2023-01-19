@@ -24,6 +24,7 @@ export default {
         'clear-form',
         'validation-touch',
         'update:fee',
+        'update:is-sequence-processing',
     ],
     props: {
         /** @type {SendSequenceItem|Array<SendSequenceItem>} */
@@ -95,12 +96,18 @@ export default {
                 this.$emit('update:fee', newVal);
             },
         },
+        isFormSending: {
+            handler(newVal) {
+                this.$emit('update:is-sequence-processing', newVal);
+            },
+        },
     },
     created() {
         // feeBusParams
         this.$watch(
             () => {
                 const sequenceParamsArray = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
+                // check only nullish, because 'false' feeTxParams mean 'skip estimation'
                 const txParamsList = sequenceParamsArray.map((item) => item.feeTxParams ?? item.txParams);
 
                 return {
@@ -158,10 +165,11 @@ export default {
                         }
 
                         // fill txParams with gasCoin
-                        const prepareGasCoin = item.prepareGasCoinPosition === 'skip' && index === 0
-                            ? () => ({gasCoin: this.fee.resultList?.[0]?.coin})
+                        const isGasCoinSet = !!item.txParams.gasCoin || item.txParams.gasCoin === 0;
+                        const prepareGasCoin = item.prepareGasCoinPosition === 'skip'
+                            ? (isGasCoinSet ? undefined : () => ({gasCoin: this.fee.resultList?.[0]?.coin}))
                             : () => this.refineByIndex(index).then((fee) => ({
-                                gasCoin: fee?.coin,
+                                ...(isGasCoinSet || {gasCoin: fee?.coin}),
                                 // extra data to pass to next `prepare`
                                 extra: {fee},
                             }));
@@ -170,6 +178,7 @@ export default {
                             : (item.prepare ? [item.prepare] : []);
                         const prepareGasCoinPosition = item.prepareGasCoinPosition || 'start';
 
+                        //@TODO ensure correct prepare array is formed
                         return {
                             ...item,
                             prepare: arrayInsertAtPosition(itemPrepare, prepareGasCoin, prepareGasCoinPosition),
@@ -191,7 +200,7 @@ export default {
                     this.clearForm();
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.error(error);
                     this.isFormSending = false;
                     this.serverError = getErrorText(error);
                 });
@@ -215,6 +224,9 @@ export default {
  * @return {Array<function>}
  */
 function arrayInsertAtPosition(target, item, position) {
+    if (!item) {
+        return target;
+    }
     target = target.slice();
     if (position === 'start') {
         target.unshift(item);
