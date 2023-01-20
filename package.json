@@ -46,6 +46,7 @@
     "axios": "^0.27.2",
     "axios-extensions": "https://git@github.com/shrpne/axios-extensions#build",
     "big.js": "^6.2.1",
+    "bip39": "^3.0.4",
     "camelcase-keys": "^7.0.2",
     "centrifuge": "^2.8.5",
     "clipbrd": "^1.0.2",
