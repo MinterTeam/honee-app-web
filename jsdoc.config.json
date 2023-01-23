@@ -1,0 +1,25 @@
+{
+  "help": "https://jsdoc.app/about-configuring-jsdoc.html",
+  "plugins": [],
+  "recurseDepth": 10,
+  "source": {
+    "exclude": [
+      "node_modules",
+      "tmp",
+      ".nuxt",
+      "tests"
+    ],
+    "includePattern": "api.+\\.js(doc|x)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "sourceType": "module",
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc","closure"]
+  },
+  "opts": {
+    "template": "./node_modules/tsd-jsdoc/dist",
+    "destination": "./tmp/@types",
+    "recurse": true
+  }
+}

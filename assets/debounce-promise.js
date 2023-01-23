@@ -5,11 +5,15 @@ import CancelError from '~/assets/utils/error-cancel.js';
  */
 
 /**
+ * @typedef {object} DebouncePromiseOptions
+ * @property {boolean} [leading]
+ * @property {boolean} [throwOnCancel = true]
+ */
+
+/**
  * @param {function(T): Promise<T2>} fn
- * @param {number | (function:number)} wait
- * @param {object} [options]
- * @param {boolean} [options.leading]
- * @param {boolean} [options.throwOnCancel = true]
+ * @param {number | (function():number)} wait
+ * @param {DebouncePromiseOptions} [options]
  * @return {(function(T): Promise<T2>)&{flush: function}}
  * @template T, T2
  */
@@ -71,7 +75,7 @@ export default function debouncePromise(fn, wait = 0, options = {}) {
 }
 
 /**
- * @param {number | (function:number)} wait
+ * @param {number | (function(): number)} wait
  * @return {number}
  */
 function getWait(wait) {

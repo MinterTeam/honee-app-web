@@ -195,10 +195,10 @@ export async function prepareBalance(balanceList) {
 }
 
 /**
- *
- * @param {Promise} coinListPromise
- * @param {('coin','balance')} itemType
- * @return {Promise<Array<Coin>|Array<BalanceItem>>}
+ * @template {Coin|BalanceItem} T
+ * @param {Promise<Array<T>>} coinListPromise
+ * @param {'coin'|'balance'} itemType
+ * @return {Promise<Array<T>>}
  */
 function markVerified(coinListPromise, itemType = 'coin') {
     const verifiedMinterCoinListPromise = getVerifiedMinterCoinList()
@@ -278,9 +278,11 @@ export function getValidatorMetaList() {
 const coinsCache = new Cache({ttl: 1 * 60 * 1000, max: 100});
 
 /**
- * @param {boolean} [skipMeta]
+ * @param {object} [options]
+ * @param {boolean} [options.skipMeta]
  * @return {Promise<Array<CoinInfo>>}
  */
+// @ts-ignore https://github.com/microsoft/TypeScript/issues/50286
 export function getCoinList({skipMeta} = {}) {
     let coinListPromise = explorer.get('coins', {
             cache: coinsCache,
@@ -658,10 +660,11 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
  */
 
 /**
- * @typedef {Object} Coin
+ * @typedef {object} Coin
  * @property {number} id
  * @property {string} symbol
  * @property {CoinType} type
+ * @property {boolean} [verified]
  */
 
 /**

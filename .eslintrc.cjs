@@ -12,11 +12,21 @@ module.exports = {
         'eslint:recommended',
         // https://github.com/vuejs/eslint-plugin-vue
         'plugin:vue/recommended',
+        'plugin:jsdoc/recommended',
     ],
     // required to lint *.vue files
     plugins: [
         'vue',
+        'jsdoc',
     ],
+    settings: {
+        'jsdoc': {
+            mode: 'jsdoc', // instead of 'typescript'
+            tagNamePreference: {
+                // "return": "return",
+            },
+        },
+    },
     // add your custom rules here
     rules: {
         'arrow-parens': ["error", "always"],
@@ -144,6 +154,21 @@ module.exports = {
               "renderError",
           ],
         }],
+
+
+        // JSDOC
+        'jsdoc/require-param-description': 0,
+        'jsdoc/require-returns-description': 0,
+        'jsdoc/require-property-description': 0,
+        'jsdoc/newline-after-description': 0,
+        // poor syntax validator
+        'jsdoc/valid-types': 0,
+        // @TODO allow both return and returns
+        'jsdoc/require-returns': 0,
+        // @TODO allow both return and returns
+        'jsdoc/check-tag-names': 0,
+        // @TODO all custom types treated as undefined
+        'jsdoc/no-undefined-types': 0,
     },
     "overrides": [
         {

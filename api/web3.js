@@ -35,8 +35,7 @@ const transactionPollingInterval = 5000;
 /**
  *
  * @param {object} abi
- * @return {function(method: string, ...[*]): string}
- * @constructor
+ * @return {function(method: string, ...[*]): string} abiMethodEncoder
  */
 export function AbiEncoder(abi) {
     const contract = new Contract(abi);
@@ -71,11 +70,12 @@ export function toErcDecimals(balance, ercDecimals = 18) {
 }
 
 /**
- * @typedef {import('web3-core/types/index.d.ts').Transaction & import('web3-core/types/index.d.ts').TransactionReceipt & {confirmations: number, timestamp: number}} Web3Tx
+ * @typedef {import('web3-core/types/index').Transaction & import('web3-core/types/index').TransactionReceipt & {confirmations: number, timestamp: number}} Web3Tx
  */
 
 /**
  * @typedef {Promise} PromiseWithEmitter
+ * @implements {Promise}
  * @property {function} on
  * @property {function} once
  * @property {function} unsubscribe
@@ -135,7 +135,7 @@ export function subscribeTransaction(hash, {
     return txPromise;
 
     /**
-     *
+     * @template T
      * @param {Promise<T>} target
      * @param {PromiseWithEmitter<T>} emitter
      */

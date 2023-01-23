@@ -1,3 +1,10 @@
+/**
+ // * @typedef {import('~/api/explorer').BalanceItem} BalanceItem
+ // * @typedef {import('~/api/explorer.js').StakeItem} StakeItem
+ // * @typedef {import('~/api/explorer.js').PoolProvider} PoolProvider
+ // * @typedef {import('~/api/explorer.js').ValidatorMeta} ValidatorMeta
+ */
+
 export default function() {
     return {
         auth: '',
@@ -31,7 +38,7 @@ export default function() {
 
 
 /**
- * @typedef {Object} Transaction
+ * @typedef {object} Transaction
  * @property {string} name
  * @property {number} amount
  * @property {string} coin

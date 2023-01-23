@@ -305,18 +305,18 @@ export default {
 };
 
 /**
- * @typedef {CardListItemRaw} CardListItem
+ * @typedef {object & CardListItemRaw} CardListItem
  * @property {string} actionType
  * @property {string} category
  */
 
 
 /**
- * @typedef {CardDataText} CardListItemRaw
+ * @typedef {object & CardDataText} CardListItemRaw
  * @property {string} action - url to action
  * @property {string|Array<string>} [coin] - coin symbol or list of coin symbols (used for `title`, `icon`, and `tags`)
  * @property {string|Array<string>} [icon]
- * @property {CardDataStats} [stats]
+ * @property {CardDataStats & CardDataText.stats} [stats]
  * @property {string[]} [tags]
  * @property {string} [style] - class to apply to card to style it
  * @property {CardDataText} [ru]
@@ -334,7 +334,7 @@ export default {
  */
 
 /**
- * @typedef {CardDataText.stats} CardDataStats
+ * @typedef {object} CardDataStats
  * @property {CardDataStatsApr} [apr]
  * @property {CardDataStatsApr} [apy]
  */

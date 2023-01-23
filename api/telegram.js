@@ -18,6 +18,7 @@ addEcdsaAuthInterceptor(instance);
 const userCacheTime = 60 * 60 * 1000;
 const tgUserCache = new Cache({ttl: userCacheTime, max: 100});
 /**
+ * @param {string} secretDeviceUuid
  * @return {Promise<TelegramAuthResponse>}
  */
 export function getLegacyAuth(secretDeviceUuid) {
@@ -31,6 +32,8 @@ export function getLegacyAuth(secretDeviceUuid) {
 }
 
 /**
+ * @param {string} secretDeviceUuid
+ * @param {string} privateKey
  * @return {Promise<undefined>}
  */
 export function switchLegacyAuth(secretDeviceUuid, privateKey) {
@@ -45,6 +48,7 @@ export function switchLegacyAuth(secretDeviceUuid, privateKey) {
 }
 
 /**
+ * @param {string} privateKey
  * @return {Promise<TelegramAuthResponse>}
  */
 export function getAuth(privateKey) {
@@ -62,8 +66,8 @@ export function getAuth(privateKey) {
 
 /**
  * @param {number|string} id
- * @param {privateKey} privateKey
- * @return {Promise<AxiosResponse<any>>}
+ * @param {string} privateKey
+ * @return {Promise<import('axios').AxiosResponse<any>>}
  */
 export function portfolioNotificationSubscribe(id, privateKey) {
     return instance.post(`users/portfolios/${id}`, {}, {
@@ -74,8 +78,8 @@ export function portfolioNotificationSubscribe(id, privateKey) {
 }
 /**
  * @param {number|string} id
- * @param {privateKey} privateKey
- * @return {Promise<AxiosResponse<any>>}
+ * @param {string} privateKey
+ * @return {Promise<import('axios').AxiosResponse<any>>}
  */
 export function portfolioNotificationUnsubscribe(id, privateKey) {
     return instance.delete(`users/portfolios/${id}`, {
