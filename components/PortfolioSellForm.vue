@@ -522,7 +522,8 @@ export default {
             () => ({
                 privateKey: this.$store.getters.privateKey,
                 evmAccountAddress: this.$store.getters.evmAddress,
-                depositDestination: this.$store.getters.address,
+                withdrawOriginAddress: this.portfolioWallet.address,
+                depositDestinationAddress: this.$store.getters.address,
                 chainId: this.hubChainData.chainId,
                 coinToSellList: this.withdrawCoinList,
                 coinToBuy: this.form.coin,

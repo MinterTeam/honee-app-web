@@ -445,7 +445,7 @@ export default {
             () => ({
                 privateKey: this.$store.getters.privateKey,
                 evmAccountAddress: this.$store.getters.evmAddress,
-                depositDestination: this.portfolioWallet.address,
+                depositDestinationAddress: this.portfolioWallet.address,
                 chainId: this.hubChainData.chainId,
                 valueToSell: this.form.value,
                 coinToSell: this.form.coin,

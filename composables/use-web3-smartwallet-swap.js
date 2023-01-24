@@ -38,10 +38,15 @@ export default function useWeb3SmartWalletSwap() {
     } = useWeb3Withdraw();
 
     const props = reactive({
+        // privateKey of control address
         privateKey: '',
+        // control address of smart-wallet
         evmAccountAddress: '',
         extraNonce: undefined,
-        depositDestination: '', // destination address to deposit via Hub after swap (should be specified with 0x prefix, however it is address of Minter account)
+        // origin address to withdraw from (via Hub before swap)
+        withdrawOriginAddress: '',
+        // destination address to deposit via Hub after swap (should be specified with 0x prefix, however it is address of Minter account)
+        depositDestinationAddress: '',
         chainId: 0,
         coinToSell: '',
         coinToBuy: '',
@@ -82,7 +87,7 @@ export default function useWeb3SmartWalletSwap() {
         hubNetworkSlug: HUB_CHAIN_BY_ID[props.chainId]?.hubNetworkSlug,
         amountToSend: props.valueToSell,
         tokenSymbol: props.coinToSell,
-        accountAddress: props.evmAccountAddress?.replace('0x', 'Mx'),
+        accountAddress: (props.withdrawOriginAddress || props.evmAccountAddress || '').replace('0x', 'Mx'),
         destinationAddress: smartWalletAddress.value,
         speed: HUB_WITHDRAW_SPEED.FAST,
         // placeholder for minter tx payload
@@ -124,7 +129,7 @@ export default function useWeb3SmartWalletSwap() {
             fromAddress: smartWalletAddress.value,
             // destAddress: undefined, // is set by hubDepositProxy api
             // hub proxy destination
-            destination: (props.depositDestination || props.evmAccountAddress || '').replace('Mx', '0x'),
+            destination: (props.depositDestinationAddress || props.evmAccountAddress || '').replace('Mx', '0x'),
             // refundTo: props.evmAccountAddress,
             slippage: 1,
             disableEstimate: true,
@@ -186,7 +191,7 @@ export default function useWeb3SmartWalletSwap() {
         console.log('amountToSellForSwapToHub', props.valueToSell, withdrawAmountToReceive.value, '-', amountEstimationLimitForRelayReward.value, '=', amountToSellForSwapToHub.value);
         console.log('_buildTxForSwapToHub', props.chainId, txParams);
         // don't pass idPreventConcurrency (to ensure it will not cancelled by estimate)
-        return _buildTxForSwapToHub(props.chainId, txParams, {idPreventConcurrency: false})
+        return _buildTxForSwapToHub(props.chainId, txParams, {idPreventConcurrency: null})
             .then((result) => result.txList);
     }
 

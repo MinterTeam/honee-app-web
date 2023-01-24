@@ -8,7 +8,8 @@ export default function useWeb3SmartWalletPortfolioSell() {
     const props = reactive({
         privateKey: '',
         evmAccountAddress: '',
-        depositDestination: '',
+        withdrawOriginAddress: '',
+        depositDestinationAddress: '',
         chainId: 0,
         // amount used to withdraw (before sell to hub)
         /** @type {Array<{symbol: string, amount: number|string}>} */
@@ -98,7 +99,8 @@ export default function useWeb3SmartWalletPortfolioSell() {
             swsList.value[index].setSmartWalletSwapProps({
                 privateKey: props.privateKey,
                 evmAccountAddress: props.evmAccountAddress,
-                depositDestination: props.depositDestination,
+                withdrawOriginAddress: props.withdrawOriginAddress,
+                depositDestinationAddress: props.depositDestinationAddress,
                 chainId: props.chainId,
                 valueToSell: item.amount,
                 coinToSell: item.symbol,
