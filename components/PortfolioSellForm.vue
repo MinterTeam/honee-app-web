@@ -265,6 +265,12 @@ export default {
             // total gas used for premium fee txs
             let premiumFeeTotalGas = 0;
 
+            // if no minter swaps mean that address will be empty after sws withdrawals, so
+            // - nothing to swap for serviceFee
+            // - no coins to pay fee for send tx with type: sell payload
+            // - no premiumFee to lock
+            const hasMinterTxs = this.selectedIndices.length > 0;
+
             const swsSequence = this.coinList.map((coinItem, index) => {
                 // ? maybe use swsSelectedIndices ?
                 const isSwsBetter = this.estimationView[index]?.isSmartWalletSwapBetter;
@@ -363,7 +369,7 @@ export default {
 
             // SWAP SERVICE FEE TX
             const swapServiceFee = {
-                skip: !this.isNeedSwapServiceFee,
+                skip: !this.isNeedSwapServiceFee || !hasMinterTxs,
                 txParams: {
                     type: this.$refs.estimationServiceFee?.getTxType(),
                     data: this.serviceFeeSwapTxData,
@@ -409,6 +415,7 @@ export default {
 
 
             const send = {
+                skip: !hasMinterTxs,
                 prepareGasCoinPosition: 'start',
                 prepare: (swapTx, prevPrepareGasCoin) => {
                     premiumFeeAmount = this.isNeedSwapServiceFee ? restorePremiumFee(swapServiceFeeReturn, this.portfolio.profit) : premiumFeeInCoin;
@@ -476,6 +483,7 @@ export default {
 
             // LOCK TX
             const lock = {
+                skip: !hasMinterTxs,
                 txParams: {
                     type: TX_TYPE.LOCK,
                     data: {
