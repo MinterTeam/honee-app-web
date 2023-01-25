@@ -649,7 +649,7 @@ export default {
     },
     metagarden: {
         'title': 'Майнинг-споты metagarden',
-        'description': 'Один спот стоит 1000 токенов METAGARDEN',
+        'description': 'Один спот стоит $80 или 1000 токенов METAGARDEN',
         'spot-amount-label': 'Количество спотов',
         'confirm-title': 'Подтвердите покупку',
     },
