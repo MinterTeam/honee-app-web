@@ -18,7 +18,13 @@ export default {
         store.commit('LOGOUT');
         store.commit('ADD_AUTH_ADVANCED', mnemonic);
 
-        return app.router.replace(app.i18nGetPreferredPath('/' + game));
+        return app.router.replace(app.i18nGetPreferredPath('/' + game))
+            .catch((error) => {
+                // fix error on double redirect @see https://stackoverflow.com/a/65326844
+                if (error.type !== app.router.constructor.NavigationFailureType.redirected) {
+                    throw error;
+                }
+            });
     },
 };
 </script>

@@ -120,6 +120,8 @@ module.exports = {
     router: {
         linkActiveClass: 'is-active-inner',
         linkExactActiveClass: 'is-active',
+        // fix foo-bar.vue shadowing foo/bar.vue, by default they have same name, so change '-' separator to '/'
+        routeNameSplitter: '/',
         middleware: [
             'auth',
             'history',

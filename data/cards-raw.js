@@ -15,7 +15,7 @@ export default {
                 description: 'metagarden — a play-to-earn platform with mini games. Become the platform miner to earn crypto.',
                 buttonLabel: 'Buy spot',
                 tags: [],
-                action: `/metagarden-buy-spot`,
+                action: `/metagarden/buy-spot`,
                 ru: {
                     caption: 'Майнинг',
                     title: 'Майнинг-споты',
