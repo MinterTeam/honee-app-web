@@ -5,9 +5,9 @@ import {isValidMnemonic, walletFromMnemonic} from 'minterjs-wallet';
  */
 
 /**
- * @type {Object.<number, PortfolioWallet>}
+ * @type {Object.<number, PortfolioWallet> & {mnemonic: string}}
  */
-let wallets = {};
+let wallets = {mnemonic: ''};
 
 export default function usePortfolioWallet(mnemonic) {
     if (!mnemonic || !isValidMnemonic(mnemonic)) {
@@ -15,9 +15,10 @@ export default function usePortfolioWallet(mnemonic) {
     }
     // clear wallet list for new mnemonic
     if (wallets.mnemonic !== mnemonic) {
-        wallets = {};
+        wallets = {
+            mnemonic,
+        };
     }
-    wallets.mnemonic = mnemonic;
 
     /**
      * @param {number|string} portfolioId

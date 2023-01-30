@@ -3,7 +3,7 @@
 declare module 'axios' {
     interface AxiosRequestConfig {
         idDebounce?: string|number;
-        debounceOptions: AxiosDebounceAdapterOptions;
+        debounceOptions?: AxiosDebounceAdapterOptions;
     }
 }
 /**

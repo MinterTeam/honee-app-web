@@ -161,6 +161,8 @@ module.exports = {
         'jsdoc/require-returns-description': 0,
         'jsdoc/require-property-description': 0,
         'jsdoc/newline-after-description': 0,
+        // e.g. export default from .vue
+        'jsdoc/require-jsdoc': 0,
         // poor syntax validator
         'jsdoc/valid-types': 0,
         // @TODO allow both return and returns
