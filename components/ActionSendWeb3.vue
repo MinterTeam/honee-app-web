@@ -10,10 +10,8 @@ import {getTokenSymbolForNetwork} from '~/api/hub.js';
 import {pretty} from '~/assets/utils.js';
 import {HUB_NETWORK, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
 // import useHubOracle from '~/composables/use-hub-oracle.js';
-// import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
-import useWeb3SmartWalletSwap from '~/composables/use-web3-smartwallet-swap.js';
-import {buildTransferTx, toErcDecimals} from '~/api/web3.js';
+import {buildTransferTx, getTokenDecimals, toErcDecimals} from '~/api/web3.js';
 import FieldAddress from '~/components/base/FieldAddress.vue';
 
 
@@ -44,18 +42,12 @@ export default {
         // } = useHubOracle({
         //     // no need to subscribe here, because already subscribed in useHubToken and useWeb3Withdraw
         // });
-        // const {hubCoin: coinItem, tokenPrice: coinPrice, tokenData: externalToken, setHubTokenProps} = useHubToken();
         const {smartWalletAddress, setSmartWalletProps, buildTxForRelayReward, callSmartWallet} = useWeb3SmartWallet();
 
         return {
             // networkHubCoinList,
             // setHubOracleProps,
             // fetchHubDestinationFee,
-
-            // coinItem,
-            // coinPrice,
-            // externalToken,
-            // setHubTokenProps,
 
 
             smartWalletAddress,
@@ -65,13 +57,13 @@ export default {
         };
     },
     data() {
-
         return {
             form: {
                 token: '',
                 amount: '',
                 address: '',
             },
+            tokenDecimalsFetched: -1,
         };
     },
     computed: {
@@ -79,8 +71,36 @@ export default {
         hubChainData() {
             return HUB_CHAIN_DATA[HUB_NETWORK.BSC];
         },
+        tokenAddressFixed() {
+            if (this.form.token === 'BNB') {
+                return NATIVE_COIN_ADDRESS;
+            }
+            if (this.form.token.length === 42 && this.form.token.indexOf('0x') === 0) {
+                return this.form.token;
+            }
+            return '';
+        },
+        tokenDecimals() {
+            if (this.tokenAddressFixed === NATIVE_COIN_ADDRESS) {
+                return 18;
+            }
+            return this.tokenDecimalsFetched;
+        },
     },
     watch: {
+        tokenAddressFixed: {
+            handler() {
+                // set invalid value to ensure old value not used for tx
+                this.tokenDecimalsFetched = -1;
+                if (!this.tokenAddressFixed || this.tokenAddressFixed === NATIVE_COIN_ADDRESS) {
+                    return;
+                }
+                getTokenDecimals(this.tokenAddressFixed, this.hubChainData.chainId)
+                    .then((decimals) => {
+                        this.tokenDecimalsFetched = decimals;
+                    });
+            },
+        },
     },
     created() {
         // smartWalletProps
@@ -90,7 +110,7 @@ export default {
                 evmAccountAddress: this.$store.getters.evmAddress,
                 chainId: this.hubChainData.chainId,
                 gasTokenAddress: this.form.token === 'BNB' ? NATIVE_COIN_ADDRESS : this.form.token,
-                gasTokenDecimals: 18,
+                gasTokenDecimals: this.tokenDecimals,
                 estimationSkip: true,
             }),
             (newVal) => this.setSmartWalletProps(newVal),
@@ -103,16 +123,6 @@ export default {
         //         hubNetworkSlug: this.hubChainData.hubNetworkSlug,
         //     }),
         //     (newVal) => this.setHubOracleProps(newVal),
-        //     {deep: true, immediate: true},
-        // );
-
-        // hubTokenProps
-        // this.$watch(
-        //     () => ({
-        //         chainId: this.hubChainData.chainId,
-        //         tokenSymbol: this.withdrawCoin,
-        //     }),
-        //     (newVal) => this.setHubTokenProps(newVal),
         //     {deep: true, immediate: true},
         // );
     },

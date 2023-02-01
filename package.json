@@ -85,10 +85,10 @@
     "vue-now": "^0.1.1",
     "vuelidate": "^0.7.7",
     "vuex-persistedstate": "^3.2.1",
-    "web3-eth": "^1.8.1",
-    "web3-eth-abi": "^1.8.1",
-    "web3-eth-contract": "^1.8.1",
-    "web3-utils": "^1.8.1"
+    "web3-eth": "^1.8.2",
+    "web3-eth-abi": "^1.8.2",
+    "web3-eth-contract": "^1.8.2",
+    "web3-utils": "^1.8.2"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.19.1",
@@ -101,7 +101,7 @@
     "dotenv": "^16.0.3",
     "eslint": "8.33.0",
     "eslint-friendly-formatter": "^4.0.1",
-    "eslint-plugin-jsdoc": "^39.7.4",
+    "eslint-plugin-jsdoc": "^39.7.5",
     "eslint-plugin-vue": "^9.9.0",
     "fancy-log": "^2.0.0",
     "gulp": "^4.0.2",
