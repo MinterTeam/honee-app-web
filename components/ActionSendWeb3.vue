@@ -138,11 +138,11 @@ export default {
             if (this.form.token === 'BNB') {
                 tx = {
                     to: this.form.address,
-                    value: toErcDecimals(amount, 18),
+                    value: toErcDecimals(amount, this.tokenDecimals),
                     data: '0x',
                 };
             } else {
-                tx = buildTransferTx(this.form.token, this.form.address, toErcDecimals(amount, 18));
+                tx = buildTransferTx(this.form.token, this.form.address, toErcDecimals(amount, this.tokenDecimals));
             }
             this.callSmartWallet([].concat(relayRewardData.txList, tx))
                 .then((result) => {
