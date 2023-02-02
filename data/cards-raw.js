@@ -8,7 +8,7 @@ export default {
         title: 'Earning Options',
         cards: [
             {
-                style: 'metagarden',
+                style: 'garden',
                 caption: 'Mining',
                 title: 'Buy mining spots',
                 coin: `METAGARDEN`,
