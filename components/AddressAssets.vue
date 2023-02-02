@@ -1,5 +1,6 @@
 <script>
 import {pretty, getExplorerAddressUrl} from '~/assets/utils.js';
+import InlineSvg from 'vue-inline-svg';
 import BaseTabs from '~/components/base/BaseTabs.vue';
 import AddressBalanceList from '~/components/AddressBalanceList.vue';
 import AddressStakeList from '~/components/AddressStakeList.vue';
@@ -19,6 +20,7 @@ export default {
     BALANCE_DISPLAY_TOTAL_USD,
     ASSET_TYPE,
     components: {
+        InlineSvg,
         BaseTabs,
         AddressBalanceList,
         AddressStakeList,
@@ -47,57 +49,39 @@ export default {
             <h2 class="u-h--uppercase">{{ $td('Total balance', 'index.total-balance') }}</h2>
             <div class="wallet__balance-wrap">
                 <div class="wallet__balance">
-                    <div class="wallet__balance-value">
+                    <div class="wallet__balance-value u-mb-05">
                         ${{ pretty($store.state.totalBalanceSumUsd) }}
                     </div>
-                    <div class="wallet__balance-control-items">
-                        <nuxt-link class="wallet__balance-control-item button button--ghost-gray" :to="getDashboardUrl('topup')">
+                    <div class="button-group button-group--small">
+                        <nuxt-link class="button button--small button--light-gray" :to="$getDashboardUrl('topup')">
                             {{ $td('&#43; Deposit', 'index.topup') }}
                         </nuxt-link>
-                        <nuxt-link class="wallet__balance-control-item button button--ghost-gray" :to="getDashboardUrl('withdraw')">
+                        <nuxt-link class="button button--small button--light-gray" :to="$getDashboardUrl('withdraw')">
                             {{ $td('&#8599; Withdraw', 'index.withdraw') }}
                         </nuxt-link>
-                        <!--<nuxt-link class="wallet__balance-buy-link button button--yellow-light button--full-mobile u-text-nowrap" :to="getDashboardUrl('buy')">
-                            <img class="button__icon" src="/img/icon-category-buy.svg" width="24" height="24" alt="" role="presentation">
-                            {{ $td('Buy BIP, HUB, & BEE', 'index.wallet-balance-links') }}
-                        </nuxt-link>-->
                     </div>
                 </div>
-                <div class="button-group button-group--center u-hidden-large-down">
-                    <nuxt-link class="button button--main wallet__action-button" :to="getDashboardUrl('swap')">
-                        <img class="button__icon" src="/img/icon-white-swap.svg" width="24" height="24" alt="" role="presentation">
+
+                <div class="card__fake-divider u-hidden-medium-up"></div>
+
+                <div class="button-group button-group--center">
+                    <nuxt-link class="button button--main wallet__action-button link--opacity" :to="$getDashboardUrl('swap')">
+                        <!--<img class="button__icon u-hidden-medium-down" src="/img/icon-white-swap.svg" width="24" height="24" alt="" role="presentation">-->
+                        <InlineSvg class="button__icon" src="/img/icon-swap.svg" width="24" height="24" alt="" role="presentation"/>
                         {{ $td('Swap', 'index.swap-wallet-button') }}
                     </nuxt-link>
-                    <nuxt-link class="button button--main wallet__action-button" :to="getDashboardUrl('send')">
-                        <img class="button__icon" src="/img/icon-white-send.svg" width="24" height="24" alt="" role="presentation">
+                    <nuxt-link class="button button--main wallet__action-button link--opacity" :to="$getDashboardUrl('send')">
+                        <!--<img class="button__icon u-hidden-medium-down" src="/img/icon-white-send.svg" width="24" height="24" alt="" role="presentation">-->
+                        <InlineSvg class="button__icon" src="/img/icon-send.svg" width="24" height="24" alt="" role="presentation"/>
                         {{ $td('Send', 'index.send') }}
                     </nuxt-link>
-                    <nuxt-link class="button button--main wallet__action-button" :to="getDashboardUrl('receive')">
-                        <img class="button__icon" src="/img/icon-white-receive.svg" width="24" height="24" alt="" role="presentation">
+                    <nuxt-link class="button button--main wallet__action-button link--opacity" :to="$getDashboardUrl('receive')">
+                        <!--<img class="button__icon u-hidden-medium-down" src="/img/icon-white-receive.svg" width="24" height="24" alt="" role="presentation">-->
+                        <InlineSvg class="button__icon" src="/img/icon-receive.svg" width="24" height="24" alt="" role="presentation"/>
                         {{ $td('Receive', 'index.receive') }}
                     </nuxt-link>
                 </div>
             </div>
-        </div>
-        <div class="card__content wallet__controls u-hidden-large-up">
-            <div class="button-group button-group--center">
-                <nuxt-link class="button button--main wallet__action-button" :to="getDashboardUrl('swap')">
-                    <img class="button__icon u-hidden-medium-down" src="/img/icon-white-swap.svg" width="24" height="24" alt="" role="presentation">
-                    <img class="button__icon u-hidden-medium-up" src="/img/icon-swap.svg" width="24" height="24" alt="" role="presentation">
-                    {{ $td('Swap', 'index.swap-wallet-button') }}
-                </nuxt-link>
-                <nuxt-link class="button button--main wallet__action-button" :to="getDashboardUrl('send')">
-                    <img class="button__icon u-hidden-medium-down" src="/img/icon-white-send.svg" width="24" height="24" alt="" role="presentation">
-                    <img class="button__icon u-hidden-medium-up" src="/img/icon-send.svg" width="24" height="24" alt="" role="presentation">
-                    {{ $td('Send', 'index.send') }}
-                </nuxt-link>
-                <nuxt-link class="button button--main wallet__action-button" :to="getDashboardUrl('receive')">
-                    <img class="button__icon u-hidden-medium-down" src="/img/icon-white-receive.svg" width="24" height="24" alt="" role="presentation">
-                    <img class="button__icon u-hidden-medium-up" src="/img/icon-receive.svg" width="24" height="24" alt="" role="presentation">
-                    {{ $td('Receive', 'index.receive') }}
-                </nuxt-link>
-            </div>
-
         </div>
         <section class="card__content">
             <div class="u-flex u-flex--align-start u-mb-15">

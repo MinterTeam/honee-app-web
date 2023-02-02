@@ -1,9 +1,11 @@
 <script>
+import AddressAssets from '~/components/AddressAssets.vue';
 import MetagardenSpotCard from '~/components/MetagardenSpotCard.vue';
 import MetagardenLootboxCard from '~/components/MetagardenLootboxCard.vue';
 
 export default {
     components: {
+        AddressAssets,
         MetagardenSpotCard,
         MetagardenLootboxCard,
     },
@@ -16,7 +18,9 @@ export default {
 </script>
 
 <template>
-    <div class="u-container--small">
+    <div class="theme--metagarden">
+        <AddressAssets class="card--metagarden u-mb-10"/>
+
         <MetagardenSpotCard/>
 
         <MetagardenLootboxCard class="u-mt-10"/>

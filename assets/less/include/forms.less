@@ -15,13 +15,12 @@
 .button--large {padding-top: 16px; padding-bottom: 16px;}
 .button--narrow {padding-inline: 12px;}
 .button--medium {min-width: auto; width: 100%;}
-//.button--small {padding: 2px 8px; border-radius: 4px;}
+.button--small {padding: 6px 13px; font-size: 14px; line-height: 18px;}
 //.button--icon {padding-left: 48px;}
 //.button__icon {position: absolute; left: 28px; top: 50%; transform: translate(-50%, -50%);}
 .button__icon {margin: -2px 8px -2px -2px; fill: currentColor;}
 .button--full {display: flex; width: 100%;}
 /*.button__content {transition: 0.1s;}*/
-//.button--small {padding-left: 14px; padding-right: 14px;}
 @media (max-width: @breakpoint-small-down) {
     //.button--medium-mobile {min-width: auto; width: 100%;}
     .button--full-mobile {display: flex; width: 100%;}
@@ -109,14 +108,14 @@
 }
 */
 .button--ghost-main {
-    color: @c-main; background: transparent; border-color: @c-main;
-    &:hover, &:focus {background: fade(@c-main, 20%);}
-    &:active {background: fade(@c-main, 40%);}
+    color: var(--color-main); background: transparent; border-color: var(--color-main);
+    &:hover, &:focus {background: rgba(var(--color-main-rgb), 0.2);}
+    &:active {background: rgba(var(--color-main-rgb), 0.4);}
 }
-.button--ghost-gray {
-    color: @c-main; background: #F2F2F2; padding: 7px 11px 8px 11px; font-size: 14px; line-height: 17px; border: none; margin: 0 4px 0 0;
-    &:hover, &:focus {background: fade(@c-main, 20%);}
-    &:active {background: fade(@c-main, 40%);}
+.button--light-gray {
+    color: var(--color-main); background: var(--color-light-gray);
+    &:hover, &:focus {background: rgba(var(--color-main-rgb), 0.2);}
+    &:active {background: rgba(var(--color-main-rgb), 0.4);}
 }
 //.button--ghost-white {
 //    color: #fff; background: transparent; border-color: #fff;
@@ -133,6 +132,10 @@
 .button-group {
     display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; margin-top: -10px; margin-left: -16px;
     .button, .link--default {margin-top: 10px; margin-left: 16px;}
+}
+.button-group--small {
+    margin-left: -8px;
+    .button, .link--default {margin-left: 8px;}
 }
 .button-group--center {justify-content: center;}
 
