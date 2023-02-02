@@ -20,20 +20,20 @@ export default {
     BTC: {
         name: 'BTC',
         network: 'ETH',
+        hide: true,
     },
     BTCBSC: {
         name: 'BTC',
         network: 'BSC',
-        hide: true,
     },
     ETH: {
         name: 'ETH',
         network: 'ETH',
+        hide: true,
     },
     ETHBSC: {
         name: 'ETH',
         network: 'BSC',
-        hide: true,
     },
     BUSDE: {
         name: 'BUSD',
