@@ -120,6 +120,7 @@ export default {
 
         return {
             form,
+            // @TODO combine withdraw and send tx fees ans validate it
             amountToWithdraw: {
                 minValue: (value) => this.isSmartWalletWithdraw ? minValue(this.minAmountToWithdraw)(value) : true,
             },

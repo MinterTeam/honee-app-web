@@ -131,7 +131,9 @@ export default function useWeb3SmartWalletSwap() {
             // hub proxy destination
             destination: (props.depositDestinationAddress || props.evmAccountAddress || '').replace('Mx', '0x'),
             // refundTo: props.evmAccountAddress,
-            slippage: 1,
+            // @TODO portfolio buy: make first swap in a sequence less slippage (e.g. 2.5)
+            // @TODO portfolio buy: estimate swap of all sell value to e.g. BNB to get overalls price impact and set slippage basing on it
+            slippage: 5,
             disableEstimate: true,
             allowPartialFill: false,
         };
@@ -141,7 +143,7 @@ export default function useWeb3SmartWalletSwap() {
     // https://github.com/vuejs/core/issues/2231 it should be fixed here but looks like not backported to vue/composition-api
     watchDebounced(swapToHubParams, () => {
         const sameTokens = swapToHubParams.value.fromTokenAddress === swapToHubParams.value.toTokenAddress;
-        const hasProps = swapToHubParams.value.fromTokenAddress && swapToHubParams.value.toTokenAddress && swapToHubParams.value.amount > 0;
+        const hasProps = swapToHubParams.value.fromTokenAddress && swapToHubParams.value.toTokenAddress && Number(swapToHubParams.value.amount) > 0;
         if (hasProps && !sameTokens) {
             // console.log('swapToHubParams', swapToHubParams.value);
             // prepareTxParams();
