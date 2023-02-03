@@ -19,6 +19,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        isMetagarden: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         indexUrl() {
@@ -65,28 +69,29 @@ export default {
         <div class="header__container u-container u-container--wide">
             <div class="header__logo">
                 <nuxt-link class="header__logo-link" :to="$i18nGetPreferredPath(indexUrl)">
-                    <InlineSvg class="header__image-logo" src="/img/logo-honee.svg" alt="Honee" width="122" height="24" fill="currentColor"/>
+                    <img v-if="isMetagarden" class="header__image-logo" src="/img/logo-metagarden-green.svg" alt="Metagarden" width="32" height="32">
+                    <InlineSvg v-else class="header__image-logo" src="/img/logo-honee.svg" alt="Honee" width="122" height="24" fill="currentColor"/>
                 </nuxt-link>
             </div>
 
             <!--<div class="header__controls">-->
-            <template v-if="!isPremiumPage && isAuthorized && !simple">
-                <hr class="header__horizontal-divider header__premium-item u-hidden-large-up"/>
-                <nuxt-link class="header__controls-link u-flex u-flex--align-center header__premium-item" :to="$i18nGetPreferredPath('/premium')">
+            <template v-if="!isPremiumPage && isAuthorized && !simple && !isMetagarden">
+                <hr class="header__horizontal-divider header__premium-item u-hidden-large-up metagarden-layout__hide"/>
+                <nuxt-link class="header__controls-link u-flex u-flex--align-center header__premium-item metagarden-layout__hide" :to="$i18nGetPreferredPath('/premium')">
                     <img class="u-mr-05 u-hidden-large-down" src="/img/icon-premium-fancy.svg" alt="" role="presentation" width="64" height="42">
                     <img class="u-mr-05 u-hidden-large-up" src="/img/icon-premium.svg" alt="" role="presentation" width="24" height="24">
                     {{ $t('premium.activate-title-short') }}
                 </nuxt-link>
-                <hr class="header__controls-link header__controls-divider header__premium-item"/>
-                <ReferralCard class="u-flex header__premium-item" button-class="header__controls-link u-semantic-button"/>
-                <hr class="header__controls-link header__controls-divider header__premium-item u-hidden-large-down"/>
+                <hr class="header__controls-link header__controls-divider header__premium-item metagarden-layout__hide"/>
+                <ReferralCard class="u-flex header__premium-item metagarden-layout__hide" button-class="header__controls-link u-semantic-button"/>
+                <hr class="header__controls-link header__controls-divider header__premium-item u-hidden-large-down metagarden-layout__hide"/>
             </template>
 
             <nuxt-link v-if="isAuthorized && !simple" :to="$i18nGetPreferredPath('/receive')" class="header__controls-link header__controls-user">
                 <div class="header__controls-user-avatar u-hidden-mini-down" :style="`background-image: url(${$store.getters.avatar});`" v-if="$store.getters.avatar"></div>
                 <div class="header__controls-user-name">{{ $store.getters.username }}</div>
             </nuxt-link>
-            <button v-if="isAuthorized && !simple" type="button" class="header__controls-link link u-semantic-button" @click="logout()">
+            <button v-if="isAuthorized && !simple && !isMetagarden" type="button" class="header__controls-link link u-semantic-button metagarden-layout__hide" @click="logout()">
                 <img src="/img/icon-logout.svg" width="24" height="24" alt="Logout">
             </button>
             <nuxt-link v-if="!isAuthorized && !simple && !isAuthPage" :to="$i18nGetPreferredPath('/auth')" type="button" class="header__controls-link">
