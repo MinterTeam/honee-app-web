@@ -17,14 +17,31 @@ addEcdsaAuthInterceptor(instance);
 
 
 /**
- * @param {string} address
+ * @param {string} privateKey
  * @return {Promise<object>}
  */
-export function getSpotInfo(address) {
-    if (!address) {
-        throw new Error('Address needed to get spots info');
+export function getSpotInfo(privateKey) {
+    if (!privateKey) {
+        throw new Error('PK needed to get spots info');
     }
-    return instance.get(`info/${address}`)
+    return instance.get('info', {
+            ecdsaAuth: {
+                privateKey,
+            },
+        })
+        .then((response) => response.data.data);
+}
+
+/**
+ * @param {string} privateKey
+ * @return {Promise<object>}
+ */
+export function claimSpotReward(privateKey) {
+    return instance.get('claim', {
+            ecdsaAuth: {
+                privateKey,
+            },
+        })
         .then((response) => response.data.data);
 }
 

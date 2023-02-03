@@ -33,7 +33,7 @@ const NUXT_LOADING_INLINE_SCRIPT_SHA = process.env.NODE_ENV === 'production'
 
 /**
  * prepare CSP string from env config
- * @param {Object} env - env config
+ * @param {object} env - env config
  * @param {Function} keyFilter
  */
 function prepareCSP(env, keyFilter) {
@@ -290,6 +290,7 @@ module.exports = {
             'vue-simple-suggest/dist/es7',
             'vue-simple-suggest/lib',
             'centrifuge/src',
+            'v-tooltip/src',
             'autonumeric/src',
             'vue-autonumeric/src',
             'vuelidate/src',
