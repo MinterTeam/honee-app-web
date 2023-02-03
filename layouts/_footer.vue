@@ -1,6 +1,9 @@
 <script>
+import InlineSvg from 'vue-inline-svg';
 export default {
-
+    components: {
+        InlineSvg,
+    },
 };
 </script>
 
@@ -36,7 +39,9 @@ export default {
                     <a href="mailto:hello@honee.app" class="link--default-black">hello@honee.app</a>
                 </div>
             </div>
-            <nuxt-link class="footer__logo" :to="$i18nGetPreferredPath('/')"><img src="/img/logo-honee.svg" alt="" width="82" height="16"/></nuxt-link>
+            <nuxt-link class="footer__logo" :to="$i18nGetPreferredPath('/')">
+                <InlineSvg src="/img/logo-honee.svg" alt="Honee" width="82" height="16" fill="currentColor"/>
+            </nuxt-link>
             <div class="footer__copyright">
                 Copyright © {{ (new Date()).getFullYear() }} Grom R&D Limited.<br>
                 All Rights Reserved.

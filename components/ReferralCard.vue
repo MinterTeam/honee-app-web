@@ -12,6 +12,12 @@ export default {
         BaseButtonCopyIcon,
         Modal,
     },
+    props: {
+        buttonClass: {
+            type: String,
+            default: '',
+        },
+    },
     data() {
         return {
             serverError: '',
@@ -78,10 +84,11 @@ export default {
     <div>
         <button
             type="button"
-            class="button button--in-menu"
+            class=""
+            :class="buttonClass"
             @click="isConfirmModalVisible = true"
         >
-            <img class="header__controls-premium-icon" src="/img/icon-share-earn.svg" alt="" role="presentation" width="24" height="24">
+            <img class="u-mr-05" src="/img/icon-share-earn.svg" alt="" role="presentation" width="24" height="24">
             {{ $td('Share & Earn', 'referral.invite-friend') }}
         </button>
 

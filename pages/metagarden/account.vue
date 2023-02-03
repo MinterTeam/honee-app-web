@@ -11,7 +11,7 @@ export default {
     },
     head: {
         htmlAttrs: {
-            class: 'metagarden-layout',
+            class: 'metagarden-layout theme--metagarden',
         },
     },
 };

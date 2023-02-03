@@ -71,12 +71,12 @@ export default {
 
             <div class="header__controls">
                 <template v-if="!isPremiumPage && isAuthorized && !simple">
-                    <nuxt-link class="header__controls-link header__controls-premium u-hidden-large-down" :to="$i18nGetPreferredPath('/premium')">
-                        <img class="header__controls-premium-icon" src="/img/icon-premium-fancy.svg" alt="" role="presentation" width="64" height="42">
+                    <nuxt-link class="header__controls-link u-flex u-flex--align-center u-hidden-large-down" :to="$i18nGetPreferredPath('/premium')">
+                        <img class="u-mr-05" src="/img/icon-premium-fancy.svg" alt="" role="presentation" width="64" height="42">
                         {{ $t('premium.activate-title-short') }}
                     </nuxt-link>
                     <hr class="header__controls-link header__controls-divider u-hidden-large-down"/>
-                    <ReferralCard class="header__controls-link u-hidden-large-down" style="font-weight: 400;"/>
+                    <ReferralCard class="u-flex" button-class="header__controls-link u-hidden-large-down u-semantic-button"/>
                     <hr class="header__controls-link header__controls-divider u-hidden-large-down"/>
                 </template>
 
@@ -95,14 +95,14 @@ export default {
                 </div>
             </div>
         </div>
-        <div class="header__container--premium header__container u-container u-hidden-large-up" v-if="!isPremiumPage && isAuthorized && !simple">
+        <div class="header__container u-container u-container--wide u-hidden-large-up u-flex--justify-center" v-if="!isPremiumPage && isAuthorized && !simple">
             <div class="header__controls">
-                <nuxt-link class="header__controls-link header__controls-premium" :to="$i18nGetPreferredPath('/premium')">
-                    <img class="header__controls-premium-icon" src="/img/icon-premium.svg" alt="" role="presentation" width="24" height="24">
+                <nuxt-link class="header__controls-link u-flex u-flex--align-center" :to="$i18nGetPreferredPath('/premium')">
+                    <img class="u-mr-05" src="/img/icon-premium.svg" alt="" role="presentation" width="24" height="24">
                     {{ $t('premium.activate-title-short') }}
                 </nuxt-link>
                 <hr class="header__controls-link header__controls-divider"/>
-                <ReferralCard class="header__controls-link u-hidden-large-up" style="font-weight: 400;"/>
+                <ReferralCard class="u-flex" button-class="header__controls-link u-hidden-large-up u-semantic-button"/>
             </div>
         </div>
     </header>

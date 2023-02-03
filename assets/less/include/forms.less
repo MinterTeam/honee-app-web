@@ -8,7 +8,7 @@
     &:active {background: #ddd;}
     &[disabled], &.is-disabled {
         cursor: default;
-        &:not(.is-loading) {background: shade(#fff, 50%);}
+        &:not(.is-loading) {background: shade(#fff, 50%); /* maybe var(--color-text-muted2)*/}
     }
     &.is-loading .button__content {color: transparent;}
 }
@@ -76,10 +76,6 @@
     &::before {content: ''; background: linear-gradient(93.67deg, #3B1A99 2.7%, #1F9AA2 32.65%, #4099DA 68.99%, #372D9A 100.39%); position: absolute; z-index: -1; left: 0; top: 0; right: 0; bottom: 0; transition: 0.15s;}
     &:hover::before, &:focus::before {transform: scaleX(1.2);}
     &:active::before {transform: scaleX(1.1);}
-}
-.button--in-menu {
-    padding: 0; border: none; border-radius: 0;
-    &, &:hover, &:focus, &:active {background: none;}
 }
 //.button--black {
 //    color: #fff; background: @c-black;
