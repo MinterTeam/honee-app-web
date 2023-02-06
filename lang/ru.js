@@ -652,5 +652,11 @@ export default {
         'description': 'Один спот стоит $80 или 1000 токенов METAGARDEN',
         'spot-amount-label': 'Количество спотов',
         'confirm-title': 'Подтвердите покупку',
+        'mining-spots': 'Майнинг-споты',
+        'you-own': 'Количество',
+        'available-to-claim': 'Доступно для сбора',
+        'claim-rewards-button': 'Собрать награды',
+        'buy-more-button': 'Купить еще',
+        'daily-yield': 'Ежедневные награды:',
     },
 };

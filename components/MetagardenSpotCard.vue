@@ -72,17 +72,17 @@ export default {
             <img class="card__action-logo" alt="" src="/img/logo-metagarden.svg">
             <div class="card__action-title">
                 <div class="card__action-title-type">Metagarden</div>
-                <div class="card__action-title-value">{{ $td('Mining Spots', 'todo') }}</div>
+                <div class="card__action-title-value">{{ $td('Mining Spots', 'metagarden.mining-spots') }}</div>
             </div>
             <div class="card__action-stats">
-                <div class="card__action-stats-caption">{{ $td('You own', 'todo') }}</div>
+                <div class="card__action-stats-caption">{{ $td('You own', 'metagarden.you-own') }}</div>
                 <div class="card__action-stats-value">{{ spotInfo.spots }}</div>
             </div>
         </div>
 
         <img class="u-image u-image-center u-mt-15 u-mb-10" src="/img/metagarden-spot.png" srcset="/img/metagarden-spot@2x.png 2x" alt="" role="presentation">
 
-        <div class="u-h--uppercase u-mb-05">{{ $td('Available to claim', 'todo') }}</div>
+        <div class="u-h--uppercase u-mb-05">{{ $td('Available to claim', 'metagarden.available-to-claim') }}</div>
         <div class="u-h u-h3">{{ spotInfo.claimValue }}</div>
 
         <div class="u-flex u-flex--align-center u-flex--justify-center u-mt-10 u-mb-10">
@@ -106,15 +106,15 @@ export default {
             :class="{'is-loading': isClaimLoading, 'is-disabled': spotInfo.claimValue <= 0}"
             @click="claimSpot()"
         >
-            <span class="button__content">{{ $td('Claim rewards', 'todo') }}</span>
+            <span class="button__content">{{ $td('Claim rewards', 'metagarden.claim-rewards-button') }}</span>
             <BaseLoader class="button__loader" :isLoading="true"/>
         </button>
         <nuxt-link :to="$i18nGetPreferredPath('/metagarden/buy-spot')" class="button button--full">
-            {{ $td('Buy more', 'todo') }}
+            {{ $td('Buy more', 'metagarden.buy-more-button') }}
         </nuxt-link>
 
         <div class="u-mt-15">
-            <span class="u-h--uppercase">Daily yield:</span>
+            <span class="u-h--uppercase">{{ $td('Daily yield:', 'metagarden.daily-yield') }}</span>
             <span class="u-h--uppercase-solid u-display-ib">
                 {{ spotInfo.dailyYield }} METAGARDEN + {{ spotInfo.dailyYield }}&nbsp;VOTES
             </span>
