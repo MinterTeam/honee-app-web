@@ -110,7 +110,7 @@ export default {
             <BaseLoader class="button__loader" :isLoading="true"/>
         </button>
         <nuxt-link :to="$i18nGetPreferredPath('/metagarden/buy-spot')" class="button button--full">
-            {{ $td('Buy more', 'metagarden.buy-more-button') }}
+            {{ $td('Buy mining spots', 'metagarden.buy-more-button') }}
         </nuxt-link>
 
         <div class="u-mt-15">

@@ -656,7 +656,7 @@ export default {
         'you-own': 'Количество',
         'available-to-claim': 'Доступно для сбора',
         'claim-rewards-button': 'Собрать награды',
-        'buy-more-button': 'Купить еще',
+        'buy-more-button': 'Купить майнинг-споты',
         'daily-yield': 'Ежедневные награды:',
     },
 };
