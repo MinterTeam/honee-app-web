@@ -72,7 +72,7 @@ export default {
             <img class="card__action-logo" alt="" src="/img/logo-metagarden.svg">
             <div class="card__action-title">
                 <div class="card__action-title-type">Metagarden</div>
-                <div class="card__action-title-value">{{ $td('Mining Spot', 'todo') }}</div>
+                <div class="card__action-title-value">{{ $td('Mining Spots', 'todo') }}</div>
             </div>
             <div class="card__action-stats">
                 <div class="card__action-stats-caption">{{ $td('You own', 'todo') }}</div>
