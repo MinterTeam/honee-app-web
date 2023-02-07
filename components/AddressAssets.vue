@@ -75,7 +75,7 @@ export default {
                         <InlineSvg class="button__icon" src="/img/icon-send.svg" width="24" height="24" alt="" role="presentation"/>
                         {{ $td('Send', 'index.send') }}
                     </nuxt-link>
-                    <nuxt-link class="button button--main wallet__action-button link--opacity" :to="$getDashboardUrl('receive')">
+                    <nuxt-link class="button button--main wallet__action-button link--opacity" :to="$getDashboardUrl('/topup/minter')">
                         <!--<img class="button__icon u-hidden-medium-down" src="/img/icon-white-receive.svg" width="24" height="24" alt="" role="presentation">-->
                         <InlineSvg class="button__icon" src="/img/icon-receive.svg" width="24" height="24" alt="" role="presentation"/>
                         {{ $td('Receive', 'index.receive') }}

@@ -294,9 +294,9 @@
     &:hover::after, &:focus::after {background: rgba(var(--color-main-rgb), 0.4);}
     &.is-active::after {background: var(--color-main);}
 }
-.header__controls-user {display: flex; align-items: center; font-weight: 700; /*max-width: calc(100vw - 220px);*/ /*margin-right: 16px;*/}
+.header__controls-user {display: flex; align-items: center; /*max-width: calc(100vw - 220px);*/ /*margin-right: 16px;*/}
 //.header__controls-user-name {overflow: hidden; text-overflow: ellipsis;white-space: nowrap;}
-.header__controls-user-avatar {width: 24px; height: 24px; border-radius: 50%; background: no-repeat 50% 50% @c-black-light; background-size: cover; margin-right: 8px; flex-shrink: 0;}
+.header__controls-user-avatar {width: 24px; height: 24px; border-radius: 50%; background: @c-black-light; object-fit: cover; margin-right: 8px; flex-shrink: 0;}
 .header__controls-language {display: flex; align-items: center; /*margin-left: 16px;*/}
 .header__language-container {padding-top: 16px; padding-bottom: 16px; display: flex; justify-content: flex-end;}
 .header__language-button {line-height: 0; display: block;}

@@ -1,12 +1,18 @@
 <script>
 import InlineSvg from 'vue-inline-svg';
+import {HUB_NETWORK} from '~/assets/variables.js';
 import Language from '~/components/layout/Language.vue';
+import Modal from '~/components/base/Modal.vue';
+import Topup from '~/components/Topup.vue';
 import ReferralCard from '~/components/ReferralCard.vue';
 
 export default {
+    HUB_NETWORK,
     components: {
         InlineSvg,
         Language,
+        Modal,
+        Topup,
         ReferralCard,
     },
     props: {
@@ -24,8 +30,16 @@ export default {
             default: false,
         },
     },
+    data() {
+        return {
+            isTopupModalOpen: false,
+        };
+    },
     computed: {
         indexUrl() {
+            if (this.isMetagarden) {
+                return '/metagarden/account';
+            }
             if (this.isAuthBattlePage) {
                 return '/auth/battle';
             }
@@ -87,10 +101,10 @@ export default {
                 <hr class="header__controls-link header__controls-divider header__premium-item u-hidden-large-down metagarden-layout__hide"/>
             </template>
 
-            <nuxt-link v-if="isAuthorized && !simple" :to="$i18nGetPreferredPath('/receive')" class="header__controls-link header__controls-user">
-                <div class="header__controls-user-avatar u-hidden-mini-down" :style="`background-image: url(${$store.getters.avatar});`" v-if="$store.getters.avatar"></div>
-                <div class="header__controls-user-name">{{ $store.getters.username }}</div>
-            </nuxt-link>
+            <button v-if="isAuthorized && !simple" type="button" class="header__controls-link header__controls-user u-semantic-button" @click="isTopupModalOpen = true">
+                <img class="header__controls-user-avatar u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation"/>
+                <span class="header__controls-user-name">{{ $store.getters.username }}</span>
+            </button>
             <button v-if="isAuthorized && !simple && !isMetagarden" type="button" class="header__controls-link link u-semantic-button metagarden-layout__hide" @click="logout()">
                 <img src="/img/icon-logout.svg" width="24" height="24" alt="Logout">
             </button>
@@ -102,5 +116,20 @@ export default {
             </div>
             <!--</div>-->
         </div>
+
+        <Modal
+            modalContainerClass="card card__content"
+            :isOpen.sync="isTopupModalOpen"
+            :hideCloseButton="false"
+            :disableOutsideClick="false"
+        >
+            <Topup
+                :network-slug="$options.HUB_NETWORK.MINTER"
+                :title="$td('Your wallet address', 'receive.title')"
+                :description="false"
+                :back-url="false"
+                @click-back="isTopupModalOpen = false"
+            />
+        </Modal>
     </header>
 </template>
