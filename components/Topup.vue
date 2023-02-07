@@ -186,10 +186,10 @@ export default {
         />
 
         <button v-if="isOnlyCloseOnBack" class="button button--ghost button--full u-mt-10" type="button" @click="$emit('click-back')">
-            {{ $td('Back', 'topup.back') }}
+            {{ $td('Cancel', 'topup.back') }}
         </button>
         <nuxt-link v-else class="button button--ghost button--full u-mt-10" :to="backUrl || $i18nGetPreferredPath('/topup')">
-            {{ $td('Back', 'topup.back') }}
+            {{ $td('Cancel', 'topup.back') }}
         </nuxt-link>
     </div>
 </template>

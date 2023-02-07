@@ -1,12 +1,10 @@
 <script>
 import getTitle from '~/assets/get-title.js';
-import Modal from '~/components/base/Modal.vue';
 import TheAction from '~/components/Action.vue';
 
 export default {
     components: {
         TheAction,
-        Modal,
     },
     head() {
         if (!this.action) {
@@ -17,7 +15,7 @@ export default {
         return {
             title,
             meta: [
-                { hid: 'og-title', name: 'og:title', content: title },
+                {hid: 'og-title', name: 'og:title', content: title},
             ],
         };
     },
@@ -32,18 +30,11 @@ export default {
 </script>
 
 <template>
-    <Modal
-        v-if="$route.params.pathMatch"
-        :isOpen="true"
-        :hideCloseButton="false"
-        :disableOutsideClick="true"
-        modalContainerClass=""
-        @modal-close="$router.push(getDashboardUrl())"
-    >
+    <div class="u-section u-container u-container--small">
         <TheAction
             :base-url="getDashboardUrl()"
             @update:action="action = $event"
             @success-modal-close="$router.push(getDashboardUrl())"
         />
-    </Modal>
+    </div>
 </template>
