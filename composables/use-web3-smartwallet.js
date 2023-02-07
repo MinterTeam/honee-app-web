@@ -1,4 +1,4 @@
-import {reactive, computed, toRefs} from '@vue/composition-api';
+import {reactive, computed, toRefs} from 'vue';
 import {watchThrottled, watchDebounced} from '@vueuse/core';
 // import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 // import {PAYLOAD_MAX_LENGTH} from 'minterjs-util/src/variables.js';

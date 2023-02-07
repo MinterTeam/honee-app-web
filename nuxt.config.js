@@ -183,7 +183,6 @@ module.exports = {
     ],
     plugins: [
         { src: '~/plugins/global-mixin.js'},
-        { src: '~/plugins/composition-api.js'},
         { src: '~/plugins/online.js', ssr: false },
         { src: '~/plugins/custom-event-polyfill.js', ssr: false },
         { src: '~/plugins/persisted-state.js', ssr: false },

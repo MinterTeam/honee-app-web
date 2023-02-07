@@ -1,4 +1,4 @@
-import {reactive, computed, watch, watchEffect, toRefs} from '@vue/composition-api';
+import {reactive, computed, watch, watchEffect, toRefs} from 'vue';
 import {watchDebounced} from '@vueuse/core';
 import {fromErcDecimals, toErcDecimals} from '~/api/web3.js';
 // import {buildTxForSwap as buildTxForOneInchSwap, getQuoteForSwap} from '~/api/1inch.js';

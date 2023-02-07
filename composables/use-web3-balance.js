@@ -1,4 +1,4 @@
-import {reactive, set} from '@vue/composition-api';
+import {reactive, set} from 'vue';
 import {getProviderByChain, getAllowance as _getAllowance, web3Utils, fromErcDecimals} from '~/api/web3.js';
 import erc20ABI from '~/assets/abi-erc20.js';
 import {HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from '~/assets/variables.js';

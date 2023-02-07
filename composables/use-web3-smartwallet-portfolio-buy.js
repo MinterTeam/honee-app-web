@@ -1,4 +1,4 @@
-import {ref, reactive, computed, watch, watchEffect, toRefs, set} from '@vue/composition-api';
+import {ref, reactive, computed, watch, watchEffect, toRefs, set} from 'vue';
 import {watchDebounced} from '@vueuse/core';
 import Big, {BIG_ROUND_DOWN, BIG_ROUND_UP} from '~/assets/big.js';
 import {getErrorText} from '~/assets/server-error.js';

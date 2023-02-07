@@ -1,4 +1,4 @@
-import {ref, reactive, computed, watch} from '@vue/composition-api';
+import {ref, reactive, computed, watch} from 'vue';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {convertToPip} from 'minterjs-util/src/converter.js';
 import Big, {BIG_ROUND_UP} from '~/assets/big.js';

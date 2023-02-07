@@ -1,4 +1,4 @@
-import {ref, reactive, computed, watch, set} from '@vue/composition-api';
+import {ref, reactive, computed, watch, set} from 'vue';
 import {watchDebounced} from '@vueuse/core';
 import Big from '~/assets/big.js';
 import useWeb3SmartWalletSwap from '~/composables/use-web3-smartwallet-swap.js';

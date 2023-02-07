@@ -1,4 +1,4 @@
-import {reactive, computed} from '@vue/composition-api';
+import {reactive, computed} from 'vue';
 import {findHubCoinItem, findTokenInfo} from '~/api/hub.js';
 import {HUB_CHAIN_BY_ID, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
@@ -31,13 +31,13 @@ export default function useHubToken() {
     }
 
     /**
-     * @type {import('@vue/composition-api').ComputedRef<HubCoinItem>}
+     * @type {ComputedRef<HubCoinItem>}
      */
     const hubCoin = computed(() => {
         return findHubCoinItem(hubTokenList.value, props.tokenSymbol);
     });
     /**
-     * @type {import('@vue/composition-api').ComputedRef<TokenInfo.AsObject>}
+     * @type {ComputedRef<TokenInfo.AsObject>}
      */
     const tokenData = computed(() => {
         return findTokenInfo(hubTokenList.value, props.tokenSymbol, props.chainId);

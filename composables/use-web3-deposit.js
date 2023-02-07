@@ -1,4 +1,4 @@
-import {ref, reactive, computed, watch} from '@vue/composition-api';
+import {ref, reactive, computed, watch} from 'vue';
 
 import {subscribeTransfer} from '~/api/hub.js';
 import {getProviderByChain, web3Utils, toErcDecimals} from '~/api/web3.js';
@@ -29,7 +29,7 @@ export default function useWeb3Deposit(destinationMinterAddress) {
     const { txServiceState, sendEthTx, addStepData, waitPendingStep } = useTxService();
 
     /**
-     * @type {import('@vue/composition-api').UnwrapRef<{amount: number, tokenSymbol: string, accountAddress: string, destinationMinterAddress: string, chainId: number, freezeGasPrice: boolean}>}
+     * @type {UnwrapRef<{amount: number, tokenSymbol: string, accountAddress: string, destinationMinterAddress: string, chainId: number, freezeGasPrice: boolean}>}
      */
     const props = reactive({
         destinationMinterAddress: destinationMinterAddress || '',
@@ -71,7 +71,7 @@ export default function useWeb3Deposit(destinationMinterAddress) {
     }
 
     /**
-     * @type {import('@vue/composition-api').ComputedRef<HubChainDataItem>}
+     * @type {ComputedRef<HubChainDataItem>}
      */
 // const hubChainData = computed(() => HUB_CHAIN_BY_ID[props.chainId]);
 
@@ -85,7 +85,7 @@ export default function useWeb3Deposit(destinationMinterAddress) {
     /**
      * Disabled sending wrapped ERC-20 WETH directly
      * it may save 5-10k of gas ($1-2), but not worth it, because of complicated codebase and need of native ETH predictions to pay fee
-     * @type {import('@vue/composition-api').ComputedRef<boolean>}
+     * @type {ComputedRef<boolean>}
      */
     const isUnwrapRequired = computed(() => {
         if (!isNativeToken.value) {
