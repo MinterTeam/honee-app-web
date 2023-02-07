@@ -1,4 +1,5 @@
 <script>
+import {getCurrentInstance} from 'vue';
 import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required.js';
 import minLength from 'vuelidate/src/validators/minLength.js';
@@ -42,8 +43,9 @@ export default {
             required: true,
         },
     },
-    setup(props, context) {
-        const {getWallet} = usePortfolioWallet(context.root.$store.getters.mnemonic);
+    setup(props) {
+        const vm = getCurrentInstance()?.proxy;
+        const {getWallet} = usePortfolioWallet(vm.$store.getters.mnemonic);
         const {
             amountToWithdraw,
             minAmountToWithdraw,
