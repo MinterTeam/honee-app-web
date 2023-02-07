@@ -18,9 +18,11 @@
     --color-bg-tint: @body-bg-color;
     --color-divider: #0001; // #eee, rgba(0,0,0,0.06667)
     --color-light-gray: @c-darker-light; // #f2f2f2, rgba(0,0,0, 0.5)
-    --color-text: @c-black;;
+    --color-text: @c-black;
+    --color-text-rgb: @c-black-rgb;
     --color-text-muted: @c-black-light;
     --color-text-muted2: @c-black-half-transparent;
+    --color-text-muted-hard: @c-black-hard-transparent;
     --color-main: @c-main;
     --color-main-rgb: @c-main-rgb;
 }
@@ -31,13 +33,18 @@
     --color-divider: @c-metagarden-border;
     --color-light-gray: rgba(255,255,255, 0.05);
     --color-text: #fff;
+    --color-text-rgb: 255, 255, 255;
     --color-text-muted: @c-metagarden-text-muted;
     --color-text-muted2: @c-white-half-transparent;
+    --color-text-muted-hard: @c-white-hard-transparent;
     --color-main: @c-metagarden;
     --color-main-rgb: @c-metagarden-rgb;
 
 
     .wallet__action-button .color-main-light {display: none;}
+    .card {
+        .card--metagarden();
+    }
     .card__action-title-type, .card__action-stats-caption {color: @c-metagarden-text-muted; opacity: 1;}
 }
 

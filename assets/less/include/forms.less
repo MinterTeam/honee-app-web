@@ -83,12 +83,12 @@
 //    &:active {background: shade(@c-black, 10%);}
 //}
 .button--ghost {
-    color: @c-black; background: transparent; border-color: @c-black;
-    &:hover, &:focus {background: fade(@c-black, 10%);}
-    &:active {background: fade(@c-black, 20%);}
+    color: currentColor; background: transparent; border-color: currentColor;
+    &:hover, &:focus {background: rgba(var(--color-text-rgb), 0.1);}
+    &:active {background: rgba(var(--color-text-rgb), 0.2);}
     &[disabled], &.is-disabled {
         cursor: default;
-        &:not(.is-loading) {color: shade(#fff, 35%); background: transparent; border-color: shade(#fff, 25%);}
+        &:not(.is-loading) {color: var(--color-text-muted-hard); background: transparent; border-color: var(--color-text-muted-hard);}
     }
 }
 .button--ghost-white {
@@ -182,8 +182,12 @@
     }
 }
 .h-field {position: relative; display: flex; width: 100%; padding: (@h-field-vertical-padding - 2px) (@h-field-horizontal-padding - 2px); border: 2px solid transparent;}
-.h-field, .h-field__dropdown {background: #fff; border-radius: 12px; box-shadow: 0 4px 4px rgba(0,0,0,0.05);}
-.h-field--is-readonly {box-shadow: none; border: 1px solid @c-border; background: @c-white-light; padding: (@h-field-vertical-padding - 1px) (@h-field-horizontal-padding - 1px);}
+.h-field, .h-field__dropdown {background: #fff; color: @c-black; border-radius: 12px; box-shadow: 0 4px 4px rgba(0,0,0,0.05);}
+.h-field--is-readonly {
+    html:not(.theme--metagarden) & {
+        box-shadow: none; border: 1px solid @c-border; background: @c-white-light; padding: (@h-field-vertical-padding - 1px) (@h-field-horizontal-padding - 1px);
+    }
+}
 .h-field--is-dashed {box-shadow: none; border: 2px dashed @c-border;}
 .h-field__content {flex-grow: 2; max-width: 100%; text-align: left;}
 .h-field__title {.h-field-title-text(); color: @c-black-light; margin-bottom: @h-field-title-margin; display: block;}

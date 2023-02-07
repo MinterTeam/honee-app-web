@@ -3,6 +3,9 @@ import getTitle from '~/assets/get-title.js';
 import Topup, {TOP_UP_NETWORK} from '~/components/Topup.vue';
 
 export default {
+    layout(context) {
+        return context.store.state.isMetagarden ? 'metagarden' : 'default';
+    },
     components: {
         Topup,
     },

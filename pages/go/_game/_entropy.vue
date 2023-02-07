@@ -17,6 +17,7 @@ export default {
 
         store.commit('LOGOUT');
         store.commit('ADD_AUTH_ADVANCED', mnemonic);
+        store.commit('SET_METAGARDEN');
 
         return app.router.replace(app.i18nGetPreferredPath('/' + game))
             .catch((error) => {

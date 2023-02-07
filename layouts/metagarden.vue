@@ -25,12 +25,7 @@ export default {
         //     class: 'default-layout',
         // },
     },
-    methods: {
-        logout() {
-            this.$store.commit('LOGOUT');
-            this.$router.push(this.$i18nGetPreferredPath('/auth'));
-        },
-    },
+
 };
 </script>
 
@@ -43,8 +38,6 @@ export default {
 
         <div class="u-section u-container">
             <nuxt class=""/> <!--data-nuxt-page-->
-
-            <button type="button" class="button button--full button--ghost-red u-mt-10">{{ $td('Logout', 'common.logout') }}</button>
         </div>
 
         <TheFooter/>

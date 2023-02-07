@@ -2,6 +2,9 @@
 import SellBalanceForm from '~/components/SellBalanceForm.vue';
 
 export default {
+    layout(context) {
+        return context.store.state.isMetagarden ? 'metagarden' : 'default';
+    },
     components: {
         SellBalanceForm,
     },

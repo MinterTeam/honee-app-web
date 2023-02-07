@@ -10,6 +10,9 @@ export default {
         MetagardenSpotCard,
         MetagardenLootboxCard,
     },
+    fetch() {
+        this.$store.commit('SET_METAGARDEN');
+    },
     /*
     head: {
         htmlAttrs: {
@@ -17,6 +20,12 @@ export default {
         },
     },
     */
+    methods: {
+        logout() {
+            this.$store.commit('LOGOUT');
+            this.$router.push(this.$i18nGetPreferredPath('/auth'));
+        },
+    },
 };
 </script>
 
@@ -27,5 +36,7 @@ export default {
         <MetagardenSpotCard/>
 
         <MetagardenLootboxCard class="u-mt-10"/>
+
+        <button type="button" class="button button--full button--ghost-red u-mt-10" @click="logout()">{{ $td('Logout', 'common.logout') }}</button>
     </div>
 </template>

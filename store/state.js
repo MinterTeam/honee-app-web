@@ -30,6 +30,7 @@ export default function() {
         authRedirectPath: '',
         onLine: true,
         isSnackbarActive: false,
+        isMetagarden: false,
     };
     // vuex-persistedstate enabled in nuxt.config.js
 }

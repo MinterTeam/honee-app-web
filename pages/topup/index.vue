@@ -6,6 +6,9 @@ import {getCard2MinterUrl} from '~/assets/utils.js';
 
 export default {
     CARD_TO_MINTER_HOST,
+    layout(context) {
+        return context.store.state.isMetagarden ? 'metagarden' : 'default';
+    },
     components: {
         InlineSvg,
     },

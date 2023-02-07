@@ -3,6 +3,9 @@ import getTitle from '~/assets/get-title.js';
 import TheAction from '~/components/Action.vue';
 
 export default {
+    layout(context) {
+        return context.store.state.isMetagarden ? 'metagarden' : 'default';
+    },
     components: {
         TheAction,
     },
