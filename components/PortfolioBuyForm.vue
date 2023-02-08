@@ -163,9 +163,15 @@ export default {
             });
         },
         isSmartWalletWithdraw() {
+            return false;
+            // @TODO
+            // eslint-disable-next-line no-unreachable
             return this.swsSelectedIndices.length > 0;
         },
         selectedIndices() {
+            return Object.keys(this.coinList);
+            // @TODO
+            // eslint-disable-next-line no-unreachable
             return Object.keys(this.coinList)
                 .filter((indexString) => !this.swsSelectedIndices.includes(indexString));
         },
@@ -240,7 +246,9 @@ export default {
                 const enoughToPayFee = Number(this.valueDistributionToSpend[index]) > 0;
 
                 const minterEstimation = this.estimationList[index] || 0;
-                const smartWalletEstimation = this.amountEstimationToReceiveAfterDepositList[index] || 0;
+                // @TODO
+                // const smartWalletEstimation = this.amountEstimationToReceiveAfterDepositList[index] || 0;
+                const smartWalletEstimation = 0;
                 const isSmartWalletSwapBetter = new Big(smartWalletEstimation).gt(minterEstimation);
                 const finalEstimation = isSmartWalletSwapBetter ? smartWalletEstimation : minterEstimation;
 
@@ -456,7 +464,9 @@ export default {
                 isLocked: this.isSequenceProcessing && !this.isWithdrawProcessing,
             }),
             (newVal) => {
-                if (newVal.isLocked) {
+                // @TODO
+                // eslint-disable-next-line no-constant-condition
+                if (newVal.isLocked || true) {
                     this.setSmartWalletPortfolioBuyProps({
                         // only update isLocked to reduce recalculations
                         isLocked: true,
