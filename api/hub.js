@@ -232,7 +232,7 @@ export function getTransferFee(inputTxHash) {
 /**
  *
  * @param {string} hash
- * @param [timestamp]
+ * @param {number|string} [timestamp]
  * @return {Promise<HubTransferStatus>}
  */
 export function subscribeTransfer(hash, timestamp) {
@@ -320,7 +320,20 @@ export function subscribeTransfer(hash, timestamp) {
  * @return {HubCoinItem|undefined}
  */
 export function findHubCoinItem(hubCoinList, tokenSymbol) {
+    tokenSymbol = tokenSymbol?.toUpperCase();
     return hubCoinList.find((item) => item.symbol === tokenSymbol);
+}
+
+/**
+ * @param {Array<HubCoinItem>} hubCoinList
+ * @param {string} tokenContractAddress
+ * @param {ChainId} chainId
+ * @return {HubCoinItem|undefined}
+ */
+export function findHubCoinItemByTokenAddress(hubCoinList, tokenContractAddress, chainId) {
+    tokenContractAddress = tokenContractAddress?.toLowerCase();
+    const hubNetworkSlug = HUB_CHAIN_BY_ID[chainId]?.hubNetworkSlug;
+    return hubCoinList.find((item) => item[hubNetworkSlug]?.externalTokenId === tokenContractAddress);
 }
 
 /**

@@ -323,6 +323,7 @@ export function getTokenDecimals(tokenContractAddress, chainId, hubCoinList = []
     if (!chainId) {
         return Promise.reject(new Error('chainId not specified'));
     }
+    tokenContractAddress = tokenContractAddress.toLowerCase();
     // search from cache
     if (decimalsPromiseCache[chainId]?.[tokenContractAddress]) {
         return decimalsPromiseCache[chainId][tokenContractAddress];
@@ -493,7 +494,7 @@ export async function getDepositTxInfo(tx, chainId, hubCoinList, skipAmount) {
 
 /**
  *
- * @param {strong} hex
+ * @param {string} hex
  * @param {string} tokenContract
  * @param {number} chainId
  * @param {Array<HubCoinItem>} [hubCoinList]

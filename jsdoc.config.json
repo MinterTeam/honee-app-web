@@ -3,13 +3,17 @@
   "plugins": [],
   "recurseDepth": 10,
   "source": {
+    "include": [
+      "api",
+      "assets/variables.js"
+    ],
     "exclude": [
       "node_modules",
       "tmp",
       ".nuxt",
       "tests"
     ],
-    "includePattern": "api.+\\.js(doc|x)?$",
+    "includePattern": ".+\\.js(doc|x)?$",
     "excludePattern": "(^|\\/|\\\\)_"
   },
   "sourceType": "module",
