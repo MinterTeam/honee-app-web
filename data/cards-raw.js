@@ -25,40 +25,6 @@ export default {
                 },
             },
             {
-                caption: 'Liquidity mining',
-                coin: ['BEE', 'MUSD'],
-                description: 'Put your BEE and MUSD into a liquidity pool. Then stake received LP-656 tokens for getting extra daily rewards.',
-                stats: {
-                    apy: {
-                        percent: '≈3',
-                    },
-                },
-                tags: [],
-                action: '/add-liquidity/BEE/MUSD',
-                ru: {
-                    caption: 'Майнинг ликвидностью',
-                    description: 'Поместите свои BEE и MUSD в пул ликвидности. Затем застейкуйте полученные LP-656 токены для получения дополнительных ежедневных наград.',
-                },
-            },
-            {
-                caption: 'Yield farming',
-                coin: ['BEE', 'MUSD'],
-                description: 'Stake your LP-656 tokens with a 1-year lock to start getting extra daily rewards.',
-                buttonLabel: 'Stake',
-                stats: {
-                    apr: {
-                        percent: '36.5',
-                    },
-                },
-                tags: ['Farming'],
-                action: `/farm/378`,
-                ru: {
-                    description: 'Застейкуйте свои LP-656 токены с блокировкой на 1 год, чтобы получать дополнительные ежедневные награды.',
-                    caption: 'Фарминг',
-                    buttonLabel: 'Застейковать',
-                },
-            },
-            {
                 caption: 'Stake & Earn',
                 coin: `BEE`,
                 description: 'Stake BEE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
