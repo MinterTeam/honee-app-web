@@ -648,7 +648,7 @@ export default {
         'airdrop-registered-description': 'Проверьте, чтобы на вашем адресе были монеты BIP. Аирдроп состоится 12 декабря 2022 года.',
     },
     metagarden: {
-        'title': 'Майнинг-споты metagarden',
+        'title': 'Майнинг-споты Metagarden',
         'description': 'Один спот стоит $80 или 1000 токенов METAGARDEN',
         'spot-amount-label': 'Количество спотов',
         'confirm-title': 'Подтвердите покупку',
