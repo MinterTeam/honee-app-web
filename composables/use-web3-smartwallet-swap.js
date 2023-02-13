@@ -1,6 +1,6 @@
 import {reactive, computed, watch, watchEffect, toRefs} from 'vue';
 import {watchDebounced} from '@vueuse/core';
-import {fromErcDecimals, toErcDecimals} from '~/api/web3.js';
+import {fromErcDecimals, toErcDecimals, buildDepositTx as _buildDepositTx, getAllowance, buildApproveTx} from '~/api/web3.js';
 // import {buildTxForSwap as buildTxForOneInchSwap, getQuoteForSwap} from '~/api/1inch.js';
 import {buildTxForSwap as _buildTxForSwapToHub} from '~/api/swap-hub-deposit-proxy.js';
 import Big from '~/assets/big.js';
@@ -9,6 +9,8 @@ import {HUB_WITHDRAW_SPEED, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
+
+export const ERROR_NOT_ENOUGH_PAY_REWARD = 'Not enough to pay relay reward';
 
 export default function useWeb3SmartWalletSwap() {
     const {
@@ -22,7 +24,7 @@ export default function useWeb3SmartWalletSwap() {
         buildTxForRelayReward,
         callSmartWallet,
     } = useWeb3SmartWallet();
-    const { tokenDecimals: tokenToSellDecimals, tokenContractAddressFixNative: tokenToSellAddress, setHubTokenProps: setHubTokenToSellProps } = useHubToken();
+    const { tokenDecimals: tokenToSellDecimals, tokenContractAddressFixNative: tokenToSellAddress, setHubTokenProps: setHubTokenToSellProps, isNativeToken } = useHubToken();
     const { tokenDecimals: tokenToBuyDecimals, tokenContractAddressFixNative: tokenToBuyAddress, setHubTokenProps: setHubTokenToBuyProps } = useHubToken();
     const {
         discountUpsidePercent,
@@ -48,26 +50,41 @@ export default function useWeb3SmartWalletSwap() {
         // destination address to deposit via Hub after swap (should be specified with 0x prefix, however it is address of Minter account)
         depositDestinationAddress: '',
         chainId: 0,
+        // minter coins for WITHDRAW mode
         coinToSell: '',
         coinToBuy: '',
-        // amount to withdraw
+        // evm tokens for DEPOSIT mode
+        tokenToSellContractAddress: '',
+        tokenToBuyContractAddress: '',
+        tokenToSellDecimals: 0,
+        tokenToBuyDecimals: 0,
+        // used as amount to withdraw in WITHDRAW mode and as value to sell/deposit in DEPOSIT mode
         valueToSell: 0,
         // disable relay reward
         skipRelayReward: false,
+        // disable relay reward estimation, but use relay reward during smart-wallet call
+        skipEstimation: false,
         idPreventConcurrency: '',
     });
 
+    /**
+     * @param {props} newProps
+     */
     function setProps(newProps) {
         Object.assign(props, newProps);
         // moved to watchEffect
         // setSmartWalletProps(newProps);
         setHubTokenToSellProps({
-            tokenSymbol: props.coinToSell,
             chainId: props.chainId,
+            tokenSymbol: props.coinToSell,
+            tokenAddress: props.tokenToSellContractAddress,
+            tokenDecimals: props.tokenToSellDecimals,
         });
         setHubTokenToBuyProps({
-            tokenSymbol: props.coinToBuy,
             chainId: props.chainId,
+            tokenSymbol: props.coinToBuy,
+            tokenAddress: props.tokenToBuyContractAddress,
+            tokenDecimals: props.tokenToBuyDecimals,
         });
     }
 
@@ -79,7 +96,7 @@ export default function useWeb3SmartWalletSwap() {
         gasTokenAddress: tokenToSellAddress.value,
         gasTokenDecimals: tokenToSellDecimals.value,
         complexity: undefined,
-        estimationSkip: props.skipRelayReward,
+        estimationSkip: props.skipRelayReward || props.skipEstimation,
     }));
 
     const dummySmartWalletTxHash = Array.from({length: 64}).fill('0').join('');
@@ -102,6 +119,13 @@ export default function useWeb3SmartWalletSwap() {
     });
 
 
+    // select mode
+    // WITHDRAW mode: start from minter: withdraw + swap + deposit
+    // DEPOSIT mode : start from evm: swap + deposit
+    const isWithdrawMode = computed(() => {
+        return props.coinToSell && props.coinToBuy;
+    });
+
     const isSmartWalletSwapParamsLoading = computed(() => {
         return isEstimationLimitForRelayRewardsLoading.value || state.isEstimationAfterSwapToHubLoading;
     });
@@ -110,14 +134,22 @@ export default function useWeb3SmartWalletSwap() {
         return estimationLimitForRelayRewardsError.value || state.estimationAfterSwapToHubError;
     });
 
-    const amountToSellForSwapToHub = computed(() => {
+    const amountToSellForSwapToHub = computed(() => getAmountToSellForSwapToHub(amountEstimationLimitForRelayReward.value));
+
+    function getAmountToSellForSwapToHub(amountEstimationLimitForRelayRewardValue) {
+        const valueToUseInEvm = isWithdrawMode.value ? (withdrawAmountToReceive.value || 0) : (props.valueToSell || 0);
         if (props.skipRelayReward) {
-            return withdrawAmountToReceive.value || 0;
+            return valueToUseInEvm;
         }
-        if (!amountEstimationLimitForRelayReward.value || amountEstimationLimitForRelayReward.value <= 0) {
+        // invalid reward so can't calculate part to use for swapToHub
+        if (!amountEstimationLimitForRelayRewardValue || amountEstimationLimitForRelayRewardValue <= 0) {
             return 0;
         }
-        return new Big(withdrawAmountToReceive.value || 0).minus(amountEstimationLimitForRelayReward.value).toString();
+        return new Big(valueToUseInEvm).minus(amountEstimationLimitForRelayRewardValue).toString();
+    }
+
+    const depositDestinationAddress = computed(() => {
+        return props.depositDestinationAddress || props.evmAccountAddress || '';
     });
 
     const swapToHubParams = computed(() => {
@@ -129,7 +161,7 @@ export default function useWeb3SmartWalletSwap() {
             fromAddress: smartWalletAddress.value,
             // destAddress: undefined, // is set by hubDepositProxy api
             // hub proxy destination
-            destination: (props.depositDestinationAddress || props.evmAccountAddress || '').replace('Mx', '0x'),
+            destination: depositDestinationAddress.value.replace('Mx', '0x'),
             // refundTo: props.evmAccountAddress,
             // @TODO portfolio buy: make first swap in a sequence less slippage (e.g. 2.5)
             // @TODO portfolio buy: estimate swap of all sell value to e.g. BNB to get overalls price impact and set slippage basing on it
@@ -142,6 +174,9 @@ export default function useWeb3SmartWalletSwap() {
     // @TODO Watch triggered even if value is not changed
     // https://github.com/vuejs/core/issues/2231 it should be fixed here but looks like not backported to vue/composition-api
     watchDebounced(swapToHubParams, () => {
+        if (props.skipEstimation) {
+            return;
+        }
         const sameTokens = swapToHubParams.value.fromTokenAddress === swapToHubParams.value.toTokenAddress;
         const hasProps = swapToHubParams.value.fromTokenAddress && swapToHubParams.value.toTokenAddress && Number(swapToHubParams.value.amount) > 0;
         if (hasProps && !sameTokens) {
@@ -182,10 +217,38 @@ export default function useWeb3SmartWalletSwap() {
     /**
      * @param {object} [options]
      * @param {number|string} [options.overrideAmount]
+     * @return {Promise<Array<{data: string, to: string, value: (string|number)}>>}
+     */
+    // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
+    async function buildDepositTx({overrideAmount} = {}) {
+        const amount = Number(overrideAmount) > 0 ? overrideAmount : amountToSellForSwapToHub.value;
+        console.log('overrideAmount', overrideAmount);
+        console.log('amountToSellForSwapToHub', props.valueToSell, withdrawAmountToReceive.value, '-', amountEstimationLimitForRelayReward.value, '=', amountToSellForSwapToHub.value);
+        console.log('_buildDepositTx', props.chainId, isNativeToken.value ? undefined : tokenToSellAddress.value, tokenToSellDecimals.value, depositDestinationAddress.value, amount);
+
+        let txList = [];
+        if (!isNativeToken.value) {
+            const hubBridgeContractAddress = HUB_CHAIN_BY_ID[props.chainId]?.hubContractAddress;
+            const allowance = await getAllowance(props.chainId, tokenToSellAddress.value, smartWalletAddress.value, hubBridgeContractAddress);
+            if (new Big(allowance).lt(toErcDecimals(amount, tokenToSellDecimals.value))) {
+                const approveTx = buildApproveTx(tokenToSellAddress.value, hubBridgeContractAddress);
+                txList.push(approveTx);
+            }
+        }
+        const depositTx = _buildDepositTx(props.chainId, isNativeToken.value ? undefined : tokenToSellAddress.value, tokenToSellDecimals.value, depositDestinationAddress.value, amount);
+        txList.push(depositTx);
+
+        return txList;
+    }
+
+    /**
+     * @param {object} [options]
+     * @param {number|string} [options.overrideAmount]
      * @return {Promise<Array<OneInchTx>>}
      */
+    // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
     function buildTxForSwapToHub({overrideAmount} = {}) {
-        const txParams = overrideAmount > 0 ? {
+        const txParams = Number(overrideAmount) > 0 ? {
             ...swapToHubParams.value,
             amount: toErcDecimals(overrideAmount, tokenToSellDecimals.value),
         } : swapToHubParams.value;
@@ -202,12 +265,23 @@ export default function useWeb3SmartWalletSwap() {
      * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxResult>}
      */
+    // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
     async function buildTxListAndCallSmartWallet({overrideExtraNonce} = {}) {
         if (props.skipRelayReward) {
             throw new Error('Can\'t call smart-wallet with disabled relay reward. Use build and call manually');
         }
-        const {txList: txListForRelayReward} = await buildTxForRelayReward();
-        const swapTxList = await buildTxForSwapToHub();
+        const {txList: txListForRelayReward, swapLimit} = await buildTxForRelayReward();
+        let options = {};
+        if (props.skipEstimation) {
+            options.overrideAmount = getAmountToSellForSwapToHub(swapLimit);
+            if (options.overrideAmount < 0) {
+                throw new Error(ERROR_NOT_ENOUGH_PAY_REWARD);
+            }
+        }
+
+        const swapTxList = tokenToSellAddress.value === tokenToBuyAddress.value
+            ? await buildDepositTx(options)
+            : await buildTxForSwapToHub(options);
         console.log(txListForRelayReward);
         console.log(swapTxList);
         return callSmartWallet([].concat(txListForRelayReward, swapTxList), {overrideExtraNonce})

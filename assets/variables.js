@@ -28,8 +28,12 @@ export const HUB_DEPOSIT_PROXY_API_URL = process.env.APP_HUB_API_URL + 'deposit-
 export const SMART_WALLET_RELAY_API_URL = process.env.APP_HUB_API_URL + 'smart-wallet-relay/';
 export const ETHEREUM_API_URL = process.env.APP_ETHEREUM_API_URL;
 export const BSC_API_URL = process.env.APP_BSC_API_URL;
+/** @type {ChainId} */
 export const ETHEREUM_CHAIN_ID = NETWORK === MAINNET ? 1 : 3;
+/** @type {ChainId} */
 export const BSC_CHAIN_ID = NETWORK === MAINNET ? 56 : 97;
+export const MORALIS_API_URL = 'https://deep-index.moralis.io/api/v2';
+export const MORALIS_API_KEY = 'ungoUimbOH1JpYFza5bjczdNlsIolB8L843SzlUsdpMULwS8kl0MD6vTkLeJf2GC';
 export const ETHERSCAN_API_URL = NETWORK === MAINNET ? 'https://api.etherscan.io/api/' : 'https://api-ropsten.etherscan.io/api/';
 export const ETHERSCAN_API_KEY = 'I3VTWM2AX8BXS2ZX1FYRXINCWHQVVGEBJM';
 export const ETHERSCAN_HOST = NETWORK === MAINNET ? 'https://etherscan.io' : 'https://ropsten.etherscan.io';
@@ -95,7 +99,7 @@ export const HUB_NETWORK = {
 export const HUB_CHAIN_ID = HUB_NETWORK;
 
 /**
- * @typedef {{coinSymbol: string, name: string, shortName: string, chainId: number, hubChainId: HUB_CHAIN_ID, hubNetworkSlug: HUB_CHAIN_ID, apiUrl: string, explorerHost: string, hubContractAddress: string, wrappedNativeContractAddress: string}} HubChainDataItem
+ * @typedef {{coinSymbol: string, name: string, shortName: string, chainId: ChainId, hubChainId: HUB_CHAIN_ID, hubNetworkSlug: HUB_CHAIN_ID, apiUrl: string, explorerHost: string, hubContractAddress: string, wrappedNativeContractAddress: string}} HubChainDataItem
  */
 
 /**
@@ -211,3 +215,7 @@ export const TX_STATUS = {
     SUCCESS: true,
     FAILURE: false,
 };
+
+/**
+ * @typedef {number} ChainId
+ */

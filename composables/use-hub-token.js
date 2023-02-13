@@ -23,6 +23,7 @@ export default function useHubToken() {
         chainId: 0,
         tokenSymbol: '',
         tokenAddress: '',
+        tokenDecimals: 0,
     });
 
     const state = reactive({
@@ -30,7 +31,7 @@ export default function useHubToken() {
     });
 
     /**
-     * @param {{tokenSymbol?: string, chainId?: number}} newProps
+     * @param {props} newProps
      */
     function setProps(newProps) {
         Object.assign(props, newProps);
@@ -72,6 +73,9 @@ export default function useHubToken() {
         }
     });
     const tokenDecimals = computed(() => {
+        if (props.tokenDecimals) {
+            return props.tokenDecimals;
+        }
         return tokenData.value
             ? Number(tokenData.value.externalDecimals)
             : state.decimals[props.chainId]?.[tokenContractAddress.value];
@@ -94,6 +98,10 @@ export default function useHubToken() {
         tokenContractAddress,
         isNativeToken,
     ], (newVal) => {
+        // already known
+        if (props.tokenDecimals) {
+            return;
+        }
         // invalid props
         if (!props.chainId || !tokenContractAddress.value) {
             return;

@@ -1,7 +1,7 @@
 import {ref, reactive, computed, watch} from 'vue';
 
 import {subscribeTransfer} from '~/api/hub.js';
-import {getProviderByChain, web3Utils, toErcDecimals} from '~/api/web3.js';
+import {getProviderByChain, web3Utils, toErcDecimals, buildDepositTx} from '~/api/web3.js';
 import {getTransaction} from '~/api/explorer.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_TRANSFER_STATUS, MAINNET, NETWORK} from '~/assets/variables.js';
 import Big from '~/assets/big.js';
@@ -28,9 +28,6 @@ export default function useWeb3Deposit(destinationMinterAddress) {
     const { nativeBalance, setWeb3TokenProps } = useWeb3TokenBalance();
     const { txServiceState, sendEthTx, addStepData, waitPendingStep } = useTxService();
 
-    /**
-     * @type {UnwrapRef<{amount: number, tokenSymbol: string, accountAddress: string, destinationMinterAddress: string, chainId: number, freezeGasPrice: boolean}>}
-     */
     const props = reactive({
         destinationMinterAddress: destinationMinterAddress || '',
         accountAddress: '',
@@ -243,34 +240,9 @@ export default function useWeb3Deposit(destinationMinterAddress) {
 
 
     function sendCoinTx({nonce, gasPrice}) {
-        const web3Eth = getProviderByChain(props.chainId);
-        const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(props.destinationMinterAddress.replace("Mx", "0x")))]);
-        const destinationChain = Buffer.from('minter', 'utf-8');
-        const hubContract = new web3Eth.Contract(hubABI, getHubContractAddress());
-        let txParams;
-        if (isNativeToken.value) {
-            txParams = {
-                value: depositAmountAfterGas.value,
-                data: hubContract.methods.transferETHToChain(
-                    destinationChain,
-                    address,
-                    0,
-                ).encodeABI(),
-            };
-        } else {
-            txParams = {
-                data: hubContract.methods.transferToChain(
-                    tokenAddress.value,
-                    destinationChain,
-                    address,
-                    toErcDecimals(depositAmountAfterGas.value, tokenDecimals.value),
-                    0,
-                ).encodeABI(),
-            };
-        }
+        const txParams = buildDepositTx(props.chainId, isNativeToken.value ? undefined : tokenAddress.value, tokenDecimals.value, props.destinationMinterAddress, depositAmountAfterGas.value);
 
         return sendEthTx({
-            to: getHubContractAddress(),
             ...txParams,
             nonce,
             gasPrice,

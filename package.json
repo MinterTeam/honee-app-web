@@ -38,6 +38,10 @@
     "@material/list": "^14.0.0",
     "@material/menu": "^14.0.0",
     "@material/snackbar": "^14.0.0",
+    "@moralisweb3/api-utils": "^2.13.0",
+    "@moralisweb3/common-core": "^2.13.0",
+    "@moralisweb3/common-evm-utils": "^2.13.0",
+    "@moralisweb3/evm-api": "^2.13.0",
     "@nuxt/content": "^1.15.1",
     "@nuxtjs/i18n": "^7.3.1",
     "@ramp-network/ramp-instant-sdk": "^3.2.3",
@@ -127,7 +131,8 @@
     "postcss-preset-env": "^7.8.3",
     "pre-commit": "^1.2.2",
     "swagger-typescript-api": "^10.0.3",
-    "tsd-jsdoc": "^2.5.0"
+    "tsd-jsdoc": "^2.5.0",
+    "typescript": "^5.0.0-beta"
   },
   "peerDependencies": {
     "webpack": "^4"
