@@ -15,7 +15,9 @@
     "checkJs": true,
 //    "sourceMap": true,
     "strict": false,
+    "noImplicitThis": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {

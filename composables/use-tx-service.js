@@ -108,8 +108,8 @@ function sendMinterTx(txParams, options = {}) {
 /**
  * @param {object} txConfig
  * @param {string} txConfig.to
- * @param {number|string} txConfig.value
- * @param {string} txConfig.data
+ * @param {number|string} [txConfig.value]
+ * @param {string} [txConfig.data]
  * @param {number|string} txConfig.nonce
  * @param {number|string} txConfig.gasPrice
  * @param {number|string} [txConfig.gasLimit]

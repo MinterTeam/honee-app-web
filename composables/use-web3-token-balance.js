@@ -150,7 +150,7 @@ export default function useWeb3TokenBalance() {
     }
 
     /**
-     * @param {number|string} [targetAmount]
+     * @param {number|string|undefined} targetAmount
      * @param {{value: boolean}} isCanceled
      * @return {Promise}
      * @private

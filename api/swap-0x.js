@@ -35,7 +35,7 @@ export function _buildTxForSwap(chainId, swapParams) {
 }
 
 /**
- * @param {number|string} chainId
+ * @param {number} chainId
  * @param {ZeroExSwapParams&{receiver?: string}} swapParams
  * @return {Promise<{txList: Array<OneInchTx>, swapLimit: string}>}
  */
