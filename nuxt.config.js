@@ -294,6 +294,7 @@ module.exports = {
             'vue-autonumeric/src',
             'vuelidate/src',
             'lodash-es',
+            'camelcase-keys',
             // 'nuxt-i18n/src',
             'v-file-input/src',
             'clipbrd/src',

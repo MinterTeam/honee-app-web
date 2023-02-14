@@ -419,7 +419,7 @@ export default {
             <div class="form-row u-text-muted u-text-small">
                 <template v-if="$i18n.locale === 'en'">
                     <p class="u-mb-05"><span class="u-emoji">⚠️</span> <strong class="u-fw-600">Withdrawal notice</strong></p>
-                    <ul class="list-simple list-simple--small">
+                    <ul class="list-simple">
                         <li>Withdraw to the wallet you own first (the one you have a seed phrase to);</li>
                         <li>Do not withdraw to an exchange because many do not accept deposits from smart contracts and your tokens will be lost;</li>
                         <li>Pay attention to {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} and Minter Hub fees;</li>
@@ -432,7 +432,7 @@ export default {
                 </template>
                 <template v-if="$i18n.locale === 'ru'">
                     <p class="u-mb-05"><span class="u-emoji">⚠️</span> <strong class="u-fw-600">Внимание</strong></p>
-                    <ul class="list-simple list-simple--small">
+                    <ul class="list-simple">
                         <li>Вывод средств возможен только на ваш персональный адрес;</li>
                         <li>Не допускается вывод средств на смарт-контракты, адреса бирж или адреса, к которым у вас нет прямого доступа;</li>
                         <li>Всегда обращайте внимание на комиссии в {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} и Minter Hub;</li>
