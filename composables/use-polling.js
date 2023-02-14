@@ -1,5 +1,5 @@
 import PollingSubscriber from '~/assets/utils/polling-subscriber.js';
-import {onUnmounted} from '@vue/composition-api';
+import {onUnmounted} from 'vue';
 
 const pollList = {};
 

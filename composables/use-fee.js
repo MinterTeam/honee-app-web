@@ -1,4 +1,4 @@
-import { ref, reactive, computed, watch, set } from '@vue/composition-api';
+import { ref, reactive, computed, watch, set } from 'vue';
 import Big from '~/assets/big.js';
 import {FeePrice} from 'minterjs-util/src/fee.js';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';

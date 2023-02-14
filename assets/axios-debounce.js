@@ -2,14 +2,13 @@ import debounce from '~/assets/debounce-promise.js';
 
 /**
  * Store of debounced functions created per each ID
- * @type {Object.<string, function(AxiosRequestConfig): Promise>}
+ * @type {Object.<string, function(import('axios').AxiosRequestConfig): Promise>}
  */
 const store = {};
 
 /**
  * @param {import('axios').AxiosAdapter} adapter
- * @param {object} [options]
- * @param {number} [options.time=1000]
+ * @param {AxiosDebounceAdapterOptions} [options]
  * @return {import('axios').AxiosAdapter}
  */
 export default function debounceAdapter(adapter, options) {

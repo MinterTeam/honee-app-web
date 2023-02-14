@@ -59,7 +59,7 @@ body {
 a, .link {color: inherit; outline: none; text-decoration: none; text-decoration-skip-ink: auto; transition: 0.1s;}
 a, .link {&:hover, &:focus {/*text-decoration: underline; */outline: none;}}
 .no-link {text-decoration: none;}
-.link--main {&, &:hover, &:focus {color: @c-main;}}
+.link--main {&, &:hover, &:focus {color: var(--color-main);}}
 //.link--green {&, &:hover, &:focus {color: @c-green;}}
 .link--white {&, &:hover, &:focus {color: #fff;}}
 .link--opacity {
@@ -90,14 +90,14 @@ sub, sup { font-size: 75%;}
 .list-simple {
     padding: 0;
     li {
-        list-style: none; position: relative; padding-left: 25px;
+        list-style: none; position: relative; padding-left: 20px;
         &::before {content: '•'; position: absolute; left: 0; top: 0;}
     }
     li + li {margin-top: 10px;}
 }
 .list-simple--small {
-    li {padding-left: 20px;}
-    li + li {margin-top: 8px;}
+    //li {padding-left: 20px;}
+    li + li {margin-top: 4px;}
 }
 :-moz-focusring {outline: none;}
 input, textarea, select {
@@ -113,9 +113,11 @@ h1, h2, h3, h4, h5, h6 {.u-h();}
 .u-h1 {font-size: 32px; line-height: 1.22;}
 .u-h2 {font-size: 24px;}
 .u-h3 {font-size: 18px; line-height: 1.21;}
+.u-h4 {font-size: 16px; line-height: 1.19;}
 .u-h5 {font: inherit; font-weight: 600;}
-.u-h--uppercase {font-weight: 700; font-size: 12px; line-height: 16px; color: @c-black-light; letter-spacing: 1.5px; text-transform: uppercase;}
+.u-h--uppercase {font-weight: 700; font-size: 12px; line-height: 16px; color: var(--color-text-muted); letter-spacing: 1.5px; text-transform: uppercase;}
 .u-h--uppercase-solid {.u-h--uppercase(); color: inherit;}
+.subtitle {font-size: 14px;}
 @media (min-width: @breakpoint-small-up) {
     //html {font-size: 20px; line-height: 1.4;}
     .u-h1 {font-size: 40px; line-height: 1.2;}

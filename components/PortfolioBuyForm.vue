@@ -1,4 +1,5 @@
 <script>
+import {getCurrentInstance} from 'vue';
 import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required.js';
 import minLength from 'vuelidate/src/validators/minLength.js';
@@ -42,8 +43,9 @@ export default {
             required: true,
         },
     },
-    setup(props, context) {
-        const {getWallet} = usePortfolioWallet(context.root.$store.getters.mnemonic);
+    setup(props) {
+        const vm = getCurrentInstance()?.proxy;
+        const {getWallet} = usePortfolioWallet(vm.$store.getters.mnemonic);
         const {
             amountToWithdraw,
             minAmountToWithdraw,
@@ -120,6 +122,7 @@ export default {
 
         return {
             form,
+            // @TODO combine withdraw and send tx fees ans validate it
             amountToWithdraw: {
                 minValue: (value) => this.isSmartWalletWithdraw ? minValue(this.minAmountToWithdraw)(value) : true,
             },
@@ -162,9 +165,15 @@ export default {
             });
         },
         isSmartWalletWithdraw() {
+            return false;
+            // @TODO
+            // eslint-disable-next-line no-unreachable
             return this.swsSelectedIndices.length > 0;
         },
         selectedIndices() {
+            return Object.keys(this.coinList);
+            // @TODO
+            // eslint-disable-next-line no-unreachable
             return Object.keys(this.coinList)
                 .filter((indexString) => !this.swsSelectedIndices.includes(indexString));
         },
@@ -239,7 +248,9 @@ export default {
                 const enoughToPayFee = Number(this.valueDistributionToSpend[index]) > 0;
 
                 const minterEstimation = this.estimationList[index] || 0;
-                const smartWalletEstimation = this.amountEstimationToReceiveAfterDepositList[index] || 0;
+                // @TODO
+                // const smartWalletEstimation = this.amountEstimationToReceiveAfterDepositList[index] || 0;
+                const smartWalletEstimation = 0;
                 const isSmartWalletSwapBetter = new Big(smartWalletEstimation).gt(minterEstimation);
                 const finalEstimation = isSmartWalletSwapBetter ? smartWalletEstimation : minterEstimation;
 
@@ -445,7 +456,7 @@ export default {
             () => ({
                 privateKey: this.$store.getters.privateKey,
                 evmAccountAddress: this.$store.getters.evmAddress,
-                depositDestination: this.portfolioWallet.address,
+                depositDestinationAddress: this.portfolioWallet.address,
                 chainId: this.hubChainData.chainId,
                 valueToSell: this.form.value,
                 coinToSell: this.form.coin,
@@ -455,7 +466,9 @@ export default {
                 isLocked: this.isSequenceProcessing && !this.isWithdrawProcessing,
             }),
             (newVal) => {
-                if (newVal.isLocked) {
+                // @TODO
+                // eslint-disable-next-line no-constant-condition
+                if (newVal.isLocked || true) {
                     this.setSmartWalletPortfolioBuyProps({
                         // only update isLocked to reduce recalculations
                         isLocked: true,

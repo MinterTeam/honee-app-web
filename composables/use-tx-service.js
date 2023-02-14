@@ -1,4 +1,4 @@
-import {reactive, computed, set} from '@vue/composition-api';
+import {reactive, computed, set} from 'vue';
 import {deepMerge} from '~/assets/utils/collection.js';
 import {getProviderByChain, web3Utils, subscribeTransaction, toErcDecimals} from '~/api/web3.js';
 import {postTx} from '~/api/gate.js';
@@ -8,7 +8,7 @@ import {ensurePromise} from '~/assets/utils.js';
 
 
 /**
- * @type {import('@vue/composition-api').UnwrapRef<{privateKey: string, accountAddress: string, chainId: number, form: Object}>}
+ * @type {UnwrapRef<{privateKey: string, accountAddress: string, chainId: number, form: Object}>}
  */
 const props = reactive({
     privateKey: '',
@@ -108,8 +108,8 @@ function sendMinterTx(txParams, options = {}) {
 /**
  * @param {object} txConfig
  * @param {string} txConfig.to
- * @param {number|string} txConfig.value
- * @param {string} txConfig.data
+ * @param {number|string} [txConfig.value]
+ * @param {string} [txConfig.data]
  * @param {number|string} txConfig.nonce
  * @param {number|string} txConfig.gasPrice
  * @param {number|string} [txConfig.gasLimit]

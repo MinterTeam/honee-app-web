@@ -6,7 +6,7 @@ export function toCamel(obj) {
 
 /**
  *
- * @param {AxiosInstance} instance
+ * @param {import('axios').AxiosInstance} instance
  */
 export default function addToCamelInterceptor(instance) {
     instance.interceptors.response.use(function(response) {

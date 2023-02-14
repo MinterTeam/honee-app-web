@@ -4,7 +4,6 @@ import Card from '~/components/Card.vue';
 import CardHead from '~/components/CardHead.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
 import InvestmentList from '~/components/InvestmentList.vue';
-import PortfolioBattleTable from '~/components/PortfolioBattleTable.vue';
 import PortfolioLeaderboard from '~/components/PortfolioLeaderboard.vue';
 import PortfolioList from '~/components/PortfolioList.vue';
 
@@ -40,7 +39,6 @@ export default {
         CardHead,
         AddressAssets,
         InvestmentList,
-        PortfolioBattleTable,
         PortfolioLeaderboard,
         PortfolioList,
     },
@@ -103,7 +101,7 @@ export default {
         -->
 
         <div class="u-mt-25" v-for="(categoryCards, categorySlug) in cardList" :key="categorySlug">
-            <h2 class="u-h1 u-mb-15">
+            <h2 class="u-h2 u-mb-15">
                 {{ $td(capitalize($options.cardList[categorySlug].title || categorySlug), `action.category-${categorySlug.toLowerCase()}`) }}
             </h2>
             <div class="u-grid u-grid--vertical-margin">
@@ -166,8 +164,8 @@ export default {
 
         <PortfolioLeaderboard class="u-mt-25" limit="5"/>
 
-        <h2 class="u-h1 u-mt-25 u-mb-15">
-            {{ $td('Portfolio battle', `portfolio.battle-title`) }}
+        <!--<h2 class="u-h2 u-mt-25 u-mb-15">
+            {{ $td('Portfolio Battle', `portfolio.battle-title`) }}
         </h2>
         <div class="card card__content">
             <PortfolioBattleTable limit="5"/>
@@ -177,13 +175,11 @@ export default {
                     {{ $td('View all', 'portfolio.leaderboard-view-all') }}
                 </nuxt-link>
             </div>
-        </div>
+        </div>-->
 
         <PortfolioList class="u-mt-25" type="managed" @update:portfolio-list="portfolioListManaged = $event"/>
         <nuxt-link v-if="portfolioListManaged.length === 0" class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">
             + {{ $td('Create portfolio', 'portfolio.create-new-link') }}
         </nuxt-link>
-
-        <nuxt-child/>
     </div>
 </template>

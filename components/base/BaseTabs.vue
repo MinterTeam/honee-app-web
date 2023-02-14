@@ -41,7 +41,7 @@ export default {
             v-for="tabItem in tabs"
             :key="tabItem.value"
             class="u-semantic-button" type="button"
-            :class="[itemClass || 'tabs__item u-h u-h3', {'is-active': value === tabItem.value}]"
+            :class="[itemClass || 'tabs__item u-h u-h4', {'is-active': value === tabItem.value}]"
             @click="handleClick(tabItem.value)"
         >
             {{ tabItem.label || tabItem.value }}

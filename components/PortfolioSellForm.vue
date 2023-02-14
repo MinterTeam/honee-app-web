@@ -1,4 +1,5 @@
 <script>
+import {getCurrentInstance} from 'vue';
 import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required';
 import minLength from 'vuelidate/src/validators/minLength';
@@ -42,8 +43,9 @@ export default {
             required: true,
         },
     },
-    setup(props, context) {
-        const {getWallet} = usePortfolioWallet(context.root.$store.getters.mnemonic);
+    setup(props) {
+        const vm = getCurrentInstance()?.proxy;
+        const {getWallet} = usePortfolioWallet(vm.$store.getters.mnemonic);
         const {
             minAmountToWithdrawList,
             withdrawTxParamsList,
@@ -142,6 +144,9 @@ export default {
                 });
         },
         selectedIndices() {
+            return Object.keys(this.coinList);
+            // @TODO
+            // eslint-disable-next-line no-unreachable
             return Object.keys(this.coinList)
                 .filter((indexString) => !this.swsSelectedIndices.includes(indexString));
         },
@@ -197,7 +202,9 @@ export default {
                 */
 
                 const minterEstimation = this.estimationList[index] || 0;
-                const smartWalletEstimation = this.amountEstimationToReceiveAfterDepositList[index] || 0;
+                // @TODO
+                // const smartWalletEstimation = this.amountEstimationToReceiveAfterDepositList[index] || 0;
+                const smartWalletEstimation = 0;
                 const isSmartWalletSwapBetter = new Big(smartWalletEstimation).gt(minterEstimation);
                 const finalEstimation = isSmartWalletSwapBetter ? smartWalletEstimation : minterEstimation;
 
@@ -264,6 +271,12 @@ export default {
             let premiumFeeAmount = 0;
             // total gas used for premium fee txs
             let premiumFeeTotalGas = 0;
+
+            // if no minter swaps mean that address will be empty after sws withdrawals, so
+            // - nothing to swap for serviceFee
+            // - no coins to pay fee for send tx with type: sell payload
+            // - no premiumFee to lock
+            const hasMinterTxs = this.selectedIndices.length > 0;
 
             const swsSequence = this.coinList.map((coinItem, index) => {
                 // ? maybe use swsSelectedIndices ?
@@ -363,7 +376,7 @@ export default {
 
             // SWAP SERVICE FEE TX
             const swapServiceFee = {
-                skip: !this.isNeedSwapServiceFee,
+                skip: !this.isNeedSwapServiceFee || !hasMinterTxs,
                 txParams: {
                     type: this.$refs.estimationServiceFee?.getTxType(),
                     data: this.serviceFeeSwapTxData,
@@ -409,6 +422,7 @@ export default {
 
 
             const send = {
+                skip: !hasMinterTxs,
                 prepareGasCoinPosition: 'start',
                 prepare: (swapTx, prevPrepareGasCoin) => {
                     premiumFeeAmount = this.isNeedSwapServiceFee ? restorePremiumFee(swapServiceFeeReturn, this.portfolio.profit) : premiumFeeInCoin;
@@ -476,6 +490,7 @@ export default {
 
             // LOCK TX
             const lock = {
+                skip: !hasMinterTxs,
                 txParams: {
                     type: TX_TYPE.LOCK,
                     data: {
@@ -522,7 +537,8 @@ export default {
             () => ({
                 privateKey: this.$store.getters.privateKey,
                 evmAccountAddress: this.$store.getters.evmAddress,
-                depositDestination: this.$store.getters.address,
+                withdrawOriginAddress: this.portfolioWallet.address,
+                depositDestinationAddress: this.$store.getters.address,
                 chainId: this.hubChainData.chainId,
                 coinToSellList: this.withdrawCoinList,
                 coinToBuy: this.form.coin,
@@ -531,7 +547,9 @@ export default {
                 // isLocked: this.isSequenceProcessing && !this.isWithdrawProcessing,
             }),
             (newVal) => {
-                if (newVal.isLocked) {
+                // @TODO
+                // eslint-disable-next-line no-constant-condition
+                if (newVal.isLocked || true) {
                     this.setSmartWalletPortfolioSellProps({
                         // only update isLocked to reduce recalculations
                         isLocked: true,

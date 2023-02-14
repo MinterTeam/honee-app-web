@@ -1,11 +1,12 @@
 <script>
 import getTitle from '~/assets/get-title.js';
-import Modal from '~/components/base/Modal.vue';
 import Topup, {TOP_UP_NETWORK} from '~/components/Topup.vue';
 
 export default {
+    layout(context) {
+        return context.store.state.isMetagarden ? 'metagarden' : 'default';
+    },
     components: {
-        Modal,
         Topup,
     },
     asyncData({route, error}) {
@@ -26,7 +27,7 @@ export default {
         return {
             title,
             meta: [
-                { hid: 'og-title', name: 'og:title', content: title },
+                {hid: 'og-title', name: 'og:title', content: title},
             ],
         };
     },
@@ -42,13 +43,7 @@ export default {
 </script>
 
 <template>
-    <Modal
-        modalContainerClass="card card__content"
-        :isOpen="true"
-        :hideCloseButton="false"
-        :disableOutsideClick="false"
-        @modal-close="$router.push(getDashboardUrl())"
-    >
-        <Topup v-if="networkSlug" :network-slug="networkSlug"/>
-    </Modal>
+    <div class="u-section u-container u-container--small u-text-center">
+        <Topup class="card card__content" v-if="networkSlug" :network-slug="networkSlug"/>
+    </div>
 </template>

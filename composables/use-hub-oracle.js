@@ -1,4 +1,4 @@
-import {ref, computed, reactive, set, watch} from '@vue/composition-api';
+import {ref, computed, reactive, set, watch} from 'vue';
 import isEqual from 'lodash-es/isEqual.js';
 import Big from '~/assets/big.js';
 import {findNativeCoin, getOracleCoinList, getOracleFee, getOraclePriceList} from '~/api/hub.js';

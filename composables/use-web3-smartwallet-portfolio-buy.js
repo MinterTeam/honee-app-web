@@ -1,4 +1,4 @@
-import {ref, reactive, computed, watch, watchEffect, toRefs, set} from '@vue/composition-api';
+import {ref, reactive, computed, watch, watchEffect, toRefs, set} from 'vue';
 import {watchDebounced} from '@vueuse/core';
 import Big, {BIG_ROUND_DOWN, BIG_ROUND_UP} from '~/assets/big.js';
 import {getErrorText} from '~/assets/server-error.js';
@@ -44,7 +44,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
     const props = reactive({
         privateKey: '',
         evmAccountAddress: '',
-        depositDestination: '',
+        depositDestinationAddress: '',
         chainId: 0,
         coinToSell: '',
         // amount used to withdraw (before sell to hub)
@@ -171,7 +171,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
             swsList.value[index].setSmartWalletSwapProps({
                 privateKey: props.privateKey,
                 evmAccountAddress: props.evmAccountAddress,
-                depositDestination: props.depositDestination,
+                depositDestinationAddress: props.depositDestinationAddress,
                 chainId: props.chainId,
                 // valueToSell is set in `valueDistribution` watcher
                 // valueToSell: undefined,

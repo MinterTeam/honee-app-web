@@ -18,7 +18,7 @@ import InputMaskedAmount from '~/components/base/InputMaskedAmount.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 
 const METAGARDEN_SYMBOL = 'METAGARDEN';
-const USD_SYMBOL = 'USDTE';
+const USD_SYMBOL = 'USDTBSC';
 const MODE = {
     // send metagarden directly (if it is enough)
     SEND_METAGARDEN: 'send_metagarden',
@@ -30,7 +30,7 @@ const MODE = {
     BUY_USD: 'buy_usd',
 };
 const SPOT_PRICE_METAGARDEN = 1000;
-const SPOT_PRICE_USD = 40;
+const SPOT_PRICE_USD = 80;
 const SPOT_BUY_ADDRESS = 'Mxfb758e0516e3ced06eb90387b7fee61ecaad0000';
 
 export default {
@@ -111,13 +111,13 @@ export default {
     computed: {
         currentMode() {
             // 0.04 price check is made by comparing estimation (which is made based on 1000 and 40 prices)
-            const isMetagardenCheaper = this.estimationSpendForUsd <= 0 || Number(this.estimationSpendForMetagarden) <= Number(this.estimationSpendForUsd);
+            // const isMetagardenCheaper = this.estimationSpendForUsd <= 0 || Number(this.estimationSpendForMetagarden) <= Number(this.estimationSpendForUsd);
             if (this.form.coin === METAGARDEN_SYMBOL) {
                 return MODE.SEND_METAGARDEN;
             } else if (this.form.coin === USD_SYMBOL) {
                 return MODE.SEND_USD;
-            } else if (isMetagardenCheaper) {
-                return MODE.BUY_METAGARDEN;
+            // } else if (isMetagardenCheaper) {
+            //     return MODE.BUY_METAGARDEN;
             } else {
                 return MODE.BUY_USD;
             }
@@ -315,7 +315,7 @@ export default {
             </template>
 
             <template v-slot:submit-title>
-                {{ $td('Stake', `stake-by-lock.submit-button`) }}
+                {{ $td('Buy', `form.buy-button`) }}
             </template>
 
             <template v-slot:confirm-modal-header>

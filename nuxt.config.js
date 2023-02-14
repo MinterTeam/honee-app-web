@@ -33,7 +33,7 @@ const NUXT_LOADING_INLINE_SCRIPT_SHA = process.env.NODE_ENV === 'production'
 
 /**
  * prepare CSP string from env config
- * @param {Object} env - env config
+ * @param {object} env - env config
  * @param {Function} keyFilter
  */
 function prepareCSP(env, keyFilter) {
@@ -120,6 +120,8 @@ module.exports = {
     router: {
         linkActiveClass: 'is-active-inner',
         linkExactActiveClass: 'is-active',
+        // fix foo-bar.vue shadowing foo/bar.vue, by default they have same name, so change '-' separator to '/'
+        routeNameSplitter: '/',
         middleware: [
             'auth',
             'history',
@@ -181,7 +183,6 @@ module.exports = {
     ],
     plugins: [
         { src: '~/plugins/global-mixin.js'},
-        { src: '~/plugins/composition-api.js'},
         { src: '~/plugins/online.js', ssr: false },
         { src: '~/plugins/custom-event-polyfill.js', ssr: false },
         { src: '~/plugins/persisted-state.js', ssr: false },
@@ -288,10 +289,12 @@ module.exports = {
             'vue-simple-suggest/dist/es7',
             'vue-simple-suggest/lib',
             'centrifuge/src',
+            'v-tooltip/src',
             'autonumeric/src',
             'vue-autonumeric/src',
             'vuelidate/src',
             'lodash-es',
+            'camelcase-keys',
             // 'nuxt-i18n/src',
             'v-file-input/src',
             'clipbrd/src',

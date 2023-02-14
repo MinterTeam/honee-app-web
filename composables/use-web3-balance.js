@@ -1,8 +1,11 @@
-import {reactive, set} from '@vue/composition-api';
+import {reactive, set} from 'vue';
 import {getProviderByChain, getAllowance as _getAllowance, web3Utils, fromErcDecimals} from '~/api/web3.js';
 import erc20ABI from '~/assets/abi-erc20.js';
 import {HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from '~/assets/variables.js';
 
+/**
+ * @enum {string}
+ */
 export const PROMISE_STATUS = {
     FINISHED: 'finished',
     REJECTED: 'rejected',
@@ -11,6 +14,19 @@ export const PROMISE_STATUS = {
 
 // workaround for `set` not trigger computed properly
 // @see https://github.com/vuejs/composition-api/issues/580
+/**
+ * @overload
+ * @return {Record<ChainId, object>}
+ */
+/**
+ * @overload
+ * @param {boolean} isBalance
+ * @return {Record<ChainId, Record<string, number>>}
+ */
+/**
+ * @param {boolean} [isBalance]
+ * @return {Record<ChainId, (Record<string, number> | object)>}
+ */
 function getInitialChainData(isBalance) {
     return Object.fromEntries(Object.values(HUB_CHAIN_DATA).map((item) => [item.chainId, getEmptyItem()]));
 
@@ -21,19 +37,19 @@ function getInitialChainData(isBalance) {
 }
 
 /**
- * @type {Object.<number, {promise: Promise, promiseStatus: PROMISE_STATUS}>}
+ * @type {Record<ChainId, Record<string, {promise: Promise, promiseStatus: PROMISE_STATUS}>>}
  */
 let balanceRequestData = getInitialChainData();
 /**
- * @type {Object.<number, {promise: Promise, promiseStatus: PROMISE_STATUS}>}
+ * @type {Record<ChainId, Record<string, {promise: Promise, promiseStatus: PROMISE_STATUS}>>}
  */
 let allowanceRequestData = getInitialChainData();
 /**
- * @type {UnwrapRef<Object.<number, Object.<string, number|string>>>}
+ * @type {UnwrapNestedRefs<Record<ChainId, Record<string, number|string>>>}
  */
 const web3Balance = reactive(getInitialChainData(true));
 /**
- * @type {UnwrapRef<Object.<number, Object.<string, number|string>>>}
+ * @type {UnwrapNestedRefs<Record<ChainId, Record<string, number|string>>>}
  */
 const web3Allowance = reactive(getInitialChainData());
 

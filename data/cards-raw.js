@@ -5,57 +5,23 @@ import {BASE_COIN} from '~/assets/variables.js';
  */
 export default {
     earn: {
-        title: 'Earning options',
+        title: 'Earning Options',
         cards: [
             {
-                style: 'metagarden',
+                style: 'metagarden-buy-spot',
                 caption: 'Mining',
                 title: 'Buy mining spots',
                 coin: `METAGARDEN`,
-                description: 'metagarden — a play-to-earn platform with mini games. Become the platform miner to earn crypto.',
+                description: 'Metagarden — a play-to-earn platform with mini games. Become the platform miner to earn crypto.',
                 buttonLabel: 'Buy spot',
                 tags: [],
-                action: `/metagarden-buy-spot`,
+                action: `/metagarden/buy-spot`,
                 ru: {
                     caption: 'Майнинг',
                     title: 'Майнинг-споты',
-                    description: 'metagarden — play-to-earn платформа с мини-играми. Станьте майнером платформы, чтобы зарабатывать криптовалюту.',
+                    description: 'Metagarden — play-to-earn платформа с мини-играми. Станьте майнером платформы, чтобы зарабатывать криптовалюту.',
                     buttonLabel: 'Купить спот',
 
-                },
-            },
-            {
-                caption: 'Liquidity mining',
-                coin: ['BEE', 'MUSD'],
-                description: 'Put your BEE and MUSD into a liquidity pool. Then stake received LP-656 tokens for getting extra daily rewards.',
-                stats: {
-                    apy: {
-                        percent: '≈3',
-                    },
-                },
-                tags: [],
-                action: '/add-liquidity/BEE/MUSD',
-                ru: {
-                    caption: 'Майнинг ликвидностью',
-                    description: 'Поместите свои BEE и MUSD в пул ликвидности. Затем застейкуйте полученные LP-656 токены для получения дополнительных ежедневных наград.',
-                },
-            },
-            {
-                caption: 'Yield farming',
-                coin: ['BEE', 'MUSD'],
-                description: 'Stake your LP-656 tokens with a 1-year lock to start getting extra daily rewards.',
-                buttonLabel: 'Stake',
-                stats: {
-                    apr: {
-                        percent: '36.5',
-                    },
-                },
-                tags: ['Farming'],
-                action: `/farm/378`,
-                ru: {
-                    description: 'Застейкуйте свои LP-656 токены с блокировкой на 1 год, чтобы получать дополнительные ежедневные награды.',
-                    caption: 'Фарминг',
-                    buttonLabel: 'Застейковать',
                 },
             },
             {
@@ -154,6 +120,23 @@ export default {
                     stats: {
                         caption: 'Приз до',
                     },
+                },
+            },
+            {
+                style: 'portfolio-battle',
+                caption: 'Contest',
+                title: 'PORTFOLIO BATTLE',
+                icon: '/img/icon-portfolio-battle.png',
+                description: 'Join the Portfolio Battle and win crypto prizes every week.',
+                buttonLabel: 'Learn More',
+                tags: [],
+                action: `/portfolio/battle`,
+                ru: {
+                    caption: 'Конкурс',
+                    title: 'БИТВА ПОРТФЕЛЕЙ',
+                    description: 'Присоединяйтесь к битве портфелей и выигрывайте крипто-призы каждую неделю.',
+                    buttonLabel: 'Подробнее',
+
                 },
             },
         ],
@@ -288,18 +271,18 @@ export default {
 };
 
 /**
- * @typedef {CardListItemRaw} CardListItem
+ * @typedef {object & CardListItemRaw} CardListItem
  * @property {string} actionType
  * @property {string} category
  */
 
 
 /**
- * @typedef {CardDataText} CardListItemRaw
+ * @typedef {object & CardDataText} CardListItemRaw
  * @property {string} action - url to action
  * @property {string|Array<string>} [coin] - coin symbol or list of coin symbols (used for `title`, `icon`, and `tags`)
  * @property {string|Array<string>} [icon]
- * @property {CardDataStats} [stats]
+ * @property {CardDataStats & CardDataText.stats} [stats]
  * @property {string[]} [tags]
  * @property {string} [style] - class to apply to card to style it
  * @property {CardDataText} [ru]
@@ -317,7 +300,7 @@ export default {
  */
 
 /**
- * @typedef {CardDataText.stats} CardDataStats
+ * @typedef {object} CardDataStats
  * @property {CardDataStatsApr} [apr]
  * @property {CardDataStatsApr} [apy]
  */

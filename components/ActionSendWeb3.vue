@@ -10,9 +10,8 @@ import {getTokenSymbolForNetwork} from '~/api/hub.js';
 import {pretty} from '~/assets/utils.js';
 import {HUB_NETWORK, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
 // import useHubOracle from '~/composables/use-hub-oracle.js';
-// import useHubToken from '~/composables/use-hub-token.js';
+import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
-import useWeb3SmartWalletSwap from '~/composables/use-web3-smartwallet-swap.js';
 import {buildTransferTx, toErcDecimals} from '~/api/web3.js';
 import FieldAddress from '~/components/base/FieldAddress.vue';
 
@@ -44,7 +43,7 @@ export default {
         // } = useHubOracle({
         //     // no need to subscribe here, because already subscribed in useHubToken and useWeb3Withdraw
         // });
-        // const {hubCoin: coinItem, tokenPrice: coinPrice, tokenData: externalToken, setHubTokenProps} = useHubToken();
+        const {tokenContractAddressFixNative: tokenContractAddress, tokenDecimals, hubCoin, tokenData, setHubTokenProps} = useHubToken();
         const {smartWalletAddress, setSmartWalletProps, buildTxForRelayReward, callSmartWallet} = useWeb3SmartWallet();
 
         return {
@@ -52,10 +51,10 @@ export default {
             // setHubOracleProps,
             // fetchHubDestinationFee,
 
-            // coinItem,
-            // coinPrice,
-            // externalToken,
-            // setHubTokenProps,
+            tokenContractAddress,
+            tokenDecimals,
+            setHubTokenProps,
+            hubCoin, tokenData,
 
 
             smartWalletAddress,
@@ -65,7 +64,6 @@ export default {
         };
     },
     data() {
-
         return {
             form: {
                 token: '',
@@ -79,8 +77,18 @@ export default {
         hubChainData() {
             return HUB_CHAIN_DATA[HUB_NETWORK.BSC];
         },
-    },
-    watch: {
+        tokenAddressFixed() {
+            if (this.form.token === 'BNB') {
+                return NATIVE_COIN_ADDRESS;
+            }
+            if (this.form.token.length === 42 && this.form.token.indexOf('0x') === 0) {
+                return this.form.token;
+            }
+            return '';
+        },
+        isTokenDecimalsFetched() {
+            return this.tokenDecimals > 0;
+        },
     },
     created() {
         // smartWalletProps
@@ -90,7 +98,7 @@ export default {
                 evmAccountAddress: this.$store.getters.evmAddress,
                 chainId: this.hubChainData.chainId,
                 gasTokenAddress: this.form.token === 'BNB' ? NATIVE_COIN_ADDRESS : this.form.token,
-                gasTokenDecimals: 18,
+                gasTokenDecimals: this.tokenDecimals,
                 estimationSkip: true,
             }),
             (newVal) => this.setSmartWalletProps(newVal),
@@ -107,18 +115,22 @@ export default {
         // );
 
         // hubTokenProps
-        // this.$watch(
-        //     () => ({
-        //         chainId: this.hubChainData.chainId,
-        //         tokenSymbol: this.withdrawCoin,
-        //     }),
-        //     (newVal) => this.setHubTokenProps(newVal),
-        //     {deep: true, immediate: true},
-        // );
+        this.$watch(
+            () => ({
+                chainId: this.hubChainData.chainId,
+                tokenSymbol: this.form.token.indexOf('0x') === 0 ? '' : this.form.token,
+                tokenAddress: this.form.token.indexOf('0x') === 0 ? this.form.token : '',
+            }),
+            (newVal) => this.setHubTokenProps(newVal),
+            {deep: true, immediate: true},
+        );
     },
     methods: {
         pretty,
         async submit() {
+            if (!this.isTokenDecimalsFetched) {
+                return;
+            }
             const relayRewardData = await this.buildTxForRelayReward();
             const amount = new Big(this.form.amount).minus(relayRewardData.swapLimit).toString();
             if (amount <= 0) {
@@ -128,11 +140,11 @@ export default {
             if (this.form.token === 'BNB') {
                 tx = {
                     to: this.form.address,
-                    value: toErcDecimals(amount, 18),
+                    value: toErcDecimals(amount, this.tokenDecimals),
                     data: '0x',
                 };
             } else {
-                tx = buildTransferTx(this.form.token, this.form.address, toErcDecimals(amount, 18));
+                tx = buildTransferTx(this.form.token, this.form.address, toErcDecimals(amount, this.tokenDecimals));
             }
             this.callSmartWallet([].concat(relayRewardData.txList, tx))
                 .then((result) => {
@@ -161,7 +173,7 @@ export default {
         </div>
         <div class="h-field form-row">
             <div class="h-field__content">
-                <div class="h-field__title">Address of token contract to send or 'BNB'</div>
+                <div class="h-field__title">Coin symbol or address of token contract to send (e.g. USDTBSC)</div>
                 <input class="h-field__input" type="text" v-model="form.token">
             </div>
         </div>

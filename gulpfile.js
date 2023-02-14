@@ -13,7 +13,7 @@ import postcssPresetEnv from 'postcss-preset-env';
 import postcss100vhFix from 'postcss-100vh-fix';
 import cleanCss from 'gulp-clean-css';
 // images
-import del from 'del';
+import * as del from 'del';
 import path from 'path';
 import cache from 'gulp-cache';
 import imagemin from 'gulp-imagemin';

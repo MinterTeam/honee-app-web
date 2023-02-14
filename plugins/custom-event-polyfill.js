@@ -1,3 +1,4 @@
+// @ts-nocheck
 (function() {
     if (typeof window === 'undefined' || typeof window.CustomEvent === "function" ) {
         return;

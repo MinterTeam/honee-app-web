@@ -67,7 +67,7 @@ export function getEvmAddressUrl(chainId, hash) {
 }
 
 export function getCard2MinterUrl(address, backUrl) {
-    return `${CARD_TO_MINTER_HOST}/?coin=BEE&address=${address}&return_url=${backUrl}`;
+    return `${CARD_TO_MINTER_HOST}/?coin=BIP&address=${address}&return_url=${backUrl}`;
 }
 
 /**

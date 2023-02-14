@@ -66,7 +66,7 @@ export default {
                             <p>When selling a portfolio, a 1% Premium fee is charged from its total value, this commission remains with a user in the form of BEE locked in their Premium account.</p>
                             <p>The user is charged a Success fee from 10 to 40%, depending on the amount of profit received. If&nbsp;instead of profit, there is a loss, then the Success fee is not charged.</p>
                             <p>Success fee:</p>
-                            <ul class="list-simple list-simple--small">
+                            <ul class="list-simple">
                                 <li>10% (with profit up to 10%)</li>
                                 <li>20% (with profit from 10% to 20%)</li>
                                 <li>30% (with profit from 20% to 40%)</li>
@@ -80,7 +80,7 @@ export default {
                             <p>При продаже портфеля взимается 1% Premium fee от его общей стоимости, эта комиссия остается у пользователя в виде BEE, заблокированного в его Premium-аккаунт.</p>
                             <p>С пользователя взимается Success fee от 10 до 40%, в зависимости от размера полученной прибыли. Если вместо прибыли, получен убыток, то Success fee не взимается.</p>
                             <p>Размер Success fee:</p>
-                            <ul class="list-simple list-simple--small">
+                            <ul class="list-simple">
                                 <li>10% (при прибыли до 10%)</li>
                                 <li>20% (при прибыли от 10% до 20%)</li>
                                 <li>30% (при прибыли от 20% до 40%)</li>

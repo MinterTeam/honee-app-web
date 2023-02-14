@@ -1,4 +1,5 @@
 <script>
+import {getCurrentInstance} from 'vue';
 import QrcodeVue from 'qrcode.vue';
 import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required.js';
@@ -105,7 +106,8 @@ export default {
             default: () => ({}),
         },
     },
-    setup(props, context) {
+    setup() {
+        const vm = getCurrentInstance()?.proxy;
         // just `estimation` refers to minter swap estimation
         const {
             estimation,
@@ -116,7 +118,7 @@ export default {
             handleInputBlur,
             estimateSwap,
         } = useEstimateSwap({
-            $td: context.root.$td,
+            $td: vm.$td,
             idPreventConcurrency: 'hubBuy',
         });
         const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();

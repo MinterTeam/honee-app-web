@@ -99,12 +99,12 @@ export default {
 
 <template>
     <div>
-        <h2 class="u-h1 u-mb-15" v-if="showTitle">
+        <h2 class="u-h2 u-mb-15" v-if="showTitle">
             <template v-if="type === $options.PORTFOLIO_LIST_TYPE.MANAGED">
-                {{ $td('Managed portfolios', `portfolio.list-managed-title`) }}
+                {{ $td('Managed Portfolios', `portfolio.list-managed-title`) }}
             </template>
             <template v-else-if="type === $options.PORTFOLIO_LIST_TYPE.COPIED">
-                {{ $td('Copied portfolios', `portfolio.list-copied-title`) }}
+                {{ $td('Copied Portfolios', `portfolio.list-copied-title`) }}
             </template>
             <!--
             <template v-else-if="type === $options.PORTFOLIO_LIST_TYPE.ALL">
@@ -115,7 +115,7 @@ export default {
             </template>
             -->
             <template v-else-if="type === $options.PORTFOLIO_LIST_TYPE.RECOMMEND">
-                {{ $td('Recommended portfolios', `portfolio.list-recommend-title`) }}
+                {{ $td('Recommended Portfolios', `portfolio.list-recommend-title`) }}
             </template>
         </h2>
         <div v-if="$fetchState.pending" class="u-text-center">

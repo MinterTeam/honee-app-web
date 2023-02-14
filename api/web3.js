@@ -6,6 +6,7 @@ import AbiCoder from 'web3-eth-abi';
 import {TinyEmitter as Emitter} from 'tiny-emitter';
 import {ETHEREUM_API_URL, BSC_API_URL, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, HUB_DEPOSIT_TX_PURPOSE, HUB_CHAIN_ID, HUB_CHAIN_DATA, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import erc20ABI from '~/assets/abi-erc20.js';
+import hubABI from '~/assets/abi-hub.js';
 
 export const CONFIRMATION_COUNT = 5;
 
@@ -35,8 +36,7 @@ const transactionPollingInterval = 5000;
 /**
  *
  * @param {object} abi
- * @return {function(method: string, ...[*]): string}
- * @constructor
+ * @return {function(method: string, ...[*]): string} abiMethodEncoder
  */
 export function AbiEncoder(abi) {
     const contract = new Contract(abi);
@@ -71,11 +71,12 @@ export function toErcDecimals(balance, ercDecimals = 18) {
 }
 
 /**
- * @typedef {import('web3-core/types/index.d.ts').Transaction & import('web3-core/types/index.d.ts').TransactionReceipt & {confirmations: number, timestamp: number}} Web3Tx
+ * @typedef {import('web3-core/types/index').Transaction & import('web3-core/types/index').TransactionReceipt & {confirmations: number, timestamp: number}} Web3Tx
  */
 
 /**
  * @typedef {Promise} PromiseWithEmitter
+ * @implements {Promise}
  * @property {function} on
  * @property {function} once
  * @property {function} unsubscribe
@@ -135,7 +136,7 @@ export function subscribeTransaction(hash, {
     return txPromise;
 
     /**
-     *
+     * @template T
      * @param {Promise<T>} target
      * @param {PromiseWithEmitter<T>} emitter
      */
@@ -323,6 +324,7 @@ export function getTokenDecimals(tokenContractAddress, chainId, hubCoinList = []
     if (!chainId) {
         return Promise.reject(new Error('chainId not specified'));
     }
+    tokenContractAddress = tokenContractAddress.toLowerCase();
     // search from cache
     if (decimalsPromiseCache[chainId]?.[tokenContractAddress]) {
         return decimalsPromiseCache[chainId][tokenContractAddress];
@@ -396,6 +398,46 @@ export function buildTransferTx(tokenContractAddress, recipientAddress, amount) 
         data,
         value: '0',
     };
+}
+
+/**
+ * @param {number} chainId
+ * @param {string|undefined} tokenContractAddress
+ * @param {number} tokenDecimals
+ * @param {string} destinationMinterAddress
+ * @param {string|number} amount - in ether or coins
+ * @return {{data: string, to: string, value: string|number}}
+ */
+export function buildDepositTx(chainId, tokenContractAddress, tokenDecimals, destinationMinterAddress, amount) {
+    const hubBridgeContractAddress = HUB_CHAIN_BY_ID[chainId]?.hubContractAddress;
+    const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(destinationMinterAddress.replace("Mx", "0x")))]);
+    const destinationChain = Buffer.from('minter', 'utf-8');
+    const isNativeToken = !tokenContractAddress;
+    if (isNativeToken) {
+        return {
+            to: hubBridgeContractAddress,
+            value: amount,
+            data: AbiEncoder(hubABI)(
+                'transferETHToChain',
+                destinationChain,
+                address,
+                0,
+            ),
+        };
+    } else {
+        return {
+            to: hubBridgeContractAddress,
+            value: '0',
+            data: AbiEncoder(hubABI)(
+                'transferToChain',
+                tokenContractAddress,
+                destinationChain,
+                address,
+                toErcDecimals(amount, tokenDecimals),
+                0,
+            ),
+        };
+    }
 }
 
 /**
@@ -493,7 +535,7 @@ export async function getDepositTxInfo(tx, chainId, hubCoinList, skipAmount) {
 
 /**
  *
- * @param {strong} hex
+ * @param {string} hex
  * @param {string} tokenContract
  * @param {number} chainId
  * @param {Array<HubCoinItem>} [hubCoinList]

@@ -1,4 +1,4 @@
-import { reactive, computed, watch } from '@vue/composition-api';
+import { reactive, computed, watch } from 'vue';
 import Big from '~/assets/big.js';
 import {BSC_CHAIN_ID, ETHEREUM_CHAIN_ID} from '~/assets/variables.js';
 import {wait} from '~/assets/utils/wait.js';
@@ -150,7 +150,7 @@ export default function useWeb3TokenBalance() {
     }
 
     /**
-     * @param {number|string} [targetAmount]
+     * @param {number|string|undefined} targetAmount
      * @param {{value: boolean}} isCanceled
      * @return {Promise}
      * @private

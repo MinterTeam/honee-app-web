@@ -23,7 +23,7 @@ export default {
 
 <template>
     <div class="u-section u-container u-container--large">
-        <h2 class="u-h1 u-mb-15">
+        <h2 class="u-h2 u-mb-15">
             {{ $td('Portfolios', `portfolio.list-title`) }}
         </h2>
 

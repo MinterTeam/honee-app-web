@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {Cache, cacheAdapterEnhancer} from 'axios-extensions';
-import {ParaSwapSwapSide} from '~/api/swap-paraswap-models.d.ts';
+import {ParaSwapSwapSide} from '~/api/swap-paraswap-models';
 import {fromErcDecimals, getAllowance, buildApproveTx} from '~/api/web3.js';
 import Big from '~/assets/big.js';
 import {getMaxEstimationLimit, getMinEstimationLimit} from '~/assets/utils/swap-limit.js';

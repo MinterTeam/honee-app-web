@@ -1,4 +1,5 @@
 <script>
+import {getCurrentInstance} from 'vue';
 import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required.js';
 import minLength from 'vuelidate/src/validators/minLength.js';
@@ -58,7 +59,8 @@ export default {
             type: String,
         },
     },
-    setup(props, context) {
+    setup(props) {
+        const vm = getCurrentInstance()?.proxy;
         const {
             estimation,
             isEstimationTypePool,
@@ -68,7 +70,7 @@ export default {
             handleInputBlur,
             estimateSwap,
         } = useEstimateSwap({
-            $td: context.root.$td,
+            $td: vm.$td,
             idPreventConcurrency: props.idPreventConcurrency,
         });
 

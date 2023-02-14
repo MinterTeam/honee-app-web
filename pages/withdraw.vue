@@ -3,6 +3,9 @@ import HubWithdrawForm from '~/components/HubWithdrawForm.vue';
 import HubWithdrawTxList from '~/components/HubWithdrawTxList.vue';
 
 export default {
+    layout(context) {
+        return context.store.state.isMetagarden ? 'metagarden' : 'default';
+    },
     components: {
         HubWithdrawForm,
         HubWithdrawTxList,
