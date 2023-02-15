@@ -53,7 +53,7 @@ export default {
                         ${{ pretty($store.state.totalBalanceSumUsd) }}
                     </div>
                     <div class="button-group button-group--small">
-                        <nuxt-link class="button button--small button--light-gray" :to="$getDashboardUrl('topup')">
+                        <nuxt-link class="button button--small button--main" :to="$getDashboardUrl('topup')">
                             {{ $td('&#43; Deposit', 'index.topup') }}
                         </nuxt-link>
                         <nuxt-link class="button button--small button--light-gray" :to="$getDashboardUrl('withdraw')">

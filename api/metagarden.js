@@ -70,9 +70,35 @@ export function getLootbox(privateKey) {
         });
 }
 
+
+/**
+ * @param {string} privateKey
+ * @param {number|string} id
+ * @return {Promise<MetagardenLootbox>}
+ */
+export function openLootbox(privateKey, id) {
+    return instance.get(`loot-box/activate/${id}`, {
+            ecdsaAuth: {
+                privateKey,
+            },
+        })
+        .then((response) => response.data.data);
+}
+
 /**
  * @typedef {object} MetagardenLootbox
  * @property {number} id
  * @property {boolean} isActivated
+ * @property {Array<MetagardenLootboxReward>} items
+ */
+
+/**
+ * @typedef {MetagardenLootboxRewardCheck} MetagardenLootboxReward
+ */
+
+/**
+ * @typedef {object} MetagardenLootboxRewardCheck
+ * @property {'check'} type
+ * @property {{check: string, password: string}} data
  */
 

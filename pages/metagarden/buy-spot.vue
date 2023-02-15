@@ -2,6 +2,9 @@
 import ActionMetagardenBuySpot from '~/components/ActionMetagardenBuySpot.vue';
 
 export default {
+    layout(context) {
+        return context.store.state.isMetagarden ? 'metagarden' : 'default';
+    },
     components: {
         ActionMetagardenBuySpot,
     },

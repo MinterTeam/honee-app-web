@@ -36,9 +36,7 @@ export default {
 
         <!--<BackButtonFull/>-->
 
-        <div class="u-section u-container">
-            <nuxt class=""/> <!--data-nuxt-page-->
-        </div>
+        <nuxt class="u-section u-container"/> <!--data-nuxt-page-->
 
         <TheFooter/>
         <FooterGarden/>
