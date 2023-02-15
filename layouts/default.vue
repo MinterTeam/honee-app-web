@@ -22,6 +22,11 @@ export default {
             class: 'default-layout',
         },
     },
+    fetch() {
+        if (this.$store.state.isMetagarden) {
+            return this.$router.replace(this.$i18nGetPreferredPath('/metagarden/account'));
+        }
+    },
 };
 </script>
 

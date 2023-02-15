@@ -23,8 +23,10 @@
     --color-text-muted: @c-black-light;
     --color-text-muted2: @c-black-half-transparent;
     --color-text-muted-hard: @c-black-hard-transparent;
+    --color-text-disabled-button: #fff;
     --color-main: @c-main;
     --color-main-rgb: @c-main-rgb;
+    --color-main-invert: #fff;
 }
 
 .theme--metagarden {
@@ -37,8 +39,10 @@
     --color-text-muted: @c-metagarden-text-muted;
     --color-text-muted2: @c-white-half-transparent;
     --color-text-muted-hard: @c-white-hard-transparent;
+    --color-text-disabled-button: @c-night;
     --color-main: @c-metagarden;
     --color-main-rgb: @c-metagarden-rgb;
+    --color-main-invert: @c-night-dark;
 
 
     .wallet__action-button .color-main-light {display: none;}
@@ -476,10 +480,11 @@
 .convert__reverse {
 }
 .convert__reverse-button {
-    padding: 5px; margin-inline: auto; display: flex;
+    /*padding: 5px; */margin-inline: auto; display: flex;
     // alt text fallback styles
-    font-size: 20px; line-height: 24px; text-align: center; color: @c-black-light;
-    &:hover, &:focus {color: @c-black;}
+    font-size: 20px; line-height: 24px; text-align: center; color: var(--color-main);
+    //&:hover, &:focus {color: @c-black;}
+    svg {fill: currentColor;}
 }
 .convert__panel {
     background: #fff; border-radius: 8px; padding: 16px; text-align: left; position: relative;

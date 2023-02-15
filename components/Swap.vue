@@ -3,6 +3,7 @@ import {postTx} from '~/api/gate.js';
 import {getErrorText} from "~/assets/server-error";
 import {pretty, prettyExact, prettyPrecise, decreasePrecisionSignificant, getExplorerTxUrl} from '~/assets/utils.js';
 import useFee from '~/composables/use-fee.js';
+import InlineSvg from 'vue-inline-svg';
 import {getTxType} from '~/components/base/SwapEstimation.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
@@ -13,6 +14,7 @@ import SwapPriceImpact from '~/components/SwapPriceImpact.vue';
 
 export default {
     components: {
+        InlineSvg,
         BaseAmountEstimation,
         BaseLoader,
         Modal,
@@ -228,11 +230,11 @@ export default {
             </div>
 
             <button
-                class="form-row button button--white convert__reverse-button" type="button"
+                class="form-row link--opacity convert__reverse-button u-semantic-button" type="button"
                 v-if="!params.coinToSell && !params.coinToBuy"
                 @click="reverseCoins()"
             >
-                <img class="" src="/img/icon-reverse.svg" width="24" height="24" alt="⇅">
+                <InlineSvg class="" src="/img/icon-swap.svg" width="24" height="24" alt="⇅"/>
             </button>
 
             <div class="form-row" v-if="!params.coinToBuy && v$estimation.coinToBuy">
