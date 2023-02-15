@@ -103,26 +103,6 @@ export default {
                 },
             },
             {
-                caption: 'Lucky Farmer',
-                coin: 'CARROTS',
-                description: 'Win up to 200% of your carrots daily by planting them in your garden.',
-                buttonLabel: 'Plant',
-                stats: {
-                    caption: 'Win up to',
-                    value: '200%',
-                },
-                tags: ['Lottery', 'CARROTS'],
-                action: '/win/CARROTS/GARDEN',
-                ru: {
-                    caption: 'Везучий фермер',
-                    description: 'Каждый день вы можете выиграть до 200% своих морковок, посадив их в саду.',
-                    buttonLabel: 'Посадить',
-                    stats: {
-                        caption: 'Приз до',
-                    },
-                },
-            },
-            {
                 style: 'portfolio-battle',
                 caption: 'Contest',
                 title: 'PORTFOLIO BATTLE',
