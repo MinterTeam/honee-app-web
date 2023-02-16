@@ -25,7 +25,7 @@ export default {
             <div class="card__content card__content--medium">
                 <h1 class="card__action-title-value">{{ $td('Withdraw', 'hub.withdraw-title') }}</h1>
                 <p class="card__action-description u-mt-05">
-                    {{ $td('Send coins from Minter to another network', 'hub.withdraw-description') }}
+                    {{ $td('Send coins to another network', 'hub.withdraw-description') }}
                 </p>
             </div>
 

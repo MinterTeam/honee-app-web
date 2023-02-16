@@ -172,7 +172,7 @@ export default {
                 :value="address"
                 :size="160"
                 level="L"
-                background="transparent"
+                background="#fff"
             />
         </template>
 

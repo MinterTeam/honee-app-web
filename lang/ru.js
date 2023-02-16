@@ -17,6 +17,7 @@ export default {
         'or': 'или',
         'terms': 'Условия',
         'learn-more': 'Подробнее',
+        'buy': 'Купить',
     },
     error: {
         'title-error': 'Ошибка',
@@ -88,7 +89,7 @@ export default {
         'footer-link-box-earn-bitcoin': 'Заработать Биткоин',
         'footer-link-box-wallet-bitcoin': 'Биткоин кошелек',
 
-        'total-balance': 'Общий баланс',
+        'total-balance': 'Мой баланс',
         'balance': 'Баланс',
         'wallet-balance-links': 'Купить BIP, HUB & BEE',
         'topup': '&#43; Пополнить',
@@ -608,7 +609,7 @@ export default {
     },
     hub: {
         'withdraw-title': 'Вывод',
-        'withdraw-description': 'Отправка монет из Minter в другую сеть',
+        'withdraw-description': 'Отправка монет в другую сеть',
         'withdraw-address': 'Вывод на адрес',
         'withdraw-address-required': 'Укажите',
         'withdraw-address-title': 'адрес',
@@ -658,5 +659,17 @@ export default {
         'claim-rewards-button': 'Собрать награды',
         'buy-more-button': 'Купить майнинг-споты',
         'daily-yield': 'Ежедневные награды:',
+        'back-to-honee': 'Перейти в Honee',
+    },
+    'mg-lootbox': {
+        'title-inactive': 'Лутбокс еще не готов',
+        'title-ready': 'Вы выиграли лутбокс!',
+        'button-ready': 'Открыть лутбокс',
+        'title-opened': 'Вы получили',
+        'error-opened': 'Ошибка!',
+        'description-redeem-failed': 'Не получилось открыть лутбокс, обратитесь в поддержку для получения вознаграждения',
+        'terms-title': 'Что такое лутбокс?',
+        'terms-description': 'Лутбокс — это призовой сундук, в котором находится случайная награда. Монеты, игровые объекты, NFT или другие предметы.',
+        'new-lootbox-button': 'У вас новый лутбокс!',
     },
 };

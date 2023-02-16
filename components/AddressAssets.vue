@@ -46,7 +46,7 @@ export default {
 <template>
     <div class="card">
         <div class="card__content">
-            <h2 class="u-h--uppercase">{{ $td('Total balance', 'index.total-balance') }}</h2>
+            <h2 class="u-h--uppercase">{{ $td('My balance', 'index.total-balance') }}</h2>
             <div class="wallet__balance-wrap">
                 <div class="wallet__balance">
                     <div class="wallet__balance-value u-mb-05">

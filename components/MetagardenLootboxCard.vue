@@ -23,7 +23,7 @@ export default {
 
             <div class="u-flex-item--grow">
                 <nuxt-link :to="$i18nGetPreferredPath('/metagarden/lootbox')" class="button button--full button--gradient-green">
-                    {{ $td('You’ve got a new lootbox!', 'todo') }}
+                    {{ $td('You’ve got a new lootbox!', 'mg-lootbox.new-lootbox-button') }}
                 </nuxt-link>
             </div>
         </div>

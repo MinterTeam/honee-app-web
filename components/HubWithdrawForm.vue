@@ -419,7 +419,8 @@ export default {
             <div class="form-row u-text-muted u-text-small">
                 <template v-if="$i18n.locale === 'en'">
                     <p class="u-mb-05"><span class="u-emoji">⚠️</span> <strong class="u-fw-600">Withdrawal notice</strong></p>
-                    <ul class="list-simple">
+                    <p>Do not withdraw to an exchange because many do not accept deposits from smart contracts and your tokens will be lost. Withdraw only to the wallet you have a seed phrase to.</p>
+                    <!--<ul class="list-simple">
                         <li>Withdraw to the wallet you own first (the one you have a seed phrase to);</li>
                         <li>Do not withdraw to an exchange because many do not accept deposits from smart contracts and your tokens will be lost;</li>
                         <li>Pay attention to {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} and Minter Hub fees;</li>
@@ -428,16 +429,17 @@ export default {
                             <a class="link--default" href="https://github.com/MinterTeam/mhub2" target="_blank">{{ $td('open-source', 'hub.warning-description-3') }}</a>.
                             {{ $td('If needed, you may investigate its code before making use of the features offered on this page.', 'hub.warning-description-4') }}
                         </li>
-                    </ul>
+                    </ul>-->
                 </template>
                 <template v-if="$i18n.locale === 'ru'">
-                    <p class="u-mb-05"><span class="u-emoji">⚠️</span> <strong class="u-fw-600">Внимание</strong></p>
-                    <ul class="list-simple">
+                    <p class="u-mb-05"><span class="u-emoji">⚠️</span> <strong class="u-fw-600">Внимание!</strong></p>
+                    <p>Вывод средств возможен только на ваш персональный адрес. Не допускается вывод средств на смарт-контракты, адреса бирж или адреса, к которым у вас нет доступа по seed-фразе.</p>
+                    <!--<ul class="list-simple">
                         <li>Вывод средств возможен только на ваш персональный адрес;</li>
                         <li>Не допускается вывод средств на смарт-контракты, адреса бирж или адреса, к которым у вас нет прямого доступа;</li>
                         <li>Всегда обращайте внимание на комиссии в {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} и Minter Hub;</li>
                         <li>Minter Hub имеет открытый <a class="link--default" href="https://github.com/MinterTeam/mhub2" target="_blank">исходный код</a>, изучите его при необходимости.</li>
-                    </ul>
+                    </ul>-->
                 </template>
             </div>
         </form>

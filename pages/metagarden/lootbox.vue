@@ -118,18 +118,17 @@ export default {
 
                     <template v-if="status === $options.LOOTBOX_STATE.INACTIVE">
                         <h1 class="u-h3 u-mb-05">{{ $td('Lootbox is not ready yet', 'mg-lootbox.title-inactive') }}</h1>
-                        <p v-if="$i18n.locale === 'en'">Become <a class="link--default link--underline" href="https://metagarden-top.honee.app/" target="_blank">Top-100 METAGARDEN holder</a> to&nbsp;win guaranteed prizes!</p>
-                        <p v-if="$i18n.locale === 'ru'">todo</p>
+                        <!--<p v-if="$i18n.locale === 'en'">Become <a class="link--default link--underline" href="https://metagarden-top.honee.app/" target="_blank">Top-100 METAGARDEN holder</a> to&nbsp;win guaranteed prizes!</p>
+                        <p v-if="$i18n.locale === 'ru'">todo</p>-->
                     </template>
                     <template v-if="status === $options.LOOTBOX_STATE.READY">
                         <h1 class="u-h3 u-mb-05">{{ $td('You’ve won a lootbox!', 'mg-lootbox.title-ready') }}</h1>
-                        <p>{{ $td('Open it before January 31, 12:00pm to&nbsp;receive your prize!', 'mg-lootbox.description-ready') }}</p>
                         <button
                             type="button" class="button button--gradient-green button--full u-mt-10"
                             :class="{'is-loading': isOpening, 'is-disabled': false}"
                             @click="openLootbox()"
                         >
-                            <span class="button__content">{{ $td('Open lootbox', 'mg-lootbox.description-ready') }}</span>
+                            <span class="button__content">{{ $td('Open lootbox', 'mg-lootbox.button-ready') }}</span>
                             <BaseLoader class="button__loader" :isLoading="true"/>
                         </button>
                     </template>
@@ -138,10 +137,9 @@ export default {
                             {{ $td('You’ve received', 'mg-lootbox.title-opened') }}
                             {{ checkData.value }} {{ $store.getters['explorer/getCoinSymbol'](checkData.coin) }}
                         </h1>
-                        <p>{{ $td('Come back on January 31, 12:00pm to&nbsp;receive a new lootbox!', 'mg-lootbox.description-opened') }}</p>
                     </template>
                     <template v-if="status === $options.LOOTBOX_STATE.OPENED && isLootboxRedeemFailed">
-                        <h1 class="u-h3 u-mb-05">{{ $td('Error!', 'mg-lootbox.title-opened') }}</h1>
+                        <h1 class="u-h3 u-mb-05">{{ $td('Error!', 'mg-lootbox.error-opened') }}</h1>
                         <p>{{ $td('Lootbox opening was unsuccessful, please contact support to get reward', 'mg-lootbox.description-redeem-failed') }}</p>
                     </template>
 
@@ -154,7 +152,7 @@ export default {
             </div>
             <div class="card__content card__content--medium u-text-medium">
                 <h3 class="u-h5 u-mb-05">{{ $td('What is a lootbox?', 'mg-lootbox.terms-title') }}</h3>
-                <p>{{ $td('todo', 'mg-lootbox.todo') }}</p>
+                <p>{{ $td('A Lootbox is a prize box with a random prize. Coins, in-game items, NFTs or other items.', 'mg-lootbox.terms-description') }}</p>
                 <nuxt-link
                     v-if="status === $options.LOOTBOX_STATE.INACTIVE && !$fetchState.pending"
                     class="button button--gradient-green button--full u-mt-10"
