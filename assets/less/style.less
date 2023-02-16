@@ -13,7 +13,7 @@
 @import "include/modal";
 @import "include/layout";
 
-:root {
+:root, .theme--default {
     --color-bg: #fff;
     --color-bg-tint: @body-bg-color;
     --color-divider: #0001; // #eee, rgba(0,0,0,0.06667)
@@ -51,6 +51,8 @@
         .card--metagarden();
         .information__value, .information__coin-symbol {color: #000;}
     }
+    .card--invert {background: transparent;}
+    .card--invert .card.card__content {border-top: none;}
     .card__action-title-type, .card__action-stats-caption {color: @c-metagarden-text-muted; opacity: 1;}
 }
 
@@ -98,6 +100,8 @@
     padding: 20px; background: #fff;
     canvas {vertical-align: top;}
 }
+// qr-code
+.qr-wrap {padding: 8px; display: inline-block; line-height: 0; background: #fff;}
 // nuxt-content
 .nuxt-content {
     h3 {.u-h5(); margin-bottom: 8px;}

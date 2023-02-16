@@ -51,6 +51,7 @@ export default {
         },
         backUrl: {
             type: [String, Boolean],
+            default: '',
         },
         showWaitIndicator: {
             type: Boolean,
@@ -168,7 +169,7 @@ export default {
 
             <qrcode-vue
                 v-show="isQrVisible"
-                class="u-mt-15 u-text-center"
+                class="u-mt-10 qr-wrap u-text-center"
                 :value="address"
                 :size="160"
                 level="L"
@@ -178,7 +179,7 @@ export default {
 
         <component
             :is="networkSlug === $options.HUB_NETWORK.MINTER ? 'TopupWaitMinter' : 'TopupWaitEvm'"
-            class="u-text-center u-mt-15 u-text-medium"
+            class="u-text-center u-mt-10 u-text-medium"
             :showWaitIndicator="showWaitIndicator"
             :network-slug="networkSlug"
             @update:processing="isDepositProcessing = $event"

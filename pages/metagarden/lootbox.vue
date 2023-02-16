@@ -27,7 +27,6 @@ export default {
     },
     head: {
         htmlAttrs: {
-            class: 'metagarden-layout',
         },
     },
     fetch() {
@@ -107,7 +106,7 @@ export default {
 
 <template>
     <div class="u-container--small">
-        <div class="card mg-lootbox__card">
+        <div class="card mg-lootbox__card theme--default">
             <div class="card__content u-text-center">
                 <template v-if="$fetchState.pending">Loading…</template>
                 <template v-else>
@@ -173,7 +172,9 @@ export default {
 
 <style lang="less">
 @import '~/assets/less/include/variables.less';
-.mg-lootbox__card {background: #d2eedd; color: @c-black; position: relative; z-index: 0; overflow: clip;}
+.mg-lootbox__card {
+    && {background: #d2eedd; color: @c-black; position: relative; z-index: 0; overflow: clip;}
+}
 .mg-lootbox__chest-wrap {position: relative;}
 .mg-lootbox__chest-star {position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: -1;}
 </style>

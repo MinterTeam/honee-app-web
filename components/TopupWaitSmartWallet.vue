@@ -234,6 +234,18 @@ export default defineComponent({
             // has any step except WAIT_ETH
             return Object.keys(this.txServiceState.steps).some((key) => key !== LOADING_STAGE.WAIT_ETH);
         },
+        showExistingBalance() {
+            return this.depositAmountToReceive > 0 && !this.isEvmToppedUp && !this.isDepositStarted;
+        },
+        showLoader() {
+            return this.showWaitIndicator && this.currentLoadingStage === LOADING_STAGE.WAIT_ETH;
+        },
+        showTxList() {
+            return !this.showLoader && !this.isWaitingEvmTopup;
+        },
+        showSomething() {
+            return this.showExistingBalance || this.showLoader || this.showTxList || this.serverError;
+        },
     },
     watch: {
     },
@@ -408,22 +420,22 @@ export default defineComponent({
 </script>
 
 <template>
-    <div>
-        <div class="form-row" v-if="depositAmountToReceive > 0 && !isEvmToppedUp && !isDepositStarted">
+    <div v-if="showSomething">
+        <div class="form-row" v-if="showExistingBalance">
             <p>{{ $td(`You have ${pretty(balance)} ${tokenSymbol} on you ${hubChainData.shortName} address. Do you want to deposit it?`, 'topup.deposit-evm-balance-description', {amount: pretty(balance), coin: tokenSymbol, network: hubChainData.shortName}) }}</p>
             <button type="button" class="button button--main button--full u-mt-10" @click="isConfirmModalVisible = true">
                 {{ $td(`Deposit ${pretty(balance)} ${tokenSymbol}`, 'topup.deposit-evm-balance-button', {amount: pretty(balance), coin: tokenSymbol}) }}
             </button>
         </div>
 
-        <div class="form-row" v-if="showWaitIndicator && currentLoadingStage === $options.LOADING_STAGE.WAIT_ETH">
+        <div class="form-row" v-if="showLoader">
             <div>{{ $td('Waiting top-up transaction', 'topup.waiting-topup') }}</div>
             <div class="u-text-center">
                 <BaseLoader :is-loading="true"/>
             </div>
         </div>
         <HubBuyTxListItem
-            v-else-if="!isWaitingEvmTopup"
+            v-else-if="showTxList"
             class="hub__buy-stage form-row u-text-left"
             v-for="item in txServiceState.steps"
             :key="item.loadingStage"
