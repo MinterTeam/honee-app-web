@@ -53,10 +53,10 @@ export default {
                         ${{ pretty($store.state.totalBalanceSumUsd) }}
                     </div>
                     <div class="button-group button-group--small">
-                        <nuxt-link class="button button--small button--main" :to="$getDashboardUrl('topup')">
+                        <nuxt-link class="button button--small button--main" :to="$i18nGetPreferredPath('/topup')">
                             {{ $td('&#43; Deposit', 'index.topup') }}
                         </nuxt-link>
-                        <nuxt-link class="button button--small button--light-gray" :to="$getDashboardUrl('withdraw')">
+                        <nuxt-link class="button button--small button--light-gray" :to="$i18nGetPreferredPath('/withdraw')">
                             {{ $td('&#8599; Withdraw', 'index.withdraw') }}
                         </nuxt-link>
                     </div>
@@ -65,17 +65,17 @@ export default {
                 <div class="card__fake-divider u-hidden-medium-up"></div>
 
                 <div class="button-group button-group--center">
-                    <nuxt-link class="button button--main wallet__action-button link--opacity" :to="$getDashboardUrl('swap')">
+                    <nuxt-link class="button button--main wallet__action-button link--opacity" :to="$i18nGetPreferredPath('/swap')">
                         <!--<img class="button__icon u-hidden-medium-down" src="/img/icon-white-swap.svg" width="24" height="24" alt="" role="presentation">-->
                         <InlineSvg class="button__icon" src="/img/icon-swap.svg" width="24" height="24" alt="" role="presentation"/>
                         {{ $td('Swap', 'index.swap-wallet-button') }}
                     </nuxt-link>
-                    <nuxt-link class="button button--main wallet__action-button link--opacity" :to="$getDashboardUrl('send')">
+                    <nuxt-link class="button button--main wallet__action-button link--opacity" :to="$i18nGetPreferredPath('/send')">
                         <!--<img class="button__icon u-hidden-medium-down" src="/img/icon-white-send.svg" width="24" height="24" alt="" role="presentation">-->
                         <InlineSvg class="button__icon" src="/img/icon-send.svg" width="24" height="24" alt="" role="presentation"/>
                         {{ $td('Send', 'index.send') }}
                     </nuxt-link>
-                    <nuxt-link class="button button--main wallet__action-button link--opacity" :to="$getDashboardUrl('/topup/minter')">
+                    <nuxt-link class="button button--main wallet__action-button link--opacity" :to="$i18nGetPreferredPath('/topup/minter')">
                         <!--<img class="button__icon u-hidden-medium-down" src="/img/icon-white-receive.svg" width="24" height="24" alt="" role="presentation">-->
                         <InlineSvg class="button__icon" src="/img/icon-receive.svg" width="24" height="24" alt="" role="presentation"/>
                         {{ $td('Receive', 'index.receive') }}

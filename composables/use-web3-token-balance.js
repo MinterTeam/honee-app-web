@@ -13,6 +13,7 @@ export default function useWeb3TokenBalance() {
 
     const props = reactive({
         accountAddress: '',
+        /** @type {ChainId} */
         chainId: 0,
         tokenSymbol: '',
     });

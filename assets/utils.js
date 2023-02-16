@@ -49,12 +49,6 @@ export function getEvmTxUrl(chainId, hash) {
     return host + '/tx/' + hash;
 }
 
-/**
- * @deprecated
- */
-export function getEthereumTxUrl(hash) {
-    return '';
-}
 
 /**
  * @param {number} chainId
@@ -346,7 +340,7 @@ export function fromBase64(str) {
  * @param {function(...any): Promise<T>} [fn]
  * @param {any|Array<any>} [args]
  * @param {object} [options]
- * @param {boolean} [fallbackToArg]
+ * @param {boolean} [options.fallbackToArg]
  * @return {Promise<T>}
  */
 export function ensurePromise(fn, args, {fallbackToArg} = {}) {
@@ -377,7 +371,7 @@ export function suggestionValidatorFilter(suggestion, query) {
 }
 
 /**
- * @typedef {Object} SuggestionValidatorListItem
+ * @typedef {object} SuggestionValidatorListItem
  * @property {string} [name]
  * @property {string} value
  * @property {string} [delegatedAmount]

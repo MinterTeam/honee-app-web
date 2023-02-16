@@ -31,6 +31,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         privateKey: '',
         evmAccountAddress: '',
         extraNonce: 0, // add to nonce for consequential txs
+        /** @type {ChainId} */
         chainId: 0,
         gasTokenAddress: '',
         gasTokenDecimals: '',
@@ -40,6 +41,9 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         estimationSkip: false,
     });
 
+    /**
+     * @param {Partial<props>} newProps
+     */
     function setProps(newProps) {
         Object.assign(props, newProps, {extraNonce: newProps.extraNonce > 0 ? newProps.extraNonce : 0});
     }
@@ -49,8 +53,9 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         isSmartWalletExistenceLoading: false,
         isEstimationLimitForRelayRewardsLoading: false,
         estimationLimitForRelayRewardsError: '',
+        /** @type {number|string} */
         amountEstimationLimitForRelayReward: 0,
-        // used only in estimationComplexity mode
+        /** @type {number|string} - used only in estimationComplexity mode */
         maxAmountEstimationLimitForRelayReward: 0,
     });
 
@@ -210,7 +215,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
 
     /**
      * maxAmountEstimationLimitForRelayReward is only used in estimationComplexity mode
-     * @param value
+     * @param {number|string} value
      */
     function setAmountEstimationLimitForRelayReward(value) {
         if (props.estimationComplexity > props.complexity) {

@@ -10,6 +10,7 @@ export default function useWeb3SmartWalletPortfolioSell() {
         evmAccountAddress: '',
         withdrawOriginAddress: '',
         depositDestinationAddress: '',
+        /** @type {ChainId} */
         chainId: 0,
         // amount used to withdraw (before sell to hub)
         /** @type {Array<{symbol: string, amount: number|string}>} */
@@ -22,6 +23,9 @@ export default function useWeb3SmartWalletPortfolioSell() {
 
     });
 
+    /**
+     * @param {Partial<props>} newProps
+     */
     function setProps(newProps) {
         Object.assign(props, newProps);
     }

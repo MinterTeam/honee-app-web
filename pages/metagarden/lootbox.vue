@@ -161,7 +161,7 @@ export default {
                 </nuxt-link>
                 <nuxt-link
                     class="button button--ghost button--full u-mt-10"
-                    :to="$i18nGetPreferredPath('/metagarden/account')"
+                    :to="$i18nGetPreferredPath(DASHBOARD_URL_METAGARDEN)"
                 >
                     {{ $td('Close', 'common.close') }}
                 </nuxt-link>

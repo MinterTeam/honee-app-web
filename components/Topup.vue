@@ -2,6 +2,7 @@
 import * as clipboard from 'clipbrd';
 import {BASE_COIN, HUB_NETWORK} from '~/assets/variables.js';
 import QrcodeVue from 'qrcode.vue';
+import BackButton from '~/components/layout/BackButton.vue';
 import TopupWaitMinter from '~/components/TopupWaitMinter.vue';
 import TopupWaitEvm from '~/components/TopupWaitEvm.vue';
 
@@ -33,6 +34,7 @@ export default {
     HUB_NETWORK,
     components: {
         QrcodeVue,
+        BackButton,
         TopupWaitMinter,
         TopupWaitEvm,
     },
@@ -189,8 +191,11 @@ export default {
         <button v-if="isOnlyCloseOnBack" class="button button--ghost button--full u-mt-10" type="button" @click="$emit('click-back')">
             {{ $td('Cancel', 'topup.back') }}
         </button>
-        <nuxt-link v-else class="button button--ghost button--full u-mt-10" :to="backUrl || $i18nGetPreferredPath('/topup')">
+        <nuxt-link v-else-if="backUrl" class="button button--ghost button--full u-mt-10" :to="backUrl">
             {{ $td('Cancel', 'topup.back') }}
         </nuxt-link>
+        <BackButton v-else class="u-mt-10" button-class="button button--ghost button--full">
+            {{ $td('Cancel', 'topup.back') }}
+        </BackButton>
     </div>
 </template>

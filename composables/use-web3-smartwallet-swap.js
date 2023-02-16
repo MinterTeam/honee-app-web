@@ -49,6 +49,7 @@ export default function useWeb3SmartWalletSwap() {
         withdrawOriginAddress: '',
         // destination address to deposit via Hub after swap (should be specified with 0x prefix, however it is address of Minter account)
         depositDestinationAddress: '',
+        /** @type {ChainId} */
         chainId: 0,
         // minter coins for WITHDRAW mode
         coinToSell: '',
@@ -68,7 +69,7 @@ export default function useWeb3SmartWalletSwap() {
     });
 
     /**
-     * @param {props} newProps
+     * @param {Partial<props>} newProps
      */
     function setProps(newProps) {
         Object.assign(props, newProps);

@@ -67,6 +67,7 @@ export const SUCCESS_FEE_TEAM_ADDRESS = 'Mx5a67a1f59138609f502a0e16e210d70bad03a
 export const SUCCESS_FEE_FUND_ADDRESS = 'Mx2d347ede679b8c6b91d272c9aade5a716bda4b2f';
 export const STAKE_RECALCULATE_BLOCK_COUNT = 720;
 export const DASHBOARD_URL = '/';
+export const DASHBOARD_URL_METAGARDEN = '/metagarden/account';
 
 export const REF_ID_QUERY = 'r';
 
@@ -107,7 +108,7 @@ export const HUB_CHAIN_ID = HUB_NETWORK;
 
 /**
  * @readonly
- * @type {Object.<string, HubChainDataItem>}
+ * @type {Record<HUB_NETWORK, HubChainDataItem>}
  */
 export const HUB_CHAIN_DATA = {
     [HUB_NETWORK.ETHEREUM]: {

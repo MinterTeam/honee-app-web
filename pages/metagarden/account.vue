@@ -37,9 +37,9 @@ export default {
     <div>
         <AddressAssets class="card--metagarden u-mb-10"/>
 
-        <MetagardenSpotCard/>
+        <MetagardenLootboxCard class="u-mt-10 u-mb-10"/>
 
-        <MetagardenLootboxCard class="u-mt-10"/>
+        <MetagardenSpotCard/>
 
         <button type="button" class="button button--full button--ghost-red u-mt-10" @click="logout()">{{ $td('Logout', 'common.logout') }}</button>
 

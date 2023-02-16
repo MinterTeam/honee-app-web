@@ -20,6 +20,7 @@ export default function useHubToken() {
     });
 
     const props = reactive({
+        /** @type {ChainId} */
         chainId: 0,
         tokenSymbol: '',
         tokenAddress: '',
@@ -31,7 +32,7 @@ export default function useHubToken() {
     });
 
     /**
-     * @param {props} newProps
+     * @param {Partial<props>} newProps
      */
     function setProps(newProps) {
         Object.assign(props, newProps);

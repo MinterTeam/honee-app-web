@@ -193,19 +193,20 @@
     .card {box-shadow: none;}
 }
 .card--pop {
-    margin-top: 12px;
-    & > .card__content:first-child, &&.card__content {
-        padding-top: 0;
-        & > .h-field:first-child,
-        & > .information:first-child,
-        & .form-row:first-child .h-field,
-        & .form-row:first-child .information {
-            margin-top: -12px;
+    html:not(.theme--metagarden) & {
+        margin-top: 12px;
+        & > .card__content:first-child, &&.card__content {
+            padding-top: 0;
+            & > .h-field:first-child,
+            & > .information:first-child,
+            & .form-row:first-child .h-field,
+            & .form-row:first-child .information {
+                margin-top: -12px;
+            }
+            & .card__pop-item--20 {
+                margin-top: -20px;
+            }
         }
-        & .card__pop-item--20 {
-            margin-top: -20px;
-        }
-
     }
 }
 .card--invert {background: @c-black; color: #fff;}

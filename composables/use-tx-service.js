@@ -7,25 +7,24 @@ import {clearEmptyFields} from '~/assets/utils/collection.js';
 import {ensurePromise} from '~/assets/utils.js';
 
 
-/**
- * @type {UnwrapRef<{privateKey: string, accountAddress: string, chainId: number, form: Object}>}
- */
 const props = reactive({
     privateKey: '',
     accountAddress: '',
+    /** @type {ChainId} */
     chainId: 0,
+    /** @type {object} */
     form: {},
 });
 
 /**
- * @param {{privateKey?: string, accountAddress?: string, chainId?: number, form?: any}} newProps
+ * @param {Partial<props>} newProps
  */
 function setProps(newProps) {
     Object.assign(props, newProps);
 }
 
 const state = reactive({
-    /** @type {Object.<LOADING_STAGE, SequenceStepItem>}*/
+    /** @type {Record<LOADING_STAGE, SequenceStepItem>}*/
     steps: {},
 });
 
@@ -381,7 +380,7 @@ function addStepData(loadingStage, data = {}, finishPrev) {
 }
 
 /**
- * @param {Object.<LOADING_STAGE, SequenceStepItem>} steps
+ * @param {Record<LOADING_STAGE, SequenceStepItem>} steps
  */
 function setStepList(steps) {
     state.steps = steps;
@@ -389,9 +388,9 @@ function setStepList(steps) {
 
 /**
  *
- * @param {Array<function>|function} list
- * @param arg
- * @param options
+ * @param {Array<Function>|Function} list
+ * @param {any} arg
+ * @param {Parameters<ensurePromise>[2]} [options]
  * @return {Promise<Array<any>>}
  */
 async function awaitSeries(list, arg, options) {

@@ -15,12 +15,13 @@ export default function useWeb3AddressBalance() {
 
     const props = reactive({
         accountAddress: '',
+        /** @type {ChainId} */
         chainId: 0,
     });
 
     /**
      *
-     * @param {props} newProps
+     * @param {Partial<props>} newProps
      */
     function setProps(newProps) {
         Object.assign(props, newProps);

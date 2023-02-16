@@ -31,6 +31,7 @@ export default function useWeb3Deposit(destinationMinterAddress) {
     const props = reactive({
         destinationMinterAddress: destinationMinterAddress || '',
         accountAddress: '',
+        /** @type {ChainId} */
         chainId: 0,
         amount: 0,
         tokenSymbol: '',

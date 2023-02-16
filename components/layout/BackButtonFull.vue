@@ -27,5 +27,5 @@ export default {
 </script>
 
 <template>
-    <BackButton class="u-section--top u-container" :class="pageContainerClass"/>
+    <BackButton class="u-section--top u-container u-fw-700 u-hidden-medium-down" :class="pageContainerClass"/>
 </template>

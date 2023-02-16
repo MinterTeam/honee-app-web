@@ -26,14 +26,14 @@ const priceList = ref([]);
 
 /**
  * Withdraw tx fee for destination network in dollars (e.g. fee to send bsc tx from hub to recipient)
- * @type {UnwrapRef<Object.<HUB_NETWORK, DestinationFee>>}
+ * @type {UnwrapNestedRefs<Record<HUB_NETWORK, DestinationFee>>}
  */
 const destinationFeeMap = reactive(getInitialChainData());
 
 
 /**
  * Gas price in external network in gwei
- * @type {ComputedRef<Object.<HUB_NETWORK, (number|string)>>}
+ * @type {ComputedRef<Record<HUB_NETWORK, (number|string)>>}
  */
 const gasPriceMap = computed(() => {
     const entries = Object.values(HUB_NETWORK)
@@ -100,11 +100,12 @@ export default function useHubOracle({
 } = {}) {
 
     const props = reactive({
+        /** @type {HUB_NETWORK|''} */
         hubNetworkSlug: '',
     });
 
     /**
-     * @param {{hubNetworkSlug?: HUB_NETWORK}} newProps
+     * @param {Partial<props>} newProps
      */
     function setProps(newProps) {
         Object.assign(props, newProps);

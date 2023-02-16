@@ -14,7 +14,7 @@ import CancelError from '~/assets/utils/error-cancel.js';
 
 
 /**
- * @typedef {Object} FeeItemData
+ * @typedef {object} FeeItemData
  * @property {Coin} priceCoin
  * @property {boolean} isBaseCoin
  * @property {boolean} isBaseCoinEnough
@@ -45,7 +45,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         txParamsList: [],
         //@TODO invalid behavior with TxSequence with different privateKey
         baseCoinAmount: 0,
-        /** @type {Boolean} - by default fallback to baseCoin, additionally it can try to fallback to coinToSpend, if baseCoin is not enough */
+        /** @type {boolean} - by default fallback to baseCoin, additionally it can try to fallback to coinToSpend, if baseCoin is not enough */
         fallbackToCoinToSpend: false,
         isOffline: false,
         isLocked: false,
@@ -53,12 +53,15 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         precision: FEE_PRECISION_SETTING.PRECISE,
     });
 
+    /**
+     * @param {Partial<feeProps>} newProps
+     */
     function setProps(newProps) {
         Object.assign(feeProps, newProps);
     }
 
 
-    /** @type {Object.<number, string>}*/
+    /** @type {Ref<UnwrapRef<Record<number, string>>>}*/
     const coinMap = ref({});
     const state = reactive({
         resultListSource: [],
@@ -426,8 +429,8 @@ function isBaseCoin(coinIdOrSymbol) {
 /**
  * @pure
  * @nosideeffects
- * @param txType
- * @param txData
+ * @param {TX_TYPE} txType
+ * @param {TxData} txData
  * @return {boolean}
  */
 function isValidTxData(txType, txData) {

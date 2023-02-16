@@ -1,6 +1,6 @@
 <script>
 import InlineSvg from 'vue-inline-svg';
-import {HUB_NETWORK} from '~/assets/variables.js';
+import {HUB_NETWORK, DASHBOARD_URL, DASHBOARD_URL_METAGARDEN} from '~/assets/variables.js';
 import Language from '~/components/layout/Language.vue';
 import Modal from '~/components/base/Modal.vue';
 import Topup from '~/components/Topup.vue';
@@ -38,12 +38,12 @@ export default {
     computed: {
         indexUrl() {
             if (this.isMetagarden) {
-                return '/metagarden/account';
+                return DASHBOARD_URL_METAGARDEN;
             }
             if (this.isAuthBattlePage) {
                 return '/auth/battle';
             }
-            return '/';
+            return DASHBOARD_URL;
         },
         backUrl() {
             // if no history use '/' as backUrl
