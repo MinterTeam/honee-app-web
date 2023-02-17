@@ -93,10 +93,10 @@ export default {
         <div class="card card--invert">
             <div class="card__content card__content--medium">
                 <h1 class="u-h3 u-mb-025">
-                    {{ $td('Deposit with Cards or Crypto', 'deposit.title') }}
+                    {{ $td('Instant Deposit', 'deposit.title') }}
                 </h1>
                 <p class="u-text-medium">
-                    {{ $td(`Top up your balance with any amount or share this page with any person if you want to request payment.`, 'deposit.description') }}
+                    {{ $td(`Top up your balance with any of the following options, or share this page with anyone if you want to request payment.`, 'deposit.description') }}
                 </p>
             </div>
             <div class="card card--light-grey card__content card__content--medium">
@@ -107,7 +107,7 @@ export default {
                         {{ $td('BNB Smart Chain', 'deposit.title-evm') }}
                     </h2>
                     <p class="u-text-medium">
-                        {{ $td(`Transfer any token from BNB Smart Chain network to this address.`, 'deposit.description-evm') }}
+                        {{ $td(`Transfer any token (BEP20) from BNB Smart Chain networks to this address.`, 'deposit.description-evm') }}
                     </p>
 
                     <div class="h-field u-mt-10 u-mb-10">
@@ -119,22 +119,14 @@ export default {
                             <BaseButtonCopyIcon class="" :copy-text="smartWalletAddress"/>
                         </div>
                     </div>
-
-                    <ul class="u-text-muted u-text-small list-simple list-simple--small">
-                        <li>Supported networks: <!--Ethereum & -->BNB Smart Chain</li>
-                        <li>Only <!--ERC20 or -->BEP20 tokens</li>
-                        <li>Any amount</li>
-                    </ul>
-
-
                     <h2 class="u-h--uppercase-solid u-mt-20 u-mb-025 u-flex u-flex--align-center">
                         <img class="u-mr-05" src="/img/icon-card.svg" alt="" role="presentation" width="24" height="24">
                         {{ $td('Bank cards', 'deposit.title-card') }}
                     </h2>
                     <p class="u-text-medium">
-                        {{ $td('Top up with fiat money via bank card.', 'deposit.description-card') }}
+                        {{ $td('Top up your balance via bank card.', 'deposit.description-card') }}
                     </p>
-                    <a class="button button--main button--full u-mt-10" :href="card2MinterUrl" target="_blank">{{ $td('Top up with card', 'deposit.button-card') }}</a>
+                    <a class="button button--main button--full u-mt-10" :href="card2MinterUrl" target="_blank">{{ $td('Top up with Card', 'deposit.button-card') }}</a>
 
 
                     <h2 class="u-h--uppercase-solid u-mt-20 u-mb-025 u-flex u-flex--align-center">
@@ -142,7 +134,7 @@ export default {
                         {{ $td('Minter Network', 'deposit.title-minter') }}
                     </h2>
                     <p class="u-text-medium">
-                        {{ $td('Transfer any token from Minter network to this address.', 'deposit.description-minter') }}
+                        {{ $td('Transfer any token from Minter to this address.', 'deposit.description-minter') }}
                     </p>
 
                     <div class="h-field u-mt-10 u-mb-10">
@@ -154,11 +146,6 @@ export default {
                             <BaseButtonCopyIcon class="" :copy-text="$store.getters.address"/>
                         </div>
                     </div>
-
-                    <ul class="u-text-muted u-text-small list-simple list-simple--small">
-                        <li>Supported network: Minter</li>
-                        <li>Any amount</li>
-                    </ul>
 
                     <!--<div class="u-grid u-grid&#45;&#45;vertical-margin&#45;&#45;small">-->
                     <!--    <div class="u-cell u-cell&#45;&#45;auto-grow">-->

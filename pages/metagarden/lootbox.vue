@@ -127,7 +127,7 @@ export default {
                             :class="{'is-loading': isOpening, 'is-disabled': false}"
                             @click="openLootbox()"
                         >
-                            <span class="button__content">{{ $td('Open lootbox', 'mg-lootbox.button-ready') }}</span>
+                            <span class="button__content">{{ $td('Open', 'mg-lootbox.button-ready') }}</span>
                             <BaseLoader class="button__loader" :isLoading="true"/>
                         </button>
                     </template>
@@ -151,7 +151,7 @@ export default {
             </div>
             <div class="card__content card__content--medium u-text-medium">
                 <h3 class="u-h5 u-mb-05">{{ $td('What is a lootbox?', 'mg-lootbox.terms-title') }}</h3>
-                <p>{{ $td('A Lootbox is a prize box with a random prize. Coins, in-game items, NFTs or other items.', 'mg-lootbox.terms-description') }}</p>
+                <p>{{ $td('LootBox is a virtual treasure chest that contains a randomly selected reward: coins, NFTs, or other in-game items.', 'mg-lootbox.terms-description') }}</p>
                 <nuxt-link
                     v-if="status === $options.LOOTBOX_STATE.INACTIVE && !$fetchState.pending"
                     class="button button--gradient-green button--full u-mt-10"
