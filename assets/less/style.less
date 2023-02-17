@@ -48,9 +48,9 @@
     background: @c-night-dark; color: #fff;
     .wallet__action-button .color-main-light {display: none;}
     .card {
-        .card--metagarden();
         .information__value, .information__coin-symbol {color: #000;}
     }
+    .card--light-grey {.card--metagarden();}
     .card--invert {background: transparent;}
     .card--invert .card.card__content {border-top: none;}
     .card__action-title-type, .card__action-stats-caption {color: @c-metagarden-text-muted; opacity: 1;}
@@ -188,7 +188,7 @@
 /* stretch card vertically to fit siblings */
 .card-wrap-cell {display: flex;}
 .card {
-    background: #fff; color: @c-black; box-shadow: 0 4px 4px rgba(0,0,0,0.05); position: relative; border-radius: 16px; /*overflow: hidden;*/ display: block;
+    background: var(--color-bg); color: var(--color-text); box-shadow: 0 4px 4px rgba(0,0,0,0.05); position: relative; border-radius: 16px; /*overflow: hidden;*/ display: block;
     &::before {content: ''; display: table;} // fix firefox incorrect collapsing negative margin
     .card {box-shadow: none;}
 }
@@ -217,7 +217,7 @@
 .card--portfolio-battle {background: url(../img/bg-portfolio-battle-1.svg) top right no-repeat, url(../img/bg-portfolio-battle-2.svg) bottom left no-repeat;}
 .card--twitter {background: url(../img/bg-share-to-earn.svg) no-repeat 20px 0 #1DA1F2;}
 .card--metagarden {background: @c-night; color: #fff;}
-
+.card--metagarden-lootbox {background: url(../img/metagarden-lootbox-fancy-bg.svg) center bottom no-repeat, radial-gradient(58% 118% at 42% 27%, #242122 0%, #A91880 100%);}
 //.card--metagarden-buy-spot-backup {background: url(../img/card-metagarden.svg) top left no-repeat, linear-gradient(100.01deg, #42DF81 -5.26%, #1E8045 43.33%, #1A6D3B 119.14%); color: #fff;}
 .card--metagarden-buy-spot {
     background: url(../img/metagarden-spot-bg.svg) -160px 35% no-repeat,

@@ -130,7 +130,7 @@ export default {
 @import "~/assets/less/include/variables.less";
 
 
-.mg-spot__days {background: @c-night; padding: 8px; border-radius: 36px; /*width: 212px;*/ /* (24 + 2 * 2) * 7 + (8 * 2) */}
+.mg-spot__days {background: @c-night-dark; padding: 8px; border-radius: 36px; /*width: 212px;*/ /* (24 + 2 * 2) * 7 + (8 * 2) */}
 .mg-spot__days-item {
     width: 28px; height: 12px; border: 2px solid @c-metagarden; border-radius: 6px;
     &.is-active {background: @c-metagarden;;}
