@@ -3,11 +3,12 @@ import get from 'lodash-es/get.js';
 /**
  * @template {object} T
  * @param {Array<T>} arr
- * @param {string} path
+ * @param {keyof T} path
  * @param {function(T): any} [itemTransformer]
- * @return {object}
+ * @return {Record<T[path], T>}
  */
 export function arrayToMap(arr, path, itemTransformer) {
+    /** @type {ReturnType<arrayToMap>} */
     const map = {};
     arr.forEach((item) => {
         const key = get(item, path);
@@ -37,7 +38,7 @@ export function clearEmptyFields(obj) {
 
 
 /**
- * @param item
+ * @param {any} item
  * @returns {boolean}
  */
 function isObject(item) {

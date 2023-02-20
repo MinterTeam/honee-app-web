@@ -77,9 +77,9 @@ export function toErcDecimals(balance, ercDecimals = 18) {
 /**
  * @typedef {Promise} PromiseWithEmitter
  * @implements {Promise}
- * @property {function} on
- * @property {function} once
- * @property {function} unsubscribe
+ * @property {Function} on
+ * @property {Function} once
+ * @property {Function} unsubscribe
  */
 
 /**
@@ -537,7 +537,7 @@ export async function getDepositTxInfo(tx, chainId, hubCoinList, skipAmount) {
  *
  * @param {string} hex
  * @param {string} tokenContract
- * @param {number} chainId
+ * @param {ChainId} chainId
  * @param {Array<HubCoinItem>} [hubCoinList]
  * @return {Promise<string>}
  */
@@ -552,7 +552,7 @@ async function getAmountFromInputValue(hex, tokenContract, chainId, hubCoinList)
 /**
  *
  * @param {Array<HubCoinItem>} hubCoinList
- * @param {number} chainId
+ * @param {ChainId} chainId
  * @return {Array<TokenInfo.AsObject>}
  */
 export function getExternalCoinList(hubCoinList, chainId) {
@@ -572,7 +572,7 @@ export function getExternalCoinList(hubCoinList, chainId) {
 }
 
 /**
- * @param {number} chainId
+ * @param {ChainId} chainId
  * @return {Eth}
  */
 export function getProviderByChain(chainId) {
@@ -589,7 +589,7 @@ export function getProviderByChain(chainId) {
 }
 
 /**
- * @param {number} chainId
+ * @param {ChainId} chainId
  * @return {string}
  */
 function getProviderHostByChain(chainId) {
@@ -602,24 +602,24 @@ function getProviderHostByChain(chainId) {
 }
 
 /**
- * @param {number} chainId
- * @return {HUB_CHAIN_ID}
+ * @param {ChainId} chainId
+ * @return {HUB_NETWORK_SLUG}
  */
 export function getHubNetworkByChain(chainId) {
     validateChainId(chainId);
-    return HUB_CHAIN_BY_ID[chainId]?.hubChainId;
+    return HUB_CHAIN_BY_ID[chainId]?.hubNetworkSlug;
 }
 
 /**
- * @param {HUB_CHAIN_ID} network
- * @return {number}
+ * @param {HUB_NETWORK_SLUG} network
+ * @return {ChainId}
  */
 export function getChainIdByHubNetwork(network) {
     return HUB_CHAIN_DATA[network].chainId;
 }
 
 /**
- * @param {number} chainId
+ * @param {ChainId} chainId
  * @return {string}
  */
 export function getEvmNetworkName(chainId) {

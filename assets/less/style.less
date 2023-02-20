@@ -47,10 +47,6 @@
 
     background: @c-night-dark; color: #fff;
     .wallet__action-button .color-main-light {display: none;}
-    .card {
-        .information__value, .information__coin-symbol {color: #000;}
-    }
-    .information__item {color: #000;}
     .card--light-grey {.card--metagarden();}
     .card--invert {background: transparent;}
     .card--invert .card.card__content {border-top: none;}
@@ -506,7 +502,7 @@
 
 
 
-.information {padding: (@h-field-vertical-padding - 1px) (@h-field-horizontal-padding - 1px); background: #d7def6; border: 1px dashed #707ba3; border-radius: 12px; font-size: 16px; line-height: 20px; font-weight: 500;}
+.information {padding: (@h-field-vertical-padding - 1px) (@h-field-horizontal-padding - 1px); background: #d7def6; color: @c-black; border: 1px dashed #707ba3; border-radius: 12px; font-size: 16px; line-height: 20px; font-weight: 500;}
 .information--warning {background: @c-yellow-light; border-color: @c-yolk;}
 .information--field {background: #fff; border-color: transparent;}
 .information__title {

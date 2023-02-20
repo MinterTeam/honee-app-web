@@ -33,6 +33,7 @@ export default function useWeb3Deposit(destinationMinterAddress) {
         accountAddress: '',
         /** @type {ChainId} */
         chainId: 0,
+        /** @type {number|string} */
         amount: 0,
         tokenSymbol: '',
         freezeGasPrice: false,
