@@ -38,8 +38,8 @@ export default {
         },
         /**
          * Flat array or array of balance items
-         * @type Array<string>|Array<BalanceItem>|Array<Coin>
-         * */
+         * @type Array<string>|Array<BalanceItem>|Array<TokenBalanceItem>
+         */
         coinList: {
             type: Array,
             default: () => [],
@@ -87,10 +87,12 @@ export default {
         'update:is-use-max',
         'use-max',
         'input-native',
+        'select-suggestion',
     ],
     data() {
         return {
             isSelectVisible: false,
+            selectedSuggestion: undefined,
         };
     },
     computed: {
@@ -118,6 +120,18 @@ export default {
             // 0 and >1 are OK (enabled)
             return this.coinList.length === 1;
         },
+        displayValue() {
+            if (this.selectedSuggestion) {
+                return this.$refs.coinDropdown?.getSuggestionCoin(this.selectedSuggestion);
+            }
+            return this.coin;
+        },
+        iconUrl() {
+            if (this.selectedSuggestion) {
+                return this.$refs.coinDropdown?.getSuggestionIconUrl(this.selectedSuggestion);
+            }
+            return this.$store.getters['explorer/getCoinIcon'](this.coin);
+        },
     },
     mounted() {
         if (this.isSelectDisabled && this.coinList[0] && !this.coin) {
@@ -125,9 +139,6 @@ export default {
         }
     },
     methods: {
-        getIconUrl(coin) {
-            return this.$store.getters['explorer/getCoinIcon'](coin);
-        },
         openDropdown() {
             if (this.isSelectDisabled) {
                 return;
@@ -153,8 +164,8 @@ export default {
         <div class="h-field__content">
             <div class="h-field__title">{{ label }}</div>
             <button class="h-field__select-button u-semantic-button" type="button" @click="openDropdown()" :disabled="isSelectDisabled">
-                <img class="h-field__select-icon" :src="getIconUrl(coin)" width="24" height="24" alt="" role="presentation" v-if="coin">
-                <BaseCoinSymbol class="h-field__select-value">{{ coin || $td('Select coin', 'form.select-coin') }}</BaseCoinSymbol>
+                <img class="h-field__select-icon" :src="iconUrl" width="24" height="24" alt="" role="presentation" v-if="coin">
+                <BaseCoinSymbol class="h-field__select-value">{{ displayValue || $td('Select coin', 'form.select-coin') }}</BaseCoinSymbol>
                 <img class="h-field__select-icon-arrow" src="/img/icon-dropdown.svg" alt="" role="presentation" width="24" height="24" v-if="!isSelectDisabled">
             </button>
         </div>
@@ -180,11 +191,14 @@ export default {
         </FieldCombinedBaseAmount>
 
         <FieldCombinedCoinDropdown
+            ref="coinDropdown"
             :is-open.sync="isSelectVisible"
+            :selected-value="coin"
             :coin-list="coinList"
             :coin-type="coinType"
             :fallback-to-full-list="fallbackToFullList"
             @select="handleSelect($event)"
+            @select-suggestion="selectedSuggestion = $event; $emit('select-suggestion', $event)"
         />
     </div>
 </template>
