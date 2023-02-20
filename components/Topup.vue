@@ -88,6 +88,13 @@ export default {
         isShareSupported() {
             return window.navigator.share;
         },
+        backButtonText() {
+            if (this.successDeposit) {
+                return this.$td('Finish', 'common.finish');
+            } else {
+                return this.$td('Cancel', 'topup.back');
+            }
+        },
     },
     methods: {
         copy(str) {
@@ -188,14 +195,16 @@ export default {
             @topup="successDeposit = $event; $emit('topup', $event)"
         />
 
-        <button v-if="isOnlyCloseOnBack" class="button button--ghost button--full u-mt-10" type="button" @click="$emit('click-back')">
-            {{ $td('Cancel', 'topup.back') }}
-        </button>
-        <nuxt-link v-else-if="backUrl" class="button button--ghost button--full u-mt-10" :to="backUrl">
-            {{ $td('Cancel', 'topup.back') }}
-        </nuxt-link>
-        <BackButton v-else class="u-mt-10" button-class="button button--ghost button--full">
-            {{ $td('Cancel', 'topup.back') }}
-        </BackButton>
+        <template v-if="!isDepositProcessing">
+            <button v-if="isOnlyCloseOnBack" class="button button--ghost button--full u-mt-10" type="button" @click="$emit('click-back')">
+                {{ backButtonText }}
+            </button>
+            <nuxt-link v-else-if="backUrl" class="button button--ghost button--full u-mt-10" :to="backUrl">
+                {{ backButtonText }}
+            </nuxt-link>
+            <BackButton v-else class="u-mt-10" button-class="button button--ghost button--full">
+                {{ backButtonText }}
+            </BackButton>
+        </template>
     </div>
 </template>

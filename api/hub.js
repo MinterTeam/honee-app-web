@@ -331,6 +331,9 @@ export function findHubCoinItem(hubCoinList, tokenSymbol) {
  * @return {HubCoinItem|undefined}
  */
 export function findHubCoinItemByTokenAddress(hubCoinList, tokenContractAddress, chainId) {
+    if (!tokenContractAddress) {
+        return undefined;
+    }
     tokenContractAddress = tokenContractAddress?.toLowerCase();
     const hubNetworkSlug = HUB_CHAIN_BY_ID[chainId]?.hubNetworkSlug;
     return hubCoinList.find((item) => item[hubNetworkSlug]?.externalTokenId === tokenContractAddress);

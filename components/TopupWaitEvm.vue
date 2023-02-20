@@ -1,7 +1,10 @@
 <script>
+import {validationMixin} from 'vuelidate/src/index.js';
+import required from 'vuelidate/src/validators/required.js';
 import stripZeros from 'pretty-num/src/strip-zeros.js';
 import Big from '~/assets/big.js';
-import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_CHAIN_ID} from '~/assets/variables.js';
+import {isValidAmount} from '~/assets/utils/validators.js';
+import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {wait} from '~/assets/utils/wait.js';
 import {pretty} from '~/assets/utils.js';
@@ -14,21 +17,33 @@ import useTxService from '~/composables/use-tx-service.js';
 import {TOP_UP_NETWORK} from '~/components/Topup.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
+import FieldCombined from '~/components/base/FieldCombined.vue';
 import Modal from '~/components/base/Modal.vue';
 import HubBuyTxListItem from '~/components/HubBuyTxListItem.vue';
 import HubFeeImpact from '~/components/HubFeeImpact.vue';
+
+
+/**
+ * @enum {string}
+ */
+const MODE = {
+    AFTER_TOPUP: 'topup',
+    EXISTING_BALANCE: 'existing',
+};
 
 export default {
     LOADING_STAGE,
     components: {
         BaseAmountEstimation,
         BaseLoader,
+        FieldCombined,
         Modal,
         HubBuyTxListItem,
         HubFeeImpact,
     },
+    mixins: [validationMixin],
     props: {
-        /** @type {HUB_CHAIN_ID} */
+        /** @type {HUB_NETWORK_SLUG} */
         networkSlug: {
             type: String,
             required: true,
@@ -108,9 +123,26 @@ export default {
     },
     data() {
         return {
+            form: {
+                amount: '',
+            },
+            mode: MODE.EXISTING_BALANCE,
             evmWaitCanceler: () => {},
             serverError: '',
             isConfirmModalVisible: false,
+        };
+    },
+    validations() {
+        return {
+            form: {
+                amount: {
+                    required,
+                    validAmount: isValidAmount,
+                    // maxValue: maxValue(this.maxAmount || 0),
+                    minValue: (value) => value > 0,
+                    enoughToPayFee: (value) => value >= this.evmTotalFee,
+                },
+            },
         };
     },
     computed: {
@@ -140,7 +172,7 @@ export default {
             return new Big(input || 0).minus(this.hubFee).toString();
         },
         totalFeeImpact() {
-            const totalSpend = this.balance;
+            const totalSpend = this.form.amount;
             const totalResult = this.coinAmountAfterBridge;
             if (!totalSpend || !totalResult) {
                 return 0;
@@ -159,7 +191,7 @@ export default {
             return Object.keys(this.txServiceState.steps).some((key) => key !== LOADING_STAGE.WAIT_ETH);
         },
         showExistingBalance() {
-            return this.depositAmountAfterGas > 0 && !this.isEvmToppedUp && !this.isDepositStarted;
+            return this.balance > this.evmTotalFee && !this.isEvmToppedUp && !this.isDepositStarted;
         },
         showLoader() {
             return this.showWaitIndicator && this.currentLoadingStage === LOADING_STAGE.WAIT_ETH;
@@ -182,7 +214,7 @@ export default {
                 accountAddress: this.$store.getters.evmAddress,
                 chainId: this.hubChainData.chainId,
                 // @TODO don't unwrap micro WETH balance
-                amount: this.balance,
+                amount: this.mode === MODE.AFTER_TOPUP ? this.balance : this.form.amount,
                 tokenSymbol: this.tokenSymbol,
                 // disable updating gasPriceGwei > coinAmountAfterBridge, which will triggers watchEstimation
                 freezeGasPrice: false,
@@ -244,6 +276,11 @@ export default {
                 .then(() => wait(100))
                 .then(() => this.waitEvmBalance())
                 .then(() => {
+                    // change mode and wait computed to recalculate
+                    this.mode = MODE.AFTER_TOPUP;
+                    return wait(100);
+                })
+                .then(() => {
                     this.$emit('update:processing', true);
                     return this.depositFromEthereum();
                 })
@@ -286,9 +323,27 @@ export default {
 <template>
     <div v-if="showSomething">
         <div class="form-row" v-if="showExistingBalance">
-            <p>{{ $td(`You have ${pretty(balance)} ${tokenSymbol} on you ${hubChainData.shortName} address. Do you want to deposit it?`, 'topup.deposit-evm-balance-description', {amount: pretty(balance), coin: tokenSymbol, network: hubChainData.shortName}) }}</p>
+            <hr class="card__fake-divider"/>
+            <p>{{ $td(`You have available funds on you ${hubChainData.name} address. Do you want to deposit it?`, 'topup.deposit-evm-balance-description', {network: hubChainData.shortName}) }}</p>
+            <div class="u-mt-10">
+                <FieldCombined
+                    class="h-field--is-readonly"
+                    :coin="tokenSymbol"
+                    :fallback-to-full-list="false"
+                    :amount.sync="form.amount"
+                    :$amount="$v.form.amount"
+                    :label="$td('Choose amount', 'form.amount')"
+                    :max-value="balance"
+                    @blur="/*handleInputBlur(); */$v.form.amount.$touch()"
+                />
+                <span class="form-field__error" v-if="$v.form.amount.$dirty && !$v.form.amount.required">{{ $td('Enter amount', 'form.enter-amount') }}</span>
+                <span class="form-field__error" v-else-if="$v.form.amount.$dirty && (!$v.form.amount.validAmount || !$v.form.amount.minValue)">{{ $td('Invalid amount', 'form.invalid-amount') }}</span>
+                <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.enoughToPayFee">{{ $td('Not enough to pay fee', 'form.not-enough-to-pay-fee') }}</span>
+                <!--                        <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.maxValue">{{ $td('Not enough', 'form.not-enough') }} {{ form.coinToGet }} ({{ $td('max.', 'form.max') }} {{ pretty(maxAmount) }})</span>-->
+            </div>
+
             <button type="button" class="button button--main button--full u-mt-10" @click="isConfirmModalVisible = true">
-                {{ $td(`Deposit ${pretty(balance)} ${tokenSymbol}`, 'topup.deposit-evm-balance-button', {amount: pretty(balance), coin: tokenSymbol}) }}
+                {{ $td(`Deposit`, 'topup.deposit-evm-balance-button') }}
             </button>
         </div>
 
@@ -316,7 +371,7 @@ export default {
 
             <div class="information form-row">
                 <h3 class="information__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
-                <BaseAmountEstimation :coin="tokenSymbol" :amount="balance" format="exact"/>
+                <BaseAmountEstimation :coin="tokenSymbol" :amount="form.amount" format="exact"/>
 
                 <h3 class="information__title">{{ $td('You will get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                 <BaseAmountEstimation :coin="tokenSymbol" :amount="coinAmountAfterBridge" format="approx"/>

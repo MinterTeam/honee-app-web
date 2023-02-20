@@ -9,6 +9,7 @@ import withParams from 'vuelidate/src/withParams.js';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {web3Utils, AbiEncoder, toErcDecimals} from '~/api/web3.js';
+import {isValidAmount} from '~/assets/utils/validators.js';
 import Big from '~/assets/big.js';
 import initRampPurchase, {fiatRampPurchaseNetwork} from '~/assets/fiat-ramp.js';
 import {pretty, prettyPrecise, prettyRound, prettyExact, decreasePrecisionSignificant, getExplorerTxUrl, getEvmTxUrl, shortHashFilter} from '~/assets/utils.js';
@@ -56,10 +57,6 @@ let waitingCancel;
 
 let timer;
 
-
-const isValidAmount = withParams({type: 'validAmount'}, (value) => {
-    return parseFloat(value) >= 0;
-});
 
 export default {
     FIAT_RAMP_NETWORK,
@@ -474,7 +471,7 @@ export default {
                 this.addStepData(LOADING_STAGE.WAIT_ETH, {
                     coin: this.externalTokenSymbol,
                     amount: targetAmount,
-                    network: this.hubChainData.hubChainId,
+                    network: this.hubChainData.hubNetworkSlug,
                 });
 
                 const promise = this.waitEnoughTokenBalance(targetAmount);
@@ -759,7 +756,7 @@ export default {
                         :$amount="$v.form.amountEth"
                         :label="$td('You spend', 'form.you-spend')"
                         :max-value="maxAmount"
-                        @blur="handleInputBlur(); $v.form.buyAmount.$touch()"
+                        @blur="handleInputBlur(); $v.form.amountEth.$touch()"
                     />
                     <span class="form-field__error" v-if="$v.form.amountEth.$dirty && !$v.form.amountEth.required">{{ $td('Enter amount', 'form.enter-amount') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && (!$v.form.amountEth.validAmount || !$v.form.amountEth.minValue)">{{ $td('Invalid amount', 'form.invalid-amount') }}</span>
@@ -776,7 +773,7 @@ export default {
                         :fallback-to-full-list="false"
                         :is-estimation="true"
                         :isLoading="isEstimationWaiting"
-                        @blur="handleInputBlur(); $v.form.buyAmount.$touch()"
+                        @blur="handleInputBlur(); $v.form.amountEth.$touch()"
                     />
 
                     <span class="form-field__error" v-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.required">{{ $td('Enter coin symbol', 'form.enter-coin-symbol') }}</span>

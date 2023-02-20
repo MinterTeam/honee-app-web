@@ -32,7 +32,7 @@ export const BSC_API_URL = process.env.APP_BSC_API_URL;
 export const ETHEREUM_CHAIN_ID = NETWORK === MAINNET ? 1 : 3;
 /** @type {ChainId} */
 export const BSC_CHAIN_ID = NETWORK === MAINNET ? 56 : 97;
-export const MORALIS_API_URL = 'https://exchanges-proxy.bip.dev/moralis/';
+export const MORALIS_API_URL = 'https://exchanges-proxy.bip.dev/moralis';
 // dummy key needed for sdk to work correctly
 export const MORALIS_API_KEY = 'dummy-key';
 // export const MORALIS_API_URL = 'https://deep-index.moralis.io/api/v2';
@@ -90,7 +90,7 @@ export const COIN_TYPE = {
  * @readonly
  * @enum {string}
  */
-export const HUB_NETWORK = {
+export const HUB_NETWORK_SLUG = {
     ETHEREUM: 'ethereum',
     BSC: 'bsc',
     MINTER: 'minter',
@@ -98,38 +98,51 @@ export const HUB_NETWORK = {
 
 /**
  * @deprecated
- * @type {HUB_NETWORK}
+ * @type {typeof HUB_NETWORK_SLUG}
  */
-export const HUB_CHAIN_ID = HUB_NETWORK;
+export const HUB_NETWORK = HUB_NETWORK_SLUG;
 
 /**
- * @typedef {{coinSymbol: string, name: string, shortName: string, chainId: ChainId, hubChainId: HUB_CHAIN_ID, hubNetworkSlug: HUB_CHAIN_ID, apiUrl: string, explorerHost: string, hubContractAddress: string, wrappedNativeContractAddress: string}} HubChainDataItem
+ * @deprecated
+ * @type {typeof HUB_NETWORK_SLUG}
+ */
+export const HUB_CHAIN_ID = HUB_NETWORK_SLUG;
+
+/**
+ * @typedef {object} HubChainDataItem
+ * @property {string} coinSymbol
+ * @property {string} name
+ * @property {string} shortName
+ * @property {ChainId} chainId
+ * @property {HUB_NETWORK_SLUG} hubNetworkSlug
+ * @property {string} apiUrl
+ * @property {string} explorerHost
+ * @property {string} hubContractAddress
+ * @property {string} wrappedNativeContractAddress
  */
 
 /**
  * @readonly
- * @type {Record<HUB_NETWORK, HubChainDataItem>}
+ * @type {Record<HUB_NETWORK_SLUG, HubChainDataItem>}
  */
 export const HUB_CHAIN_DATA = {
-    [HUB_NETWORK.ETHEREUM]: {
+    [HUB_NETWORK_SLUG.ETHEREUM]: {
         name: 'Ethereum',
         shortName: 'Ethereum',
         coinSymbol: 'ETH',
         chainId: ETHEREUM_CHAIN_ID,
-        hubChainId: HUB_NETWORK.ETHEREUM,
-        hubNetworkSlug: HUB_NETWORK.ETHEREUM,
+        hubNetworkSlug: HUB_NETWORK_SLUG.ETHEREUM,
         apiUrl: ETHEREUM_API_URL,
         explorerHost: ETHERSCAN_HOST,
         hubContractAddress: HUB_ETHEREUM_CONTRACT_ADDRESS.toLowerCase(),
         wrappedNativeContractAddress: WETH_CONTRACT_ADDRESS.toLowerCase(),
     },
-    [HUB_NETWORK.BSC]: {
-        name: 'Binance Smart Chain',
+    [HUB_NETWORK_SLUG.BSC]: {
+        name: 'BNB Chain',
         shortName: 'BSC',
         coinSymbol: 'BNB',
         chainId: BSC_CHAIN_ID,
-        hubChainId: HUB_NETWORK.BSC,
-        hubNetworkSlug: HUB_NETWORK.BSC,
+        hubNetworkSlug: HUB_NETWORK_SLUG.BSC,
         apiUrl: BSC_API_URL,
         explorerHost: BSCSCAN_HOST,
         hubContractAddress: HUB_BSC_CONTRACT_ADDRESS.toLowerCase(),
@@ -139,7 +152,7 @@ export const HUB_CHAIN_DATA = {
 
 /**
  * @readonly
- * @type {{number: HubChainDataItem}}
+ * @type {Record<ChainId, HubChainDataItem>}
  */
 export const HUB_CHAIN_BY_ID = Object.fromEntries(Object.values(HUB_CHAIN_DATA).map((item) => [item.chainId, item]));
 

@@ -183,8 +183,8 @@ export default {
         'cancel': 'Отмена',
         'back': 'Назад',
         'confirm-deposit-title': 'Депозит',
-        'deposit-evm-balance-description': 'На вашем {network}-адресе {amount} {coin}. Хотите зачислить?',
-        'deposit-evm-balance-button': 'Зачислить {amount} {coin}',
+        'deposit-evm-balance-description': 'На вашем {network} адресе доступные средства. Хотите зачислить?',
+        'deposit-evm-balance-button': 'Зачислить',
     },
     deposit: {
         'title': 'Мгновенное пополнение',
