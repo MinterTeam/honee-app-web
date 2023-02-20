@@ -30,7 +30,7 @@ const MODE = {
     BUY_USD: 'buy_usd',
 };
 const SPOT_PRICE_METAGARDEN = 1000;
-const SPOT_PRICE_USD = 80;
+const SPOT_PRICE_USD = 160;
 const SPOT_BUY_ADDRESS = 'Mxfb758e0516e3ced06eb90387b7fee61ecaad0000';
 
 export default {
