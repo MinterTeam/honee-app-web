@@ -118,7 +118,7 @@ export default {
         </div>
 
         <Modal
-            modalContainerClass="card card__content"
+            modalContainerClass="card card__content u-text-center"
             :isOpen.sync="isTopupModalOpen"
             :hideCloseButton="false"
             :disableOutsideClick="false"

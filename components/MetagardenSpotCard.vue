@@ -80,11 +80,11 @@ export default {
             </div>
         </div>
 
-        <video class="u-image u-image-center u-mt-15 u-mb-10" width="210" height="100%" autoplay loop muted playsinline>
+        <!--<video class="u-image u-image-center u-mt-15 u-mb-10" width="210" height="100%" autoplay loop muted playsinline>
             <source src="/video/spot-video3.mov" type="video/mp4">
-            <!--<source src="/video/spot-video.webm" type="video/webm">-->
-        </video>
-        <!--<img class="u-image u-image-center u-mt-15 u-mb-10" src="/img/metagarden-spot.png" srcset="/img/metagarden-spot@2x.png 2x" alt="" role="presentation">-->
+            <source src="/video/spot-video.webm" type="video/webm">
+        </video>-->
+        <img class="u-image u-image-center u-mt-15 u-mb-10" src="/img/metagarden-spot.png" srcset="/img/metagarden-spot@2x.png 2x" alt="" role="presentation">
 
         <div class="u-h--uppercase u-mb-05">{{ $td('Available to claim', 'metagarden.available-to-claim') }}</div>
         <div class="u-h u-h3">${{ spotInfo.claimValue }}</div>
