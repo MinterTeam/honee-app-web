@@ -149,6 +149,15 @@ export default function useWeb3SmartWalletSwap() {
         return new Big(valueToUseInEvm).minus(amountEstimationLimitForRelayRewardValue).toString();
     }
 
+    const amountAfterDeposit = computed(() => {
+        if (tokenToSellAddress.value === tokenToBuyAddress.value) {
+            // @TODO deduct Hub deposit fee
+            return amountToSellForSwapToHub.value;
+        } else {
+            return state.amountEstimationAfterSwapToHub;
+        }
+    });
+
     const depositDestinationAddress = computed(() => {
         return props.depositDestinationAddress || props.evmAccountAddress || '';
     });
@@ -165,7 +174,7 @@ export default function useWeb3SmartWalletSwap() {
             destination: depositDestinationAddress.value.replace('Mx', '0x'),
             // refundTo: props.evmAccountAddress,
             // @TODO portfolio buy: make first swap in a sequence less slippage (e.g. 2.5)
-            // @TODO portfolio buy: estimate swap of all sell value to e.g. BNB to get overalls price impact and set slippage basing on it
+            // @TODO portfolio buy: estimate swap of all sell value to e.g. BNB to get overalls price impact and set slippage basing on it (10 small swaps estimation will produce less price impact than 1 large swap estimation)
             slippage: 5,
             disableEstimate: true,
             allowPartialFill: false,
@@ -313,6 +322,7 @@ export default function useWeb3SmartWalletSwap() {
         isSmartWalletSwapParamsLoading,
         smartWalletSwapParamsError,
         amountToSellForSwapToHub,
+        amountAfterDeposit,
         smartWalletAddress,
         swapToHubParams,
         // feeTxParams,

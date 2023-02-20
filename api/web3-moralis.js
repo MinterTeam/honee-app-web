@@ -1,16 +1,17 @@
 import MoralisCore, {CoreProvider} from '@moralisweb3/common-core';
 import {ApiUtils} from '@moralisweb3/api-utils';
+import { CommonEvmUtils, EvmChain } from '@moralisweb3/common-evm-utils';
 // import MoralisEvmApi from '@moralisweb3/evm-api';
 import MoralisEvmApi from '~/api/web3-moralis-evm-api.js';
-import { EvmChain } from '@moralisweb3/common-evm-utils';
 import {NATIVE_COIN_ADDRESS, MORALIS_API_URL, MORALIS_API_KEY} from "~/assets/variables.js";
 
 
 const core = MoralisCore.create();
 // Register all imported modules to the @moralisweb3/core module
+const commonEvmUtils = CommonEvmUtils.create(core);
 const apiUtils = ApiUtils.create(core);
 const evmApi = MoralisEvmApi.create(core, MORALIS_API_URL);
-core.registerModules([apiUtils, evmApi]);
+core.registerModules([commonEvmUtils, apiUtils, evmApi]);
 CoreProvider.setDefault(core);
 
 core.start({
@@ -21,6 +22,7 @@ core.start({
 });
 
 export const Moralis = {
+    EvmUtils: commonEvmUtils,
     ApiUtils: apiUtils,
     EvmApi: evmApi,
 };

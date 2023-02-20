@@ -1,14 +1,25 @@
 import { ref, reactive, computed, watch, set} from 'vue';
 import Big from '~/assets/big.js';
-import {BSC_CHAIN_ID, ETHEREUM_CHAIN_ID} from '~/assets/variables.js';
+import {BSC_CHAIN_ID, ETHEREUM_CHAIN_ID, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from '~/assets/variables.js';
+import {arrayToMap} from '~/assets/utils/collection.js';
 import {wait} from '~/assets/utils/wait.js';
 import CancelError from '~/assets/utils/error-cancel.js';
 import {getWalletTokenBalances} from '~/api/web3-moralis.js';
 
+// workaround for `set` not trigger computed properly
+// @see https://github.com/vuejs/composition-api/issues/580
+function getInitialChainData() {
+    return Object.fromEntries(Object.values(HUB_CHAIN_DATA).map((item) => [item.chainId, getEmptyItem()]));
+
+    function getEmptyItem() {
+        return undefined;
+    }
+}
+
 /**
- * @type {UnwrapNestedRefs<Record<ChainId, Record<string, TokenBalance>>>}
+ * @type {UnwrapNestedRefs<Record<ChainId, Array<TokenBalanceItem>>>}
  */
-const web3Balance = reactive({});
+const web3Balance = reactive(getInitialChainData());
 
 export default function useWeb3AddressBalance() {
     // const {tokenData, tokenContractAddress, tokenDecimals, isNativeToken, setHubTokenProps} = useHubToken();
@@ -30,11 +41,10 @@ export default function useWeb3AddressBalance() {
 
 
     /**
-     *
-     * @type {ComputedRef<Record<string, TokenBalance>>}
+     * @type {ComputedRef<Array<TokenBalanceItem>>}
      */
-    const balance = computed(() => {
-        return web3Balance[props.chainId];
+    const balanceList = computed(() => {
+        return web3Balance[props.chainId] || [];
     });
 
     // const nativeBalance = computed(() => {
@@ -76,15 +86,21 @@ export default function useWeb3AddressBalance() {
     }, {immediate: true});
 
     /**
-     * @typedef {object} TokenBalance
+     * @typedef {object} TokenBalanceItem
+     * @property {HUB_NETWORK_SLUG} hubNetworkSlug
      * @property {string} tokenContractAddress
+     * @property {string} tokenSymbol
+     * @property {string} tokenName
      * @property {string|number} amount
      * @property {number} decimals
+     * @property {import('@moralisweb3/common-evm-utils').Erc20Value} moralisItem
+     * @property {string} id
+     * @property {string} search
      */
 
     /**
      * #@return {Promise<import('@moralisweb3/common-evm-utils/lib/operations/token/getWalletTokenBalancesOperation').GetWalletTokenBalancesResponse>}
-     * @return {Promise<Array<TokenBalance>>} - list of updated balances
+     * @return {Promise<Array<TokenBalanceItem>>} - list of updated balances
      */
     async function updateAddressBalance() {
         const chainId = props.chainId;
@@ -92,26 +108,30 @@ export default function useWeb3AddressBalance() {
         return getWalletTokenBalances(chainId, props.accountAddress)
             .then((result) => {
                 console.log(result);
-                const oldTokenMap = web3Balance[chainId];
-                const tokenMap = Object.fromEntries(result.map((item) => {
-                    return [
-                        item.token.contractAddress.lowercase,
-                        {
-                            tokenContractAddress: item.token.contractAddress.lowercase,
-                            amount: item.value,
-                            decimals: item.token.decimals,
-                        },
-                    ];
-                }));
-                set(web3Balance, chainId, Object.freeze(tokenMap));
+                const oldBalanceList = web3Balance[chainId];
+                /** @type {HUB_NETWORK_SLUG} */
+                const hubNetworkSlug = HUB_CHAIN_BY_ID[chainId].hubNetworkSlug;
+                const tokenList = result.map((item) => {
+                    return {
+                        hubNetworkSlug,
+                        tokenContractAddress: item.token.contractAddress.lowercase,
+                        tokenSymbol: item.token.symbol,
+                        tokenName: item.token.name,
+                        amount: item.value,
+                        decimals: item.token.decimals,
+                        moralisItem: item,
+                        id: `${item.token.contractAddress.lowercase}-${hubNetworkSlug}`,
+                        search: item.token.symbol + hubNetworkSlug,
+                    };
+                });
 
-                if (oldTokenMap) {
-                    return Object.entries(tokenMap)
-                        .filter(([tokenContractAddress, tokenBalance]) => {
-                            return new Big(tokenBalance.amount).gt(oldTokenMap[tokenContractAddress]?.amount || 0);
-                        })
-                        .map(([tokenContractAddress, tokenBalance]) => {
-                            return tokenBalance;
+                set(web3Balance, chainId, Object.freeze(tokenList));
+
+                if (oldBalanceList?.length > 0) {
+                    const oldTokenMap = arrayToMap(oldBalanceList, 'tokenContractAddress');
+                    return tokenList
+                        .filter((tokenBalanceItem) => {
+                            return new Big(tokenBalanceItem.amount).gt(oldTokenMap[tokenBalanceItem.tokenContractAddress]?.amount || 0);
                         });
                 } else {
                     return [];
@@ -128,7 +148,7 @@ export default function useWeb3AddressBalance() {
     }
 
     /**
-     * @return {Promise<Array<TokenBalance>>&{canceler: function}}
+     * @return {Promise<Array<TokenBalanceItem>>&{canceler: function}}
      */
     function waitBalanceUpdate() {
         let promiseReject;
@@ -160,7 +180,7 @@ export default function useWeb3AddressBalance() {
 
     /**
      * @param {{value: boolean}} isCanceled
-     * @return {Promise<Array<TokenBalance>>}
+     * @return {Promise<Array<TokenBalanceItem>>}
      * @private
      */
     function _waitBalanceUpdate(isCanceled) {
@@ -182,7 +202,7 @@ export default function useWeb3AddressBalance() {
     return {
         web3Balance,
         // computed
-        balance,
+        balanceList,
         // nativeBalance,
         // wrappedBalance,
         // balance,
