@@ -1,7 +1,9 @@
 import Big from '~/assets/big.js';
-import Eth from 'web3-eth';
+/** @type {import('web3-eth').Eth} */
+import _Eth from 'web3-eth';
 import Utils from 'web3-utils';
-import Contract from 'web3-eth-contract';
+/** @type {import('web3-eth-contract').Contract} */
+import _Contract from 'web3-eth-contract';
 import AbiCoder from 'web3-eth-abi';
 import {TinyEmitter as Emitter} from 'tiny-emitter';
 import {ETHEREUM_API_URL, BSC_API_URL, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, HUB_DEPOSIT_TX_PURPOSE, HUB_CHAIN_ID, HUB_CHAIN_DATA, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
@@ -9,6 +11,13 @@ import erc20ABI from '~/assets/abi-erc20.js';
 import hubABI from '~/assets/abi-hub.js';
 
 export const CONFIRMATION_COUNT = 5;
+
+/** @type {import('web3-eth').Eth} - fix https://github.com/web3/web3.js/issues/5543 */
+// @ts-expect-error
+const Eth = _Eth;
+/** @type {import('web3-eth-contract').Contract} - fix https://github.com/web3/web3.js/issues/5543*/
+// @ts-expect-error
+const Contract = _Contract;
 
 export const web3Utils = Utils;
 /** @deprecated use getProviderByChain instead */

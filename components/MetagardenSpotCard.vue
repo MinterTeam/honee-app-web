@@ -1,5 +1,6 @@
 <script>
 import {claimSpotReward, getSpotInfo} from '~/api/metagarden.js';
+import {pretty} from '~/assets/utils.js';
 import tooltip from 'v-tooltip/src/directives/v-tooltip.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 
@@ -46,6 +47,7 @@ export default {
         },
     },
     methods: {
+        pretty,
         claimSpot() {
             if (this.isClaimLoading || this.spotInfo?.claimValue <= 0) {
                 return;
@@ -87,7 +89,7 @@ export default {
         <img class="u-image u-image-center u-mt-15 u-mb-10" src="/img/metagarden-spot.png" srcset="/img/metagarden-spot@2x.png 2x" alt="" role="presentation">
 
         <div class="u-h--uppercase u-mb-05">{{ $td('Available to claim', 'metagarden.available-to-claim') }}</div>
-        <div class="u-h u-h3">${{ spotInfo.claimValue }}</div>
+        <div class="u-h u-h3">${{ pretty(spotInfo.claimValue) }}</div>
 
         <div class="u-flex u-flex--align-center u-flex--justify-center u-mt-10 u-mb-10">
             <div class="mg-spot__days u-flex u-mr-05">

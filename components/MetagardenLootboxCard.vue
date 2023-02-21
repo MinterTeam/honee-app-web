@@ -25,12 +25,11 @@ export default {
 
 
         <h2 class="u-h3">{{ $td('You’ve got a new lootbox!', 'mg-lootbox.new-lootbox-button') }}</h2>
-
     </nuxt-link>
 </template>
 
-<style lang="less" scoped>
-.luminaire__card {overflow: clip; position: relative; z-index: 0;}
+<style-backup lang="less" scoped>
+.luminaire__card {overflow: hidden; overflow: clip; position: relative; z-index: 0;}
 .luminaire__wrap {position: relative;}
 .luminaire {
     position: absolute;
@@ -83,4 +82,4 @@ export default {
     transform: translateX(100px);
     opacity: 1;
 }
-</style>
+</style-backup>
