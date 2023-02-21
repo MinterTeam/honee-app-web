@@ -23,7 +23,7 @@ export default {
             <div class="card__content card__content--medium">
                 <h1 class="card__action-title-value">{{ $td('Buy Metagarden mining spots', 'metagarden.title') }}</h1>
                 <p class="card__action-description u-mt-05">
-                    {{ $td('One spot costs $80 or 1000 METAGARDEN tokens', 'metagarden.description') }}
+                    {{ $td('One spot costs $160 or 1000 METAGARDEN tokens', 'metagarden.description') }}
                 </p>
             </div>
 
