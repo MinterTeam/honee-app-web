@@ -1,9 +1,10 @@
 <script>
+import _get from 'lodash-es/get.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import {COIN_TYPE} from '~/assets/variables.js';
 import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';
 import FieldCombinedBaseAmount from '~/components/base/FieldCombinedBaseAmount.vue';
-import FieldCombinedCoinDropdown from '~/components/base/FieldCombinedCoinDropdown.vue';
+import FieldCombinedCoinDropdown, {getValueAttribute} from '~/components/base/FieldCombinedCoinDropdown.vue';
 
 export default {
     components: {
@@ -135,7 +136,12 @@ export default {
     },
     mounted() {
         if (this.isSelectDisabled && this.coinList[0] && !this.coin) {
-            this.handleSelect(this.coinList[0]);
+            this.handleSelect(getSuggestionValue(this.coinList[0]));
+        }
+
+        function getSuggestionValue(item) {
+            const valueAttribute = getValueAttribute(item);
+            return valueAttribute ? _get(item, valueAttribute) : item;
         }
     },
     methods: {
@@ -146,7 +152,7 @@ export default {
             this.isSelectVisible = true;
         },
         handleSelect(coin) {
-            this.$emit('update:coin', coin.coin?.symbol || coin);
+            this.$emit('update:coin', coin);
         },
         handleUseMax(value) {
             this.$emit('update:is-use-max', value);

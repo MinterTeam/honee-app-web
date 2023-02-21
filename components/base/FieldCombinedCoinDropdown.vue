@@ -57,26 +57,11 @@ export default {
                     .map((item) => item.symbol);
             }
         },
-        isMinterBalanceList() {
-            return !!this.currentCoinList[0]?.coin?.symbol;
-        },
-        isTokenBalanceList() {
-            return !!this.currentCoinList[0]?.tokenContractAddress;
-        },
         valueAttribute() {
-            if (this.isMinterBalanceList) {
-                return 'coin.symbol';
-            }
-            if (this.isTokenBalanceList) {
-                return 'id';
-            }
-            return undefined;
+            return getValueAttribute(this.currentCoinList[0]);
         },
         displayAttribute() {
-            if (this.isTokenBalanceList) {
-                return 'search';
-            }
-            return undefined;
+            return getDisplayAttribute(this.currentCoinList[0]);
         },
         maxSuggestions() {
             return this.useSpecifiedCoinList ? 100 : undefined;
@@ -100,6 +85,29 @@ export default {
         },
     },
 };
+
+function isMinterBalanceItem(item) {
+    return !!item?.coin?.symbol;
+}
+function isTokenBalanceItem(item) {
+    return !!item?.tokenContractAddress;
+}
+export function getValueAttribute(item) {
+    if (isMinterBalanceItem(item)) {
+        return 'coin.symbol';
+    }
+    if (isTokenBalanceItem(item)) {
+        return 'id';
+    }
+    return undefined;
+}
+function getDisplayAttribute(item) {
+    if (isTokenBalanceItem(item)) {
+        return 'search';
+    }
+    return undefined;
+}
+
 
 function ofType(coinType, selectedType) {
     if (selectedType === COIN_TYPE.ANY) {
