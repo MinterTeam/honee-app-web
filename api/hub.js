@@ -6,7 +6,7 @@ import {isValidAddress as isValidMinterAddress} from 'minterjs-util';
 import {isValidAddress as isValidEthAddress} from 'ethereumjs-util';
 import {getCoinList} from '~/api/explorer.js';
 import Big from '~/assets/big.js';
-import {HUB_API_URL, HUB_TRANSFER_STATUS, HUB_CHAIN_ID, HUB_NETWORK, NETWORK, MAINNET, BASE_COIN, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_COIN_DATA} from "~/assets/variables.js";
+import {HUB_API_URL, HUB_TRANSFER_STATUS, HUB_CHAIN_ID, HUB_NETWORK, NETWORK, MAINNET, BASE_COIN, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_COIN_DATA, NATIVE_COIN_ADDRESS} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {isHubTransferFinished} from '~/assets/utils.js';
 
@@ -328,14 +328,21 @@ export function findHubCoinItem(hubCoinList, tokenSymbol) {
  * @param {Array<HubCoinItem>} hubCoinList
  * @param {string} tokenContractAddress
  * @param {ChainId} chainId
+ * @param {boolean} [isAcceptNative]
  * @return {HubCoinItem|undefined}
  */
-export function findHubCoinItemByTokenAddress(hubCoinList, tokenContractAddress, chainId) {
-    if (!tokenContractAddress) {
+export function findHubCoinItemByTokenAddress(hubCoinList, tokenContractAddress, chainId, isAcceptNative) {
+    if (!tokenContractAddress || !HUB_CHAIN_BY_ID[chainId]) {
         return undefined;
     }
+
     tokenContractAddress = tokenContractAddress?.toLowerCase();
-    const hubNetworkSlug = HUB_CHAIN_BY_ID[chainId]?.hubNetworkSlug;
+    if (isAcceptNative && tokenContractAddress === NATIVE_COIN_ADDRESS) {
+        // cast native address 'eeee..' to wrapped address
+        tokenContractAddress = HUB_CHAIN_BY_ID[chainId].wrappedNativeContractAddress;
+    }
+
+    const hubNetworkSlug = HUB_CHAIN_BY_ID[chainId].hubNetworkSlug;
     return hubCoinList.find((item) => item[hubNetworkSlug]?.externalTokenId === tokenContractAddress);
 }
 

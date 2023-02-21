@@ -4,7 +4,7 @@ import {BSC_CHAIN_ID, ETHEREUM_CHAIN_ID, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from '
 import {arrayToMap} from '~/assets/utils/collection.js';
 import {wait} from '~/assets/utils/wait.js';
 import CancelError from '~/assets/utils/error-cancel.js';
-import {getWalletTokenBalances} from '~/api/web3-moralis.js';
+import {getWalletBalances} from '~/api/web3-moralis.js';
 
 // workaround for `set` not trigger computed properly
 // @see https://github.com/vuejs/composition-api/issues/580
@@ -99,13 +99,12 @@ export default function useWeb3AddressBalance() {
      */
 
     /**
-     * #@return {Promise<import('@moralisweb3/common-evm-utils/lib/operations/token/getWalletTokenBalancesOperation').GetWalletTokenBalancesResponse>}
      * @return {Promise<Array<TokenBalanceItem>>} - list of updated balances
      */
     async function updateAddressBalance() {
         const chainId = props.chainId;
 
-        return getWalletTokenBalances(chainId, props.accountAddress)
+        return getWalletBalances(chainId, props.accountAddress)
             .then((result) => {
                 console.log(result);
                 const oldBalanceList = web3Balance[chainId];

@@ -415,9 +415,10 @@ export function buildTransferTx(tokenContractAddress, recipientAddress, amount) 
  * @param {number} tokenDecimals
  * @param {string} destinationMinterAddress
  * @param {string|number} amount - in ether or coins
+ * @param {boolean} [keepValueAsEther]
  * @return {{data: string, to: string, value: string|number}}
  */
-export function buildDepositTx(chainId, tokenContractAddress, tokenDecimals, destinationMinterAddress, amount) {
+export function buildDepositTx(chainId, tokenContractAddress, tokenDecimals, destinationMinterAddress, amount, keepValueAsEther) {
     const hubBridgeContractAddress = HUB_CHAIN_BY_ID[chainId]?.hubContractAddress;
     const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(destinationMinterAddress.replace("Mx", "0x")))]);
     const destinationChain = Buffer.from('minter', 'utf-8');
@@ -425,7 +426,7 @@ export function buildDepositTx(chainId, tokenContractAddress, tokenDecimals, des
     if (isNativeToken) {
         return {
             to: hubBridgeContractAddress,
-            value: amount,
+            value: keepValueAsEther ? amount : toErcDecimals(amount, tokenDecimals),
             data: AbiEncoder(hubABI)(
                 'transferETHToChain',
                 destinationChain,

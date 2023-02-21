@@ -196,7 +196,7 @@ export default defineComponent({
         },
         /** @type {HubCoinItem|undefined} */
         hubCoin() {
-            return findHubCoinItemByTokenAddress(this.hubTokenList, this.selectedBalanceItem?.tokenContractAddress, this.hubChainData.chainId);
+            return findHubCoinItemByTokenAddress(this.hubTokenList, this.selectedBalanceItem?.tokenContractAddress, this.hubChainData.chainId, true);
         },
         tokenSymbol() {
             return this.hubCoin?.symbol || this.selectedBalanceItem?.tokenContractAddress;
@@ -401,6 +401,15 @@ export default defineComponent({
                     this.serverError = getErrorText(error);
                 });
         },
+        openDepositConfirmation() {
+            if (this.$v.$invalid) {
+                this.$v.$touch();
+                return;
+            }
+
+            this.serverError = '';
+            this.isConfirmModalVisible = true;
+        },
         // cancel waiting and deposit existing balance
         deposit() {
             this.evmWaitCanceler();
@@ -450,8 +459,8 @@ export default defineComponent({
                 <!--                        <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.maxValue">{{ $td('Not enough', 'form.not-enough') }} {{ form.coinToGet }} ({{ $td('max.', 'form.max') }} {{ pretty(maxAmount) }})</span>-->
             </div>
 
-            <button type="button" class="button button--main button--full u-mt-10" @click="isConfirmModalVisible = true">
-                {{ $td(`Deposit`, 'topup.deposit-evm-balance-button') }}
+            <button type="button" class="button button--main button--full u-mt-10" :class="{'is-disabled': $v.$invalid}" @click="openDepositConfirmation()">
+                {{ $td('Deposit', 'topup.deposit-evm-balance-button') }}
             </button>
         </div>
 
