@@ -1,7 +1,9 @@
 <script>
-import ActionMetagardenBuySpot from '~/components/ActionMetagardenBuySpot.vue';
+import ActionMetagardenBuySpot, {SPOT_PRICE_METAGARDEN, SPOT_PRICE_USD} from '~/components/ActionMetagardenBuySpot.vue';
 
 export default {
+    SPOT_PRICE_METAGARDEN,
+    SPOT_PRICE_USD,
     layout(context) {
         return context.store.state.isMetagarden ? 'metagarden' : 'default';
     },
@@ -23,7 +25,7 @@ export default {
             <div class="card__content card__content--medium">
                 <h1 class="card__action-title-value">{{ $td('Buy Metagarden mining spots', 'metagarden.title') }}</h1>
                 <p class="card__action-description u-mt-05">
-                    {{ $td('One spot costs $160 or 1000 METAGARDEN tokens', 'metagarden.description') }}
+                    {{ $td(`One spot costs $${$options.SPOT_PRICE_USD} or ${$options.SPOT_PRICE_METAGARDEN} METAGARDEN tokens`, 'metagarden.description', {priceUsd: $options.SPOT_PRICE_USD, priceMetagarden: $options.SPOT_PRICE_METAGARDEN}) }}
                 </p>
             </div>
 
