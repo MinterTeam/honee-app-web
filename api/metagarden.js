@@ -18,7 +18,7 @@ addEcdsaAuthInterceptor(instance);
 
 /**
  * @param {string} privateKey
- * @return {Promise<object>}
+ * @return {Promise<MetagardenSpotInfo>}
  */
 export function getSpotInfo(privateKey) {
     if (!privateKey) {
@@ -102,3 +102,13 @@ export function openLootbox(privateKey, id) {
  * @property {{check: string, password: string}} data
  */
 
+/**
+ * @typedef {object} MetagardenSpotInfo
+ * @property {number} position - in rating
+ * @property {string} address
+ * @property {number} spots
+ * @property {number} claimValue
+ * @property {number} claimDays
+ * @property {number} dailyYield - mg + votes
+ * @property {Record<string, string|number>} locks
+ */

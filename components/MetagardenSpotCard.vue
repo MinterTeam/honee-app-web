@@ -1,6 +1,7 @@
 <script>
 import {claimSpotReward, getSpotInfo} from '~/api/metagarden.js';
 import {pretty} from '~/assets/utils.js';
+import {getErrorText} from '~/assets/server-error.js';
 import tooltip from 'v-tooltip/src/directives/v-tooltip.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 
@@ -19,13 +20,10 @@ export default {
     },
     data() {
         return {
-            spotInfo: {
-                spots: 0,
-                claimValue: 0,
-                claimDays: 0,
-                dailyYield: 0,
-            },
+            /** @type {MetagardenSpotInfo} */
+            spotInfo: undefined,
             isClaimLoading: false,
+            serverError: '',
         };
     },
     computed: {
@@ -48,6 +46,7 @@ export default {
     },
     methods: {
         pretty,
+        getErrorText,
         claimSpot() {
             if (this.isClaimLoading || this.spotInfo?.claimValue <= 0) {
                 return;
@@ -60,8 +59,9 @@ export default {
                     this.spotInfo.claimValue = 0;
                     this.spotInfo.claimDays = 0;
                 })
-                .catch(() => {
+                .catch((error) => {
                     this.isClaimLoading = false;
+                    this.serverError = getErrorText(error);
                 });
         },
     },
@@ -78,7 +78,7 @@ export default {
             </div>
             <div class="card__action-stats">
                 <div class="card__action-stats-caption">{{ $td('You own', 'metagarden.you-own') }}</div>
-                <div class="card__action-stats-value">{{ spotInfo.spots }}</div>
+                <div class="card__action-stats-value">{{ spotInfo?.spots ?? '—' }}</div>
             </div>
         </div>
 
@@ -88,28 +88,37 @@ export default {
         </video>-->
         <img class="u-image u-image-center u-mt-15 u-mb-10" src="/img/metagarden-spot.png" srcset="/img/metagarden-spot@2x.png 2x" alt="" role="presentation">
 
-        <div class="u-h--uppercase u-mb-05">{{ $td('Available to claim', 'metagarden.available-to-claim') }}</div>
-        <div class="u-h u-h3">${{ pretty(spotInfo.claimValue) }}</div>
-
-        <div class="u-flex u-flex--align-center u-flex--justify-center u-mt-10 u-mb-10">
-            <div class="mg-spot__days u-flex u-mr-05">
-                <div
-                    class="mg-spot__days-item u-flex-item--grow"
-                    v-for="(day, index) in days"
-                    :key="index"
-                    :class="{'is-active': day.isAvailable}"
-                ></div>
-            </div>
-
-            <img
-                class="mg-spot__days-info" src="/img/icon-metagarden-info.svg" alt="Info"
-                v-tooltip="tooltipOptions"
-            >
+        <div v-if="$fetchState.pending" class="u-text-center">
+            <BaseLoader class="" :is-loading="true"/>
         </div>
+        <div v-else-if="$fetchState.error" class="form__error">
+            Can't get spots info: <br>
+            {{ getErrorText($fetchState.error) }}
+        </div>
+        <template v-else-if="spotInfo">
+            <div class="u-h--uppercase u-mb-05">{{ $td('Available to claim', 'metagarden.available-to-claim') }}</div>
+            <div class="u-h u-h3">${{ pretty(spotInfo.claimValue) }}</div>
+
+            <div class="u-flex u-flex--align-center u-flex--justify-center u-mt-10">
+                <div class="mg-spot__days u-flex u-mr-05">
+                    <div
+                        class="mg-spot__days-item u-flex-item--grow"
+                        v-for="(day, index) in days"
+                        :key="index"
+                        :class="{'is-active': day.isAvailable}"
+                    ></div>
+                </div>
+
+                <img
+                    class="mg-spot__days-info" src="/img/icon-metagarden-info.svg" alt="Info"
+                    v-tooltip="tooltipOptions"
+                >
+            </div>
+        </template>
 
         <button
-            type="button" class="button button--full"
-            :class="{'is-loading': isClaimLoading, 'is-disabled': spotInfo.claimValue <= 0}"
+            type="button" class="button button--full u-mt-10"
+            :class="{'is-loading': isClaimLoading, 'is-disabled': !spotInfo || spotInfo.claimValue <= 0}"
             @click="claimSpot()"
         >
             <span class="button__content">{{ $td('Claim rewards', 'metagarden.claim-rewards-button') }}</span>
@@ -119,7 +128,11 @@ export default {
             {{ $td('Buy mining spots', 'metagarden.buy-more-button') }}
         </nuxt-link>
 
-        <div class="u-mt-15">
+        <div class="form__error u-mt-10" v-if="serverError">
+            {{ serverError }}
+        </div>
+
+        <div class="u-mt-15" v-if="spotInfo?.spots > 0">
             <span class="u-h--uppercase">{{ $td('Daily yield:', 'metagarden.daily-yield') }}</span>
             <span class="u-h--uppercase-solid u-display-ib">
                 {{ spotInfo.dailyYield }} METAGARDEN + {{ spotInfo.dailyYield }}&nbsp;VOTES

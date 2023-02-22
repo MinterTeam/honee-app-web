@@ -2,7 +2,7 @@
 export default {
     layout: 'splash',
     asyncData({redirect, app}) {
-        return redirect(app.i18nGetPreferredPath('/metagarden/buy-spot'));
+        return redirect(app.i18nGetPreferredPath('/metagarden/account'));
     },
 };
 </script>
