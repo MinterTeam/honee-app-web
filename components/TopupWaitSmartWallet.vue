@@ -254,7 +254,7 @@ export default defineComponent({
             return this.showWaitIndicator && this.currentLoadingStage === LOADING_STAGE.WAIT_ETH;
         },
         showTxList() {
-            return !this.showLoader && !this.isWaitingEvmTopup;
+            return Object.keys(this.txServiceState.steps).length > 0 && !this.showLoader && !this.isWaitingEvmTopup;
         },
         showSomething() {
             return this.showExistingBalance || this.showLoader || this.showTxList || this.serverError;

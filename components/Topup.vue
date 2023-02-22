@@ -199,7 +199,7 @@ export default {
             <button v-if="isOnlyCloseOnBack" class="button button--ghost button--full u-mt-10" type="button" @click="$emit('click-back')">
                 {{ backButtonText }}
             </button>
-            <nuxt-link v-else-if="backUrl" class="button button--ghost button--full u-mt-10" :to="backUrl">
+            <nuxt-link v-else-if="backUrl || successDeposit" class="button button--ghost button--full u-mt-10" :to="backUrl || $getDashboardUrl()">
                 {{ backButtonText }}
             </nuxt-link>
             <BackButton v-else class="u-mt-10" button-class="button button--ghost button--full">

@@ -78,7 +78,7 @@ export default {
             </div>
             <div class="card__action-stats">
                 <div class="card__action-stats-caption">{{ $td('You own', 'metagarden.you-own') }}</div>
-                <div class="card__action-stats-value">{{ spotInfo?.spots ?? '—' }}</div>
+                <div class="card__action-stats-value">{{ pretty(spotInfo?.spots) ?? '—' }}</div>
             </div>
         </div>
 
@@ -135,7 +135,7 @@ export default {
         <div class="u-mt-15" v-if="spotInfo?.spots > 0">
             <span class="u-h--uppercase">{{ $td('Daily yield:', 'metagarden.daily-yield') }}</span>
             <span class="u-h--uppercase-solid u-display-ib">
-                {{ spotInfo.dailyYield }} METAGARDEN + {{ spotInfo.dailyYield }}&nbsp;VOTES
+                {{ pretty(spotInfo.dailyYield) }} METAGARDEN + {{ pretty(spotInfo.dailyYield) }}&nbsp;VOTES
             </span>
         </div>
     </div>

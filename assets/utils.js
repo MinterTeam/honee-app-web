@@ -88,9 +88,10 @@ export function pretty(value) {
     if (!value && value !== 0) {
         return '';
     }
-    const PRECISION = 2;
+    const PRECISION_FIXED = 2;
+    const PRECISION = 4;
     if (value >= 1 || value <= -1 || Number(value) === 0) {
-        return prettyNumber(value, PRECISION, PRECISION_SETTING.FIXED);
+        return prettyNumber(value, PRECISION_FIXED, PRECISION_SETTING.FIXED);
     } else {
         value = prettyNumber(value, PRECISION, PRECISION_SETTING.REDUCE_SIGNIFICANT);
         value = value.substr(0, 10);

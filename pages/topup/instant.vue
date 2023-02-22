@@ -99,9 +99,28 @@ export default {
                     {{ $td(`Top up your balance with any of the following options, or share this page with anyone if you want to request payment.`, 'deposit.description') }}
                 </p>
             </div>
-            <div class="card card--light-grey card__content card__content--medium">
-                <template v-if="!isDepositProcessing && !successDeposit">
+            <div class="card card--light-grey">
+                <div class="card__content card__content--medium"><!--
+                --><TopupWaitSmartWallet
+                        class="u-text-center u-text-medium"
+                        :showWaitIndicator="false"
+                        :networkSlug="$options.HUB_NETWORK.BSC"
+                        @update:processing="isDepositProcessing = $event"
+                        @topup="successDeposit = $event;"
+                    /><!--
+                --><TopupWaitMinter
+                        class="u-text-center u-mt-15 u-text-medium"
+                        :showWaitIndicator="false"
+                        :network-slug="$options.HUB_NETWORK.MINTER"
+                        @update:processing="isDepositProcessing = $event"
+                        @topup="successDeposit = $event;"
+                    /><!--
+                --><nuxt-link v-if="successDeposit" class="button button--ghost button--full u-mt-10" :to="$getDashboardUrl()">
+                        {{ $td('Finish', 'common.finish') }}
+                    </nuxt-link><!--
+            --></div>
 
+                <div class="card__content card__content--medium" v-if="!isDepositProcessing && !successDeposit">
                     <h2 class="u-h--uppercase-solid u-mb-025 u-flex u-flex--align-center">
                         <img class="u-mr-05" src="https://explorer-static.minter.network/coins/2107.png" alt="" role="presentation" width="24" height="24">
                         {{ $td('BNB Smart Chain', 'deposit.title-evm') }}
@@ -172,22 +191,7 @@ export default {
                         level="L"
                         background="transparent"
                     />
-                </template>
-
-                <TopupWaitSmartWallet
-                    class="u-text-center u-mt-15 u-text-medium"
-                    :showWaitIndicator="false"
-                    :networkSlug="$options.HUB_NETWORK.BSC"
-                    @update:processing="isDepositProcessing = $event"
-                    @topup="successDeposit = $event;"
-                />
-                <TopupWaitMinter
-                    class="u-text-center u-mt-15 u-text-medium"
-                    :showWaitIndicator="false"
-                    :network-slug="$options.HUB_NETWORK.MINTER"
-                    @update:processing="isDepositProcessing = $event"
-                    @topup="successDeposit = $event;"
-                />
+                </div>
             </div>
         </div>
 
