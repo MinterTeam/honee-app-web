@@ -147,8 +147,15 @@ export default {
 
 .mg-spot__days {background: @c-night-dark; padding: 8px; border-radius: 36px; /*width: 212px;*/ /* (24 + 2 * 2) * 7 + (8 * 2) */}
 .mg-spot__days-item {
-    width: 28px; height: 12px; border: 2px solid @c-metagarden; border-radius: 6px;
-    &.is-active {background: @c-metagarden;;}
+    --color-spot-day-bg: @c-metagarden;
+    width: 28px; height: 12px; border: 2px solid var(--color-spot-day-bg); border-radius: 6px;
+    &.is-active {background: var(--color-spot-day-bg);}
+    &:nth-child(2) {--color-spot-day-bg: #8bed60;}
+    &:nth-child(3) {--color-spot-day-bg: #b5f44d;}
+    &:nth-child(4) {--color-spot-day-bg: #e1f837;}
+    &:nth-child(5) {--color-spot-day-bg: #eab328;}
+    &:nth-child(6) {--color-spot-day-bg: #f26f19;}
+    &:nth-child(7) {--color-spot-day-bg: #fc1b06;}
 }
 .mg-spot__days-info {cursor: help;}
 </style>
