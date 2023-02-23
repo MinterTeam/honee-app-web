@@ -372,7 +372,7 @@ export default defineComponent({
 
             return this.buildTxListAndCallSmartWallet()
                 .then((result) => {
-                    window.alert(`https://explorer.minter.network/smart-wallet-relay/${result.hash}`);
+                    window.alert(`https://explorer.minter.network/smart-wallet-relay/${this.hubChainData.hubNetworkSlug}/${result.hash}`);
                     this.addStepData(LOADING_STAGE.SEND_BRIDGE, {finished: true});
                     // @TODO subscribe hub deposit
                 })

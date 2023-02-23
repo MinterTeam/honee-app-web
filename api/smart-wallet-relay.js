@@ -1,6 +1,6 @@
 import axios from 'axios';
 // import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
-import {SMART_WALLET_RELAY_API_URL} from "~/assets/variables.js";
+import {HUB_CHAIN_BY_ID, SMART_WALLET_RELAY_API_URL} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 
 const instance = axios.create({
@@ -12,11 +12,13 @@ addToCamelInterceptor(instance);
 // const fastCache = new Cache({maxAge: 5 * 1000});
 
 /**
+ * @param {ChainId} chainId
  * @param {SmartWalletRelaySubmitTxPayload} payload
  * @return {Promise<{hash: string}>}
  */
-export function submitRelayTx(payload) {
-    return instance.post('submit_tx', payload, {
+export function submitRelayTx(chainId, payload) {
+    const hubNetworkSlug = HUB_CHAIN_BY_ID[chainId].hubNetworkSlug;
+    return instance.post(`${hubNetworkSlug}/submit_tx`, payload, {
             // cache: fastCache,
         })
         .then((response) => {
@@ -26,11 +28,13 @@ export function submitRelayTx(payload) {
 
 
 /**
+ * @param {ChainId} chainId
  * @param {string} inputTxHash
  * @return {Promise<SmartWalletRelayTxStatus>}
  */
-export function getRelayTxStatus(inputTxHash) {
-    return instance.get(`tx_status/${inputTxHash}`, {
+export function getRelayTxStatus(chainId, inputTxHash) {
+    const hubNetworkSlug = HUB_CHAIN_BY_ID[chainId].hubNetworkSlug;
+    return instance.get(`${hubNetworkSlug}/tx_status/${inputTxHash}`, {
             // cache: fastCache,
         })
         .then((response) => {

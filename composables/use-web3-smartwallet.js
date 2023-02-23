@@ -34,7 +34,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         /** @type {ChainId} */
         chainId: 0,
         gasTokenAddress: '',
-        gasTokenDecimals: '',
+        gasTokenDecimals: 0,
         // amount of swap tx combined into smart-wallet tx (e.g. several swaps for portfolio buy)
         complexity: 1,
         estimationComplexity: undefined,
@@ -315,6 +315,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
      * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxPayload>}
      */
+    // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
     async function preparePayload(txToList, txDataList, txValueList, {overrideExtraNonce} = {}) {
         const web3Eth = getProviderByChain(props.chainId);
         const smartWalletFactoryContract = new web3Eth.Contract(smartWalletFactoryABI);
@@ -357,6 +358,8 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
             d: hexToBase64(callPayload.slice(2)),
             gp: gasPrice,
             gl: gasLimit,
+            // if send via minter payload
+            // type: `send_to_${HUB_CHAIN_BY_ID[props.chainId].hubNetworkSlug}`,
         };
 
         function hexToBase64(str) {
@@ -376,6 +379,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
      * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxPayload>}
      */
+    // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
     function preparePayloadFromTxList(txList, {overrideExtraNonce} = {}) {
         const toList = [];
         const dataList = [];
@@ -395,10 +399,11 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
      * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxResult>}
      */
+    // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
     function callSmartWallet(txList, {overrideExtraNonce} = {}) {
         return preparePayloadFromTxList(txList, {overrideExtraNonce})
             .then((payload) => {
-                return submitRelayTx(payload);
+                return submitRelayTx(props.chainId, payload);
             })
             .then(({hash}) => {
                 return {
