@@ -544,6 +544,18 @@ export async function getDepositTxInfo(tx, chainId, hubCoinList, skipAmount) {
 }
 
 /**
+ * Calculate fee in native coin from gas price and gas limit
+ * @param {number|string} gasPriceGwei
+ * @param {number|string} gasLimit
+ * @return {number|string}
+ */
+export function getFeeAmount(gasPriceGwei, gasLimit) {
+    // gwei to ether
+    const gasPrice = web3Utils.fromWei(web3Utils.toWei(gasPriceGwei.toString(), 'gwei'), 'ether');
+    return new Big(gasPrice).times(gasLimit).toString();
+}
+
+/**
  *
  * @param {string} hex
  * @param {string} tokenContract

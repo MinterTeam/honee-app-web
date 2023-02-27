@@ -1,8 +1,8 @@
-import {reactive, computed, toRefs} from 'vue';
+import {reactive, computed, toRefs, watch} from 'vue';
 import {watchThrottled, watchDebounced} from '@vueuse/core';
 // import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 // import {PAYLOAD_MAX_LENGTH} from 'minterjs-util/src/variables.js';
-import {web3Utils, web3Abi, getProviderByChain, toErcDecimals, fromErcDecimals} from '~/api/web3.js';
+import {web3Utils, web3Abi, getProviderByChain, toErcDecimals, fromErcDecimals, getFeeAmount} from '~/api/web3.js';
 import {ParaSwapSwapSide} from '~/api/swap-paraswap-models.d.ts';
 // import {buildTxForSwap as buildTxForParaSwap, getEstimationLimit as getParaSwapEstimationLimit} from '~/api/swap-paraswap.js';
 import {buildTxForSwap as buildTxForZeroExSwap, getEstimationLimit as getZeroExEstimationLimit} from '~/api/swap-0x.js';
@@ -12,21 +12,27 @@ import smartWalletABI from '~/assets/abi-smartwallet.js';
 import smartWalletBin from '~/assets/abi-smartwallet-bin.js';
 import smartWalletFactoryABI from '~/assets/abi-smartwallet-factory.js';
 import Big from '~/assets/big.js';
-import {SMART_WALLET_RELAY_MINTER_ADDRESS, SMART_WALLET_FACTORY_CONTRACT_ADDRESS, SMART_WALLET_RELAY_BROADCASTER_ADDRESS, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
+import {SMART_WALLET_RELAY_MINTER_ADDRESS, SMART_WALLET_FACTORY_CONTRACT_ADDRESS, SMART_WALLET_RELAY_BROADCASTER_ADDRESS, NATIVE_COIN_ADDRESS, HUB_CHAIN_BY_ID, BSC_CHAIN_ID} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {wait} from '~/assets/utils/wait.js';
+import useHubOracle from '~/composables/use-hub-oracle.js';
 
-
-// (fees in BNB)
+const GAS_PRICE_BSC = 5; // in gwei
+const SLIPPAGE_PERCENT = 5;
+// gas limits of:
 // base extra fee added for each tx (to cover unexpected costs)
-export const RELAY_REWARD_AMOUNT_BASE = 0.0025;
+export const RELAY_REWARD_AMOUNT_BASE_GAS_LIMIT = 500000; // equivalent of 0.0025 BNB
 // fee for smart-wallet contract creation via factory
-export const RELAY_REWARD_AMOUNT_CREATE = 0.005;
+export const RELAY_REWARD_AMOUNT_CREATE_GAS_LIMIT = 1000000; // equivalent of 0.005 BNB
 // fee for each swap inside combined tx
-export const RELAY_REWARD_AMOUNT_SWAP = 0.0025;
+export const RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT = 500000; // equivalent of 0.0025 BNB
 
 
 export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
+    const {networkGasPrice, setHubOracleProps} = useHubOracle({
+        subscribePriceList: true,
+    });
+
     const props = reactive({
         privateKey: '',
         evmAccountAddress: '',
@@ -48,6 +54,13 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         Object.assign(props, newProps, {extraNonce: newProps.extraNonce > 0 ? newProps.extraNonce : 0});
     }
 
+    watch(() => props.chainId, () => {
+        setHubOracleProps({
+            hubNetworkSlug: HUB_CHAIN_BY_ID[props.chainId]?.hubNetworkSlug || '',
+            fixInvalidGasPriceWithDummy: false,
+        });
+    }, {immediate: true});
+
     const state = reactive({
         isSmartWalletExists: false,
         isSmartWalletExistenceLoading: false,
@@ -60,17 +73,27 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
     });
 
     const smartWalletAddress = computed(() => getSmartWalletAddress(props.evmAccountAddress));
+    // in gwei
+    const gasPrice = computed(() => {
+        if (props.chainId === BSC_CHAIN_ID) {
+            return GAS_PRICE_BSC;
+        }
+        return networkGasPrice.value;
+    });
     const relayRewardAmount = computed(() => getRelayRewardAmount(props.complexity));
     const estimationComplexity = computed(() => {
         return typeof props.estimationComplexity !== 'undefined' ? props.estimationComplexity : props.complexity;
     });
+    // estimation of reward
+    // it's named 'max' because in portfolioBuy we estimate max possible complexity (which is equal to number of coins to buy)
     const maxRelayRewardAmount = computed(() => getRelayRewardAmount(estimationComplexity.value));
     function getRelayRewardAmount(complexity = 1) {
-        const baseReward = RELAY_REWARD_AMOUNT_BASE;
-        const createReward = state.isSmartWalletExists ? 0 : RELAY_REWARD_AMOUNT_CREATE;
-        const gasSwapReward = props.gasTokenAddress === NATIVE_COIN_ADDRESS ? 0 : RELAY_REWARD_AMOUNT_SWAP;
-        const swapReward = complexity * RELAY_REWARD_AMOUNT_SWAP;
-        return baseReward + createReward + gasSwapReward + swapReward;
+        const baseRewardGasLimit = RELAY_REWARD_AMOUNT_BASE_GAS_LIMIT;
+        const createRewardGasLimit = state.isSmartWalletExists ? 0 : RELAY_REWARD_AMOUNT_CREATE_GAS_LIMIT;
+        const gasSwapRewardGasLimit = props.gasTokenAddress === NATIVE_COIN_ADDRESS ? 0 : RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT;
+        const swapRewardGasLimit = complexity * RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT;
+        const totalGasLimit = baseRewardGasLimit + createRewardGasLimit + gasSwapRewardGasLimit + swapRewardGasLimit;
+        return getFeeAmount(gasPrice.value, totalGasLimit);
     }
     function recalculateAmountEstimationLimit(complexity, useDirectRelayReward) {
         if (useDirectRelayReward) {
@@ -85,10 +108,14 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         if (complexity === estimationComplexity.value) {
             return state.maxAmountEstimationLimitForRelayReward;
         }
-        const baseRewardPart = new Big(RELAY_REWARD_AMOUNT_BASE).div(maxRelayRewardAmount.value);
-        const createRewardPart = state.isSmartWalletExists ? new Big(0) : new Big(RELAY_REWARD_AMOUNT_CREATE).div(maxRelayRewardAmount.value);
-        const gasSwapRewardPart = props.gasTokenAddress === NATIVE_COIN_ADDRESS ? new Big(0) : new Big(RELAY_REWARD_AMOUNT_SWAP).div(maxRelayRewardAmount.value);
-        const swapRewardPart = new Big(RELAY_REWARD_AMOUNT_SWAP).div(maxRelayRewardAmount.value);
+        const baseRewardSingle = getFeeAmount(gasPrice.value, RELAY_REWARD_AMOUNT_BASE_GAS_LIMIT);
+        const createRewardSingle = getFeeAmount(gasPrice.value, RELAY_REWARD_AMOUNT_CREATE_GAS_LIMIT);
+        const gasSwapRewardSingle = getFeeAmount(gasPrice.value, RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT);
+        const swapRewardSingle = getFeeAmount(gasPrice.value, RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT);
+        const baseRewardPart = new Big(baseRewardSingle).div(maxRelayRewardAmount.value);
+        const createRewardPart = state.isSmartWalletExists ? new Big(0) : new Big(createRewardSingle).div(maxRelayRewardAmount.value);
+        const gasSwapRewardPart = props.gasTokenAddress === NATIVE_COIN_ADDRESS ? new Big(0) : new Big(gasSwapRewardSingle).div(maxRelayRewardAmount.value);
+        const swapRewardPart = new Big(swapRewardSingle).div(maxRelayRewardAmount.value);
 
         const baseReward = baseRewardPart.times(state.maxAmountEstimationLimitForRelayReward);
         const createReward = createRewardPart.times(state.maxAmountEstimationLimitForRelayReward);
@@ -117,7 +144,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
             // destToken: HUB_CHAIN_BY_ID[props.chainId]?.wrappedNativeContractAddress,
             // buyTokenDecimals: 18,
             buyAmount: toErcDecimals(relayRewardAmount.value, 18),
-            slippagePercentage: 0.05, // 5%
+            slippagePercentage: SLIPPAGE_PERCENT / 100, // part of 1
             skipValidation: true,
             intentOnFilling: false,
             takerAddress: smartWalletAddress.value,
@@ -134,7 +161,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
             destDecimals: 18,
             amount: toErcDecimals(relayRewardAmount.value, 18),
             side: ParaSwapSwapSide.BUY,
-            slippage: 5 * 100, // 5%
+            slippage: SLIPPAGE_PERCENT * 100, // in bp
             maxImpact: 50, // 50% (default 15% can be exceeded on "bipx to 0.01bnb swap" despite it has 10k liquidity)
             userAddress: smartWalletAddress.value,
             txOrigin: SMART_WALLET_RELAY_BROADCASTER_ADDRESS,
@@ -350,7 +377,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         console.log({walletNonce, finalNonce, walletExists, callDestination});
         console.log('callPayload', callPayload);
 
-        const gasPrice = web3Utils.toWei('5', 'gwei');
+        const gasPrice = web3Utils.toWei(GAS_PRICE_BSC.toString(), 'gwei');
         const gasLimit = new Big(web3Utils.toWei(relayRewardAmount.value.toString(), 'ether')).div(gasPrice).round().toNumber();
 
         return {

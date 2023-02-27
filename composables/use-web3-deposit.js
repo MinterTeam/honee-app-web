@@ -1,7 +1,7 @@
 import {ref, reactive, computed, watch} from 'vue';
 
 import {subscribeTransfer} from '~/api/hub.js';
-import {getProviderByChain, web3Utils, toErcDecimals, buildDepositTx} from '~/api/web3.js';
+import {getProviderByChain, toErcDecimals, buildDepositTx, getFeeAmount as getFee} from '~/api/web3.js';
 import {getTransaction} from '~/api/explorer.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_TRANSFER_STATUS, MAINNET, NETWORK} from '~/assets/variables.js';
 import Big from '~/assets/big.js';
@@ -99,7 +99,6 @@ export default function useWeb3Deposit(destinationMinterAddress) {
     });
 
 // @TODO gasPrice not updated during isFormSending and may be too low/high after waiting pin gasPrice on submit
-// @TODO use *network*_fee instead of 'prices'
 // @TODO use web3.eth.getGasPrice for testnet @see https://web3js.readthedocs.io/en/v1.7.3/web3-eth.html#getgasprice
     const gasPriceGwei = ref(0);
     watch(networkGasPrice, () => {
@@ -114,11 +113,6 @@ export default function useWeb3Deposit(destinationMinterAddress) {
 
         return getFee(gasPriceGwei.value, totalGasLimit);
     });
-    function getFee(gasPriceGwei, gasLimit) {
-        // gwei to ether
-        const gasPrice = web3Utils.fromWei(web3Utils.toWei(gasPriceGwei.toString(), 'gwei'), 'ether');
-        return new Big(gasPrice).times(gasLimit).toString();
-    }
     const depositAmountAfterGas = computed(() => {
         let amount = new Big(props.amount || 0).minus(gasTotalFee.value);
         amount = amount.gt(0) ? amount.toString() : 0;

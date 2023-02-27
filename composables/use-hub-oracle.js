@@ -7,6 +7,9 @@ import usePolling from '~/composables/use-polling.js';
 
 // workaround for `set` not trigger computed properly
 // @see https://github.com/vuejs/composition-api/issues/580
+/**
+ * @return {Record<HUB_NETWORK, DestinationFee>}
+ */
 function getInitialChainData() {
     return Object.fromEntries(Object.values(HUB_NETWORK).map((hubNetworkSlug) => [hubNetworkSlug, getEmptyItem()]));
 
@@ -70,7 +73,7 @@ function fetchPriceList() {
 
 /**
  * @param {HUB_NETWORK} hubNetwork
- * @return {Promise<undefined>}
+ * @return {Promise<void>}
  */
 function fetchDestinationFee(hubNetwork) {
     if (!hubNetwork) {
@@ -100,8 +103,9 @@ export default function useHubOracle({
 } = {}) {
 
     const props = reactive({
-        /** @type {HUB_NETWORK|''} */
+        /** @type {HUB_NETWORK_SLUG|''} */
         hubNetworkSlug: '',
+        fixInvalidGasPriceWithDummy: true,
     });
 
     /**
@@ -137,7 +141,7 @@ export default function useHubOracle({
     const networkGasPrice = computed(() => {
         let gasPriceGwei = gasPriceMap.value[props.hubNetworkSlug];
         if (!(gasPriceGwei > 0)) {
-            gasPriceGwei = 100;
+            gasPriceGwei = props.fixInvalidGasPriceWithDummy ? 100 : 0;
         }
 
         // return NETWORK === MAINNET ? gasPriceGwei : 5;
