@@ -147,6 +147,7 @@ export function getVerifiedMinterCoinList() {
 
 /**
  * Prices of tokens in $
+ * Or gasPrice in gwei
  * @return {Promise<Array<HubPriceItem>>}
  */
 export function getOraclePriceList() {

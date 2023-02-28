@@ -45,7 +45,7 @@ const transactionPollingInterval = 5000;
 /**
  *
  * @param {object} abi
- * @return {function(method: string, ...[*]): string} abiMethodEncoder
+ * @return {(method: string, ...args: any[]) => string} abiMethodEncoder
  */
 export function AbiEncoder(abi) {
     const contract = new Contract(abi);

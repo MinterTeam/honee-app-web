@@ -2,7 +2,7 @@ import {reactive, computed, toRefs, watch} from 'vue';
 import {watchThrottled, watchDebounced} from '@vueuse/core';
 // import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 // import {PAYLOAD_MAX_LENGTH} from 'minterjs-util/src/variables.js';
-import {web3Utils, web3Abi, getProviderByChain, toErcDecimals, fromErcDecimals, getFeeAmount} from '~/api/web3.js';
+import {web3Utils, web3Abi, AbiEncoder, getProviderByChain, toErcDecimals, fromErcDecimals, getFeeAmount} from '~/api/web3.js';
 import {ParaSwapSwapSide} from '~/api/swap-paraswap-models.d.ts';
 // import {buildTxForSwap as buildTxForParaSwap, getEstimationLimit as getParaSwapEstimationLimit} from '~/api/swap-paraswap.js';
 import {buildTxForSwap as buildTxForZeroExSwap, getEstimationLimit as getZeroExEstimationLimit} from '~/api/swap-0x.js';
@@ -11,8 +11,9 @@ import {submitRelayTx} from '~/api/smart-wallet-relay.js';
 import smartWalletABI from '~/assets/abi-smartwallet.js';
 import smartWalletBin from '~/assets/abi-smartwallet-bin.js';
 import smartWalletFactoryABI from '~/assets/abi-smartwallet-factory.js';
+import smartWalletFactoryABILegacy from '~/assets/abi-smartwallet-factory-legacy.js';
 import Big from '~/assets/big.js';
-import {SMART_WALLET_RELAY_MINTER_ADDRESS, SMART_WALLET_FACTORY_CONTRACT_ADDRESS, SMART_WALLET_RELAY_BROADCASTER_ADDRESS, NATIVE_COIN_ADDRESS, HUB_CHAIN_BY_ID, BSC_CHAIN_ID} from '~/assets/variables.js';
+import {SMART_WALLET_RELAY_MINTER_ADDRESS, SMART_WALLET_FACTORY_CONTRACT_ADDRESS, SMART_WALLET_FACTORY_LEGACY_BSC_CONTRACT_ADDRESS, SMART_WALLET_RELAY_BROADCASTER_ADDRESS, NATIVE_COIN_ADDRESS, HUB_CHAIN_BY_ID, BSC_CHAIN_ID} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {wait} from '~/assets/utils/wait.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
@@ -39,6 +40,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         extraNonce: 0, // add to nonce for consequential txs
         /** @type {ChainId} */
         chainId: 0,
+        isLegacy: false, // use legacy BSC factory
         gasTokenAddress: '',
         gasTokenDecimals: 0,
         // amount of swap tx combined into smart-wallet tx (e.g. several swaps for portfolio buy)
@@ -72,7 +74,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         maxAmountEstimationLimitForRelayReward: 0,
     });
 
-    const smartWalletAddress = computed(() => getSmartWalletAddress(props.evmAccountAddress));
+    const smartWalletAddress = computed(() => getSmartWalletAddress(props.evmAccountAddress, {isLegacy: props.isLegacy}));
     // in gwei
     const gasPrice = computed(() => {
         if (props.chainId === BSC_CHAIN_ID) {
@@ -345,8 +347,8 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
     // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
     async function preparePayload(txToList, txDataList, txValueList, {overrideExtraNonce} = {}) {
         const web3Eth = getProviderByChain(props.chainId);
-        const smartWalletFactoryContract = new web3Eth.Contract(smartWalletFactoryABI);
         const smartWalletContract = new web3Eth.Contract(smartWalletABI, smartWalletAddress.value);
+        // @TODO walletExists is not needed for non legacy
         const walletExists = await checkSmartWalletExists(props.chainId, smartWalletAddress.value, true);
 
         // @TODO cache block
@@ -364,12 +366,15 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         let callDestination;
         let callPayload;
 
-        if (walletExists || props.extraNonce > 0) {
+        if (!props.isLegacy) {
+            callDestination = SMART_WALLET_FACTORY_CONTRACT_ADDRESS;
+            callPayload = AbiEncoder(smartWalletFactoryABI)('call', props.evmAccountAddress, finalNonce, txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s);
+        } else if (walletExists || props.extraNonce > 0) {
             callDestination = smartWalletAddress.value;
             callPayload = smartWalletContract.methods.call(txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s).encodeABI();
         } else {
-            callDestination = SMART_WALLET_FACTORY_CONTRACT_ADDRESS;
-            callPayload = smartWalletFactoryContract.methods.createAndCall(props.evmAccountAddress, txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s).encodeABI();
+            callDestination = SMART_WALLET_FACTORY_LEGACY_BSC_CONTRACT_ADDRESS;
+            callPayload = AbiEncoder(smartWalletFactoryABILegacy)('createAndCall', props.evmAccountAddress, txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s);
         }
         console.log('to', txToList);
         console.log('data', txDataList);
@@ -377,13 +382,13 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         console.log({walletNonce, finalNonce, walletExists, callDestination});
         console.log('callPayload', callPayload);
 
-        const gasPrice = web3Utils.toWei(GAS_PRICE_BSC.toString(), 'gwei');
-        const gasLimit = new Big(web3Utils.toWei(relayRewardAmount.value.toString(), 'ether')).div(gasPrice).round().toNumber();
+        const gasPriceWei = web3Utils.toWei(gasPrice.value.toString(), 'gwei');
+        const gasLimit = new Big(web3Utils.toWei(relayRewardAmount.value.toString(), 'ether')).div(gasPriceWei).round().toNumber();
 
         return {
             a: callDestination,
             d: hexToBase64(callPayload.slice(2)),
-            gp: gasPrice,
+            gp: gasPriceWei,
             gl: gasLimit,
             // if send via minter payload
             // type: `send_to_${HUB_CHAIN_BY_ID[props.chainId].hubNetworkSlug}`,
@@ -463,15 +468,19 @@ const SMART_WALLET_INDEX = 0;
  * @pure
  * @nosideeffects
  * @param {string} evmAccountAddress
+ * @param {object} [options]
+ * @param {boolean} [options.isLegacy]
  * @return {string}
  */
-function getSmartWalletAddress(evmAccountAddress) {
+// @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
+function getSmartWalletAddress(evmAccountAddress, {isLegacy} = {}) {
     if (!evmAccountAddress) {
         return '';
     }
+    const factoryContractAddress = isLegacy ? SMART_WALLET_FACTORY_LEGACY_BSC_CONTRACT_ADDRESS : SMART_WALLET_FACTORY_CONTRACT_ADDRESS;
     const salt = web3Utils.keccak256(web3Abi.encodeParameters(["address", "uint256"], [evmAccountAddress, SMART_WALLET_INDEX]));
     const byteCode = smartWalletBin + web3Abi.encodeParameter('address', evmAccountAddress).slice(2);
-    return buildCreate2Address(SMART_WALLET_FACTORY_CONTRACT_ADDRESS, salt, byteCode);
+    return buildCreate2Address(factoryContractAddress, salt, byteCode);
 
     /**
      * @param {string} creatorAddress

@@ -51,7 +51,7 @@ export default {
         getExplorerTxUrl,
         formatHash: (value) => shortHashFilter(value, 8),
         getEvmNetworkName(networkSlug) {
-            return HUB_CHAIN_DATA[networkSlug].shortName || 'EVM';
+            return HUB_CHAIN_DATA[networkSlug]?.shortName || 'EVM';
         },
     },
 };
