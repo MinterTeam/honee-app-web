@@ -58,6 +58,7 @@ export default {
                     this.isClaimLoading = false;
                     this.spotInfo.claimValue = 0;
                     this.spotInfo.claimDays = 0;
+                    this.spotInfo.isMiningStarted = true;
                 })
                 .catch((error) => {
                     this.isClaimLoading = false;
@@ -99,7 +100,7 @@ export default {
             <div class="u-h--uppercase u-mb-05">{{ $td('Available to claim', 'metagarden.available-to-claim') }}</div>
             <div class="u-h u-h3">${{ pretty(spotInfo.claimValue) }}</div>
 
-            <div class="u-flex u-flex--align-center u-flex--justify-center u-mt-10">
+            <div class="u-flex u-flex--align-center u-flex--justify-center u-mt-10" v-if="spotInfo.isMiningStarted">
                 <div class="mg-spot__days u-flex u-mr-05">
                     <div
                         class="mg-spot__days-item u-flex-item--grow"
@@ -121,7 +122,8 @@ export default {
             :class="{'is-loading': isClaimLoading, 'is-disabled': !spotInfo || spotInfo.claimValue <= 0}"
             @click="claimSpot()"
         >
-            <span class="button__content">{{ $td('Claim rewards', 'metagarden.claim-rewards-button') }}</span>
+            <span class="button__content" v-if="spotInfo?.isMiningStarted">{{ $td('Claim rewards', 'metagarden.claim-rewards-button') }}</span>
+            <span class="button__content" v-else>{{ $td('Start mining', 'metagarden.start-mining-button') }}</span>
             <BaseLoader class="button__loader" :isLoading="true"/>
         </button>
         <nuxt-link :to="$i18nGetPreferredPath('/metagarden/buy-spot')" class="button button--full">

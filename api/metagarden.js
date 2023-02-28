@@ -110,5 +110,6 @@ export function openLootbox(privateKey, id) {
  * @property {number} claimValue
  * @property {number} claimDays
  * @property {number} dailyYield - mg + votes
+ * @property {boolean} isMiningStarted
  * @property {Record<string, string|number>} locks
  */

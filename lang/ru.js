@@ -670,6 +670,7 @@ export default {
         'you-own': 'Количество',
         'available-to-claim': 'Доступно для сбора',
         'claim-rewards-button': 'Собрать награды',
+        'start-mining-button': 'Начать майнинг',
         'buy-more-button': 'Купить майнинг-споты',
         'daily-yield': 'Ежедневные награды:',
         'back-to-honee': 'Перейти в Honee',
