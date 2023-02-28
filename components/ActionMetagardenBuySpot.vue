@@ -31,10 +31,12 @@ const MODE = {
 };
 export const SPOT_PRICE_METAGARDEN = 1000;
 export const SPOT_PRICE_USD = 160;
+const SPOT_MIN_AMOUNT = 0.1;
 const SPOT_BUY_ADDRESS = 'Mxfb758e0516e3ced06eb90387b7fee61ecaad0000';
 
 export default {
     TX_TYPE,
+    SPOT_MIN_AMOUNT,
     METAGARDEN_SYMBOL,
     USD_SYMBOL,
     components: {
@@ -92,7 +94,7 @@ export default {
             },
             spotAmount: {
                 required,
-                minValue: minValue(1),
+                minValue: minValue(SPOT_MIN_AMOUNT),
             },
         };
 
@@ -255,13 +257,14 @@ export default {
                             <div class="h-field__title">{{ $td('Spots amount', 'metagarden.spot-amount-label') }}</div>
                             <InputMaskedAmount
                                 class="h-field__input h-field__input--medium"
-                                scale="0"
+                                :scale="undefined"
                                 v-model="form.spotAmount"
                                 @blur="$v.form.spotAmount.$touch()"
                             />
                         </div>
                     </div>
                     <span class="form-field__error" v-if="$v.form.spotAmount.$dirty && !$v.form.spotAmount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
+                    <span class="form-field__error" v-else-if="$v.form.spotAmount.$dirty && !$v.form.spotAmount.minValue">{{ $td('Minimum', 'form.amount-error-min') }} {{ $options.SPOT_MIN_AMOUNT }}</span>
                 </div>
 
                 <div class="form-row">

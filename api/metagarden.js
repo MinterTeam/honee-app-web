@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
-import {METAGARDEN_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
+import {METAGARDEN_API_URL, METAGARDEN_ADMIN_API_KEY, NETWORK, MAINNET} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import addEcdsaAuthInterceptor, {authHeaderKeyGenerator} from '~/assets/axios-ecdsa-auth.js';
 
@@ -27,6 +27,22 @@ export function getSpotInfo(privateKey) {
     return instance.get('info', {
             ecdsaAuth: {
                 privateKey,
+            },
+        })
+        .then((response) => response.data.data);
+}
+
+/**
+ * @param {string} address
+ * @param {string} [date] - e.g. '2006-01-25'
+ * @return {Promise<MetagardenSpotInfo>}
+ */
+export function getSpotInfoDebug(address, date) {
+    return instance.get('address-info', {
+            params: {
+                address,
+                date,
+                key: METAGARDEN_ADMIN_API_KEY,
             },
         })
         .then((response) => response.data.data);

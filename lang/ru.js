@@ -388,6 +388,7 @@ export default {
         'coin-error-name': 'Некорректный символ монеты',
         'amount': 'Количество',
         'amount-error-required': 'Укажите количество',
+        'amount-error-min': 'Минимум',
         'number-invalid': 'Укажите положительное целое число',
         'fee': 'Монета для оплаты комиссии',
         'fee-help': 'В эквиваленте {coin} {value}',
