@@ -664,7 +664,7 @@ export default {
     },
     metagarden: {
         'title': 'Майнинг-споты Metagarden',
-        'description': 'Один спот стоит ${priceUsd} или {priceMetagarden} токенов METAGARDEN',
+        'description': 'Вы можете купить от 0.1 спота. Стоимость 0.1 спота составляет $16 или 100 токенов METAGARDEN.',
         'spot-amount-label': 'Количество спотов',
         'confirm-title': 'Подтвердите покупку',
         'mining-spots': 'Майнинг-споты',
