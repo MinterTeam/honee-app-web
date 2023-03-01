@@ -51,6 +51,7 @@ export default function useWeb3SmartWalletSwap() {
         depositDestinationAddress: '',
         /** @type {ChainId} */
         chainId: 0,
+        isLegacy: false,
         // minter coins for WITHDRAW mode
         coinToSell: '',
         coinToBuy: '',
@@ -94,6 +95,7 @@ export default function useWeb3SmartWalletSwap() {
         evmAccountAddress: props.evmAccountAddress,
         extraNonce: props.extraNonce,
         chainId: props.chainId,
+        isLegacy: props.isLegacy,
         gasTokenAddress: tokenToSellAddress.value,
         gasTokenDecimals: tokenToSellDecimals.value,
         complexity: undefined,

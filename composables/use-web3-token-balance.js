@@ -114,6 +114,7 @@ export default function useWeb3TokenBalance() {
     }
 
     /**
+     * @TODO consecutive then calls not supported (canceler added only to first)
      * @param {number|string} [targetAmount] - current balance will be used by default
      * @return {Promise&{canceler: function}}
      */

@@ -12,7 +12,7 @@ export function wait(time, result) {
 
 
 /**
- * @param {function: boolean} conditionFn
+ * @param {function(): boolean} conditionFn
  * @param {number} [delay=100]
  * @return {Promise<void>}
  */

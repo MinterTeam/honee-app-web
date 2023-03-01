@@ -368,7 +368,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
 
         if (!props.isLegacy) {
             callDestination = SMART_WALLET_FACTORY_CONTRACT_ADDRESS;
-            callPayload = AbiEncoder(smartWalletFactoryABI)('call', props.evmAccountAddress, finalNonce, txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s);
+            callPayload = AbiEncoder(smartWalletFactoryABI)('call', props.evmAccountAddress, SMART_WALLET_INDEX, txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s);
         } else if (walletExists || props.extraNonce > 0) {
             callDestination = smartWalletAddress.value;
             callPayload = smartWalletContract.methods.call(txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s).encodeABI();

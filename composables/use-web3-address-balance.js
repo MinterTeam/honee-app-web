@@ -12,12 +12,12 @@ function getInitialChainData() {
     return Object.fromEntries(Object.values(HUB_CHAIN_DATA).map((item) => [item.chainId, getEmptyItem()]));
 
     function getEmptyItem() {
-        return undefined;
+        return {};
     }
 }
 
 /**
- * @type {UnwrapNestedRefs<Record<ChainId, Array<TokenBalanceItem>>>}
+ * @type {UnwrapNestedRefs<Record<ChainId, Record<string, Array<TokenBalanceItem>>>>}
  */
 const web3Balance = reactive(getInitialChainData());
 
@@ -35,7 +35,8 @@ export default function useWeb3AddressBalance() {
      * @param {Partial<props>} newProps
      */
     function setProps(newProps) {
-        Object.assign(props, newProps);
+        const accountAddress = (newProps.accountAddress || props.accountAddress || '').toLowerCase();
+        Object.assign(props, newProps, {accountAddress});
         // setHubTokenProps(newProps);
     }
 
@@ -44,36 +45,8 @@ export default function useWeb3AddressBalance() {
      * @type {ComputedRef<Array<TokenBalanceItem>>}
      */
     const balanceList = computed(() => {
-        return web3Balance[props.chainId] || [];
-    });
-
-    // const nativeBalance = computed(() => {
-    //     if (isNativeToken.value) {
-    //         return web3Balance[props.chainId]?.[0] || 0;
-    //     }
-    //
-    //     return 0;
-    // });
-    // const wrappedBalance = computed(() => {
-    //     if (isNativeToken.value) {
-    //         return web3Balance[props.chainId]?.[tokenContractAddress.value] || 0;
-    //     }
-    //
-    //     return 0;
-    // });
-    // const balance = computed(() => {
-    //     if (isNativeToken.value) {
-    //         return new Big(wrappedBalance.value).plus(nativeBalance.value).toString();
-    //     } else {
-    //         return web3Balance[props.chainId]?.[tokenContractAddress.value] || 0;
-    //     }
-    // });
-
-    // clean balances on account change
-    watch(() => props.accountAddress, () => {
-        Object.keys(web3Balance).forEach((chainId) => {
-            web3Balance[chainId] = undefined;
-        });
+        // console.log('balanceList', props.chainId, props.accountAddress, web3Balance[props.chainId]?.[props.accountAddress])
+        return web3Balance[props.chainId]?.[props.accountAddress] || [];
     });
 
     watch(props, (newVal, oldVal) => {
@@ -103,11 +76,13 @@ export default function useWeb3AddressBalance() {
      */
     async function updateAddressBalance() {
         const chainId = props.chainId;
+        const accountAddress = props.accountAddress;
 
-        return getWalletBalances(chainId, props.accountAddress)
+        return getWalletBalances(chainId, accountAddress)
             .then((result) => {
                 console.log(result);
-                const oldBalanceList = web3Balance[chainId];
+                /** @type {Array<TokenBalanceItem>} */
+                const oldBalanceList = web3Balance[chainId][accountAddress];
                 /** @type {HUB_NETWORK_SLUG} */
                 const hubNetworkSlug = HUB_CHAIN_BY_ID[chainId].hubNetworkSlug;
                 const tokenList = result.map((item) => {
@@ -119,12 +94,12 @@ export default function useWeb3AddressBalance() {
                         amount: item.value,
                         decimals: item.token.decimals,
                         moralisItem: item,
-                        id: `${item.token.contractAddress.lowercase}-${hubNetworkSlug}`,
+                        id: `${item.token.contractAddress.lowercase}-${hubNetworkSlug}-${accountAddress}`,
                         search: item.token.symbol + hubNetworkSlug,
                     };
                 });
 
-                set(web3Balance, chainId, Object.freeze(tokenList));
+                set(web3Balance[chainId], accountAddress, Object.freeze(tokenList));
 
                 if (oldBalanceList?.length > 0) {
                     const oldTokenMap = arrayToMap(oldBalanceList, 'tokenContractAddress');
@@ -147,6 +122,7 @@ export default function useWeb3AddressBalance() {
     }
 
     /**
+     * @TODO consecutive then calls not supported (canceler added only to first)
      * @return {Promise<Array<TokenBalanceItem>>&{canceler: function}}
      */
     function waitBalanceUpdate() {
