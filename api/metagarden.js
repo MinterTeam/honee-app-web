@@ -32,6 +32,8 @@ export function getSpotInfo(privateKey) {
         .then((response) => response.data.data);
 }
 
+// export const getSpotInfo = () => getSpotInfoDebug('Mx531bdb3a6ab6faa0b6adba80cedeb86a6dbbea67');
+
 /**
  * @param {string} address
  * @param {string} [date] - e.g. '2006-01-25'

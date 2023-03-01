@@ -12,7 +12,7 @@ export default {
         HeaderBanner,
         TheHeader,
         TheFooter,
-        FooterGarden,
+        // FooterGarden,
         // BackButtonFull,
         ConnectionNotice,
         Snackbar,
@@ -39,7 +39,7 @@ export default {
         <nuxt class="u-section u-container"/> <!--data-nuxt-page-->
 
         <TheFooter/>
-        <FooterGarden/>
+        <!--<FooterGarden/>-->
 
         <ConnectionNotice/>
         <Snackbar/>

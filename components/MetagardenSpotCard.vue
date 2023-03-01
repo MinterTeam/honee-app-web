@@ -79,7 +79,7 @@ export default {
             </div>
             <div class="card__action-stats">
                 <div class="card__action-stats-caption">{{ $td('You own', 'metagarden.you-own') }}</div>
-                <div class="card__action-stats-value">{{ pretty(spotInfo?.spots) ?? '—' }}</div>
+                <div class="card__action-stats-value">{{ pretty(spotInfo?.spots) || '—' }}</div>
             </div>
         </div>
 
