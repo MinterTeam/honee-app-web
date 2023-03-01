@@ -183,6 +183,7 @@ export default {
         'cancel': 'Отмена',
         'back': 'Назад',
         'confirm-deposit-title': 'Депозит',
+        'deposit-sw-balance-description': 'На вашем смарт-кошельке есть доступные средства. Хотите зачислить?',
         'deposit-evm-balance-description': 'На вашем {network} адресе доступные средства. Хотите зачислить?',
         'deposit-evm-balance-button': 'Зачислить',
     },

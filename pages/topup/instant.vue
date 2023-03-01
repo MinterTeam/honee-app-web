@@ -7,7 +7,7 @@ import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
 import QrcodeVue from 'qrcode.vue';
 import BaseButtonCopyIcon from '~/components/base/BaseButtonCopyIcon.vue';
 import TopupWaitMinter from '~/components/TopupWaitMinter.vue';
-import TopupWaitSmartWallet from '~/components/TopupWaitSmartWallet.vue';
+import TopupWaitSmartWalletWrap from '~/components/TopupWaitSmartWalletWrap.vue';
 
 export default {
     HUB_NETWORK,
@@ -18,7 +18,7 @@ export default {
         QrcodeVue,
         BaseButtonCopyIcon,
         TopupWaitMinter,
-        TopupWaitSmartWallet,
+        TopupWaitSmartWalletWrap,
     },
     setup() {
         const {
@@ -46,6 +46,7 @@ export default {
             isQrVisible: false,
             isDepositProcessing: false,
             successDeposit: '',
+            isShowWaitSmartWallet: false,
         };
     },
     computed: {
@@ -100,25 +101,28 @@ export default {
                 </p>
             </div>
             <div class="card card--light-grey">
-                <div class="card__content card__content--medium"><!--
-                --><TopupWaitSmartWallet
+                <div
+                    class="card__content card__content--medium"
+                    :class="isShowWaitSmartWallet || isDepositProcessing || successDeposit ? '' : 'u-hidden'"
+                >
+                    <TopupWaitSmartWalletWrap
                         class="u-text-center u-text-medium"
                         :showWaitIndicator="false"
-                        :networkSlug="$options.HUB_NETWORK.BSC"
                         @update:processing="isDepositProcessing = $event"
                         @topup="successDeposit = $event;"
-                    /><!--
-                --><TopupWaitMinter
+                        @is-show="isShowWaitSmartWallet = $event;"
+                    />
+                    <TopupWaitMinter
                         class="u-text-center u-mt-15 u-text-medium"
                         :showWaitIndicator="false"
                         :network-slug="$options.HUB_NETWORK.MINTER"
                         @update:processing="isDepositProcessing = $event"
                         @topup="successDeposit = $event;"
-                    /><!--
-                --><nuxt-link v-if="successDeposit" class="button button--ghost button--full u-mt-10" :to="$getDashboardUrl()">
+                    />
+                    <nuxt-link v-if="successDeposit" class="button button--ghost button--full u-mt-10" :to="$getDashboardUrl()">
                         {{ $td('Finish', 'common.finish') }}
-                    </nuxt-link><!--
-            --></div>
+                    </nuxt-link>
+                </div>
 
                 <div class="card__content card__content--medium" v-if="!isDepositProcessing && !successDeposit">
                     <h2 class="u-h--uppercase-solid u-mb-025 u-flex u-flex--align-center">

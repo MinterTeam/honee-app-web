@@ -1,10 +1,6 @@
 <script>
 import {defineComponent} from 'vue';
-import {validationMixin} from 'vuelidate/src/index.js';
-import required from 'vuelidate/src/validators/required.js';
 import stripZeros from 'pretty-num/src/strip-zeros.js';
-import Big from '~/assets/big.js';
-import {isValidAmount} from '~/assets/utils/validators.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_NETWORK} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {wait} from '~/assets/utils/wait.js';
@@ -17,12 +13,8 @@ import useWeb3AddressBalance from '~/composables/use-web3-address-balance';
 import useWeb3SmartWalletSwap from '~/composables/use-web3-smartwallet-swap.js';
 import useTxService from '~/composables/use-tx-service.js';
 import {TOP_UP_NETWORK} from '~/components/Topup.vue';
-import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
-import FieldCombined from '~/components/base/FieldCombined.vue';
-import Modal from '~/components/base/Modal.vue';
 import HubBuyTxListItem from '~/components/HubBuyTxListItem.vue';
-import HubFeeImpact from '~/components/HubFeeImpact.vue';
 
 /**
  * @enum {string}
@@ -35,19 +27,23 @@ const MODE = {
 export default defineComponent({
     LOADING_STAGE,
     components: {
-        BaseAmountEstimation,
         BaseLoader,
-        FieldCombined,
-        Modal,
         HubBuyTxListItem,
-        HubFeeImpact,
     },
-    mixins: [validationMixin],
     props: {
         /** @type {HUB_NETWORK_SLUG} */
         networkSlug: {
             type: String,
             required: true,
+        },
+        isLegacy: {
+            type: Boolean,
+            default: false,
+        },
+        form: {
+            type: Object,
+            required: true,
+            default: () => ({}),
         },
         showWaitIndicator: {
             type: Boolean,
@@ -56,6 +52,7 @@ export default defineComponent({
     },
     emits: [
         'update:processing',
+        'update:data',
         'topup',
     ],
     setup() {
@@ -148,35 +145,18 @@ export default defineComponent({
         };
     },
     fetch() {
-        return this.initWaitEvmTopup();
+        if (!this.isLegacy) {
+            return this.initWaitEvmTopup();
+        }
     },
     data() {
         return {
-            form: {
-                amount: '',
-                value: '',
-                /** @type {TokenBalanceItem} */
-                tokenBalanceItem: undefined,
-            },
             mode: MODE.EXISTING_BALANCE,
             /** @type {TokenBalanceItem|null} */
             updatedBalanceItem: null,
             evmWaitCanceler: () => {},
             serverError: '',
-            isConfirmModalVisible: false,
-        };
-    },
-    validations() {
-        return {
-            form: {
-                amount: {
-                    required,
-                    validAmount: isValidAmount,
-                    // maxValue: maxValue(this.maxAmount || 0),
-                    minValue: (value) => value > 0,
-                    enoughToPayFee: (value) => value >= this.smartWalletRelayReward,
-                },
-            },
+            // isConfirmModalVisible: false,
         };
     },
     computed: {
@@ -201,6 +181,7 @@ export default defineComponent({
         tokenSymbol() {
             return this.hubCoin?.symbol || this.selectedBalanceItem?.tokenContractAddress;
         },
+        // @TODO use bnb/eth
         usdtSymbol() {
             if (this.networkSlug === HUB_NETWORK.ETHEREUM) {
                 return 'USDTE';
@@ -223,14 +204,9 @@ export default defineComponent({
         //     const input = this.depositAmountAfterGas;
         //     return new Big(input || 0).times(this.hubFeeRate).toString();
         // },
-        coinAmountAfterBridge() {
-            return this.amountAfterDeposit;
-            // const input = this.depositAmountAfterGas;
-            // return new Big(input || 0).minus(this.hubFee).toString();
-        },
         totalFeeImpact() {
             const totalSpend = this.form.amount;
-            const totalResult = this.coinAmountAfterBridge;
+            const totalResult = this.amountAfterDeposit;
             if (!totalSpend || !totalResult) {
                 return 0;
             }
@@ -304,11 +280,12 @@ export default defineComponent({
                     privateKey: this.$store.getters.privateKey,
                     evmAccountAddress: this.$store.getters.evmAddress,
                     chainId: this.hubChainData.chainId,
+                    isLegacy: this.isLegacy,
                     valueToSell: this.selectedAmount,
                     ...tokenToSell,
                     ...tokenToDeposit,
                     // skipEstimation: true,
-                    idPreventConcurrency: 'estimateSwsSwap',
+                    idPreventConcurrency: 'estimateSwsSwap' + this.hubChainData.chainId + (this.isLegacy ? 'legacy' : ''),
                 };
             },
             (newVal) => this.setSmartWalletSwapProps(newVal),
@@ -340,6 +317,24 @@ export default defineComponent({
             (newVal) => this.setDiscountProps(newVal),
             {deep: true, immediate: true},
         );
+
+        // emit shared data to wrapper
+        this.$watch(
+            () => ({
+                addressBalance: this.addressBalance,
+                amountAfterDeposit: this.amountAfterDeposit,
+                smartWalletRelayReward: this.smartWalletRelayReward,
+                totalFeeImpact: this.totalFeeImpact,
+                showSomething: this.showSomething,
+            }),
+            (newVal) => {
+                /**
+                 * @typedef {newVal} TopupWaitSmartWalletSharedData
+                 */
+                this.$emit('update:data', newVal);
+            },
+            {deep: true, immediate: true},
+        );
     },
     destroyed() {
         this.evmWaitCanceler();
@@ -347,17 +342,23 @@ export default defineComponent({
     methods: {
         pretty,
         waitEvmBalance() {
-            this.addStepData(LOADING_STAGE.WAIT_ETH, {network: this.networkSlug});
-            const promise = this.waitBalanceUpdate()
+            // @TODO maybe keep different txServiceState instances
+            // multiple instances of topup share same txServiceState, so only set steps when other instances deactivated (e.g. on WAIT_ETH finish)
+            // this.addStepData(LOADING_STAGE.WAIT_ETH, {network: this.networkSlug});
+            const promise = this.waitBalanceUpdate();
+
+            promise
                 .then((updatedList) => {
                     // @TODO select best (it is rare that multiple coins will be topped up during polling tick, but may be)
                     this.updatedBalanceItem = updatedList[0];
+                    // @TODO maybe emit earlier to cancel other waiters (now cancels on 'update:processing')
                     this.mode = MODE.AFTER_TOPUP;
                 })
                 // wait computed to recalculate
                 .then(() => wait(100))
                 .then(() => {
                     this.addStepData(LOADING_STAGE.WAIT_ETH, {
+                        network: this.networkSlug,
                         coin: this.tokenSymbol,
                         amount: this.updatedBalanceItem.amount,
                         finished: true,
@@ -401,6 +402,7 @@ export default defineComponent({
                     this.serverError = getErrorText(error);
                 });
         },
+        /*
         openDepositConfirmation() {
             if (this.$v.$invalid) {
                 this.$v.$touch();
@@ -410,11 +412,12 @@ export default defineComponent({
             this.serverError = '';
             this.isConfirmModalVisible = true;
         },
+        */
         // cancel waiting and deposit existing balance
         deposit() {
             this.evmWaitCanceler();
             this.setStepList({});
-            this.isConfirmModalVisible = false;
+            // this.isConfirmModalVisible = false;
 
             this.depositFromEthereum()
                 .then((outputAmount) => {
@@ -436,34 +439,6 @@ export default defineComponent({
 
 <template>
     <div v-if="showSomething">
-        <div class="form-row" v-if="showExistingBalance">
-            <p>{{ $td(`You have available funds on you ${hubChainData.name} address. Do you want to deposit it?`, 'topup.deposit-evm-balance-description', {network: hubChainData.shortName}) }}</p>
-
-            <div class="u-mt-10">
-                <FieldCombined
-                    class="h-field--is-readonly"
-                    :coin.sync="form.value"
-                    :coin-list="addressBalance"
-                    :fallback-to-full-list="false"
-                    :amount.sync="form.amount"
-                    :$amount="$v.form.amount"
-                    :label="$td('Choose amount', 'form.amount')"
-                    :max-value="form.tokenBalanceItem?.amount"
-                    :use-balance-for-max-value="false"
-                    @select-suggestion="form.tokenBalanceItem = $event"
-                    @blur="/*handleInputBlur(); */$v.form.amount.$touch()"
-                />
-                <span class="form-field__error" v-if="$v.form.amount.$dirty && !$v.form.amount.required">{{ $td('Enter amount', 'form.enter-amount') }}</span>
-                <span class="form-field__error" v-else-if="$v.form.amount.$dirty && (!$v.form.amount.validAmount || !$v.form.amount.minValue)">{{ $td('Invalid amount', 'form.invalid-amount') }}</span>
-                <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.enoughToPayFee">{{ $td('Not enough to pay fee', 'form.not-enough-to-pay-fee') }}</span>
-                <!--                        <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.maxValue">{{ $td('Not enough', 'form.not-enough') }} {{ form.coinToGet }} ({{ $td('max.', 'form.max') }} {{ pretty(maxAmount) }})</span>-->
-            </div>
-
-            <button type="button" class="button button--main button--full u-mt-10" :class="{'is-disabled': $v.$invalid}" @click="openDepositConfirmation()">
-                {{ $td('Deposit', 'topup.deposit-evm-balance-button') }}
-            </button>
-        </div>
-
         <div class="form-row" v-if="showLoader">
             <div>{{ $td('Waiting top-up transaction', 'topup.waiting-topup') }}</div>
             <div class="u-text-center">
@@ -479,34 +454,5 @@ export default defineComponent({
             :loadingStage="item.loadingStage"
         />
         <div class="form__error u-mt-10" v-if="serverError">{{ serverError }}</div>
-
-        <!-- Confirm modal -->
-        <Modal class="u-text-left" :isOpen.sync="isConfirmModalVisible">
-            <h2 class="u-h3 form-row">
-                {{ $td('Deposit', 'topup.confirm-deposit-title') }}
-            </h2>
-
-            <div class="information form-row">
-                <h3 class="information__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
-                <BaseAmountEstimation :coin="tokenSymbol" :amount="form.amount" format="exact"/>
-
-                <h3 class="information__title">{{ $td('You will get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
-                <BaseAmountEstimation :coin="tokenSymbol" :amount="coinAmountAfterBridge" format="approx"/>
-            </div>
-
-            <HubFeeImpact class="form-row" :coin="tokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
-
-            <div class="form-row">
-                <button
-                    class="button button--main button--full" type="button" data-focus-on-open
-                    @click="deposit()"
-                >
-                    {{ $td('Confirm', 'form.submit-confirm-button') }}
-                </button>
-                <button class="button button--ghost-main button--full u-mt-05" type="button" @click="isConfirmModalVisible = false">
-                    {{ $td('Cancel', 'form.submit-cancel-button') }}
-                </button>
-            </div>
-        </Modal>
     </div>
 </template>
