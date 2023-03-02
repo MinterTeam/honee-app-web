@@ -190,8 +190,8 @@ export default {
     deposit: {
         'title': 'Мгновенное пополнение',
         'description': 'Пополните баланс любым из следующих способов или поделитесь этой страницей при запросе оплаты.',
-        'title-evm': 'BNB Smart Chain',
-        'description-evm': 'Переведите любой токен (BEP20) из сети BNB Smart Chain на этот адрес.',
+        'title-evm': 'Ethereum & BNB Smart Chain',
+        'description-evm': 'Переведите любой токен (ERC20 или BEP20) из сети Ethereum или BNB Smart Chain на этот адрес.',
         'smart-wallet-address': 'Адрес смарт-кошелька',
         'title-card': 'Банковские карты',
         'description-card': 'Пополнить с помощью банковской карты.',

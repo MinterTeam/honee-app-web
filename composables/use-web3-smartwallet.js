@@ -342,10 +342,11 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
      * @param {Array<string>} txValueList - list of wei values
      * @param {object} [options]
      * @param {number} [options.overrideExtraNonce]
+     * @param {number} [options.walletIndex]
      * @return {Promise<SmartWalletRelaySubmitTxPayload>}
      */
     // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
-    async function preparePayload(txToList, txDataList, txValueList, {overrideExtraNonce} = {}) {
+    async function preparePayload(txToList, txDataList, txValueList, {overrideExtraNonce, walletIndex = SMART_WALLET_INDEX} = {}) {
         const web3Eth = getProviderByChain(props.chainId);
         const smartWalletContract = new web3Eth.Contract(smartWalletABI, smartWalletAddress.value);
         // @TODO walletExists is not needed for non legacy
@@ -368,7 +369,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
 
         if (!props.isLegacy) {
             callDestination = SMART_WALLET_FACTORY_CONTRACT_ADDRESS;
-            callPayload = AbiEncoder(smartWalletFactoryABI)('call', props.evmAccountAddress, SMART_WALLET_INDEX, txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s);
+            callPayload = AbiEncoder(smartWalletFactoryABI)('call', props.evmAccountAddress, walletIndex, txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s);
         } else if (walletExists || props.extraNonce > 0) {
             callDestination = smartWalletAddress.value;
             callPayload = smartWalletContract.methods.call(txToList, txDataList, txValueList, timeout, sign.v, sign.r, sign.s).encodeABI();
@@ -470,15 +471,16 @@ const SMART_WALLET_INDEX = 0;
  * @param {string} evmAccountAddress
  * @param {object} [options]
  * @param {boolean} [options.isLegacy]
+ * @param {number} [options.walletIndex]
  * @return {string}
  */
 // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
-function getSmartWalletAddress(evmAccountAddress, {isLegacy} = {}) {
+function getSmartWalletAddress(evmAccountAddress, {isLegacy, walletIndex = SMART_WALLET_INDEX} = {}) {
     if (!evmAccountAddress) {
         return '';
     }
     const factoryContractAddress = isLegacy ? SMART_WALLET_FACTORY_LEGACY_BSC_CONTRACT_ADDRESS : SMART_WALLET_FACTORY_CONTRACT_ADDRESS;
-    const salt = web3Utils.keccak256(web3Abi.encodeParameters(["address", "uint256"], [evmAccountAddress, SMART_WALLET_INDEX]));
+    const salt = web3Utils.keccak256(web3Abi.encodeParameters(["address", "uint256"], [evmAccountAddress, walletIndex]));
     const byteCode = smartWalletBin + web3Abi.encodeParameter('address', evmAccountAddress).slice(2);
     return buildCreate2Address(factoryContractAddress, salt, byteCode);
 

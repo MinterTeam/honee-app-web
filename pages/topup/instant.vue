@@ -126,11 +126,12 @@ export default {
 
                 <div class="card__content card__content--medium" v-if="!isDepositProcessing && !successDeposit">
                     <h2 class="u-h--uppercase-solid u-mb-025 u-flex u-flex--align-center">
+                        <img class="u-mr-minus-025" src="https://explorer-static.minter.network/coins/2065.png" alt="" role="presentation" width="24" height="24">
                         <img class="u-mr-05" src="https://explorer-static.minter.network/coins/2107.png" alt="" role="presentation" width="24" height="24">
-                        {{ $td('BNB Smart Chain', 'deposit.title-evm') }}
+                        {{ $td('Ethereum & BNB Smart Chain', 'deposit.title-evm') }}
                     </h2>
                     <p class="u-text-medium">
-                        {{ $td(`Transfer any token (BEP20) from BNB Smart Chain networks to this address.`, 'deposit.description-evm') }}
+                        {{ $td(`Transfer any token (ERC20 or BEP20) from Ethereum or BNB Smart Chain networks to this address.`, 'deposit.description-evm') }}
                     </p>
 
                     <div class="h-field u-mt-10 u-mb-10">
