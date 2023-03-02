@@ -36,4 +36,7 @@ export default {
         'delegation-unbond-confirm-description': 'If you unbond coins, they will return to your address in approximately <strong>30&nbsp;days</strong> (518&#x202F;400 blocks) and will not be generating rewards during this&nbsp;period.',
         'delegation-move-confirm-description': 'Are you sure you want to move your coins? They will appear to new masternode in approximately <strong>30&nbsp;days</strong> (518&#x202F;400 blocks) and will not be generating rewards during this period.',
     },
+    'mg-lootbox': {
+        'new-lootbox-button-plural': 'a new lootbox | {n} lootboxes',
+    },
 };

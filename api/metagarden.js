@@ -65,15 +65,19 @@ export function claimSpotReward(privateKey) {
 
 /**
  * @param {string} privateKey
+ * @param {object} [options]
+ * @param {boolean} [options.keepActivated]
  * @return {Promise<Array<MetagardenLootbox>>}
  */
-export function getLootboxList(privateKey) {
+export function getLootboxList(privateKey, {keepActivated} = {}) {
     return instance.get('loot-box/list', {
             ecdsaAuth: {
                 privateKey,
             },
         })
-        .then((response) => response.data.data);
+        .then((response) => {
+            return keepActivated ? response.data.data : response.data.data.filter((item) => !item.isActivated);
+        });
 }
 
 /**
@@ -82,7 +86,7 @@ export function getLootboxList(privateKey) {
  * @returns {Promise<MetagardenLootbox|undefined>}
  */
 export function getLootbox(privateKey) {
-    return getLootboxList(privateKey)
+    return getLootboxList(privateKey, {keepActivated: true})
         .then((list) => {
             return list.find((item) => !item.isActivated);
         });

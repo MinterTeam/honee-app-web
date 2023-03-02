@@ -1,3 +1,31 @@
+/**
+ * choicesLength should be 3, e.g. машина | машины | машин
+ * @param {number} num
+ * @param {number} choicesLength
+ * @return {number}
+ */
+export function pluralizationRule(num, choicesLength) {
+    // 0 машин - third options
+    if (num === 0) {
+        return 2;
+    }
+
+    const teen = num > 10 && num < 20;
+    const endsWithOne = num % 10 === 1;
+    // 1 машина, 101 машина
+    if (!teen && endsWithOne) {
+        return 0;
+    }
+    // 2-4 машины, 22-24 машины, 132-134 машины
+    if (!teen && num % 10 >= 2 && num % 10 <= 4) {
+        return 1;
+    }
+
+    // 5-10 машин, 11-20 машин, 135-140 машин
+    return 2;
+}
+
+
 export default {
     common: {
         'logout': 'Выйти',
@@ -686,6 +714,7 @@ export default {
         'description-redeem-failed': 'Не получилось открыть лутбокс, обратитесь в поддержку для получения вознаграждения',
         'terms-title': 'Что такое лутбокс?',
         'terms-description': 'Лутбокс — это виртуальный призовой сундук, в котором находится случайная награда. Монеты, NFT или прочие игровые элементы.',
-        'new-lootbox-button': 'У вас новый лутбокс!',
+        'new-lootbox-button': 'У вас',
+        'new-lootbox-button-plural': 'новый лутбокс | {n} лутбокса | {n} лутбоксов',
     },
 };

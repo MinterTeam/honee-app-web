@@ -1,34 +1,38 @@
 <script>
-import {getLootbox} from '~/api/metagarden.js';
+import {getLootboxList} from '~/api/metagarden.js';
 
 export default {
     fetch() {
-        return getLootbox(this.$store.getters.privateKey)
-            .then((lootbox) => {
-                this.lootbox = lootbox;
+        return getLootboxList(this.$store.getters.privateKey)
+            .then((lootboxList) => {
+                this.lootboxList = lootboxList;
             });
     },
     data() {
         return {
-            lootbox: null,
+            lootboxList: [],
         };
     },
 };
 </script>
 
 <template>
-    <nuxt-link :to="$i18nGetPreferredPath('/metagarden/lootbox')" class="card card__content--small card--metagarden-lootbox luminaire__card u-text-center" v-if="lootbox">
+    <nuxt-link :to="$i18nGetPreferredPath('/metagarden/lootbox')" class="card card__content--small card--metagarden-lootbox luminaire__card u-text-center" v-if="lootboxList.length > 0">
         <div class="luminaire__wrap">
             <div class="luminaire on"></div>
             <img class="u-mb-05" src="/img/metagarden-lootbox-fancy.png" srcset="/img/metagarden-lootbox-fancy@2x.png" alt="" role="presentation" width="133" height="136">
         </div>
 
 
-        <h2 class="u-h3">{{ $td('You’ve got a new lootbox!', 'mg-lootbox.new-lootbox-button') }}</h2>
+        <h2 class="u-h3">
+            {{ $td('You’ve got', 'mg-lootbox.new-lootbox-button') }}
+            {{ $tc('mg-lootbox.new-lootbox-button-plural', lootboxList.length, {n: lootboxList.length}) }}!
+        </h2>
     </nuxt-link>
 </template>
 
-<style-backup lang="less" scoped>
+<style-backup>
+<!-- lang="less" scoped -->
 .luminaire__card {overflow: hidden; overflow: clip; position: relative; z-index: 0;}
 .luminaire__wrap {position: relative;}
 .luminaire {
