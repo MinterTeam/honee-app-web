@@ -346,9 +346,10 @@ export default defineComponent({
             // @TODO maybe keep different txServiceState instances
             // multiple instances of topup share same txServiceState, so only set steps when other instances deactivated (e.g. on WAIT_ETH finish)
             // this.addStepData(LOADING_STAGE.WAIT_ETH, {network: this.networkSlug});
-            const promise = this.waitBalanceUpdate();
+            const [promise, canceler] = this.waitBalanceUpdate();
+            this.evmWaitCanceler = canceler;
 
-            promise
+            return promise
                 .then((updatedList) => {
                     // @TODO select best (it is rare that multiple coins will be topped up during polling tick, but may be)
                     this.updatedBalanceItem = updatedList[0];
@@ -365,8 +366,6 @@ export default defineComponent({
                         finished: true,
                     });
                 });
-            this.evmWaitCanceler = promise.canceler || (() => {});
-            return promise;
         },
         depositFromEthereum() {
             this.$emit('update:processing', true);

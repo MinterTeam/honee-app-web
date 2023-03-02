@@ -3,6 +3,7 @@ import Big from '~/assets/big.js';
 import {BSC_CHAIN_ID, ETHEREUM_CHAIN_ID, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from '~/assets/variables.js';
 import {arrayToMap} from '~/assets/utils/collection.js';
 import {wait} from '~/assets/utils/wait.js';
+import {createCancelableSignal} from '~/assets/utils/cancelable-signal.js';
 import CancelError from '~/assets/utils/error-cancel.js';
 import {getWalletBalances} from '~/api/web3-moralis.js';
 
@@ -122,53 +123,33 @@ export default function useWeb3AddressBalance() {
     }
 
     /**
-     * @TODO consecutive then calls not supported (canceler added only to first)
-     * @return {Promise<Array<TokenBalanceItem>>&{canceler: function}}
+     * @return {[promise: Promise<Array<TokenBalanceItem>>, cancel: CancelableSignal['cancel']]}
      */
     function waitBalanceUpdate() {
-        let promiseReject;
-        let isCanceled = {value: false};
-        let promise = new Promise((resolve, reject) => {
-            promiseReject = reject;
-            _waitBalanceUpdate(isCanceled).then(resolve).catch(reject);
-        });
-        promise.canceler = () => {
-            promiseReject(new CancelError());
-            isCanceled.value = true;
-        };
-        // keep custom `canceler` property during chaining
-        // consider https://stackoverflow.com/a/41797215/4936667 or https://stackoverflow.com/a/48500142/4936667
-        const originalThen = promise.then;
-        const originalCatch = promise.catch;
-        promise.then = function(...args) {
-            const newPromise = originalThen.call(promise, ...args);
-            newPromise.canceler = promise.canceler;
-            return newPromise;
-        };
-        promise.catch = function(...args) {
-            const newPromise = originalCatch.call(promise, ...args);
-            newPromise.canceler = promise.canceler;
-            return newPromise;
-        };
-        return promise;
+        const signal = createCancelableSignal();
+
+        return [
+            _waitBalanceUpdate(signal),
+            signal.cancel,
+        ];
     }
 
     /**
-     * @param {{value: boolean}} isCanceled
+     * @param {CancelableSignal} signal
      * @return {Promise<Array<TokenBalanceItem>>}
      * @private
      */
-    function _waitBalanceUpdate(isCanceled) {
+    function _waitBalanceUpdate(signal) {
         return updateAddressBalance()
             .then((updatedList) => {
                 // Sending was canceled
-                if (isCanceled.value) {
+                if (signal.isCanceled) {
                     return Promise.reject(new CancelError());
                 }
                 if (updatedList.length > 0) {
                     return updatedList;
                 } else {
-                    return wait(30000).then(() => _waitBalanceUpdate(isCanceled));
+                    return wait(30000).then(() => _waitBalanceUpdate(signal));
                 }
             });
     }

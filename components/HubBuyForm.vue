@@ -474,9 +474,9 @@ export default {
                     network: this.hubChainData.hubNetworkSlug,
                 });
 
-                const promise = this.waitEnoughTokenBalance(targetAmount);
+                const [promise, canceler] = this.waitEnoughTokenBalance(targetAmount);
                 waitingCancel = () => {
-                    promise.canceler();
+                    canceler();
                     waitingCancel = null;
                 };
                 return promise;

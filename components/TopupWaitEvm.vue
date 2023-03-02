@@ -258,7 +258,10 @@ export default {
         pretty,
         waitEvmBalance() {
             this.addStepData(LOADING_STAGE.WAIT_ETH, {network: this.networkSlug});
-            const promise = this.waitEnoughTokenBalance()
+            const [promise, canceler] = this.waitEnoughTokenBalance();
+            this.evmWaitCanceler = canceler;
+
+            return promise
                 .then(() => {
                     this.addStepData(LOADING_STAGE.WAIT_ETH, {
                         coin: this.tokenSymbol,
@@ -266,8 +269,6 @@ export default {
                         finished: true,
                     });
                 });
-            this.evmWaitCanceler = promise.canceler || (() => {});
-            return promise;
         },
         initWaitEvmTopup() {
             this.setStepList({});
