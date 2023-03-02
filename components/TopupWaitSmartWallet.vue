@@ -168,6 +168,7 @@ export default defineComponent({
         hubChainData() {
             return HUB_CHAIN_DATA[this.networkSlug];
         },
+        /** @type {TokenBalanceItem} */
         selectedBalanceItem() {
             return this.mode === MODE.AFTER_TOPUP ? this.updatedBalanceItem : this.form.tokenBalanceItem;
         },

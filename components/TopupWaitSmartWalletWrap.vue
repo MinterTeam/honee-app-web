@@ -106,8 +106,16 @@ export default defineComponent({
                 .reduce((accumulator, [componentId, { addressBalance }]) => {
                     addressBalance = addressBalance?.length > 0 ? addressBalance : [];
                     addressBalance = addressBalance.map((balanceItem) => {
+                        const chainId = HUB_CHAIN_DATA[balanceItem.hubNetworkSlug].chainId;
+                        const hubCoin = findHubCoinItemByTokenAddress(this.hubTokenList, balanceItem.tokenContractAddress, chainId, true);
                         return {
                             ...balanceItem,
+                            ...(hubCoin && {
+                                coin: {
+                                    symbol: hubCoin.symbol,
+                                    id: hubCoin.minterId,
+                                },
+                            }),
                             componentId,
                         };
                     });

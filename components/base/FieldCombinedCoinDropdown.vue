@@ -75,7 +75,7 @@ export default {
             if (suggestion.coin?.symbol) {
                 return suggestion.coin?.symbol;
             } else if (suggestion.tokenContractAddress) {
-                return (suggestion.tokenSymbol || suggestion.tokenName) + ' ' + suggestion.hubNetworkSlug;
+                return (suggestion.tokenSymbol || suggestion.tokenName);
             }
             return suggestion;
         },
@@ -87,7 +87,11 @@ export default {
 };
 
 function isMinterBalanceItem(item) {
-    return !!item?.coin?.symbol;
+    return !!item?.coin?.symbol && !item?.tokenContractAddress;
+}
+// token known by Hub bridge
+function isKnownTokenBalanceItem(item) {
+    return !!item?.tokenContractAddress && !!item?.coin?.symbol;
 }
 function isTokenBalanceItem(item) {
     return !!item?.tokenContractAddress;
@@ -96,12 +100,15 @@ export function getValueAttribute(item) {
     if (isMinterBalanceItem(item)) {
         return 'coin.symbol';
     }
-    if (isTokenBalanceItem(item)) {
+    if (isTokenBalanceItem(item) || isKnownTokenBalanceItem(item)) {
         return 'id';
     }
     return undefined;
 }
 function getDisplayAttribute(item) {
+    if (isKnownTokenBalanceItem(item)) {
+        return 'coin.symbol';
+    }
     if (isTokenBalanceItem(item)) {
         return 'search';
     }
@@ -135,7 +142,7 @@ function ofType(coinType, selectedType) {
     >
         <template v-slot:suggestion-item="{suggestion}">
             <img class="h-field__suggestion-icon" :src="getSuggestionIconUrl(suggestion)" width="24" height="24" alt="" role="presentation">
-            <BaseCoinSymbol class="h-field__suggestion-symbol">{{ getSuggestionCoin(suggestion) }}</BaseCoinSymbol>
+            <BaseCoinSymbol class="h-field__suggestion-symbol" :network="suggestion.hubNetworkSlug?.toUpperCase()">{{ getSuggestionCoin(suggestion) }}</BaseCoinSymbol>
             <span class="h-field__suggestion-amount" v-if="getSuggestionAmount(suggestion)">{{ getSuggestionAmount(suggestion) }}</span>
         </template>
     </FieldCombinedBaseDropdown>

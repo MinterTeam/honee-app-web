@@ -171,7 +171,7 @@ export default {
             <div class="h-field__title">{{ label }}</div>
             <button class="h-field__select-button u-semantic-button" type="button" @click="openDropdown()" :disabled="isSelectDisabled">
                 <img class="h-field__select-icon" :src="iconUrl" width="24" height="24" alt="" role="presentation" v-if="coin">
-                <BaseCoinSymbol class="h-field__select-value">{{ displayValue || $td('Select coin', 'form.select-coin') }}</BaseCoinSymbol>
+                <BaseCoinSymbol class="h-field__select-value" :network="selectedSuggestion?.hubNetworkSlug?.toUpperCase()">{{ displayValue || $td('Select coin', 'form.select-coin') }}</BaseCoinSymbol>
                 <img class="h-field__select-icon-arrow" src="/img/icon-dropdown.svg" alt="" role="presentation" width="24" height="24" v-if="!isSelectDisabled">
             </button>
         </div>
