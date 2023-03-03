@@ -4,9 +4,9 @@ import {TinyEmitter as Emitter} from 'tiny-emitter';
 import stripZeros from 'pretty-num/src/strip-zeros.js';
 import {isValidAddress as isValidMinterAddress} from 'minterjs-util';
 import {isValidAddress as isValidEthAddress} from 'ethereumjs-util';
-import {getCoinList} from '~/api/explorer.js';
+import {getCoinList, getTransaction} from '~/api/explorer.js';
 import Big from '~/assets/big.js';
-import {HUB_API_URL, HUB_TRANSFER_STATUS, HUB_CHAIN_ID, HUB_NETWORK, NETWORK, MAINNET, BASE_COIN, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_COIN_DATA, NATIVE_COIN_ADDRESS} from "~/assets/variables.js";
+import {HUB_API_URL, HUB_TRANSFER_STATUS, HUB_CHAIN_ID, HUB_NETWORK, NETWORK, MAINNET, BASE_COIN, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_COIN_DATA, NATIVE_COIN_ADDRESS, HUB_BUY_STAGE as LOADING_STAGE} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {isHubTransferFinished} from '~/assets/utils.js';
 
@@ -234,7 +234,7 @@ export function getTransferFee(inputTxHash) {
  *
  * @param {string} hash
  * @param {number|string} [timestamp]
- * @return {Promise<HubTransferStatus>}
+ * @return {Promise<HubTransferStatus> & {unsubscribe: function(): void, on: TinyEmitter.on, once: TinyEmitter.once}}
  */
 export function subscribeTransfer(hash, timestamp) {
     if (!hash) {
@@ -313,6 +313,39 @@ export function subscribeTransfer(hash, timestamp) {
                 return wait(10000).then(() => pollMinterTxStatus(hash));
             });
     }
+}
+
+/**
+ * @param {string} txHash
+ * @param {string} destinationMinterAddress
+ * @param {string} destinationTokenSymbol
+ * @return {Promise<{tx: Transaction, outputAmount: number|string}>}
+ */
+export function waitHubTransferToMinter(txHash, destinationMinterAddress, destinationTokenSymbol) {
+    return subscribeTransfer(txHash)
+        .then((transfer) => {
+            if (transfer.status !== HUB_TRANSFER_STATUS.batch_executed) {
+                throw new Error(`Unsuccessful bridge transfer: ${transfer.status}`);
+            }
+            console.log('transfer', transfer);
+            return getTransaction(transfer.outTxHash);
+        })
+        .then((minterTx) => {
+            console.log('minterTx', minterTx);
+
+            if (!minterTx.data.list) {
+                throw new Error('Minter tx transfer has invalid data');
+            }
+            const multisendItem = minterTx.data.list.find((item) => item.to === destinationMinterAddress && item.coin.symbol === destinationTokenSymbol);
+            if (!multisendItem) {
+                throw new Error(`Minter tx transfer does not include ${destinationTokenSymbol} deposit to the current user`);
+            }
+
+            return {
+                outputAmount: multisendItem.value,
+                tx: minterTx,
+            };
+        });
 }
 
 /**

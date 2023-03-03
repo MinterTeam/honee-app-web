@@ -207,12 +207,17 @@ export const HUB_COIN_DATA = {
  * @enum {string}
  */
 export const HUB_BUY_STAGE = {
+    // common
     WAIT_ETH: 'wait_eth',
+    // smart-wallet relay
+    SEND_TO_RELAY: 'send_to_relay',
+    // user signed tx before bridge
     SWAP_ETH: 'swap_eth',
     WRAP_ETH: 'wrap_eth',
     UNWRAP_ETH: 'unwrap_eth',
     APPROVE_BRIDGE: 'approve_bridge',
     SEND_BRIDGE: 'send_bridge',
+    // common
     WAIT_BRIDGE: 'wait_bridge',
     SWAP_MINTER: 'swap_minter',
     FINISH: 'finish',

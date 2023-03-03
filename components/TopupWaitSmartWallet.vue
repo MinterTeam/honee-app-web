@@ -5,7 +5,8 @@ import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_NET
 import {getErrorText} from '~/assets/server-error.js';
 import {wait} from '~/assets/utils/wait.js';
 import {pretty} from '~/assets/utils.js';
-import {findHubCoinItemByTokenAddress, findTokenInfo} from '~/api/hub.js';
+import {findHubCoinItemByTokenAddress, findHubCoinItem, waitHubTransferToMinter} from '~/api/hub.js';
+import {waitRelayTxSuccess} from '~/api/smart-wallet-relay.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
@@ -94,6 +95,7 @@ export default defineComponent({
             amountEstimationLimitForRelayReward: smartWalletRelayReward,
             amountToSellForSwapToHub,
             amountEstimationAfterSwapToHub,
+            amountToDeposit,
             amountAfterDeposit,
             isSmartWalletSwapParamsLoading,
             smartWalletSwapParamsError,
@@ -127,6 +129,7 @@ export default defineComponent({
             smartWalletRelayReward,
             amountToSellForSwapToHub,
             amountEstimationAfterSwapToHub,
+            amountToDeposit,
             amountAfterDeposit,
             isSmartWalletSwapParamsLoading,
             smartWalletSwapParamsError,
@@ -155,6 +158,7 @@ export default defineComponent({
             /** @type {TokenBalanceItem|null} */
             updatedBalanceItem: null,
             evmWaitCanceler: () => {},
+            relayWaitCanceler: () => {},
             serverError: '',
             // isConfirmModalVisible: false,
         };
@@ -175,7 +179,7 @@ export default defineComponent({
         selectedAmount() {
             return this.mode === MODE.AFTER_TOPUP ? this.updatedBalanceItem?.amount : this.form.amount;
         },
-        /** @type {HubCoinItem|undefined} */
+        /** @type {HubCoinItem|undefined} - hub coin to send to relay */
         hubCoin() {
             return findHubCoinItemByTokenAddress(this.hubTokenList, this.selectedBalanceItem?.tokenContractAddress, this.hubChainData.chainId, true);
         },
@@ -192,8 +196,18 @@ export default defineComponent({
             }
             return '';
         },
-        usdtHubToken() {
-            return findTokenInfo(this.hubTokenList, this.usdtSymbol, this.hubChainData.chainId);
+        usdtHubCoin() {
+            return findHubCoinItem(this.hubTokenList, this.usdtSymbol);
+        },
+        depositHubCoin() {
+            // if token to sell exists in Hub bridge, then set is as tokenToBuy, so swap will be skipped and token will be deposited as is
+            // otherwise buy USDT
+            return this.hubCoin || this.usdtHubCoin;
+        },
+        depositHubToken() {
+            return this.depositHubCoin
+                ? this.depositHubCoin[this.hubChainData.hubNetworkSlug]
+                : undefined;
         },
         // hubFeeRate() {
         //     const discountModifier = 1 - this.discount;
@@ -243,48 +257,16 @@ export default defineComponent({
         // smartWalletSwapProps
         this.$watch(
             () => {
-                const tokenBalance = this.selectedBalanceItem;
-
-                /**
-                 * @type {{valueToSell: string|number, tokenToSellContractAddress: string, tokenToSellDecimals: number}|{}}
-                 */
-                const tokenToSell = (() => {
-                    if (tokenBalance) {
-                        return {
-                            tokenToSellContractAddress: tokenBalance.tokenContractAddress,
-                            tokenToSellDecimals: tokenBalance.decimals,
-                        };
-                    }
-                    return {};
-                })();
-                /**
-                 * @type {{tokenToBuyContractAddress: string, tokenToBuyDecimals: number}|{}}
-                 */
-                const tokenToDeposit = (() => {
-                    if (this.hubCoin) {
-                        // if token to sell exists in Hub bridge, then set is as tokenToBuy, so swap will be skipped and token will be deposited as is
-                        return {
-                            tokenToBuyContractAddress: tokenBalance.tokenContractAddress,
-                            tokenToBuyDecimals: tokenBalance.decimals,
-                        };
-                    } else if (this.usdtHubToken) {
-                        // otherwise buy USDT
-                        return {
-                            tokenToBuyContractAddress: this.usdtHubToken.externalTokenId,
-                            tokenToBuyDecimals: this.usdtHubToken.externalDecimals,
-                        };
-                    }
-                    return {};
-                })();
-
                 return {
                     privateKey: this.$store.getters.privateKey,
                     evmAccountAddress: this.$store.getters.evmAddress,
                     chainId: this.hubChainData.chainId,
                     isLegacy: this.isLegacy,
                     valueToSell: this.selectedAmount,
-                    ...tokenToSell,
-                    ...tokenToDeposit,
+                    tokenToSellContractAddress: this.selectedBalanceItem?.tokenContractAddress,
+                    tokenToSellDecimals: this.selectedBalanceItem?.decimals,
+                    tokenToBuyContractAddress: this.depositHubToken?.externalTokenId,
+                    tokenToBuyDecimals: this.depositHubToken?.externalDecimals,
                     // skipEstimation: true,
                     idPreventConcurrency: 'estimateSwsSwap' + this.hubChainData.chainId + (this.isLegacy ? 'legacy' : ''),
                 };
@@ -339,6 +321,7 @@ export default defineComponent({
     },
     destroyed() {
         this.evmWaitCanceler();
+        this.relayWaitCanceler();
     },
     methods: {
         pretty,
@@ -369,16 +352,53 @@ export default defineComponent({
         },
         depositFromEthereum() {
             this.$emit('update:processing', true);
-            this.addStepData(LOADING_STAGE.SEND_BRIDGE, {coin: this.tokenSymbol, amount: this.selectedAmount}, true);
+            this.addStepData(LOADING_STAGE.SEND_TO_RELAY, {
+                coin: this.tokenSymbol,
+                amount: this.selectedAmount,
+                relayParams: {
+                    hubNetworkSlug: this.hubChainData.hubNetworkSlug,
+                },
+            }, true);
 
             return this.buildTxListAndCallSmartWallet()
                 .then((result) => {
-                    window.alert(`https://explorer.minter.network/smart-wallet-relay/${this.hubChainData.hubNetworkSlug}/${result.hash}`);
-                    this.addStepData(LOADING_STAGE.SEND_BRIDGE, {finished: true});
-                    // @TODO subscribe hub deposit
+                    // window.alert(`https://explorer.minter.network/smart-wallet-relay/${this.hubChainData.hubNetworkSlug}/${result.hash}`);
+                    this.addStepData(LOADING_STAGE.SEND_TO_RELAY, {
+                        tx: {
+                            hash: result.hash,
+                            timestamp: (new Date()).toISOString(),
+                        },
+                    });
+                    const [promise, canceler] = waitRelayTxSuccess(this.hubChainData.chainId, result.hash);
+                    this.relayWaitCanceler = canceler;
+                    return promise;
+                })
+                .then((result) => {
+                    this.addStepData(LOADING_STAGE.SEND_TO_RELAY, {finished: true});
+                    this.addStepData(LOADING_STAGE.SEND_BRIDGE, {
+                        coin: this.depositHubCoin.symbol,
+                        // it is approximate amount based on estimation, maybe extract actual amount from tx
+                        amount: this.amountToDeposit,
+                        tx: {
+                            hash: result.txHash,
+                            params: {
+                                chainId: this.hubChainData.chainId,
+                            },
+                            timestamp: (new Date()).toISOString(),
+                        },
+                        finished: true, // is really finished here?
+                    });
+
+                    this.addStepData(LOADING_STAGE.WAIT_BRIDGE, {coin: this.depositHubCoin.symbol /* calculate receive amount? */}, true);
+                    return waitHubTransferToMinter(result.txHash, this.$store.getters.address, this.depositHubCoin.symbol);
+                })
+                .then(({ tx: minterTx, outputAmount}) => {
+                    this.addStepData(LOADING_STAGE.WAIT_BRIDGE, {amount: outputAmount, tx: minterTx, finished: true});
+
+                    return outputAmount;
                 })
                 .catch((error) => {
-                    this.addStepData(LOADING_STAGE.SEND_BRIDGE, {error}, true);
+                    this.addStepData(this.currentLoadingStage, {error});
                     throw error;
                 });
         },

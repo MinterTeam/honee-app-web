@@ -42,13 +42,24 @@ export default {
             if (!this.step.tx) {
                 return;
             }
-            return HUB_CHAIN_BY_ID[this.step.tx.params.chainId].coinSymbol;
+            return HUB_CHAIN_BY_ID[this.step.tx.params?.chainId].coinSymbol;
+        },
+        txUrl() {
+            if (this.hash.indexOf('Mt') === 0) {
+                return getExplorerTxUrl(this.hash);
+            }
+            if (this.hash.indexOf('0x') === 0) {
+                return getEvmTxUrl(this.step.tx.params?.chainId, this.hash);
+            }
+            if (this.hash && this.step.relayParams) {
+                return `https://explorer.minter.network/smart-wallet-relay/${this.step.relayParams.hubNetworkSlug}/${this.hash}`;
+            }
+
+            return '';
         },
     },
     methods: {
         pretty,
-        getEvmTxUrl,
-        getExplorerTxUrl,
         formatHash: (value) => shortHashFilter(value, 8),
         getEvmNetworkName(networkSlug) {
             return HUB_CHAIN_DATA[networkSlug]?.shortName || 'EVM';
@@ -77,6 +88,9 @@ export default {
             <template v-if="loadingStage === $options.LOADING_STAGE.APPROVE_BRIDGE">
                 {{ $td('Approve', 'form.stage-approve') }} {{ step.coin }}
             </template>
+            <template v-if="loadingStage === $options.LOADING_STAGE.SEND_TO_RELAY">
+                {{ $td('Send', 'form.stage-send') }} {{ pretty(step.amount) }} {{ step.coin }} {{ $td('from smart-wallet', 'form.stage-to-relay') }}
+            </template>
             <template v-if="loadingStage === $options.LOADING_STAGE.SEND_BRIDGE">
                 {{ $td('Send', 'form.stage-send') }} {{ pretty(step.amount) }} {{ step.coin }} {{ $td('to bridge', 'form.stage-to-bridge') }}
             </template>
@@ -97,9 +111,7 @@ export default {
             />
         </div>
         <div class="hub__buy-transaction-row hub__buy-transaction-meta">
-            <!-- @TODO chainId -->
-            <a v-if="hash.indexOf('0x') === 0" :href="getEvmTxUrl(step.tx.params.chainId, hash)" class="link--main link--hover" target="_blank">{{ formatHash(hash) }}</a>
-            <a v-if="hash.indexOf('Mt') === 0" :href="getExplorerTxUrl(hash)" class="link--main link--hover" target="_blank">{{ formatHash(hash) }}</a>
+            <a v-if="txUrl" :href="txUrl" class="link--main link--hover" target="_blank">{{ formatHash(hash) }}</a>
             <div class="hub__buy-time" v-if="time">
                 {{ time }}
             </div>

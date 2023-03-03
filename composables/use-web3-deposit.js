@@ -1,8 +1,7 @@
 import {ref, reactive, computed, watch} from 'vue';
 
-import {subscribeTransfer} from '~/api/hub.js';
+import {waitHubTransferToMinter} from '~/api/hub.js';
 import {getProviderByChain, toErcDecimals, buildDepositTx, getFeeAmount as getFee} from '~/api/web3.js';
-import {getTransaction} from '~/api/explorer.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_TRANSFER_STATUS, MAINNET, NETWORK} from '~/assets/variables.js';
 import Big from '~/assets/big.js';
 import wethAbi from '~/assets/abi-weth.js';
@@ -167,28 +166,9 @@ export default function useWeb3Deposit(destinationMinterAddress) {
         const depositReceipt = await waitPendingStep(LOADING_STAGE.SEND_BRIDGE);
 
         addStepData(LOADING_STAGE.WAIT_BRIDGE, {coin: props.tokenSymbol /* calculate receive amount? */}, true);
-        return subscribeTransfer(depositReceipt.transactionHash)
-            .then((transfer) => {
-                if (transfer.status !== HUB_TRANSFER_STATUS.batch_executed) {
-                    throw new Error(`Unsuccessful bridge transfer: ${transfer.status}`);
-                }
-                console.log('transfer', transfer);
-                return getTransaction(transfer.outTxHash);
-            })
-            .then((minterTx) => {
-                console.log('minterTx', minterTx);
-
-                if (!minterTx.data.list) {
-                    throw new Error('Minter tx transfer has invalid data');
-                }
-                const multisendItem = minterTx.data.list.find((item) => item.to === props.destinationMinterAddress && item.coin.symbol === props.tokenSymbol);
-                if (!multisendItem) {
-                    throw new Error(`Minter tx transfer does not include ${props.tokenSymbol} deposit to the current user`);
-                }
-
-                const outputAmount = multisendItem.value;
+        return waitHubTransferToMinter(depositReceipt.transactionHash, props.destinationMinterAddress, props.tokenSymbol)
+            .then(({ tx: minterTx, outputAmount}) => {
                 addStepData(LOADING_STAGE.WAIT_BRIDGE, {amount: outputAmount, tx: minterTx, finished: true});
-
                 return outputAmount;
             });
     }

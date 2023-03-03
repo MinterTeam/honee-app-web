@@ -509,6 +509,7 @@ export default {
         'stage-approve': 'Одобрение',
         'stage-send': 'Отправка',
         'stage-for': 'на',
+        'stage-to-relay': 'из смарт-кошелька',
         'stage-to-bridge': 'мосту',
         'stage-from-bridge': 'из моста',
         'stage-waiting': 'Ожидание',
