@@ -59,7 +59,15 @@ export default {
     computed: {
         coinList() {
             return this.balanceList
-                .filter((item) => item.coin.symbol.indexOf('LP-') !== 0)
+                .filter((item) => {
+                    if (item.coin.symbol.indexOf('LP-') === 0) {
+                        return false;
+                    }
+                    if (item.amount <= 0) {
+                        return false;
+                    }
+                    return true;
+                })
                 .map((item) => {
                     return {
                         amount: item.amount,
