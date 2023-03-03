@@ -651,7 +651,7 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
  * - type: TX_TYPE.SET_CANDIDATE_ON, TX_TYPE.SET_CANDIDATE_OFF
  * @property {string} [data.pubKey]
  * -- type: TX_TYPE.MULTISEND
- * @property {Array<{to: string, coin: Coin}>} [data.list]
+ * @property {Array<{to: string, value: string|number, coin: Coin}>} [data.list]
  * -- type: TX_TYPE.CREATE_MULTISIG
  * @property {string|number} [data.multisigAddress]
  * @property {Array<string>} [data.addresses]

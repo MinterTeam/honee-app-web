@@ -21,14 +21,16 @@ import useHubOracle from '~/composables/use-hub-oracle.js';
 const GAS_PRICE_BSC = 5; // in gwei
 const SLIPPAGE_PERCENT = 5;
 // gas limits of:
-// base extra fee added for each tx (to cover unexpected costs)
+// base extra fee added for each tx (to cover unexpected costs, also covers native coin transfer to relay 21000)
 export const RELAY_REWARD_AMOUNT_BASE_GAS_LIMIT = 500000; // equivalent of 0.0025 BNB
 // fee for smart-wallet contract creation via factory
 export const RELAY_REWARD_AMOUNT_CREATE_GAS_LIMIT = 1000000; // equivalent of 0.005 BNB
+// @TODO use transferToBridge 75000 gas limit if no swap required
 // fee for each swap inside combined tx
 export const RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT = 500000; // equivalent of 0.0025 BNB
 
 
+// @TODO estimate actual gas price if token already exists on smart-wallet
 export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
     const {networkGasPrice, setHubOracleProps} = useHubOracle({
         subscribePriceList: true,

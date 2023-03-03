@@ -151,13 +151,17 @@ export default function useWeb3SmartWalletSwap() {
         return new Big(valueToUseInEvm).minus(amountEstimationLimitForRelayRewardValue).toString();
     }
 
-    const amountAfterDeposit = computed(() => {
+    const amountToDeposit = computed(() => {
         if (tokenToSellAddress.value === tokenToBuyAddress.value) {
-            // @TODO deduct Hub deposit fee
             return amountToSellForSwapToHub.value;
         } else {
             return state.amountEstimationAfterSwapToHub;
         }
+    });
+
+    const amountAfterDeposit = computed(() => {
+        // @TODO deduct Hub deposit fee
+        return amountToDeposit.value;
     });
 
     const depositDestinationAddress = computed(() => {
@@ -324,6 +328,7 @@ export default function useWeb3SmartWalletSwap() {
         isSmartWalletSwapParamsLoading,
         smartWalletSwapParamsError,
         amountToSellForSwapToHub,
+        amountToDeposit,
         amountAfterDeposit,
         smartWalletAddress,
         swapToHubParams,
