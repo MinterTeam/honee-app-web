@@ -15,6 +15,8 @@ export const ERROR_NOT_ENOUGH_PAY_REWARD = 'Not enough to pay relay reward';
 export default function useWeb3SmartWalletSwap() {
     const {
         smartWalletAddress,
+        relayRewardAmount,
+        maxRelayRewardAmount,
         isEstimationLimitForRelayRewardsLoading,
         estimationLimitForRelayRewardsError,
         amountEstimationLimitForRelayReward,
@@ -98,7 +100,7 @@ export default function useWeb3SmartWalletSwap() {
         isLegacy: props.isLegacy,
         gasTokenAddress: tokenToSellAddress.value,
         gasTokenDecimals: tokenToSellDecimals.value,
-        complexity: undefined,
+        complexity: tokenToSellAddress.value === tokenToBuyAddress.value ? 0 : 1,
         estimationSkip: props.skipRelayReward || props.skipEstimation,
     }));
 
@@ -331,6 +333,8 @@ export default function useWeb3SmartWalletSwap() {
         amountToDeposit,
         amountAfterDeposit,
         smartWalletAddress,
+        relayRewardAmount,
+        maxRelayRewardAmount,
         swapToHubParams,
         // feeTxParams,
 

@@ -21,7 +21,10 @@ import useHubOracle from '~/composables/use-hub-oracle.js';
 const GAS_PRICE_BSC = 5; // in gwei
 const SLIPPAGE_PERCENT = 5;
 // gas limits of:
-// base extra fee added for each tx (to cover unexpected costs, also covers native coin transfer to relay 21000)
+// base extra fee added for each tx to cover unexpected costs, also covers:
+// - native coin transfer to relay 21000-35000
+// - smart-wallet broadcast expenses up to 100000
+// - transferToBridge 75000 (if complexity:0)
 export const RELAY_REWARD_AMOUNT_BASE_GAS_LIMIT = 500000; // equivalent of 0.0025 BNB
 // fee for smart-wallet contract creation via factory
 export const RELAY_REWARD_AMOUNT_CREATE_GAS_LIMIT = 1000000; // equivalent of 0.005 BNB
@@ -256,14 +259,6 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         }
     }
 
-    function getEstimationLimit() {
-        return getZeroExEstimationLimit(props.chainId, swapToRelayRewardEstimationParams.value)
-            .then((swapLimit) => {
-                return fromErcDecimals(swapLimit, props.gasTokenDecimals);
-            });
-        // return getParaSwapEstimationLimit(swapToRelayRewardEstimationParams.value);
-    }
-
     //@TODO sometimes goes to infinite loop
     /**
      * @return {Promise<string|number>}
@@ -272,19 +267,12 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         if (props.gasTokenAddress === NATIVE_COIN_ADDRESS) {
             return Promise.resolve(maxRelayRewardAmount.value);
         } else {
-            return getEstimationLimit();
+            return getZeroExEstimationLimit(props.chainId, swapToRelayRewardEstimationParams.value)
+                .then((swapLimit) => {
+                    return fromErcDecimals(swapLimit, props.gasTokenDecimals);
+                });
+            // return getParaSwapEstimationLimit(swapToRelayRewardEstimationParams.value);
         }
-    }
-
-    function buildTxForSwap() {
-        return buildTxForZeroExSwap(props.chainId, swapToRelayRewardParams.value)
-            .then((result) => {
-                return {
-                    txList: result.txList,
-                    swapLimit: fromErcDecimals(result.swapLimit, props.gasTokenDecimals),
-                };
-            });
-        // return buildTxForParaSwap(props.chainId, swapToRelayRewardParams.value);
     }
 
     /**
@@ -301,7 +289,14 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
                 }],
             });
         } else {
-            return buildTxForSwap();
+            return buildTxForZeroExSwap(props.chainId, swapToRelayRewardParams.value)
+                .then((result) => {
+                    return {
+                        txList: result.txList,
+                        swapLimit: fromErcDecimals(result.swapLimit, props.gasTokenDecimals),
+                    };
+                });
+            // return buildTxForParaSwap(props.chainId, swapToRelayRewardParams.value);
         }
     }
 
@@ -452,6 +447,8 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         ...toRefs(state),
         setSmartWalletProps: setProps,
         smartWalletAddress,
+        relayRewardAmount,
+        maxRelayRewardAmount,
         swapToRelayRewardParams,
         // feeTxParams,
         estimateSpendLimitForRelayReward,

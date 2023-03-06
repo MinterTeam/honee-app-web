@@ -92,6 +92,8 @@ export default defineComponent({
             // withdrawTxParams,
             // withdrawFeeTxParams,
 
+            // relayRewardAmount,
+            // maxRelayRewardAmount,
             amountEstimationLimitForRelayReward: smartWalletRelayReward,
             amountToSellForSwapToHub,
             amountEstimationAfterSwapToHub,
@@ -126,6 +128,8 @@ export default defineComponent({
             setWeb3AddressBalanceProps,
             waitBalanceUpdate,
 
+            // relayRewardAmount,
+            // maxRelayRewardAmount,
             smartWalletRelayReward,
             amountToSellForSwapToHub,
             amountEstimationAfterSwapToHub,
