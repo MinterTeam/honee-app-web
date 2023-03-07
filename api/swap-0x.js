@@ -1,14 +1,19 @@
 import axios from 'axios';
 import {Cache, cacheAdapterEnhancer} from 'axios-extensions';
-import {NATIVE_COIN_ADDRESS, ZERO_X_API_URL} from "~/assets/variables.js";
+import {NATIVE_COIN_ADDRESS, ZERO_X_ETHEREUM_API_URL, ZERO_X_BSC_API_URL} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {getMaxEstimationLimit, getMinEstimationLimit} from '~/assets/utils/swap-limit.js';
 import {buildApproveTx, getAllowance} from '~/api/web3.js';
 import Big from '~/assets/big.js';
 
+const ZERO_X_API_URL_LIST = {
+    1: ZERO_X_ETHEREUM_API_URL,
+    56: ZERO_X_BSC_API_URL,
+};
+
 
 const instance = axios.create({
-    baseURL: ZERO_X_API_URL,
+    // baseURL: ZERO_X_API_URL,
     adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
 });
 // addToCamelInterceptor(instance);
@@ -27,6 +32,7 @@ export function _buildTxForSwap(chainId, swapParams) {
         excludedSources: EXCLUDE_PROTOCOLS,
     };
     return instance.get('swap/v1/quote', {
+        baseURL: ZERO_X_API_URL_LIST[chainId],
         params: swapParams,
     })
         .then((response) => {
@@ -89,6 +95,7 @@ export function getPrice(chainId, swapParams) {
         excludedSources: EXCLUDE_PROTOCOLS,
     };
     return instance.get('swap/v1/price', {
+            baseURL: ZERO_X_API_URL_LIST[chainId],
             params: swapParams,
             cache: fastCache,
         })

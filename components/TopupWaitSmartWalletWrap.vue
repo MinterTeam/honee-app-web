@@ -78,7 +78,7 @@ export default defineComponent({
                     validAmount: isValidAmount,
                     // maxValue: maxValue(this.maxAmount || 0),
                     minValue: (value) => value > 0,
-                    enoughToPayFee: (value) => value >= this.currentData?.smartWalletRelayReward || 0,
+                    enoughToPayFee: (value) => Number(value) >= Number(this.currentData?.smartWalletRelayReward || 0),
                 },
             },
         };
@@ -276,7 +276,7 @@ function getComponentPropsItem(networkSlug, isLegacy) {
             :showWaitIndicator="false"
             :networkSlug="componentProps.networkSlug"
             :is-legacy="componentProps.isLegacy"
-            :form="form"
+            :form="componentProps.id === currentComponentId ? form : undefined"
             @update:processing="handleProcessing($event, componentProps.id)"
             @topup="$emit('topup', $event);"
             @update:data="handleInnerData($event, componentProps.networkSlug, componentProps.isLegacy, )"

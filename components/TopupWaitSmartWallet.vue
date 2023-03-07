@@ -43,7 +43,6 @@ export default defineComponent({
         },
         form: {
             type: Object,
-            required: true,
             default: () => ({}),
         },
         showWaitIndicator: {
@@ -178,10 +177,10 @@ export default defineComponent({
         },
         /** @type {TokenBalanceItem} */
         selectedBalanceItem() {
-            return this.mode === MODE.AFTER_TOPUP ? this.updatedBalanceItem : this.form.tokenBalanceItem;
+            return this.mode === MODE.AFTER_TOPUP ? this.updatedBalanceItem : this.form?.tokenBalanceItem;
         },
         selectedAmount() {
-            return this.mode === MODE.AFTER_TOPUP ? this.updatedBalanceItem?.amount : this.form.amount;
+            return this.mode === MODE.AFTER_TOPUP ? this.updatedBalanceItem?.amount : this.form?.amount;
         },
         /** @type {HubCoinItem|undefined} - hub coin to send to relay */
         hubCoin() {
@@ -224,7 +223,7 @@ export default defineComponent({
         //     return new Big(input || 0).times(this.hubFeeRate).toString();
         // },
         totalFeeImpact() {
-            const totalSpend = this.form.amount;
+            const totalSpend = this.form?.amount;
             const totalResult = this.amountAfterDeposit;
             if (!totalSpend || !totalResult) {
                 return 0;
