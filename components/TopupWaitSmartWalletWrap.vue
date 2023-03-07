@@ -10,6 +10,7 @@ import {findHubCoinItemByTokenAddress, findTokenInfo} from '~/api/hub.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
+import BaseLoader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 import HubFeeImpact from '~/components/HubFeeImpact.vue';
 import TopupWaitSmartWallet from '~/components/TopupWaitSmartWallet.vue';
@@ -21,6 +22,7 @@ export default defineComponent({
     components: {
         BaseAmountEstimation,
         FieldCombined,
+        BaseLoader,
         Modal,
         HubFeeImpact,
         TopupWaitSmartWallet,
@@ -68,6 +70,7 @@ export default defineComponent({
             innerDataList: {},
             serverError: '',
             isConfirmModalVisible: false,
+            isConfirmationLoading: false,
         };
     },
     validations() {
@@ -178,14 +181,26 @@ export default defineComponent({
         handleInnerData(data, hubNetworkSlug, isLegacy) {
             this.$set(this.innerDataList, getId(hubNetworkSlug, isLegacy), data);
         },
-        openDepositConfirmation() {
+        async openDepositConfirmation() {
             if (this.$v.$invalid) {
                 this.$v.$touch();
                 return;
             }
+            if (this.isConfirmationLoading) {
+                return;
+            }
 
-            this.serverError = '';
-            this.isConfirmModalVisible = true;
+            this.isConfirmationLoading = true;
+            try {
+                await this.getRef(this.currentComponentProps?.refName)?.updateGasPrice?.();
+                this.serverError = '';
+                this.isConfirmModalVisible = true;
+            } catch (error) {
+                this.serverError = getErrorText(error);
+                console.log(error);
+            }
+
+            this.isConfirmationLoading = true;
         },
         // cancel waiting and deposit existing balance
         deposit() {
@@ -263,8 +278,9 @@ function getComponentPropsItem(networkSlug, isLegacy) {
                 <!--                        <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.maxValue">{{ $td('Not enough', 'form.not-enough') }} {{ form.coinToGet }} ({{ $td('max.', 'form.max') }} {{ pretty(maxAmount) }})</span>-->
             </div>
 
-            <button type="button" class="button button--main button--full u-mt-10" :class="{'is-disabled': $v.$invalid}" @click="openDepositConfirmation()">
-                {{ $td('Deposit', 'topup.deposit-evm-balance-button') }}
+            <button type="button" class="button button--main button--full u-mt-10" :class="{'is-loading': isConfirmationLoading, 'is-disabled': $v.$invalid}" @click="openDepositConfirmation()">
+                <span class="button__content">{{ $td('Deposit', 'topup.deposit-evm-balance-button') }}</span>
+                <BaseLoader class="button__loader" :isLoading="true"/>
             </button>
         </div>
 

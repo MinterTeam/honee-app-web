@@ -447,6 +447,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         ...toRefs(state),
         setSmartWalletProps: setProps,
         smartWalletAddress,
+        gasPrice,
         relayRewardAmount,
         maxRelayRewardAmount,
         swapToRelayRewardParams,

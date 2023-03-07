@@ -15,6 +15,7 @@ export const ERROR_NOT_ENOUGH_PAY_REWARD = 'Not enough to pay relay reward';
 export default function useWeb3SmartWalletSwap() {
     const {
         smartWalletAddress,
+        gasPrice,
         relayRewardAmount,
         maxRelayRewardAmount,
         isEstimationLimitForRelayRewardsLoading,
@@ -117,6 +118,9 @@ export default function useWeb3SmartWalletSwap() {
     }));
 
     const state = reactive({
+        // waiting debounced watcher
+        isEstimationAfterSwapToHubWaiting: false,
+        // waiting api calls
         isEstimationAfterSwapToHubLoading: false,
         estimationAfterSwapToHubError: '',
         // estimated amount after swap and after deposit to Minter
@@ -124,6 +128,7 @@ export default function useWeb3SmartWalletSwap() {
     });
 
 
+    // @TODO in deposit mode a lot of withdraw parts are not used, e.g. subscription to oracle fees, it's better to refactor it
     // select mode
     // WITHDRAW mode: start from minter: withdraw + swap + deposit
     // DEPOSIT mode : start from evm: swap + deposit
@@ -132,7 +137,7 @@ export default function useWeb3SmartWalletSwap() {
     });
 
     const isSmartWalletSwapParamsLoading = computed(() => {
-        return isEstimationLimitForRelayRewardsLoading.value || state.isEstimationAfterSwapToHubLoading;
+        return isEstimationLimitForRelayRewardsLoading.value || state.isEstimationAfterSwapToHubWaiting || state.isEstimationAfterSwapToHubLoading;
     });
 
     const smartWalletSwapParamsError = computed(() => {
@@ -189,17 +194,29 @@ export default function useWeb3SmartWalletSwap() {
         };
     });
 
+    watch(swapToHubParams, () => {
+        if (props.skipEstimation) {
+            return;
+        }
+        // early set flag, that we are waiting for watchDebounced
+        if (isValidSwapToHubParams()) {
+            state.isEstimationAfterSwapToHubWaiting = true;
+        } else {
+            state.isEstimationAfterSwapToHubWaiting = false;
+        }
+    });
+
     // @TODO Watch triggered even if value is not changed
     // https://github.com/vuejs/core/issues/2231 it should be fixed here but looks like not backported to vue/composition-api
     watchDebounced(swapToHubParams, () => {
         if (props.skipEstimation) {
             return;
         }
-        const sameTokens = swapToHubParams.value.fromTokenAddress === swapToHubParams.value.toTokenAddress;
-        const hasProps = swapToHubParams.value.fromTokenAddress && swapToHubParams.value.toTokenAddress && Number(swapToHubParams.value.amount) > 0;
-        if (hasProps && !sameTokens) {
+
+        if (isValidSwapToHubParams()) {
             // console.log('swapToHubParams', swapToHubParams.value);
             // prepareTxParams();
+            state.isEstimationAfterSwapToHubWaiting = false;
             state.isEstimationAfterSwapToHubLoading = true;
             state.estimationAfterSwapToHubError = '';
             estimateSwapToHub()
@@ -222,6 +239,13 @@ export default function useWeb3SmartWalletSwap() {
         maxWait: 2000,
     });
 
+    function isValidSwapToHubParams() {
+        const sameTokens = swapToHubParams.value.fromTokenAddress === swapToHubParams.value.toTokenAddress;
+        const hasProps = swapToHubParams.value.fromTokenAddress && swapToHubParams.value.toTokenAddress && Number(swapToHubParams.value.amount) > 0;
+
+        return hasProps && !sameTokens;
+    }
+
     /**
      * @return {Promise<string>}
      */
@@ -241,7 +265,7 @@ export default function useWeb3SmartWalletSwap() {
     async function buildDepositTx({overrideAmount} = {}) {
         const amount = Number(overrideAmount) > 0 ? overrideAmount : amountToSellForSwapToHub.value;
         console.log('overrideAmount', overrideAmount);
-        console.log('amountToSellForSwapToHub', props.valueToSell, withdrawAmountToReceive.value, '-', amountEstimationLimitForRelayReward.value, '=', amountToSellForSwapToHub.value);
+        console.log('amount to deposit to hub', props.valueToSell, '-', amountEstimationLimitForRelayReward.value, '=', amountToSellForSwapToHub.value);
         console.log('_buildDepositTx', props.chainId, isNativeToken.value ? undefined : tokenToSellAddress.value, tokenToSellDecimals.value, depositDestinationAddress.value, amount);
 
         let txList = [];
@@ -333,6 +357,7 @@ export default function useWeb3SmartWalletSwap() {
         amountToDeposit,
         amountAfterDeposit,
         smartWalletAddress,
+        gasPrice,
         relayRewardAmount,
         maxRelayRewardAmount,
         swapToHubParams,

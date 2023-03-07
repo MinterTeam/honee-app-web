@@ -3,7 +3,7 @@ import {defineComponent} from 'vue';
 import stripZeros from 'pretty-num/src/strip-zeros.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_NETWORK} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
-import {wait} from '~/assets/utils/wait.js';
+import {wait, waitCondition} from '~/assets/utils/wait.js';
 import {pretty} from '~/assets/utils.js';
 import {findHubCoinItemByTokenAddress, findHubCoinItem, waitHubTransferToMinter} from '~/api/hub.js';
 import {waitRelayTxSuccess} from '~/api/smart-wallet-relay.js';
@@ -63,6 +63,7 @@ export default defineComponent({
             networkNativeCoin,
             hubTokenList,
             setHubOracleProps,
+            fetchHubPriceList,
         } = useHubOracle({
             subscribeTokenList: true,
             subscribePriceList: true,
@@ -91,6 +92,7 @@ export default defineComponent({
             // withdrawTxParams,
             // withdrawFeeTxParams,
 
+            // gasPrice,
             // relayRewardAmount,
             // maxRelayRewardAmount,
             amountEstimationLimitForRelayReward: smartWalletRelayReward,
@@ -117,6 +119,7 @@ export default defineComponent({
             // networkNativeCoin,
             hubTokenList,
             setHubOracleProps,
+            fetchHubPriceList,
 
             // tokenData,
             // isNativeToken,
@@ -127,6 +130,7 @@ export default defineComponent({
             setWeb3AddressBalanceProps,
             waitBalanceUpdate,
 
+            // gasPrice,
             // relayRewardAmount,
             // maxRelayRewardAmount,
             smartWalletRelayReward,
@@ -328,6 +332,16 @@ export default defineComponent({
     },
     methods: {
         pretty,
+        updateGasPrice() {
+            return this.fetchHubPriceList()
+                // wait computed and useSmartWallet watch-debounce (50 + 100)
+                .then(() => wait(150))
+                .then(() => {
+                    if (this.isSmartWalletSwapParamsLoading) {
+                        return waitCondition(() => !this.isSmartWalletSwapParamsLoading);
+                    }
+                });
+        },
         waitEvmBalance() {
             // @TODO maybe keep different txServiceState instances
             // multiple instances of topup share same txServiceState, so only set steps when other instances deactivated (e.g. on WAIT_ETH finish)
