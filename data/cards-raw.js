@@ -10,7 +10,7 @@ export default {
             {
                 style: 'metagarden-buy-spot',
                 caption: 'Mining',
-                title: 'Buy mining spots',
+                title: 'Miners',
                 coin: `METAGARDEN`,
                 description: 'Metagarden — a play-to-earn platform with mini games. Become the platform miner to earn crypto.',
                 buttonLabel: 'Buy spot',
@@ -18,9 +18,9 @@ export default {
                 action: `/metagarden/buy-spot`,
                 ru: {
                     caption: 'Майнинг',
-                    title: 'Майнинг-споты',
+                    title: 'Майнеры',
                     description: 'Metagarden — play-to-earn платформа с мини-играми. Станьте майнером платформы, чтобы зарабатывать криптовалюту.',
-                    buttonLabel: 'Купить спот',
+                    buttonLabel: 'Купить майнеры',
 
                 },
             },

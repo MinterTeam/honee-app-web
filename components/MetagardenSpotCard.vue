@@ -75,7 +75,7 @@ export default {
             <img class="card__action-logo" alt="" src="/img/logo-metagarden.svg">
             <div class="card__action-title">
                 <div class="card__action-title-type">Metagarden</div>
-                <div class="card__action-title-value">{{ $td('Mining Spots', 'metagarden.mining-spots') }}</div>
+                <div class="card__action-title-value">{{ $td('Miners', 'metagarden.mining-spots') }}</div>
             </div>
             <div class="card__action-stats">
                 <div class="card__action-stats-caption">{{ $td('You own', 'metagarden.you-own') }}</div>
@@ -127,7 +127,7 @@ export default {
             <BaseLoader class="button__loader" :isLoading="true"/>
         </button>
         <nuxt-link :to="$i18nGetPreferredPath('/metagarden/buy-spot')" class="button button--full">
-            {{ $td('Buy mining spots', 'metagarden.buy-more-button') }}
+            {{ $td('Buy miners', 'metagarden.buy-more-button') }}
         </nuxt-link>
 
         <div class="form__error u-mt-10" v-if="serverError">
