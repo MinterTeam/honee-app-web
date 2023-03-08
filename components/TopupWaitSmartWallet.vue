@@ -1,7 +1,7 @@
 <script>
 import {defineComponent} from 'vue';
 import stripZeros from 'pretty-num/src/strip-zeros.js';
-import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_NETWORK} from '~/assets/variables.js';
+import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_NETWORK_SLUG} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {wait, waitCondition} from '~/assets/utils/wait.js';
 import {pretty} from '~/assets/utils.js';
@@ -193,23 +193,24 @@ export default defineComponent({
         tokenSymbol() {
             return this.hubCoin?.symbol || this.selectedBalanceItem?.tokenContractAddress;
         },
-        // @TODO use bnb/eth
-        usdtSymbol() {
-            if (this.networkSlug === HUB_NETWORK.ETHEREUM) {
-                return 'USDTE';
+        fallbackSymbol() {
+            if (this.networkSlug === HUB_NETWORK_SLUG.ETHEREUM) {
+                return 'ETH';
+                // return 'USDTE';
             }
-            if (this.networkSlug === HUB_NETWORK.BSC) {
-                return 'USDTBSC';
+            if (this.networkSlug === HUB_NETWORK_SLUG.BSC) {
+                return 'BNB';
+                // return 'USDTBSC';
             }
             return '';
         },
-        usdtHubCoin() {
-            return findHubCoinItem(this.hubTokenList, this.usdtSymbol);
+        fallbackHubCoin() {
+            return findHubCoinItem(this.hubTokenList, this.fallbackSymbol);
         },
         depositHubCoin() {
             // if token to sell exists in Hub bridge, then set is as tokenToBuy, so swap will be skipped and token will be deposited as is
             // otherwise buy USDT
-            return this.hubCoin || this.usdtHubCoin;
+            return this.hubCoin || this.fallbackHubCoin;
         },
         depositHubToken() {
             return this.depositHubCoin
