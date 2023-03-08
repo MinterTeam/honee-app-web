@@ -13,7 +13,7 @@ export default {
                 title: 'Miners',
                 coin: `METAGARDEN`,
                 description: 'Metagarden — a play-to-earn platform with mini games. Become the platform miner to earn crypto.',
-                buttonLabel: 'Buy spot',
+                buttonLabel: 'Buy miners',
                 tags: [],
                 action: `/metagarden/buy-spot`,
                 ru: {
