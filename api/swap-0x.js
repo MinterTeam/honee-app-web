@@ -60,6 +60,7 @@ export async function buildTxForSwap(chainId, swapParams) {
 
     // allowance
     if (swapParams.sellToken !== NATIVE_COIN_ADDRESS) {
+        // @TODO maybe just approve sell amount instead of infinite
         const allowance = await getAllowance(chainId, swapParams.sellToken, swapParams.takerAddress, swapTx.allowanceTarget);
         if (new Big(allowance).lt(maxSellAmount)) {
             txList.push(buildApproveTx(swapParams.sellToken, swapTx.allowanceTarget));

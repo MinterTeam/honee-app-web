@@ -1,24 +1,30 @@
 import axios from 'axios';
 import {Cache, cacheAdapterEnhancer} from 'axios-extensions';
 import {ONE_INCH_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
-import addToCamelInterceptor from '~/assets/axios-to-camel.js';
+import preventConcurrencyAdapter from '~/assets/axios-prevent-concurrency.js';
 import {fromErcDecimals} from '~/api/web3.js';
 
-//@TODO exclude limit orders https://api.1inch.io/v5.0/56/liquidity-sources
+const adapter = (($ = axios.defaults.adapter) => {
+    $ = cacheAdapterEnhancer($, { enabledByDefault: false});
+    $ = preventConcurrencyAdapter($);
+    return $;
+})();
+
 const instance = axios.create({
     baseURL: ONE_INCH_API_URL,
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
+    adapter,
 });
-// addToCamelInterceptor(instance);
 
 const fastCache = new Cache({ttl: 2 * 1000, max: 100});
 
 /**
  * @param {number|string} chainId
  * @param {OneInchExchangeControllerGetSwapParams} swapParams
- * @return {Promise<OneInchTx>}
+ * @param {object} [axiosOptions]
+ * @param {string} [axiosOptions.idPreventConcurrency]
+ * @return {Promise<OneInchSwapResponseDto>}
  */
-export async function buildTxForSwap(chainId, swapParams) {
+export async function buildTxForSwap(chainId, swapParams, {idPreventConcurrency} = {}) {
     const protocols = await prepareProtocolsCached(chainId);
     swapParams = {
         ...swapParams,
@@ -27,18 +33,21 @@ export async function buildTxForSwap(chainId, swapParams) {
     return instance.get(`${chainId}/swap`, {
         params: swapParams,
         cache: fastCache,
+        idPreventConcurrency,
     })
         .then((response) => {
-            return response.data.tx;
+            return response.data;
         });
 }
 
 /**
  * @param {number|string} chainId
  * @param {OneInchExchangeControllerGetQuoteParams} swapParams
+ * @param {object} [axiosOptions]
+ * @param {string} [axiosOptions.idPreventConcurrency]
  * @return {Promise<{estimatedGas: number, estimatedAmount: string}>}
  */
-export async function getQuoteForSwap(chainId, swapParams) {
+export async function getQuoteForSwap(chainId, swapParams, {idPreventConcurrency} = {}) {
     const protocols = await prepareProtocolsCached(chainId);
     swapParams = {
         ...swapParams,
@@ -46,6 +55,8 @@ export async function getQuoteForSwap(chainId, swapParams) {
     };
     return instance.get(`${chainId}/quote`, {
             params: swapParams,
+            cache: fastCache,
+            idPreventConcurrency,
         })
         .then((response) => {
             /** @type {OneInchQuoteResponseDto} */

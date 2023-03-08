@@ -8,7 +8,7 @@ import minLength from 'vuelidate/src/validators/minLength.js';
 import withParams from 'vuelidate/src/withParams.js';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import {web3Utils, AbiEncoder, toErcDecimals} from '~/api/web3.js';
+import {web3Utils, AbiEncoder, toErcDecimals, getHubDestinationAddressBytes, getHubDestinationChainBytes} from '~/api/web3.js';
 import {isValidAmount} from '~/assets/utils/validators.js';
 import Big from '~/assets/big.js';
 import initRampPurchase, {fiatRampPurchaseNetwork} from '~/assets/fiat-ramp.js';
@@ -612,8 +612,8 @@ export default {
             return this.sendEthTx({to: this.coinContractAddress, data, nonce, gasPrice, gasLimit: GAS_LIMIT_UNLOCK}, LOADING_STAGE.APPROVE_BRIDGE);
         },
         sendCoinTx({nonce}) {
-            const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(this.$store.getters.address.replace("Mx", "0x")))]);
-            const destinationChain = Buffer.from('minter', 'utf-8');
+            const address = getHubDestinationAddressBytes(this.$store.getters.address);
+            const destinationChain = getHubDestinationChainBytes();
             let txParams;
             if (this.isEthSelected) {
                 txParams = {

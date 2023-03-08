@@ -380,10 +380,13 @@ export function getAllowance(chainId, tokenContractAddress, accountAddress, spen
 /**
  * @param {string} tokenContractAddress
  * @param {string} spenderContractAddress
+ * @param {string|number} [amount]
  * @return {{data: string, to, value: string}}
  */
-export function buildApproveTx(tokenContractAddress, spenderContractAddress) {
-    const amountToUnlock = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+export function buildApproveTx(tokenContractAddress, spenderContractAddress, amount) {
+    const amountToUnlock = typeof amount === 'undefined'
+        ? '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+        : amount;
     const data = AbiEncoder(erc20ABI)('approve', spenderContractAddress, amountToUnlock);
 
     return {
@@ -420,8 +423,8 @@ export function buildTransferTx(tokenContractAddress, recipientAddress, amount) 
  */
 export function buildDepositTx(chainId, tokenContractAddress, tokenDecimals, destinationMinterAddress, amount, keepValueAsEther) {
     const hubBridgeContractAddress = HUB_CHAIN_BY_ID[chainId]?.hubContractAddress;
-    const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(destinationMinterAddress.replace("Mx", "0x")))]);
-    const destinationChain = Buffer.from('minter', 'utf-8');
+    const address = getHubDestinationAddressBytes(destinationMinterAddress);
+    const destinationChain = getHubDestinationChainBytes();
     const isNativeToken = !tokenContractAddress;
     if (isNativeToken) {
         return {
@@ -668,4 +671,20 @@ function validateChainId(chainId) {
     if (chainId && typeof chainId !== 'number') {
         throw new Error(`chainId should be a number`);
     }
+}
+
+/**
+ * @param {string} destinationAddress
+ * @return {Buffer}
+ */
+export function getHubDestinationAddressBytes(destinationAddress) {
+    return Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(destinationAddress.replace("Mx", "0x")))]);
+}
+
+/**
+ * @param {string} [chain='minter']
+ * @return {Buffer}
+ */
+export function getHubDestinationChainBytes(chain = 'minter') {
+    return Buffer.from(chain, 'utf-8');
 }
