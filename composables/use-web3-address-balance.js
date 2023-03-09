@@ -18,6 +18,7 @@ function getInitialChainData() {
 }
 
 /**
+ * Initial balance list `web3Balance[chainId][address]` should be undefined, `waitBalanceUpdate` relies on it
  * @type {UnwrapNestedRefs<Record<ChainId, Record<string, Array<TokenBalanceItem>>>>}
  */
 const web3Balance = reactive(getInitialChainData());
@@ -107,7 +108,9 @@ export default function useWeb3AddressBalance() {
 
                 set(web3Balance[chainId], accountAddress, Object.freeze(tokenList));
 
-                if (oldBalanceList?.length > 0) {
+                // check if balance was fetched for address previously (don't check arr length, because initial balance may be empty)
+                // return updated balance list for `waitBalanceUpdate`
+                if (oldBalanceList) {
                     const oldTokenMap = arrayToMap(oldBalanceList, 'tokenContractAddress');
                     return tokenList
                         .filter((tokenBalanceItem) => {
