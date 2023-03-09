@@ -125,10 +125,14 @@ export default defineComponent({
                     return accumulator.concat(addressBalance);
                 }, [])
                 .filter((item) => {
-                    const minterSymbol = item.coin?.symbol;
-                    const price = this.$store.state.portfolio.coinMap[minterSymbol]?.price || 0;
-                    // console.log(minterSymbol, price, item.amount, price * item.amount)
-                    return !price || (price * item.amount >= 1);
+                    const componentProps = this.componentPropsList.find((propsItem) => propsItem.id === item.componentId);
+                    if (componentProps.isLegacy) {
+                        const minterSymbol = item.coin?.symbol;
+                        const price = this.$store.state.portfolio.coinMap[minterSymbol]?.price || 0;
+                        // console.log(minterSymbol, price, item.amount, price * item.amount)
+                        return !price || (price * item.amount >= 1);
+                    }
+                    return true;
                 });
         },
         // 'selected' - mean selected by user
