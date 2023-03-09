@@ -86,7 +86,12 @@ export default function useWeb3AddressBalance() {
                 const oldBalanceList = web3Balance[chainId][accountAddress];
                 /** @type {HUB_NETWORK_SLUG} */
                 const hubNetworkSlug = HUB_CHAIN_BY_ID[chainId].hubNetworkSlug;
-                const tokenList = result.map((item) => {
+                const tokenList = result
+                    .filter((item) => {
+                        // hide dust
+                        return item.amount.toBigInt() > 100n;
+                    })
+                    .map((item) => {
                     return {
                         hubNetworkSlug,
                         tokenContractAddress: item.token.contractAddress.lowercase,

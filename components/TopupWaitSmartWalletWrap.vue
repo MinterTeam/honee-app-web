@@ -123,7 +123,13 @@ export default defineComponent({
                         };
                     });
                     return accumulator.concat(addressBalance);
-                }, []);
+                }, [])
+                .filter((item) => {
+                    const minterSymbol = item.coin.symbol;
+                    const price = this.$store.state.portfolio.coinMap[minterSymbol]?.price || 0;
+                    // console.log(minterSymbol, price, item.amount, price * item.amount)
+                    return !price || (price * item.amount >= 1);
+                });
         },
         // 'selected' - mean selected by user
         selectedBalanceItem() {
