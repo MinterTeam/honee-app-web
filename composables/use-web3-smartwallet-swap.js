@@ -123,6 +123,7 @@ export default function useWeb3SmartWalletSwap() {
         // waiting api calls
         isEstimationAfterSwapToHubLoading: false,
         estimationAfterSwapToHubError: '',
+        // @TODO now Hub fee is not included and actually it is value *before* deposit
         // estimated amount after swap and after deposit to Minter
         amountEstimationAfterSwapToHub: '',
     });
@@ -144,6 +145,7 @@ export default function useWeb3SmartWalletSwap() {
         return estimationLimitForRelayRewardsError.value || state.estimationAfterSwapToHubError;
     });
 
+    // amount to spend for deposit
     const amountToSellForSwapToHub = computed(() => getAmountToSellForSwapToHub(amountEstimationLimitForRelayReward.value));
 
     function getAmountToSellForSwapToHub(amountEstimationLimitForRelayRewardValue) {
@@ -263,10 +265,15 @@ export default function useWeb3SmartWalletSwap() {
      */
     // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
     async function buildDepositTx({overrideAmount} = {}) {
-        const amount = Number(overrideAmount) > 0 ? overrideAmount : amountToSellForSwapToHub.value;
+        const amount = Number(overrideAmount) > 0 ? overrideAmount : amountToDeposit.value;
         console.log('overrideAmount', overrideAmount);
-        console.log('amount to deposit to hub', props.valueToSell, '-', amountEstimationLimitForRelayReward.value, '=', amountToSellForSwapToHub.value);
+        console.log('amount to deposit to hub', props.valueToSell, '-', amountEstimationLimitForRelayReward.value, '=', amountToDeposit.value);
         console.log('_buildDepositTx', props.chainId, isNativeToken.value ? undefined : tokenToSellAddress.value, tokenToSellDecimals.value, depositDestinationAddress.value, amount);
+
+        if (amount <= 0) {
+            const valueToUseInEvm = isWithdrawMode.value ? (withdrawAmountToReceive.value || 0) : (props.valueToSell || 0);
+            throw new Error(`Not enough to pay smart-wallet relay reward. ${amountEstimationLimitForRelayReward.value} required, ${valueToUseInEvm} given`);
+        }
 
         let txList = [];
         if (!isNativeToken.value) {
@@ -297,6 +304,12 @@ export default function useWeb3SmartWalletSwap() {
         console.log('overrideAmount', overrideAmount);
         console.log('amountToSellForSwapToHub', props.valueToSell, withdrawAmountToReceive.value, '-', amountEstimationLimitForRelayReward.value, '=', amountToSellForSwapToHub.value);
         console.log('_buildTxForSwapToHub', props.chainId, txParams);
+
+        if (Number(txParams.amount) <= 0) {
+            const valueToUseInEvm = isWithdrawMode.value ? (withdrawAmountToReceive.value || 0) : (props.valueToSell || 0);
+            throw new Error(`Not enough to pay smart-wallet relay reward. ${amountEstimationLimitForRelayReward.value} required, ${valueToUseInEvm} given`);
+        }
+
         // don't pass idPreventConcurrency (to ensure it will not cancelled by estimate)
         return _buildTxForSwapToHub(props.chainId, txParams, {idPreventConcurrency: null})
             .then((result) => result.txList);
