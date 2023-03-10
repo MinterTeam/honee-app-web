@@ -20,7 +20,7 @@ export default {
     props: {
         onboardingUrl: {
             type: String,
-            default: '/onboarding/topup',
+            default: '/onboarding/topup/instant',
         },
     },
     data() {

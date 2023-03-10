@@ -57,7 +57,11 @@ export default {
             return window.navigator.share;
         },
         card2MinterUrl() {
-            return getCard2MinterUrl(this.$store.getters.address, window.location.origin);
+            if (this.$options.isOnboarding) {
+                return getCard2MinterUrl(this.$store.getters.address, window.location.origin + this.$i18nGetPreferredPath('/onboarding/topup/finish-card2minter'));
+            } else {
+                return getCard2MinterUrl(this.$store.getters.address, window.location.origin);
+            }
         },
     },
     created() {
@@ -208,5 +212,11 @@ export default {
             {{ $td('Cancel', 'topup.back') }}
         </nuxt-link>
         -->
+
+        <div class="u-text-center u-mt-15" v-if="$options.isOnboarding">
+            <nuxt-link class="link--default-black" :to="$i18nGetPreferredPath($store.state.authRedirectPath || DASHBOARD_URL)" @click.native="$nextTick(() => $store.commit('SET_AUTH_REDIRECT_PATH', ''))">
+                {{ $td('I\'ll do it later', 'onboarding.skip') }}
+            </nuxt-link>
+        </div>
     </div>
 </template>

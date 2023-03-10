@@ -121,6 +121,7 @@ export default {
         'balance': 'Баланс',
         'wallet-balance-links': 'Купить BIP, HUB & BEE',
         'topup': '&#43; Пополнить',
+        'topup-instant': '&#43; Мгновенно пополнить',
         'withdraw': '&#8599; Вывести',
         'swap': 'Купить',
         'swap-wallet-button': 'Обменять',

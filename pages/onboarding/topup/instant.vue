@@ -1,9 +1,9 @@
 <script>
-import Topup from '~/pages/topup/index.vue';
+import TopupInstant from '~/pages/topup/instant.vue';
 
 
 export default {
-    ...Topup,
+    ...TopupInstant,
     isOnboarding: true,
     layout: 'splash',
 };
