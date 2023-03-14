@@ -13,7 +13,7 @@ import postcssPresetEnv from 'postcss-preset-env';
 import postcss100vhFix from 'postcss-100vh-fix';
 import cleanCss from 'gulp-clean-css';
 // images
-import * as del from 'del';
+import {deleteAsync, deleteSync} from 'del';
 import path from 'path';
 import cache from 'gulp-cache';
 import imagemin from 'gulp-imagemin';
@@ -109,11 +109,11 @@ gulp.task('imagemin', function() {
         .pipe(gulp.dest(paths.dest.img));
 });
 gulp.task('imagemin:clean-dest', function(cb) {
-    del.sync(paths.dest.img);
+    deleteSync(paths.dest.img);
     cb();
 });
 gulp.task('imagemin:clean-cache', function(cb) {
-    del.sync([
+    deleteSync([
         paths.cache.tmpDir + '/' + paths.cache.cacheDirName + '/default',
     ]);
     cb();
@@ -131,10 +131,10 @@ gulp.task('default', gulp.series(
         gulp.watch(paths.watch.less, gulp.task('less'));
         gulp.watch(paths.src.img, gulp.task('imagemin'))
             .on('unlink', function(filePath) {
-                del(paths.dest.img + path.basename(filePath));
+                deleteAsync(paths.dest.img + path.basename(filePath));
             })
             .on('unlinkDir', function(dirPath) {
-                del(paths.dest.img + path.basename(dirPath));
+                deleteAsync(paths.dest.img + path.basename(dirPath));
             });
     },
 ));
