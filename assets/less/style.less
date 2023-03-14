@@ -185,7 +185,7 @@
 /* stretch card vertically to fit siblings */
 .card-wrap-cell {display: flex;}
 .card {
-    background: var(--color-bg); color: var(--color-text); box-shadow: 0 4px 4px rgba(0,0,0,0.05); position: relative; border-radius: 16px; /*overflow: hidden;*/ display: block;
+    background: var(--color-bg); color: var(--color-text); box-shadow: 0 4px 4px rgba(0,0,0,0.05); position: relative; border-radius: 16px; /*overflow: hidden; not clip dropdowns inside card */ display: block;
     &::before {content: ''; display: table;} // fix firefox incorrect collapsing negative margin
     .card {box-shadow: none;}
 }
@@ -214,6 +214,10 @@
 .card--portfolio-battle {background: url(../img/bg-portfolio-battle-1.svg) top right no-repeat, url(../img/bg-portfolio-battle-2.svg) bottom left no-repeat;}
 .card--twitter {background: url(../img/bg-share-to-earn.svg) no-repeat 20px 0 #1DA1F2;}
 .card--metagarden {background: @c-night; color: #fff;}
+.card--metagarden-game {
+    width: 205px; flex-shrink: 0;
+    &+& {margin-left: 16px;}
+}
 .card--metagarden-lootbox {background: url(../img/metagarden-lootbox-fancy-bg.svg) center bottom no-repeat, radial-gradient(58% 118% at 42% 27%, #242122 0%, #A91880 100%);}
 //.card--metagarden-buy-spot-backup {background: url(../img/card-metagarden.svg) top left no-repeat, linear-gradient(100.01deg, #42DF81 -5.26%, #1E8045 43.33%, #1A6D3B 119.14%); color: #fff;}
 .card--metagarden-buy-spot {
@@ -276,6 +280,10 @@
     border-radius: 50%; border: 1px solid @c-white-light; background: @c-white-light; width: 24px; height: 24px;
     &+& {margin-left: -6px;}
 }
+
+.card__cover {border-radius: 16px 16px 0 0; vertical-align: top; width: 100%;}
+.card__badge {.u-h--uppercase(); position: absolute; top: 97px; right: 0; padding: 4px 8px; box-shadow: 0px 2px 2px rgba(0,0,0, 0.25); border-radius: 8px 0px 0px 8px; color: @c-black;}
+.card__badge--coming-soon {background: #faff00;}
 
 @media (min-width: @breakpoint-medium-up) {
     .card__content {
@@ -592,6 +600,19 @@
 
 .battle__ranking-item {
     &+& {margin-top: 16px; padding-top: 16px; border-top: 1px solid @c-white-light;}
+}
+
+
+
+.mg-cards {display: flex; margin-inline: -@container-padding-small; padding-inline: @container-padding-small; overflow-y: auto;}
+@media (min-width: @breakpoint-small-up) {
+    margin-inline: -@container-padding; padding-inline: @container-padding;
+}
+@media (min-width: @breakpoint-medium-up) {
+    .mg-cards {
+        flex-wrap: wrap; margin-top: -16px; margin-left: -16px; margin-right: 0; padding: 0; overflow-y: visible;
+         & > .card {margin-top: 16px; margin-left: 16px;}
+    }
 }
 
 
