@@ -32,7 +32,7 @@ export default defineComponent({
     <div class="card card--metagarden-game">
         <img class="card__cover" :src="`/img/game-${game.slug}.jpg`" :srcset="`/img/game-${game.slug}@2x.jpg 2x`" alt="" role="presentation">
         <div class="card__badge card__badge--coming-soon" v-if="game.isComingSoon">
-            {{ $td('Coming soon', 'todo') }}
+            {{ $td('Coming soon', 'mg-games.label-coming') }}
         </div>
         <div class="card__content--small">
             <h3 class="u-h4 u-mb-025">{{ game.title }}</h3>
@@ -50,8 +50,8 @@ export default defineComponent({
 
             <div class="u-mt-10">
                 <nuxt-link class="button button--ghost-main button--full " :to="$i18nGetPreferredPath(`/metagarden/${game.slug}`)">
-                    <template v-if="game.isComingSoon">{{ $td('Learn more', 'todo') }}</template>
-                    <template v-else>{{ $td('Play', 'todo') }}</template>
+                    <template v-if="game.isComingSoon">{{ $td('Learn more', 'mg-games.button-learn') }}</template>
+                    <template v-else>{{ $td('Play', 'mg-games.button-play') }}</template>
                 </nuxt-link>
             </div>
         </div>

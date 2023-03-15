@@ -18,28 +18,28 @@ export default {
         gameList() {
             return [
                 {
-                    title: this.$td('Perfect City NFT', 'todo'),
+                    title: this.$td('Perfect City NFT', 'mg-games.game-perfect-city'),
                     coin: 'SHEKEL',
                     slug: 'perfect-city',
                 },
                 {
-                    title: this.$td('Mining Spot', 'todo'),
+                    title: this.$td('Miner', 'mg-games.game-miner'),
                     coin: 'METAGARDEN',
                     slug: 'mining-spot',
                 },
                 {
-                    title: this.$td('Magic Box', 'todo'),
+                    title: this.$td('Magic Box', 'mg-games.game-magic-box'),
                     coin: 'METAGARDEN',
                     slug: 'magic-box',
                 },
                 {
-                    title: this.$td('Chess', 'todo'),
+                    title: this.$td('Chess', 'mg-games.game-chess'),
                     coin: 'CHESS',
                     slug: 'chess',
                     isComingSoon: true,
                 },
                 {
-                    title: this.$td('Carrots Mafia', 'todo'),
+                    title: this.$td('Carrots Mafia', 'mg-games.game-carrots-mafia'),
                     coin: 'CARROTS',
                     slug: 'carrots-mafia',
                     isComingSoon: true,
@@ -49,13 +49,13 @@ export default {
         comingSoonList() {
             return [
                 {
-                    title: this.$td('Chess', 'todo'),
+                    title: this.$td('Chess', 'mg-games.game-chess'),
                     coin: 'CHESS',
                     slug: 'chess',
                     isComingSoon: true,
                 },
                 {
-                    title: this.$td('Carrots Mafia', 'todo'),
+                    title: this.$td('Carrots Mafia', 'mg-games.game-carrots-mafia'),
                     coin: 'CARROTS',
                     slug: 'carrots-mafia',
                     isComingSoon: true,
@@ -68,7 +68,7 @@ export default {
 
 <template>
     <div class="u-section u-container u-container--mg-cards">
-        <h2 class="u-h--uppercase u-mb-10">{{ $td('Recent games', 'todo') }}</h2>
+        <h2 class="u-h--uppercase u-mb-10">{{ $td('Recent games', 'mg-games.title-recent') }}</h2>
         <div class="mg-cards">
             <CardMetagardenGame
                 v-for="game in recentList"
@@ -77,7 +77,7 @@ export default {
             />
         </div>
 
-        <h2 class="u-h--uppercase u-mb-10 u-mt-25">{{ $td('All games', 'todo') }}</h2>
+        <h2 class="u-h--uppercase u-mb-10 u-mt-25">{{ $td('All games', 'mg-games.title-all') }}</h2>
         <div class="mg-cards">
             <CardMetagardenGame
                 v-for="game in gameList"
@@ -86,7 +86,7 @@ export default {
             />
         </div>
 
-        <h2 class="u-h--uppercase u-mb-10 u-mt-25">{{ $td('Coming soon', 'todo') }}</h2>
+        <h2 class="u-h--uppercase u-mb-10 u-mt-25">{{ $td('Coming soon', 'mg-games.title-coming') }}</h2>
         <div class="mg-cards">
             <CardMetagardenGame
                 v-for="game in comingSoonList"

@@ -719,4 +719,14 @@ export default {
         'new-lootbox-button': 'У вас',
         'new-lootbox-button-plural': 'новый лутбокс | {n} лутбокса | {n} лутбоксов',
     },
+    'mg-games': {
+        'title-recent': 'Недавние игры',
+        'title-all': 'Все игры',
+        'title-coming': 'Скоро',
+        'label-coming': 'Скоро',
+        'button-learn': 'Подробнее',
+        'button-play': 'Играть',
+        'game-miner':'Майнер',
+        'game-chess':'Шахматы',
+    },
 };
