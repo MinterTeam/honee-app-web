@@ -44,14 +44,14 @@ export default {
 
             <div class="u-grid u-mb-10">
                 <div class="u-cell u-cell--1-2">
-                    <div class="u-h--uppercase u-mb-05">{{ $td('Game token', 'todo') }}</div>
+                    <div class="u-h--uppercase u-mb-05">{{ $td('Game token', 'mg-games.game-token') }}</div>
                     <div class="u-flex u-flex--align-center u-fw-700">
                         <img class="u-image--round u-mr-05 " :src="$store.getters['explorer/getCoinIcon'](game.coin)" alt="" role="presentation" width="16" height="16">
                         {{ game.coin }}
                     </div>
                 </div>
                 <div class="u-cell u-cell--1-2">
-                    <div class="u-h--uppercase u-mb-05">{{ $td('Your balance', 'todo') }}</div>
+                    <div class="u-h--uppercase u-mb-05">{{ $td('Your balance', 'mg-games.balance') }}</div>
                     <div class="u-fw-700">
                         {{ $store.getters.getBalanceAmount(game.coin) }}
                     </div>
@@ -61,7 +61,7 @@ export default {
 
         <slot :game="game"/>
 
-        <h2 class="u-h--uppercase u-mb-10 u-mt-25">{{ $td('Find more games', 'todo') }}</h2>
+        <h2 class="u-h--uppercase u-mb-10 u-mt-25">{{ $td('Find more games', 'mg-games.find-more') }}</h2>
         <div class="mg-cards">
             <CardMetagardenGame
                 v-for="game in otherGameList"

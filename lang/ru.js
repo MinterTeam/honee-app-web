@@ -726,5 +726,11 @@ export default {
         'label-coming': 'Скоро',
         'button-learn': 'Подробнее',
         'button-play': 'Играть',
+        'game-token': 'Игровой токен',
+        'balance': 'Ваш баланс',
+        'find-more': 'Больше игр',
+        'join-channel': 'Подписаться на канал',
+        'join-conversation': 'Вступить в группу',
+        'game-community': 'Сообщество игры',
     },
 };
