@@ -26,10 +26,10 @@ export default [
     },
     */
     {
-        title: 'Magic Box',
+        title: 'The Magic Game',
         description: 'Create Magic Boxes and level up. The higher the level, the cooler the magic boxes. Each box contains coins and other valuable prizes.',
         category: 'Lottery',
-        coin: 'METAGARDEN',
+        coin: 'WONDER',
         slug: 'magic-box',
         ru: {
             description: 'Производите волшебные коробки, прокачивая свой уровень. Чем выше уровень, тем круче волшебные коробки. Каждая коробка содержит монеты и другие ценные призы.',

@@ -53,8 +53,8 @@ export default {
         tooltipOptions() {
             return {
                 content: this.$i18n.locale === 'en'
-                    ? 'todo en'
-                    : 'todo ru',
+                    ? 'The program will run until May 31, 2023. Rewards are automatically paid once a week in METAGARDEN tokens. Tokens transferred to a smart wallet can be withdrawn at any time.'
+                    : 'Программа действует до 31 мая 2023 г. Награды выплачиваются автоматически раз в неделю в токенах METAGARDEN. Токены, которые вы перечислите на смарт-кошельёк можно забрать в любой момент.',
                 trigger: 'click hover focus',
             };
         },
@@ -75,10 +75,10 @@ export default {
 
         <img class="u-image u-image-center u-mb-10" src="/img/metagarden-sw-hold.png" srcset="/img/metagarden-sw-hold@2x.png 2x" alt="" role="presentation" width="165" height="128">
 
-        <h2 class="u-h4 u-mb-10">Храни токены METAGARDEN на своем смарт-кошельке и получай за это 3%.</h2>
+        <h2 class="u-h4 u-mb-10">{{ $td('Hold METAGARDEN tokens in your smart wallet and earn 3% revenue per month.', 'metagarden.smart-hold') }}</h2>
 
         <nuxt-link v-if="minterBalance > 0" class="button button--full" :to="$i18nGetPreferredPath(`/withdraw?coin=METAGARDEN&network=${$options.HUB_NETWORK_SLUG.BSC}&address=${smartWalletAddress}`)">
-            {{ $td('Transfer to Smart-Wallet', 'metagarden.todo') }}
+            {{ $td('Transfer to Smart-Wallet', 'metagarden.transfer-smart-wallet') }}
         </nuxt-link>
         <nuxt-link v-else class="button button--main button--full" :to="$i18nGetPreferredPath('/swap/METAGARDEN')">
             {{ $t('action.title-buy-coin', {coin: 'METAGARDEN'}) }}
@@ -97,7 +97,7 @@ export default {
         <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="minterBalance > 0">
             <div class="u-flex u-flex--align-center">
                 <img class="u-image u-mr-05" alt="" src="/img/logo-metagarden.svg" width="24" height="24">
-                <div class="u-h--uppercase u-text-sw-hold">{{ $td('Available for transfer', 'metagarden.todo') }}</div>
+                <div class="u-h--uppercase u-text-sw-hold">{{ $td('Available for transfer', 'metagarden.available-for-transfer') }}</div>
             </div>
 
             <div class="u-h u-h3">{{ pretty(minterBalance) || '0' }}</div>
@@ -105,19 +105,19 @@ export default {
         <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="evmBalance > 0">
             <div class="u-flex u-flex--align-center">
                 <div class="u-mr-05" style="width: 24px"></div>
-                <div class="u-h--uppercase u-text-sw-hold">{{ $td('Metagarden in Smart-Wallet', 'metagarden.todo') }}</div>
+                <div class="u-h--uppercase u-text-sw-hold">{{ $td('METAGARDEN in Smart-Wallet', 'metagarden.balance-smart-wallet') }}</div>
             </div>
 
             <div class="u-h u-h3">{{ pretty(evmBalance) || '0' }}</div>
         </div>
-        <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="evmBalance > 0">
+        <!--<div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="evmBalance > 0">
             <div class="u-flex u-flex--align-center">
                 <div class="u-mr-05" style="width: 24px"></div>
                 <div class="u-h--uppercase u-text-sw-hold">{{ $td('Rewards for hodl, annual rate of 36%', 'metagarden.todo') }}</div>
             </div>
 
             <div class="u-h u-h3">{{ pretty(apr) }}</div>
-        </div>
+        </div>-->
     </div>
 </template>
 

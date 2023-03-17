@@ -707,6 +707,10 @@ export default {
         'buy-more-button': 'Купить майнеры',
         'daily-yield': 'Ежедневные награды:',
         'back-to-honee': 'Перейти в Honee',
+        'smart-hold': 'Храни токены METAGARDEN на своем смарт-кошельке и получай доход 3% в месяц.',
+        'transfer-smart-wallet': 'Перевести на Smart-кошелек',
+        'available-for-transfer': 'Доступно для перевода',
+        'balance-smart-wallet': 'METAGARDEN на Smart-кошельке',
     },
     'mg-lootbox': {
         'title-inactive': 'Лутбокс еще не готов',
