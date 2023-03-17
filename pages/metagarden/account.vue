@@ -1,6 +1,7 @@
 <script>
 import AddressAssets from '~/components/AddressAssets.vue';
 import MetagardenSpotCard from '~/components/MetagardenSpotCard.vue';
+import MetagardenSwHoldCard from '~/components/MetagardenSwHoldCard.vue';
 import MetagardenLootboxCard from '~/components/MetagardenLootboxCard.vue';
 
 export default {
@@ -8,6 +9,7 @@ export default {
     components: {
         AddressAssets,
         MetagardenSpotCard,
+        MetagardenSwHoldCard,
         MetagardenLootboxCard,
     },
     fetch() {
@@ -40,6 +42,8 @@ export default {
         <MetagardenLootboxCard class="u-mt-10 u-mb-10"/>
 
         <MetagardenSpotCard/>
+
+        <MetagardenSwHoldCard class="u-mt-10"/>
 
         <button type="button" class="button button--full button--ghost-red u-mt-10" @click="logout()">{{ $td('Logout', 'common.logout') }}</button>
 

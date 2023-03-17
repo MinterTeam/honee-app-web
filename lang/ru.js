@@ -655,6 +655,7 @@ export default {
     hub: {
         'withdraw-title': 'Вывод',
         'withdraw-description': 'Отправка монет в другую сеть',
+        'withdraw-description-network': 'Отправка монет в {network}',
         'withdraw-address': 'Вывод на адрес',
         'withdraw-address-required': 'Укажите',
         'withdraw-address-title': 'адрес',
