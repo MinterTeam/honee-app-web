@@ -263,7 +263,6 @@ export default function useWeb3SmartWalletSwap() {
      * @param {number|string} [options.overrideAmount]
      * @return {Promise<Array<{data: string, to: string, value: (string|number)}>>}
      */
-    // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
     async function buildDepositTx({overrideAmount} = {}) {
         const amount = Number(overrideAmount) > 0 ? overrideAmount : amountToDeposit.value;
         console.log('overrideAmount', overrideAmount);
@@ -295,7 +294,6 @@ export default function useWeb3SmartWalletSwap() {
      * @param {number|string} [options.overrideAmount]
      * @return {Promise<Array<OneInchTx>>}
      */
-    // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
     function buildTxForSwapToHub({overrideAmount} = {}) {
         const txParams = Number(overrideAmount) > 0 ? {
             ...swapToHubParams.value,
@@ -320,7 +318,6 @@ export default function useWeb3SmartWalletSwap() {
      * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxResult>}
      */
-    // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
     async function buildTxListAndCallSmartWallet({overrideExtraNonce} = {}) {
         if (props.skipRelayReward) {
             throw new Error('Can\'t call smart-wallet with disabled relay reward. Use build and call manually');

@@ -35,7 +35,6 @@ const fastCache = new Cache({ttl: 2 * 1000, max: 100});
  * @param {string} [axiosOptions.idPreventConcurrency]
  * @return {Promise<{toTokenAmount: string, txList: Array<OneInchTx>}>}
  */
-// @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
 export async function buildTxForSwap(chainId, swapParams, {idPreventConcurrency} = {}) {
     const hubProxyContractAddress = HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS_LIST[chainId];
     swapParams = {

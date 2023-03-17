@@ -62,7 +62,7 @@ const explorer = instance;
 
 
 /**
- * @typedef {Object} Status
+ * @typedef {object} Status
  * @property {number} marketCap - in $
  * @property {number} bipPriceUsd
  * @property {number} bipPriceChange - in %
@@ -84,13 +84,13 @@ export function getStatus() {
 }
 
 /**
- * @typedef {Object} BlockListInfo
+ * @typedef {object} BlockListInfo
  * @property {Array<Block>} data
  * @property {PaginationMeta} meta
  */
 
 /**
- * @param {Object} [params]
+ * @param {object} [params]
  * @param {number|string} [params.page]
  * @param {number|string} [params.limit]
  * @return {Promise<BlockListInfo>}
@@ -147,14 +147,14 @@ export async function getBalance(address) {
 }
 
 /**
- * @typedef {Object} BalanceData
+ * @typedef {object} BalanceData
  * @property {string} totalBalanceSum
  * @property {string} totalBalanceSumUsd
  * @property {Array<BalanceItem>} balances
  */
 
 /**
- * @typedef {Object} BalanceItem
+ * @typedef {object} BalanceItem
  * @property {number|string} amount
  * @property {number|string} bipAmount
  * @property {Coin} coin
@@ -231,7 +231,7 @@ function markVerified(coinListPromise, itemType = 'coin') {
 
 /**
  * @param {string} address
- * @param {Object} [params]
+ * @param {object} [params]
  * @param {number} [params.page]
  * @param {number} [params.limit]
  * @return {Promise<TransactionListInfo>}
@@ -282,7 +282,6 @@ const coinsCache = new Cache({ttl: 1 * 60 * 1000, max: 100});
  * @param {boolean} [options.skipMeta]
  * @return {Promise<Array<CoinInfo>>}
  */
-// @ts-ignore https://github.com/microsoft/TypeScript/issues/50286
 export function getCoinList({skipMeta} = {}) {
     let coinListPromise = explorer.get('coins', {
             cache: coinsCache,
@@ -370,13 +369,13 @@ export function getSwapCoinList(coin, depth) {
 }
 
 /**
- * @typedef {Object} PoolListInfo
+ * @typedef {object} PoolListInfo
  * @property {Array<Pool>} data
  * @property {PaginationMeta} meta
  */
 
 /**
- * @param {Object} [params]
+ * @param {object} [params]
  * @param {string|number} [params.coin] - search by coin
  * @param {string} [params.provider] - search by Mx address
  * @param {number} [params.page]
@@ -433,7 +432,7 @@ export function getPoolProvider(coin0, coin1, address) {
 
 /**
  * @param {string} address
- * @param {Object} [params]
+ * @param {object} [params]
  * @param {number} [params.page]
  * @param {number} [params.limit]
  * @return {Promise<ProviderPoolListInfo>}
@@ -447,7 +446,7 @@ export function getProviderPoolList(address, params) {
 }
 
 /**
- * @typedef {Object} ProviderPoolListInfo
+ * @typedef {object} ProviderPoolListInfo
  * @property {Array<PoolProvider>} data
  * @property {PaginationMeta} meta
  */
@@ -456,7 +455,7 @@ export function getProviderPoolList(address, params) {
 /**
  * @param {string} coin0
  * @param {string} coin1
- * @param {Object} amountOptions
+ * @param {object} amountOptions
  * @param {number|string} [amountOptions.buyAmount]
  * @param {number|string} [amountOptions.sellAmount]
  * @param {AxiosRequestConfig} [axiosOptions]
@@ -478,7 +477,7 @@ export function getSwapRoute(coin0, coin1, {buyAmount, sellAmount}, axiosOptions
 /**
  * @param {string} coin0
  * @param {string} coin1
- * @param {Object} amountOptions
+ * @param {object} amountOptions
  * @param {number|string} [amountOptions.buyAmount]
  * @param {number|string} [amountOptions.sellAmount]
  * @param {AxiosRequestConfig} [axiosOptions]
@@ -499,7 +498,7 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
 
 
 /**
- * @typedef {Object} Block
+ * @typedef {object} Block
  * @property {number} height
  * @property {string} timestamp
  * @property {number} transactionCount - tx count in the block
@@ -513,13 +512,13 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
  */
 
 /**
- * @typedef {Object} StakeListInfo
+ * @typedef {object} StakeListInfo
  * @property {Array<StakeItem>} data
  * @property {PaginationMeta} meta
  */
 
 /**
- * @typedef {Object} StakeItem
+ * @typedef {object} StakeItem
  * @property {Coin} coin
  * @property {string|number} value
  * @property {string|number} bipValue
@@ -529,13 +528,13 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
  */
 
 /**
- * @typedef {Object} ValidatorListItem
+ * @typedef {object} ValidatorListItem
  * @property {Validator} validator
  * @property {boolean} signed
  */
 
 /**
- * @typedef {Object} ValidatorMeta
+ * @typedef {object} ValidatorMeta
  * @property {string} publicKey
  * @property {number} status
  * @property {string} name - meta name
@@ -555,7 +554,7 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
  */
 
 /**
- * @typedef {Object} Pool
+ * @typedef {object} Pool
  * @property {Coin} coin0
  * @property {Coin} coin1
  * @property {number|string} amount0
@@ -567,7 +566,7 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
  */
 
 /**
- * @typedef {Object} PoolProvider
+ * @typedef {object} PoolProvider
  * @property {string} address
  * @property {Coin} coin0
  * @property {Coin} coin1
@@ -580,13 +579,13 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
  */
 
 /**
- * @typedef {Object} TransactionListInfo
+ * @typedef {object} TransactionListInfo
  * @property {Array<Transaction>} data
  * @property {PaginationMeta} meta
  */
 
 /**
- * @typedef {Object} Transaction
+ * @typedef {object} Transaction
  * @property {number} txn
  * @property {string} hash
  * @property {string} status
@@ -600,7 +599,7 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
  * @property {number} commissionPrice
  * @property {Coin} commissionPriceCoin
  * @property {number} type
- * @property {Object} data
+ * @property {object} data
  * -- type: TX_TYPE.SEND
  * @property {string} [data.to]
  * @property {Coin} [data.coin]
@@ -642,7 +641,7 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
  * -- type: TX_TYPE.REDEEM_CHECK
  * @property {string} [data.rawCheck]
  * @property {string} [data.proof]
- * @property {Object} [data.check]
+ * @property {object} [data.check]
  * @property {string} [data.check.sender]
  * @property {number} [data.check.nonce]
  * @property {number|string} [data.check.value]
@@ -668,7 +667,7 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
  */
 
 /**
- * @typedef {Object} CoinInfo
+ * @typedef {object} CoinInfo
  * @property {number} id
  * @property {string} symbol
  * @property {CoinType} type
@@ -689,7 +688,7 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
  */
 
 /**
- * @typedef {Object} PaginationMeta
+ * @typedef {object} PaginationMeta
  * @property {number} currentPage
  * @property {number} lastPage
  * @property {number} perPage

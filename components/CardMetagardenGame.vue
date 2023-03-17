@@ -1,5 +1,6 @@
 <script>
 import {defineComponent} from 'vue';
+import {pretty} from '~/assets/utils.js';
 
 export default defineComponent({
     components: {
@@ -11,6 +12,9 @@ export default defineComponent({
             type: Object,
             required: true,
         },
+    },
+    methods: {
+        pretty,
     },
 });
 </script>
@@ -27,7 +31,7 @@ export default defineComponent({
             <h3 class="u-h4 u-mb-025">{{ game.title }}</h3>
             <div class="u-h--uppercase u-flex u-flex--align-center">
                 <img class="u-image--round u-mr-05 " :src="$store.getters['explorer/getCoinIcon'](game.coin)" alt="" role="presentation" width="16" height="16">
-                {{ $store.getters.getBalanceAmount(game.coin) }}
+                {{ pretty($store.getters.getBalanceAmount(game.coin)) }}
                 {{ game.coin }}
             </div>
             <!--<CardHead :card="card"/>-->

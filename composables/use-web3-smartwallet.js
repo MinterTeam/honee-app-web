@@ -342,7 +342,6 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
      * @param {number} [options.walletIndex]
      * @return {Promise<SmartWalletRelaySubmitTxPayload>}
      */
-    // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
     async function preparePayload(txToList, txDataList, txValueList, {overrideExtraNonce, walletIndex = SMART_WALLET_INDEX} = {}) {
         const web3Eth = getProviderByChain(props.chainId);
         const smartWalletContract = new web3Eth.Contract(smartWalletABI, smartWalletAddress.value);
@@ -409,7 +408,6 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
      * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxPayload>}
      */
-    // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
     function preparePayloadFromTxList(txList, {overrideExtraNonce} = {}) {
         const toList = [];
         const dataList = [];
@@ -429,7 +427,6 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
      * @param {number} [options.overrideExtraNonce]
      * @return {Promise<SmartWalletRelaySubmitTxResult>}
      */
-    // @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
     function callSmartWallet(txList, {overrideExtraNonce} = {}) {
         return preparePayloadFromTxList(txList, {overrideExtraNonce})
             .then((payload) => {
@@ -474,7 +471,6 @@ const SMART_WALLET_INDEX = 0;
  * @param {number} [options.walletIndex]
  * @return {string}
  */
-// @ts-expect-error @TODO https://github.com/microsoft/TypeScript/issues/50286
 function getSmartWalletAddress(evmAccountAddress, {isLegacy, walletIndex = SMART_WALLET_INDEX} = {}) {
     if (!evmAccountAddress) {
         return '';

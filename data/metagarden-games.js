@@ -13,6 +13,7 @@ export default [
             category: 'Стратегия',
         },
     },
+    /*
     {
         title: 'Miner',
         description: 'Mining Metagarden platform tokens is an exciting process in the form of a game. Buy a Miner and receive daily rewards with many other bonuses.',
@@ -23,6 +24,7 @@ export default [
             description: 'Майнинг токенов платформы Metagarden — это увлекательный процесс в игровой форме. Купите майнер и получайте ежедневные вознаграждения с множеством других бонусов.',
         },
     },
+    */
     {
         title: 'Magic Box',
         description: 'Create Magic Boxes and level up. The higher the level, the cooler the magic boxes. Each box contains coins and other valuable prizes.',
