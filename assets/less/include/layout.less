@@ -6,6 +6,7 @@
 .u-container {padding-inline: @container-padding-small; margin: 0 auto; width: 100%;}
 .u-container-margin {margin: 0 auto;}
 .u-container--mini--always {max-width: 312px + @container-padding-small * 2;}
+.u-container--small {max-width: 376px + @container-padding-small * 2;}
 @media (min-width: @breakpoint-small-up) {
     .u-container {padding-inline: @container-padding; max-width: @container-width + @container-padding * 2;}
     .u-container--small {max-width: 376px + @container-padding * 2;}
@@ -14,7 +15,8 @@
     .u-container--large {max-width: @container-width-large + @container-padding * 2;}
     .u-container--2k {max-width: 2560px;}
     .u-container--wide {max-width: none;}
-    .u-container--mg-cards {max-width: 868px + @container-padding * 2;}
+    .u-container--mg-cards-2 {max-width: @mg-card-width * 2 + @mg-card-gap + @container-padding * 2;}
+    .u-container--mg-cards-4 {max-width: @mg-card-width * 4 + @mg-card-gap * 3 + @container-padding * 2;}
 }
 
 .u-section, .u-section--only:not(.u-section .u-section--only) {

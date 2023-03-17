@@ -726,7 +726,5 @@ export default {
         'label-coming': 'Скоро',
         'button-learn': 'Подробнее',
         'button-play': 'Играть',
-        'game-miner':'Майнер',
-        'game-chess':'Шахматы',
     },
 };

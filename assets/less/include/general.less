@@ -115,7 +115,8 @@ h1, h2, h3, h4, h5, h6 {.u-h();}
 .u-h3 {font-size: 18px; line-height: 1.21;}
 .u-h4 {font-size: 16px; line-height: 1.19;}
 .u-h5 {font: inherit; font-weight: 600;}
-.u-h--uppercase {font-weight: 700; font-size: 12px; line-height: 16px; color: var(--color-text-muted); letter-spacing: 1px; text-transform: uppercase;}
+.u-h--uppercase-like {font-weight: 700; font-size: 12px; line-height: 16px; color: var(--color-text-muted); letter-spacing: 1px;}
+.u-h--uppercase {.u-h--uppercase-like(); text-transform: uppercase;}
 .u-h--uppercase-solid {.u-h--uppercase(); color: inherit;}
 .subtitle {font-size: 14px;}
 @media (min-width: @breakpoint-small-up) {

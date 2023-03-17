@@ -18,6 +18,12 @@ export default {
                 this.spotInfo = info;
             });
     },
+    props: {
+        hideHead: {
+            type: Boolean,
+            default: false,
+        },
+    },
     data() {
         return {
             /** @type {MetagardenSpotInfo} */
@@ -71,7 +77,7 @@ export default {
 
 <template>
     <div class="card card__content--small card--metagarden card--metagarden--blobs u-text-center">
-        <div class="card__action-head">
+        <div class="card__action-head" v-if="!hideHead">
             <img class="card__action-logo" alt="" src="/img/logo-metagarden.svg">
             <div class="card__action-title">
                 <div class="card__action-title-type">Metagarden</div>
@@ -87,7 +93,7 @@ export default {
             <source src="/video/spot-video3.mov" type="video/mp4">
             <source src="/video/spot-video.webm" type="video/webm">
         </video>-->
-        <img class="u-image u-image-center u-mt-15 u-mb-10" src="/img/metagarden-spot.png" srcset="/img/metagarden-spot@2x.png 2x" alt="" role="presentation">
+        <img v-if="!hideHead" class="u-image u-image-center u-mt-15 u-mb-10" src="/img/metagarden-spot.png" srcset="/img/metagarden-spot@2x.png 2x" alt="" role="presentation">
 
         <div v-if="$fetchState.pending" class="u-text-center">
             <BaseLoader class="" :is-loading="true"/>
@@ -97,7 +103,7 @@ export default {
             {{ getErrorText($fetchState.error) }}
         </div>
         <template v-else-if="spotInfo">
-            <div class="u-h--uppercase u-mb-05">{{ $td('Available to claim', 'metagarden.available-to-claim') }}</div>
+            <div class="u-h--uppercase u-mb-05 u-mt-10">{{ $td('Available to claim', 'metagarden.available-to-claim') }}</div>
             <div class="u-h u-h3">${{ pretty(spotInfo.claimValue) }}</div>
 
             <div class="u-flex u-flex--align-center u-flex--justify-center u-mt-10" v-if="spotInfo.isMiningStarted">

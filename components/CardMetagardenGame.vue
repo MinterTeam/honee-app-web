@@ -1,18 +1,5 @@
 <script>
 import {defineComponent} from 'vue';
-import get from 'lodash-es/get.js';
-import hashColor from '~/assets/hash-color.js';
-import {clearActionQuery} from '~/components/Action.vue';
-import CardHead from '~/components/CardHead.vue';
-
-/**
- * @typedef {object} MetagardenGameCard
- * @property {string} title
- * @property {string} coin
- * @property {string} slug
- * @property {string} [url]
- * @property {boolean} [isComingSoon]
- */
 
 export default defineComponent({
     components: {
@@ -30,9 +17,11 @@ export default defineComponent({
 
 <template>
     <div class="card card--metagarden-game">
-        <img class="card__cover" :src="`/img/game-${game.slug}.jpg`" :srcset="`/img/game-${game.slug}@2x.jpg 2x`" alt="" role="presentation">
-        <div class="card__badge card__badge--coming-soon" v-if="game.isComingSoon">
-            {{ $td('Coming soon', 'mg-games.label-coming') }}
+        <div class="u-relative">
+            <img class="card__cover" :src="`/img/game-${game.slug}.jpg`" :srcset="`/img/game-${game.slug}@2x.jpg 2x`" alt="" role="presentation">
+            <div class="card__badge card__badge--coming-soon" v-if="game.isComingSoon">
+                {{ $td('Coming soon', 'mg-games.label-coming') }}
+            </div>
         </div>
         <div class="card__content--small">
             <h3 class="u-h4 u-mb-025">{{ game.title }}</h3>
@@ -49,7 +38,7 @@ export default defineComponent({
             </div>-->
 
             <div class="u-mt-10">
-                <nuxt-link class="button button--ghost-main button--full " :to="$i18nGetPreferredPath(`/metagarden/${game.slug}`)">
+                <nuxt-link class="button button--ghost-main button--full " :to="$i18nGetPreferredPath(`/metagarden/game/${game.slug}`)">
                     <template v-if="game.isComingSoon">{{ $td('Learn more', 'mg-games.button-learn') }}</template>
                     <template v-else>{{ $td('Play', 'mg-games.button-play') }}</template>
                 </nuxt-link>
