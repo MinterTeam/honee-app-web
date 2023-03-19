@@ -54,7 +54,7 @@ export default {
             return {
                 content: this.$i18n.locale === 'en'
                     ? 'The program will run until May 31, 2023. Rewards are automatically paid once a week in METAGARDEN tokens. Tokens transferred to a smart wallet can be withdrawn at any time.'
-                    : 'Программа действует до 31 мая 2023 г. Награды выплачиваются автоматически раз в неделю в токенах METAGARDEN. Токены, которые вы перечислите на смарт-кошельёк можно забрать в любой момент.',
+                    : 'Программа действует до 31 мая 2023 г. Награды выплачиваются автоматически раз в неделю в токенах METAGARDEN. Токены, которые вы перечислите на смарт-кошелек можно забрать в любой момент.',
                 trigger: 'click hover focus',
             };
         },
