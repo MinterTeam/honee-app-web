@@ -21,12 +21,12 @@ export default defineComponent({
 
 <template>
     <div class="card card--metagarden-game">
-        <div class="u-relative">
+        <nuxt-link class="u-relative u-display-block" :to="$i18nGetPreferredPath(`/metagarden/game/${game.slug}`)">
             <img class="card__cover" :src="`/img/game-${game.slug}.jpg`" :srcset="`/img/game-${game.slug}@2x.jpg 2x`" alt="" role="presentation">
             <div class="card__badge card__badge--coming-soon" v-if="game.isComingSoon">
                 {{ $td('Coming soon', 'mg-games.label-coming') }}
             </div>
-        </div>
+        </nuxt-link>
         <div class="card__content--small">
             <h3 class="u-h4 u-mb-025">{{ game.title }}</h3>
             <div class="u-h--uppercase u-flex u-flex--align-center">
