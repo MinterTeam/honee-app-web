@@ -312,11 +312,8 @@
     &+& {border-top: 1px solid var(--color-divider);}
 }
 .header__logo {display: flex; align-items: center; flex-grow: 2;}
-.header__image-logo {vertical-align: top;}
-.header__image-back {margin-right: 24px;}
-.header__icon {vertical-align: top;}
-.header__logo-text {font-size: 26px; font-weight: 700; font-family: @heading-font-family; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-//.header__controls {display: flex; height: 100%;}
+.header__image-back {margin-right: 8px;}
+.header__logo-text {font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 .header__horizontal-divider {min-width: 100%; flex-grow: 2; border-top: 1px solid var(--color-divider); margin: 0 -@container-padding;}
 .header__controls-divider {margin: 0; border: none; border-right: 1px solid var(--color-divider);}
 .header__controls-link {
@@ -326,8 +323,9 @@
     &.is-active::after {background: var(--color-main);}
 }
 .header__controls-user {display: flex; align-items: center; /*max-width: calc(100vw - 220px);*/ /*margin-right: 16px;*/}
-//.header__controls-user-name {overflow: hidden; text-overflow: ellipsis;white-space: nowrap;}
-.header__controls-user-avatar {width: 24px; height: 24px; border-radius: 50%; background: @c-black-light; object-fit: cover; margin-right: 8px; flex-shrink: 0;}
+.header__controls-user-avatar {border-radius: 50%; background: @c-black-light; object-fit: cover;
+    flex-shrink: 0;}
+.header__controls-mg-user-balance {.u-text-small(); color: @c-metagarden-highlight;}
 .header__controls-language {display: flex; align-items: center; /*margin-left: 16px;*/}
 .header__language-container {padding-top: 16px; padding-bottom: 16px; display: flex; justify-content: flex-end;}
 .header__language-button {line-height: 0; display: block;}
@@ -339,18 +337,10 @@
     }
 }
 @media (min-width: @breakpoint-small-up) {
-    //.header__logo {margin-right: 70px;}
     .header__controls-link {margin-left: 24px;}
-    .header__controls-user {/*max-width: calc(100vw - 260px);*/ /*margin-right: 24px;*/}
-    .header__controls-user-avatar {margin-right: 12px;}
-    .header__controls-language {/*margin-left: 24px;*/}
 }
 @media (max-width: @breakpoint-small-down) {
     .header__horizontal-divider {margin: 0 -16px;}
-}
-@media (min-width: @breakpoint-large-up) {
-    //.header {height: @header-height-large;}
-    //.header__controls-user {max-width: calc(100vw - 340px);}
 }
 
 // back button

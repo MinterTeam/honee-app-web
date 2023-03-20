@@ -1,6 +1,6 @@
 <script>
 import InlineSvg from 'vue-inline-svg';
-import {HUB_NETWORK, DASHBOARD_URL, DASHBOARD_URL_METAGARDEN} from '~/assets/variables.js';
+import {HUB_NETWORK, DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR} from '~/assets/variables.js';
 import Language from '~/components/layout/Language.vue';
 import Modal from '~/components/base/Modal.vue';
 import Topup from '~/components/Topup.vue';
@@ -54,7 +54,8 @@ export default {
             }
         },
         isAuthPage() {
-            return this.$route.name.indexOf('auth-') === 0 || this.$route.name.indexOf('auth_') === 0;
+            // match ^auth/.* or ^auth___(en|ru)
+            return this.$route.name.indexOf('auth' + ROUTE_NAME_SPLITTER) === 0 || this.$route.name.indexOf('auth' + I18N_ROUTE_NAME_SEPARATOR) === 0;
         },
         isAuthBattlePage() {
             return this.$route.path.includes('/auth/battle');
@@ -83,8 +84,8 @@ export default {
         <div class="header__container u-container u-container--wide">
             <div class="header__logo">
                 <nuxt-link class="header__logo-link" :to="$i18nGetPreferredPath(indexUrl)">
-                    <img v-if="isMetagarden" class="header__image-logo" src="/img/logo-metagarden-green.svg" alt="Metagarden" width="32" height="32">
-                    <InlineSvg v-else class="header__image-logo" src="/img/logo-honee.svg" alt="Honee" width="122" height="24" fill="currentColor"/>
+                    <img v-if="isMetagarden" class="u-image" src="/img/logo-metagarden-green.svg" alt="Metagarden" width="32" height="32">
+                    <InlineSvg v-else class="u-image" src="/img/logo-honee.svg" alt="Honee" width="122" height="24" fill="currentColor"/>
                 </nuxt-link>
             </div>
 
@@ -102,7 +103,7 @@ export default {
             </template>
 
             <button v-if="isAuthorized && !simple" type="button" class="header__controls-link header__controls-user u-semantic-button" @click="isTopupModalOpen = true">
-                <img class="header__controls-user-avatar u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation"/>
+                <img class="header__controls-user-avatar u-mr-05 u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation" width="24" height="24"/>
                 <span class="header__controls-user-name">{{ $store.getters.username }}</span>
             </button>
             <button v-if="isAuthorized && !simple && !isMetagarden" type="button" class="header__controls-link link u-semantic-button metagarden-layout__hide" @click="logout()">

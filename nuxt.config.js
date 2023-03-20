@@ -6,7 +6,7 @@ import webpack from 'webpack';
 const envConfig = dotenv.config();
 const envConfigParsed = envConfig.error ? {} : envConfig.parsed;
 
-import {BASE_TITLE, BASE_DESCRIPTION, I18N_ROUTE_NAME_SEPARATOR, LANGUAGE_COOKIE_KEY, GOATCOUNTER_HOST, GOATCOUNTER_SCRIPT_HASH} from "./assets/variables.js";
+import {BASE_TITLE, BASE_DESCRIPTION, I18N_ROUTE_NAME_SEPARATOR, ROUTE_NAME_SPLITTER, LANGUAGE_COOKIE_KEY, GOATCOUNTER_HOST, GOATCOUNTER_SCRIPT_HASH} from "./assets/variables.js";
 import * as varsConfig from "./assets/variables.js";
 
 const NUXT_LOADING_INLINE_SCRIPT_SHA = process.env.NODE_ENV === 'production'
@@ -119,7 +119,7 @@ module.exports = {
         linkActiveClass: 'is-active-inner',
         linkExactActiveClass: 'is-active',
         // fix foo-bar.vue shadowing foo/bar.vue, by default they have same name, so change '-' separator to '/'
-        routeNameSplitter: '/',
+        routeNameSplitter: ROUTE_NAME_SPLITTER,
         middleware: [
             'auth',
             'history',
