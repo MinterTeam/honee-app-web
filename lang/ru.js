@@ -369,7 +369,7 @@ export default {
     },
     action: {
         'title-buy': 'Купите BIP, HUB и BEE',
-        'title-buy-coin': 'Купите {coin}',
+        'title-buy-coin': 'Купить {coin}',
         'title-swap': 'Обменяйте монеты',
         'title-swap-combined': '@:action.title-swap {coin0} {conjunction} {coin1}',
         'title-swap-coin0-empty': '',
