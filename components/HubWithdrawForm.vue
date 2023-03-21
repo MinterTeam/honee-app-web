@@ -40,6 +40,9 @@ export default {
     directives: {
     },
     mixins: [validationMixin],
+    emits: [
+        'success-modal-close',
+    ],
     setup() {
         const {fee, setFeeProps} = useFee();
         const {
@@ -506,7 +509,7 @@ export default {
         </Modal>
 
         <!-- Success Modal -->
-        <Modal :isOpen.sync="isSuccessModalVisible">
+        <Modal :isOpen.sync="isSuccessModalVisible" @modal-close="$emit('success-modal-close')">
             <h2 class="u-h3 u-mb-10">{{ $td('Success!', 'form.success-title') }}</h2>
 
             <div class="u-mb-10">

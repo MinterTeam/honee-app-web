@@ -22,6 +22,6 @@ export default {
         <nuxt-link class="button button--main button--full u-mt-15" :to="$i18nGetPreferredPath('/swap/' + game.coin)">
             {{ $t('action.title-buy-coin', {coin: game.coin}) }}
         </nuxt-link>
-        <MetagardenLootboxCard/>
+        <MetagardenLootboxCard class="u-mt-10"/>
     </MetagardenGame>
 </template>
