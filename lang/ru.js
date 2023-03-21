@@ -708,7 +708,7 @@ export default {
         'daily-yield': 'Ежедневные награды:',
         'back-to-honee': 'Перейти в Honee',
         'smart-hold-title': 'Хранилище',
-        'smart-hold-description': 'Храни токены METAGARDEN на своем смарт-кошельке и получай доход 0.1% в день.',
+        'smart-hold-description': 'Храни токены METAGARDEN на своем смарт-кошельке и получай доход 0.1% в день (36% годовых).',
         'transfer-smart-wallet': 'Перевести на Smart-кошелек',
         'available-for-transfer': 'Доступно для перевода',
         'balance-smart-wallet': 'METAGARDEN на Smart-кошельке',

@@ -72,7 +72,7 @@ export default {
             <img class="card__action-logo" alt="" src="/img/logo-metagarden.svg">
             <div class="card__action-title">
                 <div class="card__action-title-type">Metagarden</div>
-                <div class="card__action-title-value">{{ $td('Miners', 'metagarden.smart-hold-title') }}</div>
+                <div class="card__action-title-value">{{ $td('Smart Hold', 'metagarden.smart-hold-title') }}</div>
             </div>
         </div>
         <img
@@ -82,7 +82,7 @@ export default {
 
         <img class="u-image u-image-center u-mt-15 u-mb-10" src="/img/metagarden-sw-hold.png" srcset="/img/metagarden-sw-hold@2x.png 2x" alt="" role="presentation" width="165" height="128">
 
-        <h2 class="u-h4 u-mb-10">{{ $td('Hold METAGARDEN tokens in your smart wallet and earn 0.1% revenue per day.', 'metagarden.smart-hold-description') }}</h2>
+        <h2 class="u-h4 u-mb-10">{{ $td('Hold METAGARDEN tokens in your smart wallet and earn 0.1% revenue per day (36% APR).', 'metagarden.smart-hold-description') }}</h2>
 
         <nuxt-link v-if="minterBalance > 0" class="button button--full" :to="$i18nGetPreferredPath(`/withdraw?coin=METAGARDEN&network=${$options.HUB_NETWORK_SLUG.BSC}&address=${smartWalletAddress}`)">
             {{ $td('Transfer to Smart-Wallet', 'metagarden.transfer-smart-wallet') }}
