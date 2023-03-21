@@ -54,7 +54,7 @@ export default {
             return {
                 content: this.$i18n.locale === 'en'
                     ? 'The program will run until May 31, 2023. Rewards are automatically paid once a week in METAGARDEN tokens. Tokens transferred to a smart wallet can be withdrawn at any time.'
-                    : 'Программа действует до 31 мая 2023 г. Награды выплачиваются автоматически раз в неделю в токенах METAGARDEN. Токены, которые вы перечислите на смарт-кошелек можно забрать в любой момент.',
+                    : 'Программа действует до 31 мая 2023 г. Награды выплачиваются автоматически раз в неделю в токенах METAGARDEN. Токены, которые вы перечислите на смарт-кошелек можно забрать в любой момент .',
                 trigger: 'click hover focus',
             };
         },
@@ -68,14 +68,21 @@ export default {
 
 <template>
     <div class="card card__content--small card--sw-hold u-text-center">
+        <div class="card__action-head" v-if="!hideHead">
+            <img class="card__action-logo" alt="" src="/img/logo-metagarden.svg">
+            <div class="card__action-title">
+                <div class="card__action-title-type">Metagarden</div>
+                <div class="card__action-title-value">{{ $td('Miners', 'metagarden.smart-hold-title') }}</div>
+            </div>
+        </div>
         <img
             class="mg-sw-hold__info" src="/img/icon-metagarden-info.svg" alt="Info"
             v-tooltip="tooltipOptions"
         >
 
-        <img class="u-image u-image-center u-mb-10" src="/img/metagarden-sw-hold.png" srcset="/img/metagarden-sw-hold@2x.png 2x" alt="" role="presentation" width="165" height="128">
+        <img class="u-image u-image-center u-mt-15 u-mb-10" src="/img/metagarden-sw-hold.png" srcset="/img/metagarden-sw-hold@2x.png 2x" alt="" role="presentation" width="165" height="128">
 
-        <h2 class="u-h4 u-mb-10">{{ $td('Hold METAGARDEN tokens in your smart wallet and earn 3% revenue per month.', 'metagarden.smart-hold') }}</h2>
+        <h2 class="u-h4 u-mb-10">{{ $td('Hold METAGARDEN tokens in your smart wallet and earn 0.1% revenue per day.', 'metagarden.smart-hold-description') }}</h2>
 
         <nuxt-link v-if="minterBalance > 0" class="button button--full" :to="$i18nGetPreferredPath(`/withdraw?coin=METAGARDEN&network=${$options.HUB_NETWORK_SLUG.BSC}&address=${smartWalletAddress}`)">
             {{ $td('Transfer to Smart-Wallet', 'metagarden.transfer-smart-wallet') }}
