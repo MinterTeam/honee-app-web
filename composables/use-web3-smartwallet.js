@@ -50,6 +50,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         gasTokenDecimals: 0,
         // amount of swap tx combined into smart-wallet tx (e.g. several swaps for portfolio buy)
         complexity: 1,
+        // used for finding tokens to buy when buying portfolio
         estimationComplexity: undefined,
         estimationSkip: false,
     });
@@ -87,21 +88,23 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         }
         return networkGasPrice.value;
     });
-    const relayRewardAmount = computed(() => getRelayRewardAmount(props.complexity));
+    const combinedTxGasLimit = computed(() => getCombinedTxGasLimit(props.complexity));
+    const relayRewardAmount = computed(() => getFeeAmount(gasPrice.value, combinedTxGasLimit.value));
     const estimationComplexity = computed(() => {
         return typeof props.estimationComplexity !== 'undefined' ? props.estimationComplexity : props.complexity;
     });
     // estimation of reward
+    const maxMultiSwapCombinedTxGasLimit = computed(() => getCombinedTxGasLimit(estimationComplexity.value));
     // it's named 'max' because in portfolioBuy we estimate max possible complexity (which is equal to number of coins to buy)
-    const maxRelayRewardAmount = computed(() => getRelayRewardAmount(estimationComplexity.value));
-    function getRelayRewardAmount(complexity = 1) {
+    const maxRelayRewardAmount = computed(() => getFeeAmount(gasPrice.value, maxMultiSwapCombinedTxGasLimit.value));
+    function getCombinedTxGasLimit(complexity = 1) {
         const baseRewardGasLimit = RELAY_REWARD_AMOUNT_BASE_GAS_LIMIT;
         const createRewardGasLimit = state.isSmartWalletExists ? 0 : RELAY_REWARD_AMOUNT_CREATE_GAS_LIMIT;
         const gasSwapRewardGasLimit = props.gasTokenAddress === NATIVE_COIN_ADDRESS ? 0 : RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT;
         const swapRewardGasLimit = complexity * RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT;
-        const totalGasLimit = baseRewardGasLimit + createRewardGasLimit + gasSwapRewardGasLimit + swapRewardGasLimit;
-        return getFeeAmount(gasPrice.value, totalGasLimit);
+        return baseRewardGasLimit + createRewardGasLimit + gasSwapRewardGasLimit + swapRewardGasLimit;
     }
+
     function recalculateAmountEstimationLimit(complexity, useDirectRelayReward) {
         if (useDirectRelayReward) {
             return state.amountEstimationLimitForRelayReward;
@@ -110,24 +113,36 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
             return 0;
         }
         if (props.gasTokenAddress === NATIVE_COIN_ADDRESS) {
-            return getRelayRewardAmount(complexity);
+            return getFeeAmount(gasPrice.value, getCombinedTxGasLimit(complexity));
         }
         if (complexity === estimationComplexity.value) {
             return state.maxAmountEstimationLimitForRelayReward;
         }
-        const baseRewardSingle = getFeeAmount(gasPrice.value, RELAY_REWARD_AMOUNT_BASE_GAS_LIMIT);
-        const createRewardSingle = getFeeAmount(gasPrice.value, RELAY_REWARD_AMOUNT_CREATE_GAS_LIMIT);
-        const gasSwapRewardSingle = getFeeAmount(gasPrice.value, RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT);
-        const swapRewardSingle = getFeeAmount(gasPrice.value, RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT);
-        const baseRewardPart = new Big(baseRewardSingle).div(maxRelayRewardAmount.value);
-        const createRewardPart = state.isSmartWalletExists ? new Big(0) : new Big(createRewardSingle).div(maxRelayRewardAmount.value);
-        const gasSwapRewardPart = props.gasTokenAddress === NATIVE_COIN_ADDRESS ? new Big(0) : new Big(gasSwapRewardSingle).div(maxRelayRewardAmount.value);
-        const swapRewardPart = new Big(swapRewardSingle).div(maxRelayRewardAmount.value);
 
-        const baseReward = baseRewardPart.times(state.maxAmountEstimationLimitForRelayReward);
-        const createReward = createRewardPart.times(state.maxAmountEstimationLimitForRelayReward);
-        const gasSwapReward = gasSwapRewardPart.times(state.maxAmountEstimationLimitForRelayReward);
-        const swapReward = swapRewardPart.times(complexity).times(state.maxAmountEstimationLimitForRelayReward);
+        return recalculateEstimation(complexity, maxMultiSwapCombinedTxGasLimit.value, state.maxAmountEstimationLimitForRelayReward);
+    }
+
+    /**
+     * Offline recalculation of erc20 token spend limit to swap for relay reward
+     * @param {number} complexity - new complexity
+     * @param {number|string} oldGasLimit
+     * @param {number|string} oldEstimation - old spend limit estimated on oldGasLimit
+     * @return {number}
+     */
+    function recalculateEstimation(complexity, oldGasLimit, oldEstimation) {
+        const baseSingle = RELAY_REWARD_AMOUNT_BASE_GAS_LIMIT;
+        const createSingle = RELAY_REWARD_AMOUNT_CREATE_GAS_LIMIT;
+        const gasSwapSingle = RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT; // swap for BNB to pay relay reward to pusher
+        const swapSingle = RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT;
+        const baseRewardPart = new Big(baseSingle).div(oldGasLimit);
+        const createRewardPart = state.isSmartWalletExists ? new Big(0) : new Big(createSingle).div(oldGasLimit);
+        const gasSwapRewardPart = props.gasTokenAddress === NATIVE_COIN_ADDRESS ? new Big(0) : new Big(gasSwapSingle).div(oldGasLimit);
+        const swapRewardPart = new Big(swapSingle).div(oldGasLimit);
+
+        const baseReward = baseRewardPart.times(oldEstimation);
+        const createReward = createRewardPart.times(oldEstimation);
+        const gasSwapReward = gasSwapRewardPart.times(oldEstimation);
+        const swapReward = swapRewardPart.times(complexity).times(oldEstimation);
 
         return baseReward.plus(createReward).plus(gasSwapReward).plus(swapReward).toNumber();
     }
