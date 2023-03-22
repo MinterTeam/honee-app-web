@@ -78,6 +78,7 @@ export default function useWeb3SmartWalletPortfolioSell() {
     //     return state.estimationLimitForRelayRewardsError || state.estimationAfterSwapToHubError;
     // });
 
+    // @TODO throttle to 5rps @see https://docs.0x.org/0x-swap-api/advanced-topics/rate-limiting
     watch(props, () => {
         // init
         props.coinToSellList.forEach((item, index) => {

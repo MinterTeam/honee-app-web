@@ -16,6 +16,7 @@ export default function useWeb3Withdraw(destinationAddress) {
     const props = reactive({
         /** @type {HUB_NETWORK|''} */
         hubNetworkSlug: '',
+        /** @type {number|string} */
         amountToSend: 0,
         // amountToReceive: 0,
         tokenSymbol: '',

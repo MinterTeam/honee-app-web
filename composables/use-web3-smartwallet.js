@@ -50,8 +50,6 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         gasTokenDecimals: 0,
         // amount of swap tx combined into smart-wallet tx (e.g. several swaps for portfolio buy)
         complexity: 1,
-        // used for finding tokens to buy when buying portfolio
-        estimationComplexity: undefined,
         estimationSkip: false,
     });
 
@@ -76,8 +74,6 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         estimationLimitForRelayRewardsError: '',
         /** @type {number|string} */
         amountEstimationLimitForRelayReward: 0,
-        /** @type {number|string} - used only in estimationComplexity mode */
-        maxAmountEstimationLimitForRelayReward: 0,
     });
 
     const smartWalletAddress = computed(() => getSmartWalletAddress(props.evmAccountAddress, {isLegacy: props.isLegacy}));
@@ -90,36 +86,12 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
     });
     const combinedTxGasLimit = computed(() => getCombinedTxGasLimit(props.complexity));
     const relayRewardAmount = computed(() => getFeeAmount(gasPrice.value, combinedTxGasLimit.value));
-    const estimationComplexity = computed(() => {
-        return typeof props.estimationComplexity !== 'undefined' ? props.estimationComplexity : props.complexity;
-    });
-    // estimation of reward
-    const maxMultiSwapCombinedTxGasLimit = computed(() => getCombinedTxGasLimit(estimationComplexity.value));
-    // it's named 'max' because in portfolioBuy we estimate max possible complexity (which is equal to number of coins to buy)
-    const maxRelayRewardAmount = computed(() => getFeeAmount(gasPrice.value, maxMultiSwapCombinedTxGasLimit.value));
     function getCombinedTxGasLimit(complexity = 1) {
         const baseRewardGasLimit = RELAY_REWARD_AMOUNT_BASE_GAS_LIMIT;
         const createRewardGasLimit = state.isSmartWalletExists ? 0 : RELAY_REWARD_AMOUNT_CREATE_GAS_LIMIT;
         const gasSwapRewardGasLimit = props.gasTokenAddress === NATIVE_COIN_ADDRESS ? 0 : RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT;
         const swapRewardGasLimit = complexity * RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT;
         return baseRewardGasLimit + createRewardGasLimit + gasSwapRewardGasLimit + swapRewardGasLimit;
-    }
-
-    function recalculateAmountEstimationLimit(complexity, useDirectRelayReward) {
-        if (useDirectRelayReward) {
-            return state.amountEstimationLimitForRelayReward;
-        }
-        if (props.estimationSkip) {
-            return 0;
-        }
-        if (props.gasTokenAddress === NATIVE_COIN_ADDRESS) {
-            return getFeeAmount(gasPrice.value, getCombinedTxGasLimit(complexity));
-        }
-        if (complexity === estimationComplexity.value) {
-            return state.maxAmountEstimationLimitForRelayReward;
-        }
-
-        return recalculateEstimation(complexity, maxMultiSwapCombinedTxGasLimit.value, state.maxAmountEstimationLimitForRelayReward);
     }
 
     /**
@@ -151,12 +123,6 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
     const swapToRelayRewardParams = computed(() => {
         return swapZeroExParams.value;
         // return swapParaSwapParams.value;
-    });
-    const swapToRelayRewardEstimationParams = computed(() => {
-        return {
-            ...swapToRelayRewardParams.value,
-            buyAmount: toErcDecimals(maxRelayRewardAmount.value, 18),
-        };
     });
     const swapZeroExParams = computed(() => {
         return {
@@ -214,7 +180,7 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
 
     //@TODO maybe check isEqual
     watchDebounced([
-        swapToRelayRewardEstimationParams,
+        swapToRelayRewardParams,
         smartWalletAddress,
         () => state.isSmartWalletExistenceLoading,
     ], (newVal, oldVal) => {
@@ -263,15 +229,10 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
     });
 
     /**
-     * maxAmountEstimationLimitForRelayReward is only used in estimationComplexity mode
      * @param {number|string} value
      */
     function setAmountEstimationLimitForRelayReward(value) {
-        if (props.estimationComplexity > props.complexity) {
-            state.maxAmountEstimationLimitForRelayReward = value;
-        } else {
-            state.amountEstimationLimitForRelayReward = value;
-        }
+        state.amountEstimationLimitForRelayReward = value;
     }
 
     //@TODO sometimes goes to infinite loop
@@ -280,9 +241,9 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
      */
     function estimateSpendLimitForRelayReward() {
         if (props.gasTokenAddress === NATIVE_COIN_ADDRESS) {
-            return Promise.resolve(maxRelayRewardAmount.value);
+            return Promise.resolve(relayRewardAmount.value);
         } else {
-            return getZeroExEstimationLimit(props.chainId, swapToRelayRewardEstimationParams.value)
+            return getZeroExEstimationLimit(props.chainId, swapToRelayRewardParams.value)
                 .then((swapLimit) => {
                     return fromErcDecimals(swapLimit, props.gasTokenDecimals);
                 });
@@ -461,11 +422,11 @@ export default function useWeb3SmartWallet({estimationThrottle = 100} = {}) {
         smartWalletAddress,
         gasPrice,
         relayRewardAmount,
-        maxRelayRewardAmount,
         swapToRelayRewardParams,
         // feeTxParams,
         estimateSpendLimitForRelayReward,
-        recalculateAmountEstimationLimit,
+        getCombinedTxGasLimit,
+        recalculateEstimation,
         buildTxForRelayReward,
         preparePayload,
         preparePayloadFromTxList,

@@ -94,7 +94,6 @@ export default defineComponent({
 
             gasPrice,
             relayRewardAmount,
-            // maxRelayRewardAmount,
             amountEstimationLimitForRelayReward: smartWalletRelayReward,
             amountToSellForSwapToHub,
             amountEstimationAfterSwapToHub,
@@ -132,7 +131,6 @@ export default defineComponent({
 
             gasPrice,
             relayRewardAmount,
-            // maxRelayRewardAmount,
             smartWalletRelayReward,
             amountToSellForSwapToHub,
             amountEstimationAfterSwapToHub,

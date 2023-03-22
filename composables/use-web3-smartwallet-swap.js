@@ -17,7 +17,6 @@ export default function useWeb3SmartWalletSwap() {
         smartWalletAddress,
         gasPrice,
         relayRewardAmount,
-        maxRelayRewardAmount,
         isEstimationLimitForRelayRewardsLoading,
         estimationLimitForRelayRewardsError,
         amountEstimationLimitForRelayReward,
@@ -369,7 +368,6 @@ export default function useWeb3SmartWalletSwap() {
         smartWalletAddress,
         gasPrice,
         relayRewardAmount,
-        maxRelayRewardAmount,
         swapToHubParams,
         // feeTxParams,
 

@@ -4,23 +4,20 @@ import Big, {BIG_ROUND_DOWN, BIG_ROUND_UP} from '~/assets/big.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {HUB_WITHDRAW_SPEED, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import useHubToken from '~/composables/use-hub-token.js';
-import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
+import useWeb3SmartWalletPortfolio from '~/composables/use-web3-smartwallet-portfolio.js';
 import useWeb3SmartWalletSwap from '~/composables/use-web3-smartwallet-swap.js';
 import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
 
 
 export default function useWeb3SmartWalletPortfolioBuy() {
     const {
-        setSmartWalletProps,
-        amountEstimationLimitForRelayReward,
+        setSmartWalletPortfolioProps,
         maxAmountEstimationLimitForRelayReward,
         smartWalletAddress,
-        swapToRelayRewardParams,
-        estimateSpendLimitForRelayReward,
         recalculateAmountEstimationLimit,
         buildTxForRelayReward,
         callSmartWallet,
-    } = useWeb3SmartWallet({estimationThrottle: 500});
+    } = useWeb3SmartWalletPortfolio({estimationThrottle: 500});
     const {
         tokenDecimals: tokenToSellDecimals,
         tokenContractAddressFixNative: tokenToSellAddress,
@@ -135,7 +132,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
     //     return state.estimationLimitForRelayRewardsError || state.estimationAfterSwapToHubError;
     // });
 
-    watchEffect(() => setSmartWalletProps({
+    watchEffect(() => setSmartWalletPortfolioProps({
         privateKey: props.privateKey,
         evmAccountAddress: props.evmAccountAddress,
         chainId: props.chainId,
@@ -188,6 +185,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         });
     });
 
+    // @ts-expect-error WatchDebouncedOptions extend WatchOptions can't detect 'deep'
     watchDebounced([
         () => props.coinToBuyList,
         () => props.minterEstimationList,
@@ -386,7 +384,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
      */
     function getIndicesOfPositiveValues(list) {
         return Object.entries(list)
-            .filter((entry) => entry[1] > 0)
+            .filter((entry) => Number(entry[1]) > 0)
             .map(([index]) => index);
     }
 
@@ -410,7 +408,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         const currentWithdrawAmountToReceive = recalculateAmountToReceive(currentAmountToWithdraw);
         // console.log('recalculateWithdrawAmountToReceiveDistribution', valueDistributionList, pickIndices, currentAmountToWithdraw, currentWithdrawAmountToReceive);
         return valueDistributionList.map((valueItem, index) => {
-            if (isExcludeByIndex(index, pickIndices) || currentAmountToWithdraw <= 0) {
+            if (isExcludeByIndex(index, pickIndices) || Number(currentAmountToWithdraw) <= 0) {
                 return 0;
             }
             const minterFeePart = minterFeeDistribution.value[index];
@@ -422,14 +420,14 @@ export default function useWeb3SmartWalletPortfolioBuy() {
 
     /**
      * @param {Array<string>} [pickIndices]
-     * @param {boolean} [useDirectRelayReward]
+     * @param {number|string} [overrideRelayRewardEstimationLimit]
      * @returns {Array<number|string>}
      */
-    function getRelayRewardDistribution(pickIndices, useDirectRelayReward) {
+    function getRelayRewardDistribution(pickIndices, overrideRelayRewardEstimationLimit) {
         // cast portfolio coinToBuy allocation to smart-wallet valueToSell allocation (e.g. if buying only 3 items of 10 coin portfolio)
         const expandedAllocationPartDistribution = expandAllocation(prepareAllocationList(pickIndices));
-        const complexity = expandedAllocationPartDistribution.filter((allocationPart) => allocationPart > 0).length;
-        const amountEstimationLimitForRelayRewardRecalculated = recalculateAmountEstimationLimit(complexity, useDirectRelayReward);
+        const complexity = expandedAllocationPartDistribution.filter((allocationPart) => Number(allocationPart) > 0).length;
+        const amountEstimationLimitForRelayRewardRecalculated = overrideRelayRewardEstimationLimit || recalculateAmountEstimationLimit(complexity);
         // console.log('expandedAllocationPartDistribution', expandedAllocationPartDistribution)
         // console.log('amountEstimationLimitForRelayReward', amountEstimationLimitForRelayReward.value, amountEstimationLimitForRelayRewardRecalculated, complexity);
         return expandedAllocationPartDistribution.map((allocationPart) => {
@@ -548,8 +546,8 @@ export default function useWeb3SmartWalletPortfolioBuy() {
      * @return {Promise<SmartWalletRelaySubmitTxResult>}
      */
     async function buildTxListAndCallSmartWallet() {
-        const {txList: txListForRelayReward} = await buildTxForRelayReward();
-        const relayRewardDistributionFinal = getRelayRewardDistribution(swsSelectedIndices.value, true);
+        const {txList: txListForRelayReward, swapLimit} = await buildTxForRelayReward();
+        const relayRewardDistributionFinal = getRelayRewardDistribution(swsSelectedIndices.value, swapLimit);
         const amountToSellForSwapToHubDistributionFinal = getAmountToSellForSwapToHubDistribution(relayRewardDistributionFinal, withdrawAmountToReceiveDistribution.value);
 
         const buildSwapPromiseList = [];
