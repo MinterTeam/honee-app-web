@@ -73,24 +73,18 @@ export default function useWeb3SmartWalletPortfolioBuy() {
 
 
     // smart-wallet-swap list
-    const swsList = ref([]);
-    // not account relay reward
-    // (refs are not unwrapped when accessed as array https://vuejs.org/api/reactivity-core.html#reactive so use object here and cast it to array later)
     // prefill on creation to exclude bugs with dynamic setting properties of reactive object https://github.com/vuejs/composition-api/issues/580
-    const swsEstimationMap = reactive(Object.fromEntries(Array.from({length: 10}).fill(0).map((item, index) => [index, item])));
+    const swsList = ref(Array.from({length: 10}));
+    // not account relay reward
     const estimationBeforeRelayRewardList = computed(() => {
         return props.coinToBuyList.map((item, index) => {
-            return swsEstimationMap[index] || 0;
+            return swsList.value[index]?.amountEstimationAfterSwapToHub || 0;
         });
     });
     // list of sws indices selected to swap (these smart-wallet swaps are considered better than Minter swaps)
     const swsSelectedIndices = ref([]);
     // considers relay reward and filtered only if sws swap better than minter
     const amountEstimationToReceiveAfterDepositList = ref([]);
-
-    // don't work without watch (wtf)
-    watch(swsEstimationMap, () => console.debug('swsEstimationMap', JSON.stringify(swsEstimationMap)));
-    watch(estimationBeforeRelayRewardList, () => console.debug('swsEstimationList', JSON.stringify(estimationBeforeRelayRewardList.value)));
 
     const complexity = computed(() => {
         return swsSelectedIndices.value.length;
@@ -169,7 +163,6 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         props.coinToBuyList.forEach((item, index) => {
             if (!swsList.value[index]) {
                 set(swsList.value, index, useWeb3SmartWalletSwap());
-                set(swsEstimationMap, index, swsList.value[index].amountEstimationAfterSwapToHub);
             }
 
             swsList.value[index].setSmartWalletSwapProps({

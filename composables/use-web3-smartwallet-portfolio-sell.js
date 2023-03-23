@@ -31,52 +31,42 @@ export default function useWeb3SmartWalletPortfolioSell() {
     }
 
 
-    // smart-wallet-swap list
-    const swsList = ref([]);
-    // not account relay reward
-    // (refs are not unwrapped when accessed as array https://vuejs.org/api/reactivity-core.html#reactive so use object here and cast it to array later)
-    // prefill on creation to exclude bugs with dynamic setting properties of reactive object https://github.com/vuejs/composition-api/issues/580m
     //@TODO sell list may be larger than 10
     const listLength = 100;
-    const minAmountToWithdrawMap = reactive(Object.fromEntries(Array.from({length: listLength}).fill(0).map((item, index) => [index, item])));
-    const withdrawTxParamsMap = reactive(Object.fromEntries(Array.from({length: listLength}).fill(0).map((item, index) => [index, item])));
-    const withdrawFeeTxParamsMap = reactive(Object.fromEntries(Array.from({length: listLength}).fill(0).map((item, index) => [index, item])));
-    const amountEstimationLimitForRelayRewardMap = reactive(Object.fromEntries(Array.from({length: listLength}).fill(0).map((item, index) => [index, item])));
-    const swsEstimationMap = reactive(Object.fromEntries(Array.from({length: listLength}).fill(0).map((item, index) => [index, item])));
 
+    // smart-wallet-swap list
+    // prefill on creation to exclude bugs with dynamic setting properties of reactive object https://github.com/vuejs/composition-api/issues/580m
+    const swsList = ref(Array.from({length: listLength}));
+    // not account relay reward
     const minAmountToWithdrawList = computed(() => {
         return props.coinToSellList.map((item, index) => {
-            return minAmountToWithdrawMap[index] || 0;
+            return swsList.value[index].minAmountToWithdraw || 0;
         });
     });
     const withdrawTxParamsList = computed(() => {
         return props.coinToSellList.map((item, index) => {
-            return withdrawTxParamsMap[index];
+            return swsList.value[index].withdrawTxParams;
         });
     });
     const withdrawFeeTxParamsList = computed(() => {
         return props.coinToSellList.map((item, index) => {
-            return withdrawFeeTxParamsMap[index];
+            return swsList.value[index].withdrawFeeTxParams;
         });
     });
     const amountEstimationLimitForRelayRewardList = computed(() => {
         return props.coinToSellList.map((item, index) => {
-            return amountEstimationLimitForRelayRewardMap[index] || 0;
+            return swsList.value[index].amountEstimationLimitForRelayReward || 0;
         });
     });
     const amountEstimationAfterSwapToHubList = computed(() => {
         return props.coinToSellList.map((item, index) => {
-            return swsEstimationMap[index] || 0;
+            return swsList.value[index].amountEstimationAfterSwapToHub || 0;
         });
     });
     // list of sws indices selected to swap (these smart-wallet swaps are considered better than Minter swaps)
     const swsSelectedIndices = ref([]);
     // filtered only if sws swap better than minter
     const amountEstimationToReceiveAfterDepositList = ref([]);
-
-    // don't work without watch (wtf)
-    watch(swsEstimationMap, () => console.debug('swsEstimationMap', JSON.stringify(swsEstimationMap)));
-    watch(amountEstimationAfterSwapToHubList, () => console.debug('swsEstimationList', JSON.stringify(amountEstimationAfterSwapToHubList.value)));
 
 
     //@TODO combine loaders from swsList and postpone swsSelectedIndices recalculation while isSmartWalletSwapParamsLoading
@@ -93,11 +83,6 @@ export default function useWeb3SmartWalletPortfolioSell() {
         props.coinToSellList.forEach((item, index) => {
             if (!swsList.value[index]) {
                 set(swsList.value, index, useWeb3SmartWalletSwap());
-                set(minAmountToWithdrawMap, index, swsList.value[index].minAmountToWithdraw);
-                set(withdrawTxParamsMap, index, swsList.value[index].withdrawTxParams);
-                set(withdrawFeeTxParamsMap, index, swsList.value[index].withdrawFeeTxParams);
-                set(amountEstimationLimitForRelayRewardMap, index, swsList.value[index].amountEstimationLimitForRelayReward);
-                set(swsEstimationMap, index, swsList.value[index].amountEstimationAfterSwapToHub);
             }
 
             swsList.value[index].setSmartWalletSwapProps({
