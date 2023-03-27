@@ -51,6 +51,7 @@
     .card--invert {background: transparent;}
     .card--invert .card.card__content {border-top: none;}
     .card__action-title-type, .card__action-stats-caption {color: @c-metagarden-text-muted; opacity: 1;}
+    .information {background: transparent; color: #fff; border-color: @c-metagarden-highlight;}
 }
 
 
@@ -436,9 +437,10 @@
 //}
 @media (min-width: @breakpoint-medium-up) {
     @margin: 8px;
-    .wallet__balance-wrap {margin-top: (8px - @margin); margin-inline: (-@margin / 2);}
-    & > * {margin-top: @margin; margin-inline: (@margin / 2);}
+    //.wallet__balance-wrap {margin-top: (8px - @margin); margin-inline: (-@margin / 2);}
+    //& > * {margin-top: @margin; margin-inline: (@margin / 2);}
     .wallet__balance-value {font-size: 40px; line-height: 48px;}
+    html:not(.metagarden-layout) .wallet__balance-divider {display: none;}
     .wallet__action-button {min-width: 96px;}
 }
 @media (min-width: @breakpoint-large-up) {
@@ -506,7 +508,7 @@
 .information--warning {background: @c-yellow-light; border-color: @c-yolk;}
 .information--field {background: #fff; border-color: transparent;}
 .information__title {
-    font-weight: 700;font-size: 10px;line-height: 12px;letter-spacing: 1px;text-transform: uppercase; color: @c-black-light;
+    font-weight: 700;font-size: 10px;line-height: 12px;letter-spacing: 1px; text-transform: uppercase; color: var(--color-text-muted);
     &:not(:first-child) {margin-top: 16px;}
 }
 .information__item {

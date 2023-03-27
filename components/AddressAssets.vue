@@ -62,7 +62,7 @@ export default {
                     </div>
                 </div>
 
-                <div class="card__fake-divider u-hidden-medium-up"></div>
+                <div class="wallet__balance-divider card__fake-divider"></div>
 
                 <div class="button-group button-group--center">
                     <nuxt-link class="button button--main wallet__action-button link--opacity" :to="$i18nGetPreferredPath('/swap')">
