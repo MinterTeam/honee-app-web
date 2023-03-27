@@ -2,15 +2,10 @@
 import InlineSvg from 'vue-inline-svg';
 import {DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR} from '~/assets/variables.js';
 import {prettyUsd} from '~/assets/utils.js';
-import Language from '~/components/layout/Language.vue';
-import Modal from '~/components/base/Modal.vue';
-import Topup from '~/components/Topup.vue';
-import ReferralCard from '~/components/ReferralCard.vue';
 
 export default {
     components: {
         InlineSvg,
-        Language,
     },
     props: {
 
@@ -58,18 +53,15 @@ export default {
             <!--<div class="header__controls">-->
 
             <nuxt-link v-if="isAuthorized" :to="$i18nGetPreferredPath('/metagarden/account')" class="header__controls-link header__controls-user u-semantic-button">
-                <div class="u-fw-600 u-mr-10 u-text-right">
-                    <div class="header__controls-user-name">{{ $store.getters.username }}</div>
-                    <div class="header__controls-mg-user-balance">${{ prettyUsd($store.state.totalBalanceSumUsd) }}</div>
+                <div class="u-mr-10 u-text-right">
+                    <div class="u-fw-700 header__controls-mg-user-name">{{ $store.getters.username }}</div>
+                    <div class="u-fw-600 header__controls-mg-user-balance">${{ prettyUsd($store.state.totalBalanceSumUsd) }}</div>
                 </div>
                 <img class="header__controls-user-avatar u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation" width="32" height="32"/>
             </nuxt-link>
             <nuxt-link v-if="!isAuthorized && !isAuthPage" :to="$i18nGetPreferredPath('/auth')" type="button" class="header__controls-link">
                 {{ $td('Sign in', 'index.sign-in') }}
             </nuxt-link>
-            <div class="header__controls-language header__controls-link">
-                <Language/>
-            </div>
             <!--</div>-->
         </div>
     </header>
