@@ -293,6 +293,7 @@ export default {
                 </template>
             </div>
 
+            <!--
             <SwapPriceImpact
                 class="form-row"
                 :coin-to-sell="form.coinFrom"
@@ -300,6 +301,7 @@ export default {
                 :coin-to-buy="form.coinTo"
                 :value-to-buy="form.buyAmount"
             />
+            -->
 
             <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('The final amount depends on&nbsp;the&nbsp;exchange rate at&nbsp;the&nbsp;moment of&nbsp;transaction.', 'form.swap-confirm-note') }}</p>
 
@@ -369,15 +371,15 @@ export default {
 
                 <div class="u-mt-10 u-fw-700" v-if="fee.isHighFee"><span class="u-emoji">⚠️</span> {{ $td('Transaction requires high fee.', 'form.tx-fee-high') }}</div>
                 -->
-            </div>
 
-            <SwapPriceImpact
-                class="form-row"
-                :coin-to-sell="form.coinFrom"
-                :value-to-sell="form.sellAmount"
-                :coin-to-buy="form.coinTo"
-                :value-to-buy="form.buyAmount"
-            />
+                <SwapPriceImpact
+                    class="u-mt-05 u-text-right"
+                    :coin-to-sell="form.coinFrom"
+                    :value-to-sell="form.sellAmount"
+                    :coin-to-buy="form.coinTo"
+                    :value-to-buy="form.buyAmount"
+                />
+            </div>
 
             <div class="form-row u-text-muted u-text-small u-text-center">
                 * {{ $td('The final amount depends on&nbsp;the&nbsp;exchange rate at&nbsp;the&nbsp;moment of&nbsp;transaction.', 'form.swap-confirm-note') }}
