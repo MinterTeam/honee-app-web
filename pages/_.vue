@@ -29,15 +29,22 @@ export default {
             action: this.action || null,
         };
     },
+    methods: {
+        handleSuccess() {
+            const lastHistory = this.$store.state.history.at(-1)?.url;
+            const redirectUrl = lastHistory ? this.$i18nGetPreferredPath(lastHistory) : this.$getDashboardUrl();
+            this.$router.push(redirectUrl);
+        },
+    },
 };
 </script>
 
 <template>
     <div class="u-section u-container u-container--small">
         <TheAction
-            :base-url="getDashboardUrl()"
+            :base-url="$getDashboardUrl()"
             @update:action="action = $event"
-            @success-modal-close="$router.push(getDashboardUrl())"
+            @success-modal-close="handleSuccess()"
         />
     </div>
 </template>
