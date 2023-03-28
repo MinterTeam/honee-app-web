@@ -320,9 +320,9 @@ function getComponentPropsItem(networkSlug, isLegacy) {
 
                 <h3 class="information__title">{{ $td('You will get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                 <BaseAmountEstimation :coin="tokenSymbol" :amount="currentData?.amountAfterDeposit" format="approx"/>
-            </div>
 
-            <HubFeeImpact class="form-row" :coin="tokenSymbol" :fee-impact="currentData?.totalFeeImpact" :network="selectedHubChainData?.shortName"/>
+                <HubFeeImpact class="u-mt-05 u-text-right" :coin="tokenSymbol" :fee-impact="currentData?.totalFeeImpact" :network="selectedHubChainData?.shortName"/>
+            </div>
 
             <div class="form-row">
                 <button

@@ -406,9 +406,10 @@ export default {
 
                     <h3 class="information__title">{{ $td('You will receive', 'hub.withdraw-estimate') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="amountToReceive" format="exact"/>
+
+                    <!--<HubFeeImpact class="u-mt-05 u-text-right" :coin="form.coin" :fee-impact="totalFeeImpact" :network="$options.HUB_CHAIN_DATA[form.networkTo].shortName"/>-->
                 </template>
             </div>
-            <HubFeeImpact class="form-row" :coin="form.coin" :fee-impact="totalFeeImpact" :network="$options.HUB_CHAIN_DATA[form.networkTo].shortName"/>
             <!--
             <div class="form-row">
                 <div class="form-check-label">Tx speed</div>
@@ -437,7 +438,7 @@ export default {
 
             <div class="form-row u-text-muted u-text-small">
                 <template v-if="$i18n.locale === 'en'">
-                    <p class="u-mb-05"><span class="u-emoji">⚠️</span> <strong class="u-fw-600">Withdrawal notice</strong></p>
+                    <p class="u-mb-05"><strong class="u-fw-600">Withdrawal notice</strong></p>
                     <p>Do not withdraw to an exchange because many do not accept deposits from smart contracts and your tokens will be lost. Withdraw only to the wallet you have a seed phrase to.</p>
                     <!--<ul class="list-simple">
                         <li>Withdraw to the wallet you own first (the one you have a seed phrase to);</li>
@@ -451,7 +452,7 @@ export default {
                     </ul>-->
                 </template>
                 <template v-if="$i18n.locale === 'ru'">
-                    <p class="u-mb-05"><span class="u-emoji">⚠️</span> <strong class="u-fw-600">Внимание!</strong></p>
+                    <p class="u-mb-05"><strong class="u-fw-600">Внимание!</strong></p>
                     <p>Вывод средств возможен только на ваш персональный адрес. Не допускается вывод средств на смарт-контракты, адреса бирж или адреса, к которым у вас нет доступа по seed-фразе.</p>
                     <!--<ul class="list-simple">
                         <li>Вывод средств возможен только на ваш персональный адрес;</li>
@@ -478,9 +479,9 @@ export default {
                 <div class="information__item information__item--content u-text-wrap">
                     {{ form.address }}
                 </div>
-            </div>
 
-            <HubFeeImpact class="form-row" :coin="form.coin" :fee-impact="totalFeeImpact" :network="$options.HUB_CHAIN_DATA[form.networkTo].shortName"/>
+                <HubFeeImpact class="u-mt-05 u-text-right" :coin="form.coin" :fee-impact="totalFeeImpact" :network="$options.HUB_CHAIN_DATA[form.networkTo].shortName"/>
+            </div>
 
             <div class="form-row">
                 <button

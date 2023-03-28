@@ -376,9 +376,9 @@ export default {
 
                 <h3 class="information__title">{{ $td('You will get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                 <BaseAmountEstimation :coin="tokenSymbol" :amount="coinAmountAfterBridge" format="approx"/>
-            </div>
 
-            <HubFeeImpact class="form-row" :coin="tokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
+                <HubFeeImpact class="u-mt-05 u-text-right" :coin="tokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
+            </div>
 
             <div class="form-row">
                 <button

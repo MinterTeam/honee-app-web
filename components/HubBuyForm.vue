@@ -804,7 +804,7 @@ export default {
                         </div>
                     </div>
 
-                    <HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
+                    <!--<HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>-->
                 </template>
 
                 <button
@@ -897,6 +897,8 @@ export default {
                     </div>
                     <div class="information__value">≈ ${{ pretty(currentPrice) }}</div>
                 </div>
+
+                <HubFeeImpact class="u-mt-05 u-text-right" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
             </div>
 
             <!--
@@ -907,8 +909,6 @@ export default {
                 </div>
             </div>
             -->
-
-            <HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
 
             <div class="form-row">
                 <button
