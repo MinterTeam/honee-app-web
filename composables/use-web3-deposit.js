@@ -216,7 +216,7 @@ export default function useWeb3Deposit(destinationMinterAddress) {
 
 
     function sendCoinTx({nonce, gasPrice}) {
-        const txParams = buildDepositTx(props.chainId, isNativeToken.value ? undefined : tokenAddress.value, tokenDecimals.value, props.destinationMinterAddress, depositAmountAfterGas.value, true);
+        const txParams = buildDepositTx(props.chainId, isNativeToken.value ? undefined : tokenAddress.value, tokenDecimals.value, props.destinationMinterAddress, depositAmountAfterGas.value, {keepValueAsEther: true});
 
         return sendEthTx({
             ...txParams,

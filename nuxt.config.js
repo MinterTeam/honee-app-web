@@ -287,6 +287,7 @@ module.exports = {
             'vuelidate/src',
             'lodash-es',
             'camelcase-keys',
+            'web3-core-method',
             // 'nuxt-i18n/src',
             'v-file-input/src',
             'clipbrd/src',

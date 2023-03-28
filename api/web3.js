@@ -1,9 +1,7 @@
 import Big from '~/assets/big.js';
-/** @type {import('web3-eth').Eth} */
-import _Eth from 'web3-eth';
+import Eth from 'web3-eth';
 import Utils from 'web3-utils';
-/** @type {import('web3-eth-contract').Contract} */
-import _Contract from 'web3-eth-contract';
+import Contract from 'web3-eth-contract';
 import AbiCoder from 'web3-eth-abi';
 import {TinyEmitter as Emitter} from 'tiny-emitter';
 import {ETHEREUM_API_URL, BSC_API_URL, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, HUB_DEPOSIT_TX_PURPOSE, HUB_CHAIN_ID, HUB_CHAIN_DATA, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
@@ -11,13 +9,6 @@ import erc20ABI from '~/assets/abi-erc20.js';
 import hubABI from '~/assets/abi-hub.js';
 
 export const CONFIRMATION_COUNT = 5;
-
-/** @type {import('web3-eth').Eth} - fix https://github.com/web3/web3.js/issues/5543 */
-// @ts-expect-error
-const Eth = _Eth;
-/** @type {import('web3-eth-contract').Contract} - fix https://github.com/web3/web3.js/issues/5543*/
-// @ts-expect-error
-const Contract = _Contract;
 
 export const web3Utils = Utils;
 /** @deprecated use getProviderByChain instead */
@@ -84,7 +75,8 @@ export function toErcDecimals(balance, ercDecimals = 18) {
  */
 
 /**
- * @typedef {Promise} PromiseWithEmitter
+ * @template {any} T
+ * @typedef {Promise<T>} PromiseWithEmitter
  * @implements {Promise}
  * @property {Function} on
  * @property {Function} once
@@ -147,7 +139,8 @@ export function subscribeTransaction(hash, {
     /**
      * @template T
      * @param {Promise<T>} target
-     * @param {PromiseWithEmitter<T>} emitter
+     * @param {import('tiny-emitter').TinyEmitter} emitter
+     * @return {PromiseWithEmitter<T>}
      */
     function proxyEmitter(target, emitter) {
         target.on = function() {
@@ -162,6 +155,7 @@ export function subscribeTransaction(hash, {
         //     emitter.off(...arguments);
         //     return target;
         // }
+        return target;
     }
 }
 
@@ -381,7 +375,7 @@ export function getAllowance(chainId, tokenContractAddress, accountAddress, spen
  * @param {string} tokenContractAddress
  * @param {string} spenderContractAddress
  * @param {string|number} [amount]
- * @return {{data: string, to, value: string}}
+ * @return {EvmTxParams}
  */
 export function buildApproveTx(tokenContractAddress, spenderContractAddress, amount) {
     const amountToUnlock = typeof amount === 'undefined'
@@ -400,7 +394,7 @@ export function buildApproveTx(tokenContractAddress, spenderContractAddress, amo
  * @param {string} tokenContractAddress
  * @param {string} recipientAddress
  * @param {string} amount - in wei
- * @return {{data: string, to, value: string}}
+ * @return {EvmTxParams}
  */
 export function buildTransferTx(tokenContractAddress, recipientAddress, amount) {
     const data = AbiEncoder(erc20ABI)('transfer', recipientAddress, amount);
@@ -418,10 +412,11 @@ export function buildTransferTx(tokenContractAddress, recipientAddress, amount) 
  * @param {number} tokenDecimals
  * @param {string} destinationMinterAddress
  * @param {string|number} amount - in ether or coins
- * @param {boolean} [keepValueAsEther]
- * @return {{data: string, to: string, value: string|number}}
+ * @param {object} [options]
+ * @param {boolean} [options.keepValueAsEther]
+ * @return {EvmTxParams}
  */
-export function buildDepositTx(chainId, tokenContractAddress, tokenDecimals, destinationMinterAddress, amount, keepValueAsEther) {
+export function buildDepositTx(chainId, tokenContractAddress, tokenDecimals, destinationMinterAddress, amount, {keepValueAsEther} = {}) {
     const hubBridgeContractAddress = HUB_CHAIN_BY_ID[chainId]?.hubContractAddress;
     const address = getHubDestinationAddressBytes(destinationMinterAddress);
     const destinationChain = getHubDestinationChainBytes();
@@ -454,97 +449,40 @@ export function buildDepositTx(chainId, tokenContractAddress, tokenDecimals, des
 }
 
 /**
- * May be no transactions depending on the eth node settings
- * @param {string} address
- * @param {number} chainId
- * @return {Promise<Transaction[]>}
+ * @typedef {object} EvmTxParams
+ * @property {string} to
+ * @property {string|number} value
+ * @property {string} data
  */
-export function getAddressPendingTransactions(address, chainId) {
-    return getProviderByChain(chainId).getPendingTransactions()
-        .then((txList) => {
-            return txList.filter((tx) => tx.from === address);
-        })
-        .catch((error) => {
-            // The method eth_pendingTransactions may be not available
-            console.log(error);
-            return [];
-        });
-}
 
 /**
- * @TODO refactor to find by method id https://stackoverflow.com/a/55258775/4936667
- * @param {HubDeposit} tx
  * @param {number} chainId
- * @param {Array<HubCoinItem>} [hubCoinList]
- * @param {boolean} [skipAmount]
- * @return {Promise<HubDepositTxInfo>}
+ * @param {string|undefined} tokenContractAddress
+ * @param {number} tokenDecimals
+ * @param {string} destinationMinterAddress
+ * @param {string|number} amount - in ether or coins
+ * @param {string} accountAddress
+ * @return {Promise<Array<EvmTxParams>>}
  */
-export async function getDepositTxInfo(tx, chainId, hubCoinList, skipAmount) {
-    chainId = Number(tx.chainId || chainId);
-    // remove 0x and function selector
-    const input = tx.input.slice(2 + 8);
-    const itemCount = input.length / 64;
-    const hubContractAddress = HUB_CHAIN_BY_ID[chainId]?.hubContractAddress;
-    const wrappedNativeContractAddress = HUB_CHAIN_BY_ID[chainId]?.wrappedNativeContractAddress;
+export async function buildDepositWithApproveTxList(chainId, tokenContractAddress, tokenDecimals, destinationMinterAddress, amount, accountAddress) {
+    let txList = [];
 
-    let type;
-    // first item
-    let tokenContract;
-    // 2nd for `unlock`, 4th for `transferToChain`, 'tx.to' in `wrap` and `sendETHToChain`
-    let amount;
-    if (itemCount === 2) {
-        // unlock
-        const beneficiaryHex = '0x' + input.slice(0, 64);
-        const beneficiaryAddress = web3Abi.decodeParameter('address', beneficiaryHex);
-        const isUnlockedForBridge = beneficiaryAddress.toLowerCase() === hubContractAddress;
-        if (isUnlockedForBridge) {
-            type = HUB_DEPOSIT_TX_PURPOSE.UNLOCK;
-            tokenContract = tx.to;
-            amount = skipAmount ? 0 : await getAmountFromInputValue(input.slice((itemCount - 1) * 64), tokenContract, chainId, hubCoinList);
-        } else {
-            return {
-                type: HUB_DEPOSIT_TX_PURPOSE.OTHER,
-            };
+    const isNativeToken = !tokenContractAddress;
+    if (!isNativeToken) {
+        const hubBridgeContractAddress = HUB_CHAIN_BY_ID[chainId]?.hubContractAddress;
+        const allowance = await getAllowance(chainId, tokenContractAddress, accountAddress, hubBridgeContractAddress);
+        if (new Big(allowance).lt(toErcDecimals(amount, tokenDecimals))) {
+            const approveTx = buildApproveTx(tokenContractAddress, hubBridgeContractAddress);
+            txList.push(approveTx);
         }
-    } else if (tx.to.toLowerCase() === hubContractAddress && itemCount === 5) {
-        // transferToChain
-        type = HUB_DEPOSIT_TX_PURPOSE.SEND;
-        const tokenContractHex = '0x' + input.slice(0, 64);
-        tokenContract = web3Abi.decodeParameter('address', tokenContractHex);
-        amount = skipAmount ? 0 : await getAmountFromInputValue(input.slice((itemCount - 2) * 64), tokenContract, chainId, hubCoinList);
-    } else if (tx.to.toLowerCase() === hubContractAddress && itemCount === 3) {
-        // transferETHToChain
-        type = HUB_DEPOSIT_TX_PURPOSE.SEND;
-        tokenContract = wrappedNativeContractAddress;
-        amount = Utils.fromWei(tx.value);
-    } else if (tx.to.toLowerCase() === wrappedNativeContractAddress && itemCount === 1) {
-        // unwrap
-        type = HUB_DEPOSIT_TX_PURPOSE.UNWRAP;
-        tokenContract = tx.to;
-        amount = skipAmount ? 0 : await getAmountFromInputValue(input, tokenContract, chainId, hubCoinList);
-    } else if (tx.to.toLowerCase() === wrappedNativeContractAddress && itemCount === 0) {
-        // wrap
-        type = HUB_DEPOSIT_TX_PURPOSE.WRAP;
-        tokenContract = tx.to;
-        amount = Utils.fromWei(tx.value);
-    } else {
-        return {
-            type: HUB_DEPOSIT_TX_PURPOSE.OTHER,
-        };
     }
 
-    tokenContract = tokenContract?.toLowerCase();
-    const coinItem = getExternalCoinList(hubCoinList, chainId)
-        .find((item) => item.externalTokenId === tokenContract);
-    const tokenName = coinItem?.denom.toUpperCase();
+    const depositTx = buildDepositTx(chainId, isNativeToken ? undefined : tokenContractAddress, tokenDecimals, destinationMinterAddress, amount);
+    txList.push(depositTx);
 
-    return {
-        type,
-        tokenContract,
-        tokenName,
-        amount,
-    };
+    return txList;
 }
+
 
 /**
  * Calculate fee in native coin from gas price and gas limit
@@ -558,21 +496,6 @@ export function getFeeAmount(gasPriceGwei, gasLimit) {
     return new Big(gasPrice).times(gasLimit).toString();
 }
 
-/**
- *
- * @param {string} hex
- * @param {string} tokenContract
- * @param {ChainId} chainId
- * @param {Array<HubCoinItem>} [hubCoinList]
- * @return {Promise<string>}
- */
-async function getAmountFromInputValue(hex, tokenContract, chainId, hubCoinList) {
-    const amountHex = '0x' + hex;
-    const decimals = await getTokenDecimals(tokenContract, chainId, hubCoinList);
-    const amount = fromErcDecimals(web3Abi.decodeParameter('uint256', amountHex), decimals);
-
-    return amount;
-}
 
 /**
  *
