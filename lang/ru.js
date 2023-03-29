@@ -712,6 +712,8 @@ export default {
         'transfer-smart-wallet': 'Перевести на Smart-кошелек',
         'available-for-transfer': 'Доступно для перевода',
         'balance-smart-wallet': 'METAGARDEN на Smart-кошельке',
+        'back-mg': 'Назад',
+        'your-account': 'Ваш аккаунт',
     },
     'mg-lootbox': {
         'title-inactive': 'Лутбокс еще не готов',
