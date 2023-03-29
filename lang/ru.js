@@ -291,7 +291,7 @@ export default {
         'manage-tokens-error-max': 'Максимум {count} монет',
         'warning-price-impact': 'Высокое влияние на цену',
         'warning-price-impact-description': 'Вы потеряете ≈{impact}% монет из-за комиссий или низколиквидных пулов, участвующих в обменах. Попробуйте изменить сумму.',
-        'warning-price-impact-unavailable-description': 'Проверьте рассчитанные суммы до подтверждения',
+        'warning-price-impact-unavailable': 'Проверьте рассчитанные суммы до подтверждения',
         'allocation-sum': 'Текущая суммарная доля',
         'allocation-sum-error': 'Сумма долей активов должна быть равна 100%. Внесите дополнительные токены или измените соотношение.',
         'manage-title-label': 'Название',
