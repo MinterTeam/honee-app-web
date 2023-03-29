@@ -25,6 +25,6 @@ export default {
 <template>
     <div class="u-text-warn u-fw-700 u-text-small" v-if="feeImpact > 10">
         {{ $td(`High ${network} fee`, 'hub.warning-fee-impact', {network}) }}
-        {{ prettyRound(feeImpact) }}%
+        ≈{{ prettyRound(feeImpact) }}%
     </div>
 </template>

@@ -26,7 +26,7 @@ export default [
     },
     */
     {
-        title: 'The Magic Game',
+        title: 'Wonder Game',
         description: 'Buy Magic Boxes or get them for free. Each box contains coins or other valuable prizes.',
         category: 'Lottery',
         coin: 'WONDER',
