@@ -5,7 +5,7 @@ import {getErrorText} from '~/assets/server-error.js';
 import {HUB_WITHDRAW_SPEED, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3SmartWalletPortfolio from '~/composables/use-web3-smartwallet-portfolio.js';
-import useWeb3SmartWalletSwap from '~/composables/use-web3-smartwallet-swap.js';
+import useWeb3SmartWalletSwapWithdraw from '~/composables/use-web3-smartwallet-swap-withdraw.js';
 import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
 
 
@@ -159,10 +159,10 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         // init
         props.coinToBuyList.forEach((item, index) => {
             if (!swsList.value[index]) {
-                set(swsList.value, index, useWeb3SmartWalletSwap());
+                set(swsList.value, index, useWeb3SmartWalletSwapWithdraw());
             }
 
-            swsList.value[index].setSmartWalletSwapProps({
+            swsList.value[index].setSmartWalletSwapWithdrawProps({
                 privateKey: props.privateKey,
                 evmAccountAddress: props.evmAccountAddress,
                 depositDestinationAddress: props.depositDestinationAddress,
@@ -179,7 +179,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
 
     watch(valueDistribution, () => {
         valueDistribution.value.forEach((valueToSell, index) => {
-            swsList.value[index].setSmartWalletSwapProps({
+            swsList.value[index].setSmartWalletSwapWithdrawProps({
                 valueToSell,
             });
         });

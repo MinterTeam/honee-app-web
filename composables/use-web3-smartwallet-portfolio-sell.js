@@ -1,7 +1,7 @@
 import {ref, reactive, computed, watch, set} from 'vue';
 import {watchDebounced} from '@vueuse/core';
 import Big from '~/assets/big.js';
-import useWeb3SmartWalletSwap from '~/composables/use-web3-smartwallet-swap.js';
+import useWeb3SmartWalletSwapWithdraw from '~/composables/use-web3-smartwallet-swap-withdraw.js';
 
 
 export default function useWeb3SmartWalletPortfolioSell() {
@@ -83,10 +83,10 @@ export default function useWeb3SmartWalletPortfolioSell() {
         // init
         props.coinToSellList.forEach((item, index) => {
             if (!swsList.value[index]) {
-                set(swsList.value, index, useWeb3SmartWalletSwap());
+                set(swsList.value, index, useWeb3SmartWalletSwapWithdraw());
             }
 
-            swsList.value[index].setSmartWalletSwapProps({
+            swsList.value[index].setSmartWalletSwapWithdrawProps({
                 privateKey: props.privateKey,
                 evmAccountAddress: props.evmAccountAddress,
                 withdrawOriginAddress: props.withdrawOriginAddress,
@@ -105,7 +105,7 @@ export default function useWeb3SmartWalletPortfolioSell() {
     watch(swsSelectedIndices, () => {
         swsList.value.forEach((swsItem, index) => {
             const positionInSequence = swsSelectedIndices.value.indexOf(index.toString());
-            swsItem.setSmartWalletSwapProps({
+            swsItem.setSmartWalletSwapWithdrawProps({
                 //@TODO consequential smart-wallet calls still consume walletCreation reward (need to recalculate estimation and deduct reward from tx)
                 extraNonce: positionInSequence > 0 ? positionInSequence : 0,
             });

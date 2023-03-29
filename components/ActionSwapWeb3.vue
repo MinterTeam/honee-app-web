@@ -13,7 +13,7 @@ import {HUB_NETWORK, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED} from '~/assets/variable
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
-import useWeb3SmartWalletSwap from '~/composables/use-web3-smartwallet-swap.js';
+import useWeb3SmartWalletSwapWithdraw from '~/composables/use-web3-smartwallet-swap-withdraw.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import TxSequenceWithSwapForm from '~/components/base/TxSequenceWithSwapForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
@@ -71,8 +71,8 @@ export default {
             smartWalletAddress,
             /*feeTxParams: smartWalletTxParams,*/
             buildTxListAndCallSmartWallet,
-            setSmartWalletSwapProps,
-        } = useWeb3SmartWalletSwap();
+            setSmartWalletSwapWithdrawProps,
+        } = useWeb3SmartWalletSwapWithdraw();
 
         return {
             networkHubCoinList,
@@ -102,7 +102,7 @@ export default {
             smartWalletAddress,
             // oneInchSwapParams,
             // smartWalletTxParams,
-            setSmartWalletSwapProps,
+            setSmartWalletSwapWithdrawProps,
             buildTxListAndCallSmartWallet,
         };
     },
@@ -256,7 +256,7 @@ export default {
                 coinToBuy: this.form.coinToBuy,
                 idPreventConcurrency: 'estimateSwsSwap',
             }),
-            (newVal) => this.setSmartWalletSwapProps(newVal),
+            (newVal) => this.setSmartWalletSwapWithdrawProps(newVal),
             {deep: true, immediate: true},
         );
 

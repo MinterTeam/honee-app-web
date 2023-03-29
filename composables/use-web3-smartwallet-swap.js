@@ -5,10 +5,8 @@ import {fromErcDecimals, toErcDecimals, buildDepositWithApproveTxList} from '~/a
 import {buildTxForSwap as _buildTxForSwapToHub} from '~/api/swap-hub-deposit-proxy.js';
 import Big from '~/assets/big.js';
 import {getErrorText} from '~/assets/server-error.js';
-import {HUB_WITHDRAW_SPEED, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
 import useHubToken from '~/composables/use-hub-token.js';
-import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
 
 export const ERROR_NOT_ENOUGH_PAY_REWARD = 'Not enough to pay relay reward';
 
@@ -28,18 +26,6 @@ export default function useWeb3SmartWalletSwap() {
     } = useWeb3SmartWallet();
     const { tokenDecimals: tokenToSellDecimals, tokenContractAddressFixNative: tokenToSellAddress, setHubTokenProps: setHubTokenToSellProps, isNativeToken } = useHubToken();
     const { tokenDecimals: tokenToBuyDecimals, tokenContractAddressFixNative: tokenToBuyAddress, setHubTokenProps: setHubTokenToBuyProps } = useHubToken();
-    const {
-        discountUpsidePercent,
-        destinationFeeInCoin,
-        hubFeeRate,
-        hubFeeRatePercent,
-        hubFee,
-        amountToReceive: withdrawAmountToReceive,
-        minAmountToSend: minAmountToWithdraw,
-        txParams: withdrawTxParams,
-        feeTxParams: withdrawFeeTxParams,
-        setWithdrawProps,
-    } = useWeb3Withdraw();
 
     const props = reactive({
         // privateKey of control address
@@ -47,22 +33,17 @@ export default function useWeb3SmartWalletSwap() {
         // control address of smart-wallet
         evmAccountAddress: '',
         extraNonce: undefined,
-        // origin address to withdraw from (via Hub before swap)
-        withdrawOriginAddress: '',
         // destination address to deposit via Hub after swap (should be specified with 0x prefix, however it is address of Minter account)
         depositDestinationAddress: '',
         /** @type {ChainId} */
         chainId: 0,
         isLegacy: false,
-        // minter coins for WITHDRAW mode
-        coinToSell: '',
-        coinToBuy: '',
         // evm tokens for DEPOSIT mode
         tokenToSellContractAddress: '',
         tokenToBuyContractAddress: '',
         tokenToSellDecimals: 0,
         tokenToBuyDecimals: 0,
-        // used as amount to withdraw in WITHDRAW mode and as value to sell/deposit in DEPOSIT mode
+        /** @type {string|number} - used as amount to withdraw in WITHDRAW mode and as value to sell/deposit in DEPOSIT mode*/
         valueToSell: 0,
         // disable relay reward
         skipRelayReward: false,
@@ -80,13 +61,11 @@ export default function useWeb3SmartWalletSwap() {
         // setSmartWalletProps(newProps);
         setHubTokenToSellProps({
             chainId: props.chainId,
-            tokenSymbol: props.coinToSell,
             tokenAddress: props.tokenToSellContractAddress,
             tokenDecimals: props.tokenToSellDecimals,
         });
         setHubTokenToBuyProps({
             chainId: props.chainId,
-            tokenSymbol: props.coinToBuy,
             tokenAddress: props.tokenToBuyContractAddress,
             tokenDecimals: props.tokenToBuyDecimals,
         });
@@ -105,18 +84,6 @@ export default function useWeb3SmartWalletSwap() {
         estimationSkip: props.skipRelayReward || props.skipEstimation,
     }));
 
-    const dummySmartWalletTxHash = Array.from({length: 64}).fill('0').join('');
-    watchEffect(() => setWithdrawProps({
-        hubNetworkSlug: HUB_CHAIN_BY_ID[props.chainId]?.hubNetworkSlug,
-        amountToSend: props.valueToSell,
-        tokenSymbol: props.coinToSell,
-        accountAddress: (props.withdrawOriginAddress || props.evmAccountAddress || '').replace('0x', 'Mx'),
-        destinationAddress: smartWalletAddress.value,
-        speed: HUB_WITHDRAW_SPEED.FAST,
-        // placeholder for minter tx payload
-        smartWalletTx: dummySmartWalletTxHash,
-    }));
-
     const state = reactive({
         // waiting debounced watcher
         isEstimationAfterSwapToHubWaiting: false,
@@ -128,14 +95,6 @@ export default function useWeb3SmartWalletSwap() {
         amountEstimationAfterSwapToHub: '',
     });
 
-
-    // @TODO in deposit mode a lot of withdraw parts are not used, e.g. subscription to oracle fees, it's better to refactor it
-    // select mode
-    // WITHDRAW mode: start from minter: withdraw + swap + deposit
-    // DEPOSIT mode : start from evm: swap + deposit
-    const isWithdrawMode = computed(() => {
-        return props.coinToSell && props.coinToBuy;
-    });
 
     // deposit without swap
     const isDepositOnlyMode = computed(() => {
@@ -155,7 +114,7 @@ export default function useWeb3SmartWalletSwap() {
     const amountToSpendForDeposit = computed(() => amountToSellForSwapToHub.value);
 
     function getAmountToSellForSwapToHub(amountEstimationLimitForRelayRewardValue) {
-        const valueToUseInEvm = isWithdrawMode.value ? (withdrawAmountToReceive.value || 0) : (props.valueToSell || 0);
+        const valueToUseInEvm = props.valueToSell || 0;
         if (props.skipRelayReward) {
             return valueToUseInEvm;
         }
@@ -313,10 +272,10 @@ export default function useWeb3SmartWalletSwap() {
         }
 
         console.log('overrideAmount', options.overrideAmount);
-        console.log('amount to spend for deposit', props.valueToSell, '||', withdrawAmountToReceive.value, '-', amountEstimationLimitForRelayReward.value, '=', amountToSpendForDeposit.value);
+        console.log('amount to spend for deposit', props.valueToSell, '-', amountEstimationLimitForRelayReward.value, '=', amountToSpendForDeposit.value);
 
         if (amountToSpendForDeposit.value <= 0) {
-            const valueToUseInEvm = isWithdrawMode.value ? (withdrawAmountToReceive.value || 0) : (props.valueToSell || 0);
+            const valueToUseInEvm = props.valueToSell || 0;
             throw new Error(`Not enough to pay smart-wallet relay reward. ${amountEstimationLimitForRelayReward.value} required, ${valueToUseInEvm} given`);
         }
 
@@ -333,18 +292,10 @@ export default function useWeb3SmartWalletSwap() {
     }
 
     return {
-        // from withdraw
-        discountUpsidePercent,
-        destinationFeeInCoin,
-        hubFeeRate,
-        hubFeeRatePercent,
-        hubFee,
-        withdrawAmountToReceive,
-        minAmountToWithdraw,
-        withdrawTxParams,
-        withdrawFeeTxParams,
-
         // from smart-wallet
+        smartWalletAddress,
+        gasPrice,
+        relayRewardAmount,
         isEstimationLimitForRelayRewardsLoading,
         estimationLimitForRelayRewardsError,
         amountEstimationLimitForRelayReward,
@@ -353,11 +304,9 @@ export default function useWeb3SmartWalletSwap() {
         isSmartWalletSwapParamsLoading,
         smartWalletSwapParamsError,
         amountToSellForSwapToHub,
+        amountToSpendForDeposit,
         amountToDeposit,
         amountAfterDeposit,
-        smartWalletAddress,
-        gasPrice,
-        relayRewardAmount,
         swapToHubParams,
         // feeTxParams,
 
