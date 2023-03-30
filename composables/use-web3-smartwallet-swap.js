@@ -38,6 +38,7 @@ export default function useWeb3SmartWalletSwap() {
         /** @type {ChainId} */
         chainId: 0,
         isLegacy: false,
+        gasPriceGwei: 0,
         // evm tokens for DEPOSIT mode
         tokenToSellContractAddress: '',
         tokenToBuyContractAddress: '',
@@ -87,6 +88,7 @@ export default function useWeb3SmartWalletSwap() {
         extraNonce: props.extraNonce,
         chainId: props.chainId,
         isLegacy: props.isLegacy,
+        gasPriceGwei: props.gasPriceGwei,
         gasTokenAddress: tokenToSellAddress.value,
         gasTokenDecimals: tokenToSellDecimals.value,
         complexity: isDepositOnlyMode.value ? 0 : 1,

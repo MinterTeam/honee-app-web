@@ -1,22 +1,13 @@
 import {reactive, computed, toRefs, watch} from 'vue';
-import {watchThrottled, watchDebounced} from '@vueuse/core';
-// import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-// import {PAYLOAD_MAX_LENGTH} from 'minterjs-util/src/variables.js';
-import {web3Utils, web3Abi, AbiEncoder, getProviderByChain, toErcDecimals, fromErcDecimals, getFeeAmount} from '~/api/web3.js';
+import {watchDebounced} from '@vueuse/core';
+import {toErcDecimals, fromErcDecimals, getFeeAmount} from '~/api/web3.js';
 import {ParaSwapSwapSide} from '~/api/swap-paraswap-models.d.ts';
 // import {buildTxForSwap as buildTxForParaSwap, getEstimationLimit as getParaSwapEstimationLimit} from '~/api/swap-paraswap.js';
 import {buildTxForSwap as buildTxForZeroExSwap, getEstimationLimit as getZeroExEstimationLimit} from '~/api/swap-0x.js';
-// import {getTokenSymbolForNetwork} from '~/api/hub.js';
-import {submitRelayTx} from '~/api/smart-wallet-relay.js';
-import smartWalletABI from '~/assets/abi-smartwallet.js';
-import smartWalletBin from '~/assets/abi-smartwallet-bin.js';
-import smartWalletFactoryABI from '~/assets/abi-smartwallet-factory.js';
-import smartWalletFactoryABILegacy from '~/assets/abi-smartwallet-factory-legacy.js';
 import Big from '~/assets/big.js';
-import {SMART_WALLET_RELAY_MINTER_ADDRESS, SMART_WALLET_FACTORY_CONTRACT_ADDRESS, SMART_WALLET_FACTORY_LEGACY_BSC_CONTRACT_ADDRESS, SMART_WALLET_RELAY_BROADCASTER_ADDRESS, NATIVE_COIN_ADDRESS, HUB_CHAIN_BY_ID, BSC_CHAIN_ID} from '~/assets/variables.js';
+import {SMART_WALLET_RELAY_BROADCASTER_ADDRESS, NATIVE_COIN_ADDRESS, HUB_CHAIN_BY_ID, BSC_CHAIN_ID} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {wait} from '~/assets/utils/wait.js';
-import useHubOracle from '~/composables/use-hub-oracle.js';
 import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
 
 const GAS_PRICE_BSC = 5; // in gwei
@@ -37,13 +28,11 @@ export const RELAY_REWARD_AMOUNT_SWAP_GAS_LIMIT = 500000; // equivalent of 0.002
 // @TODO estimate actual gas price if token already exists on smart-wallet
 export default function useWeb3SmartWalletWithRelayReward({estimationThrottle = 100} = {}) {
     const sw = useWeb3SmartWallet();
-    const {networkGasPrice, setHubOracleProps} = useHubOracle({
-        subscribePriceList: true,
-    });
 
     const props = reactive({
         /** @type {ChainId} */
         chainId: 0,
+        gasPriceGwei: 0,
         gasTokenAddress: '',
         gasTokenDecimals: 0,
         // amount of swap tx combined into smart-wallet tx (e.g. several swaps for portfolio buy)
@@ -59,13 +48,6 @@ export default function useWeb3SmartWalletWithRelayReward({estimationThrottle = 
         sw.setSmartWalletProps(newProps);
     }
 
-    watch(() => props.chainId, () => {
-        setHubOracleProps({
-            hubNetworkSlug: HUB_CHAIN_BY_ID[props.chainId]?.hubNetworkSlug || '',
-            fixInvalidGasPriceWithDummy: false,
-        });
-    }, {immediate: true});
-
     const state = reactive({
         isEstimationLimitForRelayRewardsLoading: false,
         estimationLimitForRelayRewardsError: '',
@@ -79,7 +61,7 @@ export default function useWeb3SmartWalletWithRelayReward({estimationThrottle = 
         if (props.chainId === BSC_CHAIN_ID) {
             return GAS_PRICE_BSC;
         }
-        return networkGasPrice.value;
+        return props.gasPriceGwei;
     });
     const combinedTxGasLimit = computed(() => getCombinedTxGasLimit(props.complexity));
     const relayRewardAmount = computed(() => getFeeAmount(gasPrice.value, combinedTxGasLimit.value));

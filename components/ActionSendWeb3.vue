@@ -6,13 +6,12 @@ import maxLength from 'vuelidate/src/validators/maxLength';
 import minValue from 'vuelidate/src/validators/minValue.js';
 import maxValue from 'vuelidate/src/validators/maxValue.js';
 import Big from '~/assets/big.js';
-import {getTokenSymbolForNetwork} from '~/api/hub.js';
+import {buildTransferTx, toErcDecimals} from '~/api/web3.js';
 import {pretty} from '~/assets/utils.js';
 import {HUB_NETWORK, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
-// import useHubOracle from '~/composables/use-hub-oracle.js';
+import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3SmartWalletWithRelayReward from '~/composables/use-web3-smartwallet-relay-reward.js';
-import {buildTransferTx, toErcDecimals} from '~/api/web3.js';
 import FieldAddress from '~/components/base/FieldAddress.vue';
 
 
@@ -36,20 +35,15 @@ export default {
         },
     },
     setup() {
-        // const {
-        //     networkHubCoinList,
-        //     setHubOracleProps,
-        //     fetchHubDestinationFee,
-        // } = useHubOracle({
-        //     // no need to subscribe here, because already subscribed in useHubToken and useWeb3Withdraw
-        // });
+        const {networkGasPrice, setHubOracleProps} = useHubOracle({
+            subscribePriceList: true,
+        });
         const {tokenContractAddressFixNative: tokenContractAddress, tokenDecimals, hubCoin, tokenData, setHubTokenProps} = useHubToken();
         const {smartWalletAddress, setSmartWalletProps, buildTxForRelayReward, callSmartWallet} = useWeb3SmartWalletWithRelayReward();
 
         return {
-            // networkHubCoinList,
-            // setHubOracleProps,
-            // fetchHubDestinationFee,
+            networkGasPrice,
+            setHubOracleProps,
 
             tokenContractAddress,
             tokenDecimals,
@@ -97,7 +91,8 @@ export default {
                 privateKey: this.$store.getters.privateKey,
                 evmAccountAddress: this.$store.getters.evmAddress,
                 chainId: this.hubChainData.chainId,
-                gasTokenAddress: this.form.token === 'BNB' ? NATIVE_COIN_ADDRESS : this.form.token,
+                gasPriceGwei: this.networkGasPrice,
+                gasTokenAddress: this.tokenContractAddress,
                 gasTokenDecimals: this.tokenDecimals,
                 estimationSkip: true,
             }),
@@ -106,13 +101,14 @@ export default {
         );
 
         // hubOracleProps
-        // this.$watch(
-        //     () => ({
-        //         hubNetworkSlug: this.hubChainData.hubNetworkSlug,
-        //     }),
-        //     (newVal) => this.setHubOracleProps(newVal),
-        //     {deep: true, immediate: true},
-        // );
+        this.$watch(
+            () => ({
+                hubNetworkSlug: this.hubChainData.hubNetworkSlug,
+                fixInvalidGasPriceWithDummy: false,
+            }),
+            (newVal) => this.setHubOracleProps(newVal),
+            {deep: true, immediate: true},
+        );
 
         // hubTokenProps
         this.$watch(

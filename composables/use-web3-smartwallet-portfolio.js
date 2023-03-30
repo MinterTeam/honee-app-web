@@ -1,11 +1,16 @@
 import {reactive, computed, toRefs, watch} from 'vue';
 import {getFeeAmount} from '~/api/web3.js';
-import {NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
+import {HUB_CHAIN_BY_ID, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
 import {wait} from '~/assets/utils/wait.js';
+import useHubOracle from '~/composables/use-hub-oracle.js';
 import useWeb3SmartWalletWithRelayReward from '~/composables/use-web3-smartwallet-relay-reward.js';
 
 
+//@TODO rename to relay-reward-portfolio
 export default function useWeb3SmartWalletPortfolio({estimationThrottle = undefined} = {}) {
+    const {networkGasPrice, setHubOracleProps} = useHubOracle({
+        subscribePriceList: true,
+    });
     const {
         setSmartWalletProps,
         amountEstimationLimitForRelayReward,
@@ -35,10 +40,16 @@ export default function useWeb3SmartWalletPortfolio({estimationThrottle = undefi
         Object.assign(props, newProps);
         setSmartWalletProps({
             ...newProps,
+            gasPriceGwei: networkGasPrice.value,
             complexity: newProps.estimationComplexity,
         });
+        if (newProps.chainId || newProps.chainId === 0) {
+            setHubOracleProps({
+                hubNetworkSlug: HUB_CHAIN_BY_ID[newProps.chainId]?.hubNetworkSlug || '',
+                fixInvalidGasPriceWithDummy: false,
+            });
+        }
     }
-
 
     const state = reactive({
         /** @type {number|string} - used only in estimationComplexity mode */

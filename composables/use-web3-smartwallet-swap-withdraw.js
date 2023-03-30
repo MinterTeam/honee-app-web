@@ -7,9 +7,13 @@ import {HUB_WITHDRAW_SPEED, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
 import useWeb3SmartWalletSwap from '~/composables/use-web3-smartwallet-swap.js';
+import useHubOracle from '~/composables/use-hub-oracle.js';
 
 
 export default function useWeb3SmartWalletSwapWithdraw() {
+    const {networkGasPrice, setHubOracleProps} = useHubOracle({
+        subscribePriceList: true,
+    });
     const {
         // smart-wallet
         smartWalletAddress,
@@ -92,6 +96,12 @@ export default function useWeb3SmartWalletSwapWithdraw() {
             chainId: props.chainId,
             tokenSymbol: props.coinToBuy,
         });
+        if (newProps.chainId || newProps.chainId === 0) {
+            setHubOracleProps({
+                hubNetworkSlug: HUB_CHAIN_BY_ID[newProps.chainId]?.hubNetworkSlug || '',
+                fixInvalidGasPriceWithDummy: false,
+            });
+        }
     }
 
     watchEffect(() => setSmartWalletSwapProps({
@@ -104,6 +114,8 @@ export default function useWeb3SmartWalletSwapWithdraw() {
         skipRelayReward: props.skipRelayReward,
         skipEstimation: props.skipEstimation,
         idPreventConcurrency: props.idPreventConcurrency,
+
+        gasPriceGwei: networkGasPrice.value,
 
         tokenToSellContractAddress: tokenToSellAddress.value,
         tokenToSellDecimals: tokenToSellDecimals.value,

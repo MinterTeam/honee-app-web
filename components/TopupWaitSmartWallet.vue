@@ -61,6 +61,7 @@ export default defineComponent({
         const {
             initPromise: hubInfoInitPromise,
             networkNativeCoin,
+            networkGasPrice,
             hubTokenList,
             setHubOracleProps,
             fetchHubPriceList,
@@ -116,6 +117,7 @@ export default defineComponent({
 
             hubInfoInitPromise,
             // networkNativeCoin,
+            networkGasPrice,
             hubTokenList,
             setHubOracleProps,
             fetchHubPriceList,
@@ -272,6 +274,7 @@ export default defineComponent({
                     depositDestinationAddress: this.$store.getters.evmAddress,
                     chainId: this.hubChainData.chainId,
                     isLegacy: this.isLegacy,
+                    gasPrice: this.networkGasPrice,
                     valueToSell: this.selectedAmount,
                     tokenToSellContractAddress: this.selectedBalanceItem?.tokenContractAddress,
                     tokenToSellDecimals: this.selectedBalanceItem?.decimals,
