@@ -25,6 +25,22 @@ export default {
                 },
             },
             {
+                caption: 'Yield farming',
+                coin: ['WONDER', 'BNB'],
+                description: 'Put your WONDER and BNB into a liquidity pool for getting daily rewards.',
+                stats: {
+                    apr: {
+                        percent: '120',
+                    },
+                },
+                tags: ['Farming'],
+                action: `/farm/WONDER/BNB`,
+                ru: {
+                    description: 'Поместите свои WONDER и BNB в пул ликвидности, чтобы получать ежедневные вознаграждения.',
+                    caption: 'Фарминг',
+                },
+            },
+            {
                 caption: 'Stake & Earn',
                 coin: `BEE`,
                 description: 'Stake BEE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
