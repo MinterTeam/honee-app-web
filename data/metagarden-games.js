@@ -31,6 +31,7 @@ export default [
         category: 'Lottery',
         coin: 'WONDER',
         slug: 'magic-box',
+        isComingSoon: true,
         ru: {
             description: 'Покупайте или получайте бесплатно волшебные коробки. Каждая коробка содержит монеты или другие ценные призы.',
             category: 'Лотерея',
