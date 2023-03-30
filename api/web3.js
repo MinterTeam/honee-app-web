@@ -4,7 +4,7 @@ import Utils from 'web3-utils';
 import Contract from 'web3-eth-contract';
 import AbiCoder from 'web3-eth-abi';
 import {TinyEmitter as Emitter} from 'tiny-emitter';
-import {ETHEREUM_API_URL, BSC_API_URL, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, HUB_DEPOSIT_TX_PURPOSE, HUB_CHAIN_ID, HUB_CHAIN_DATA, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+import {ETHEREUM_API_URL, BSC_API_URL, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, NATIVE_COIN_ADDRESS, HUB_CHAIN_ID, HUB_CHAIN_DATA, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import erc20ABI from '~/assets/abi-erc20.js';
 import hubABI from '~/assets/abi-hub.js';
 
@@ -374,7 +374,7 @@ export function getAllowance(chainId, tokenContractAddress, accountAddress, spen
 /**
  * @param {string} tokenContractAddress
  * @param {string} spenderContractAddress
- * @param {string|number} [amount]
+ * @param {string|number|undefined} [amount]
  * @return {EvmTxParams}
  */
 export function buildApproveTx(tokenContractAddress, spenderContractAddress, amount) {
@@ -465,22 +465,43 @@ export function buildDepositTx(chainId, tokenContractAddress, tokenDecimals, des
  * @return {Promise<Array<EvmTxParams>>}
  */
 export async function buildDepositWithApproveTxList(chainId, tokenContractAddress, tokenDecimals, destinationMinterAddress, amount, accountAddress) {
-    let txList = [];
+    const depositTx = buildDepositTx(chainId, tokenContractAddress, tokenDecimals, destinationMinterAddress, amount);
 
-    const isNativeToken = !tokenContractAddress;
+    return await addApproveTx(tokenContractAddress, toErcDecimals(amount, tokenDecimals), depositTx, {
+        chainIdForAllowanceCheck: chainId,
+        accountAddressForAllowanceCheck: accountAddress,
+        approveInfinite: true,
+    });
+}
+
+
+/**
+ * @template {EvmTxParams} T
+ * @param {string} tokenContractAddress
+ * @param {number|string|undefined} tokenAmount - in wei
+ * @param {T} targetTx
+ * @param {object} [options]
+ * @param {ChainId} [options.chainIdForAllowanceCheck]
+ * @param {string} [options.accountAddressForAllowanceCheck]
+ * @param {boolean} [options.approveInfinite]
+ * @return {Promise<[EvmTxParams?, T] | [T]>}
+ */
+export async function addApproveTx(tokenContractAddress, tokenAmount, targetTx, {chainIdForAllowanceCheck, accountAddressForAllowanceCheck, approveInfinite} = {}) {
+    let approveTx;
+
+    const isNativeToken = !tokenContractAddress || tokenContractAddress.toLowerCase() === NATIVE_COIN_ADDRESS;
     if (!isNativeToken) {
-        const hubBridgeContractAddress = HUB_CHAIN_BY_ID[chainId]?.hubContractAddress;
-        const allowance = await getAllowance(chainId, tokenContractAddress, accountAddress, hubBridgeContractAddress);
-        if (new Big(allowance).lt(toErcDecimals(amount, tokenDecimals))) {
-            const approveTx = buildApproveTx(tokenContractAddress, hubBridgeContractAddress);
-            txList.push(approveTx);
+        const spenderContractAddress = targetTx.to;
+        const canCheckAllowance = chainIdForAllowanceCheck && accountAddressForAllowanceCheck;
+        const allowance = canCheckAllowance
+            ? await getAllowance(chainIdForAllowanceCheck, tokenContractAddress, accountAddressForAllowanceCheck, spenderContractAddress)
+            : 0;
+        if (allowance && new Big(allowance).lt(tokenAmount)) {
+            approveTx = buildApproveTx(tokenContractAddress, spenderContractAddress, approveInfinite ? undefined : tokenAmount);
         }
     }
 
-    const depositTx = buildDepositTx(chainId, isNativeToken ? undefined : tokenContractAddress, tokenDecimals, destinationMinterAddress, amount);
-    txList.push(depositTx);
-
-    return txList;
+    return approveTx ? [approveTx, targetTx] : [targetTx];
 }
 
 

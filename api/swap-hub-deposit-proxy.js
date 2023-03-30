@@ -4,7 +4,7 @@ import {HUB_DEPOSIT_PROXY_API_URL, HUB_DEPOSIT_PROXY_ETHEREUM_CONTRACT_ADDRESS, 
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import preventConcurrencyAdapter from '~/assets/axios-prevent-concurrency.js';
 import {buildTxForSwap as buildOneInchTx, prepareProtocolsCached} from '~/api/swap-1inch.js';
-import {AbiEncoder, buildApproveTx, getHubDestinationAddressBytes, getHubDestinationChainBytes} from '~/api/web3.js';
+import {AbiEncoder, addApproveTx, getHubDestinationAddressBytes, getHubDestinationChainBytes} from '~/api/web3.js';
 import hubProxyAbi from '~/assets/abi-hub-proxy.js';
 
 const HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS_LIST = {
@@ -35,7 +35,7 @@ const fastCache = new Cache({ttl: 2 * 1000, max: 100});
  * @param {string} [axiosOptions.idPreventConcurrency]
  * @return {Promise<{toTokenAmount: string, txList: Array<OneInchTx>}>}
  */
-export async function buildTxForSwap(chainId, swapParams, {idPreventConcurrency} = {}) {
+export async function buildSwapWithApproveTxList(chainId, swapParams, {idPreventConcurrency} = {}) {
     const hubProxyContractAddress = HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS_LIST[chainId];
     swapParams = {
         ...swapParams,
@@ -45,26 +45,10 @@ export async function buildTxForSwap(chainId, swapParams, {idPreventConcurrency}
     };
 
     return buildOneInchTx(chainId, swapParams, {idPreventConcurrency})
-        .then((oneInchResponse) => {
-            const txList = [];
+        .then(async (oneInchResponse) => {
             const refundTo = swapParams.refundTo || swapParams.destination;
 
             // reference https://github.com/MinterTeam/transaction-composer/blob/master/main.go
-
-            // @TODO maybe approve infinite
-            if (oneInchResponse.fromToken.address !== NATIVE_COIN_ADDRESS) {
-                const approveTx = buildApproveTx(
-                    oneInchResponse.fromToken.address,
-                    hubProxyContractAddress,
-                    oneInchResponse.fromTokenAmount,
-                );
-
-                console.log("HubDepositProxy: Approve " + oneInchResponse.fromToken.symbol + " to swap");
-                txList.push({
-                    from: oneInchResponse.tx.from,
-                    ...approveTx,
-                });
-            }
 
             const destinationChain = getHubDestinationChainBytes();
             const destination = getHubDestinationAddressBytes(swapParams.destination);
@@ -98,7 +82,9 @@ export async function buildTxForSwap(chainId, swapParams, {idPreventConcurrency}
             };
 
             console.log("HubDepositProxy: Swap " + oneInchResponse.fromToken.symbol + " to " + oneInchResponse.toToken.symbol + " and send result to " + swapParams.destination + " in Minter");
-            txList.push(hubProxyTxParams);
+
+            // @TODO maybe approve infinite
+            const txList = await addApproveTx(oneInchResponse.fromToken.address, oneInchResponse.fromTokenAmount, hubProxyTxParams, {approveInfinite: false});
 
             return {
                 toTokenAmount: oneInchResponse.toTokenAmount,
@@ -145,7 +131,7 @@ export async function buildTxForSwapWithComposer(chainId, swapParams, {idPrevent
 
 export function buildTxForSwapDebug(chainId, swapParams, {idPreventConcurrency} = {}) {
     return Promise.all([
-            buildTxForSwap(chainId, swapParams, {idPreventConcurrency}),
+            buildSwapWithApproveTxList(chainId, swapParams, {idPreventConcurrency}),
             buildTxForSwapWithComposer(chainId, swapParams),
         ])
         .then((list) => {

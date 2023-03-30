@@ -266,6 +266,7 @@ export default defineComponent({
                 return {
                     privateKey: this.$store.getters.privateKey,
                     evmAccountAddress: this.$store.getters.evmAddress,
+                    depositDestinationAddress: this.$store.getters.evmAddress,
                     chainId: this.hubChainData.chainId,
                     isLegacy: this.isLegacy,
                     valueToSell: this.selectedAmount,

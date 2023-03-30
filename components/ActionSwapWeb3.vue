@@ -250,6 +250,7 @@ export default {
             () => ({
                 privateKey: this.$store.getters.privateKey,
                 evmAccountAddress: this.$store.getters.evmAddress,
+                depositDestinationAddress: this.$store.getters.evmAddress,
                 chainId: this.hubChainData.chainId,
                 valueToSell: this.withdrawValue,
                 coinToSell: this.withdrawCoin,

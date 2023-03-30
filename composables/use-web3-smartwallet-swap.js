@@ -1,8 +1,8 @@
 import {reactive, computed, watch, watchEffect, toRefs} from 'vue';
 import {watchDebounced} from '@vueuse/core';
 import {fromErcDecimals, toErcDecimals, buildDepositWithApproveTxList} from '~/api/web3.js';
-// import {buildTxForSwap as buildTxForOneInchSwap, getQuoteForSwap} from '~/api/1inch.js';
-import {buildTxForSwap as _buildTxForSwapToHub} from '~/api/swap-hub-deposit-proxy.js';
+import {buildSwapWithApproveTxList as buildSwapWithApproveTxListOneInch, getQuoteForSwap} from '~/api/swap-1inch.js';
+import {buildSwapWithApproveTxList as buildSwapWithApproveTxListHub} from '~/api/swap-hub-deposit-proxy.js';
 import Big from '~/assets/big.js';
 import {getErrorText} from '~/assets/server-error.js';
 import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
@@ -33,7 +33,8 @@ export default function useWeb3SmartWalletSwap() {
         // control address of smart-wallet
         evmAccountAddress: '',
         extraNonce: undefined,
-        // destination address to deposit via Hub after swap (should be specified with 0x prefix, however it is address of Minter account)
+        // destination address to deposit via Hub after swap
+        // if no depositDestination is specified, than only evm swap will be executed without deposit
         depositDestinationAddress: '',
         /** @type {ChainId} */
         chainId: 0,
@@ -139,7 +140,7 @@ export default function useWeb3SmartWalletSwap() {
     });
 
     const depositDestinationAddress = computed(() => {
-        return props.depositDestinationAddress || props.evmAccountAddress || '';
+        return props.depositDestinationAddress || '';
     });
 
     const swapToHubParams = computed(() => {
@@ -150,7 +151,7 @@ export default function useWeb3SmartWalletSwap() {
             amount: toErcDecimals(amountToSpendForDeposit.value, tokenToSellDecimals.value),
             fromAddress: smartWalletAddress.value,
             // destAddress: undefined, // is set by hubDepositProxy api
-            // hub proxy destination
+            // hub proxy destination (should be specified with 0x prefix, however it is address of Minter account)
             destination: depositDestinationAddress.value.replace('Mx', '0x'),
             // refundTo: props.evmAccountAddress,
             // @TODO portfolio buy: make first swap in a sequence less slippage (e.g. 2.5)
@@ -213,11 +214,19 @@ export default function useWeb3SmartWalletSwap() {
         return hasProps && !sameTokens;
     }
 
+    function getBuildSwapWithApproveTxListFinal() {
+        if (depositDestinationAddress.value) {
+            return buildSwapWithApproveTxListHub;
+        } else {
+            return buildSwapWithApproveTxListOneInch;
+        }
+    }
+
     /**
      * @return {Promise<string>}
      */
     function estimateSwapToHub() {
-        return _buildTxForSwapToHub(props.chainId, swapToHubParams.value, {
+        return getBuildSwapWithApproveTxListFinal()(props.chainId, swapToHubParams.value, {
             idPreventConcurrency: props.idPreventConcurrency,
         })
             .then((result) => result.toTokenAmount);
@@ -240,16 +249,16 @@ export default function useWeb3SmartWalletSwap() {
      * @param {number|string} [options.overrideAmount]
      * @return {Promise<Array<OneInchTx>>}
      */
-    function buildTxForSwapToHub({overrideAmount} = {}) {
+    function buildSwapTxList({overrideAmount} = {}) {
         const txParams = Number(overrideAmount) > 0 ? {
             ...swapToHubParams.value,
             amount: toErcDecimals(overrideAmount, tokenToSellDecimals.value),
         } : swapToHubParams.value;
 
-        console.log('_buildTxForSwapToHub', props.chainId, txParams);
+        console.log('buildSwapWithApproveTxListFinal', props.chainId, txParams);
 
         // don't pass idPreventConcurrency (to ensure it will not cancelled by estimate)
-        return _buildTxForSwapToHub(props.chainId, txParams, {idPreventConcurrency: null})
+        return getBuildSwapWithApproveTxListFinal()(props.chainId, txParams, {idPreventConcurrency: null})
             .then((result) => result.txList);
     }
 
@@ -278,10 +287,13 @@ export default function useWeb3SmartWalletSwap() {
             const valueToUseInEvm = props.valueToSell || 0;
             throw new Error(`Not enough to pay smart-wallet relay reward. ${amountEstimationLimitForRelayReward.value} required, ${valueToUseInEvm} given`);
         }
+        if (isDepositOnlyMode.value && !depositDestinationAddress.value) {
+            throw new Error('Swap mode can\'t be used because sellToken equal to buyToken and deposit mode can\'t be used because no depositDestinationAddress');
+        }
 
         const swapTxList = isDepositOnlyMode.value
             ? await buildDepositTx(options)
-            : await buildTxForSwapToHub(options);
+            : await buildSwapTxList(options);
         console.log(txListForRelayReward);
         console.log(swapTxList);
         return callSmartWallet([].concat(txListForRelayReward, swapTxList), {overrideExtraNonce})
@@ -312,7 +324,7 @@ export default function useWeb3SmartWalletSwap() {
 
         setSmartWalletSwapProps: setProps,
         buildTxForRelayReward,
-        buildTxForSwapToHub,
+        buildSwapTxList,
         buildTxListAndCallSmartWallet,
     };
 }

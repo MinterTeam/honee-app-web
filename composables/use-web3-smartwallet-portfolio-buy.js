@@ -553,7 +553,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         const buildSwapPromiseList = [];
         swsSelectedIndices.value.forEach((indexString) => {
             const overrideAmount = amountToSellForSwapToHubDistributionFinal[indexString];
-            buildSwapPromiseList.push(swsList.value[indexString].buildTxForSwapToHub({overrideAmount}));
+            buildSwapPromiseList.push(swsList.value[indexString].buildSwapTxList({overrideAmount}));
         });
         if (buildSwapPromiseList.length < 1) {
             throw new Error('Nothing to swap');

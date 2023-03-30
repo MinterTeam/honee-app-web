@@ -1,8 +1,8 @@
 import axios from 'axios';
 import {Cache, cacheAdapterEnhancer} from 'axios-extensions';
-import {ONE_INCH_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
+import {ONE_INCH_API_URL, NETWORK, MAINNET, NATIVE_COIN_ADDRESS} from "~/assets/variables.js";
 import preventConcurrencyAdapter from '~/assets/axios-prevent-concurrency.js';
-import {fromErcDecimals} from '~/api/web3.js';
+import {fromErcDecimals, addApproveTx} from '~/api/web3.js';
 
 const adapter = (($ = axios.defaults.adapter) => {
     $ = cacheAdapterEnhancer($, { enabledByDefault: false});
@@ -37,6 +37,27 @@ export async function buildTxForSwap(chainId, swapParams, {idPreventConcurrency}
     })
         .then((response) => {
             return response.data;
+        });
+}
+
+/**
+ * build tx to proxy contract which will swap on 1inch and deposit result to Minter via Hub
+ * @param {number|string} chainId
+ * @param {OneInchExchangeControllerGetSwapParams} swapParams
+ * @param {object} [axiosOptions]
+ * @param {string} [axiosOptions.idPreventConcurrency]
+ * @return {Promise<{toTokenAmount: string, txList: Array<OneInchTx>}>}
+ */
+export function buildSwapWithApproveTxList(chainId, swapParams, {idPreventConcurrency} = {}) {
+    return buildTxForSwap(chainId, swapParams, {idPreventConcurrency})
+        .then(async (oneInchResponse) => {
+            // @TODO maybe approve infinite
+            const txList = await addApproveTx(oneInchResponse.fromToken.address, oneInchResponse.fromTokenAmount, oneInchResponse.tx, {approveInfinite: false});
+
+            return {
+                toTokenAmount: oneInchResponse.toTokenAmount,
+                txList,
+            };
         });
 }
 

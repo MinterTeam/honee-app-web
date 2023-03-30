@@ -33,7 +33,7 @@ export default function useWeb3SmartWalletSwapWithdraw() {
         amountAfterDeposit,
         amountEstimationAfterSwapToHub,
         swapToHubParams,
-        buildTxForSwapToHub,
+        buildSwapTxList,
         buildTxListAndCallSmartWallet,
     } = useWeb3SmartWalletSwap();
     const { tokenDecimals: tokenToSellDecimals, tokenContractAddressFixNative: tokenToSellAddress, setHubTokenProps: setHubTokenToSellProps, isNativeToken } = useHubToken();
@@ -161,7 +161,7 @@ export default function useWeb3SmartWalletSwapWithdraw() {
 
         setSmartWalletSwapWithdrawProps: setProps,
         buildTxForRelayReward,
-        buildTxForSwapToHub,
+        buildSwapTxList,
         buildTxListAndCallSmartWallet,
     };
 }
