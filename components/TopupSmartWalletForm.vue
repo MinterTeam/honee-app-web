@@ -34,7 +34,7 @@ export default {
         this.$watch(
             () => ({
                 evmAccountAddress: this.$store.getters.evmAddress,
-                estimationSkip: true,
+                skipCheckExistence: true,
             }),
             (newVal) => this.setSmartWalletProps(newVal),
             {deep: true, immediate: true},

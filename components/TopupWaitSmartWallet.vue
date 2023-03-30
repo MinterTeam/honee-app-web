@@ -202,14 +202,17 @@ export default defineComponent({
             }
             return '';
         },
+        /** @type {HubCoinItem|undefined} */
         fallbackHubCoin() {
             return findHubCoinItem(this.hubTokenList, this.fallbackSymbol);
         },
+        /** @type {HubCoinItem|undefined} */
         depositHubCoin() {
             // if token to sell exists in Hub bridge, then set is as tokenToBuy, so swap will be skipped and token will be deposited as is
             // otherwise buy USDT
             return this.hubCoin || this.fallbackHubCoin;
         },
+        /** @type {TokenInfo.AsObject|undefined} */
         depositHubToken() {
             return this.depositHubCoin
                 ? this.depositHubCoin[this.hubChainData.hubNetworkSlug]

@@ -11,7 +11,7 @@ import {pretty} from '~/assets/utils.js';
 import {HUB_NETWORK, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
 // import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
-import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
+import useWeb3SmartWalletWithRelayReward from '~/composables/use-web3-smartwallet-relay-reward.js';
 import {buildTransferTx, toErcDecimals} from '~/api/web3.js';
 import FieldAddress from '~/components/base/FieldAddress.vue';
 
@@ -44,7 +44,7 @@ export default {
         //     // no need to subscribe here, because already subscribed in useHubToken and useWeb3Withdraw
         // });
         const {tokenContractAddressFixNative: tokenContractAddress, tokenDecimals, hubCoin, tokenData, setHubTokenProps} = useHubToken();
-        const {smartWalletAddress, setSmartWalletProps, buildTxForRelayReward, callSmartWallet} = useWeb3SmartWallet();
+        const {smartWalletAddress, setSmartWalletProps, buildTxForRelayReward, callSmartWallet} = useWeb3SmartWalletWithRelayReward();
 
         return {
             // networkHubCoinList,

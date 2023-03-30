@@ -298,7 +298,7 @@ export default {
                     prepare: () => {
                         // wait for computed depended on withdrawFee and withdrawValue to recalculate
                         return wait(50)
-                            .then(() => this.swsList[index].buildTxListAndCallSmartWallet({overrideExtraNonce: swsExtraNonce}))
+                            .then(() => this.swsList[index].buildTxListAndCallSmartWallet({extraNonce: swsExtraNonce}))
                             .then((result) => {
                                 swsExtraNonce += result.callCount;
 

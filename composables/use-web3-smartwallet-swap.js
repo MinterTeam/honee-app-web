@@ -5,8 +5,9 @@ import {buildSwapWithApproveTxList as buildSwapWithApproveTxListOneInch, getQuot
 import {buildSwapWithApproveTxList as buildSwapWithApproveTxListHub} from '~/api/swap-hub-deposit-proxy.js';
 import Big from '~/assets/big.js';
 import {getErrorText} from '~/assets/server-error.js';
-import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
-import useHubToken from '~/composables/use-hub-token.js';
+import useWeb3SmartWalletWithRelayReward from '~/composables/use-web3-smartwallet-relay-reward.js';
+import useHubToken, {fixNativeContractAddress} from '~/composables/use-hub-token.js';
+import {NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
 
 export const ERROR_NOT_ENOUGH_PAY_REWARD = 'Not enough to pay relay reward';
 
@@ -23,9 +24,7 @@ export default function useWeb3SmartWalletSwap() {
         estimateSpendLimitForRelayReward,
         buildTxForRelayReward,
         callSmartWallet,
-    } = useWeb3SmartWallet();
-    const { tokenDecimals: tokenToSellDecimals, tokenContractAddressFixNative: tokenToSellAddress, setHubTokenProps: setHubTokenToSellProps, isNativeToken } = useHubToken();
-    const { tokenDecimals: tokenToBuyDecimals, tokenContractAddressFixNative: tokenToBuyAddress, setHubTokenProps: setHubTokenToBuyProps } = useHubToken();
+    } = useWeb3SmartWalletWithRelayReward();
 
     const props = reactive({
         // privateKey of control address
@@ -60,17 +59,27 @@ export default function useWeb3SmartWalletSwap() {
         Object.assign(props, newProps);
         // moved to watchEffect
         // setSmartWalletProps(newProps);
-        setHubTokenToSellProps({
-            chainId: props.chainId,
-            tokenAddress: props.tokenToSellContractAddress,
-            tokenDecimals: props.tokenToSellDecimals,
-        });
-        setHubTokenToBuyProps({
-            chainId: props.chainId,
-            tokenAddress: props.tokenToBuyContractAddress,
-            tokenDecimals: props.tokenToBuyDecimals,
-        });
     }
+
+    const tokenToSellAddress = computed(() => {
+        return fixNativeContractAddress(props.chainId, props.tokenToSellContractAddress);
+    });
+    const tokenToBuyAddress = computed(() => {
+        return fixNativeContractAddress(props.chainId, props.tokenToBuyContractAddress);
+    });
+    const tokenToSellDecimals = computed(() => {
+        return props.tokenToSellDecimals;
+    });
+    const tokenToBuyDecimals = computed(() => {
+        return props.tokenToBuyDecimals;
+    });
+    const isNativeToken = computed(() => {
+        return tokenToSellAddress.value === NATIVE_COIN_ADDRESS;
+    });
+    // deposit without swap
+    const isDepositOnlyMode = computed(() => {
+        return tokenToSellAddress.value === tokenToBuyAddress.value;
+    });
 
     watchEffect(() => setSmartWalletProps({
         privateKey: props.privateKey,
@@ -80,8 +89,7 @@ export default function useWeb3SmartWalletSwap() {
         isLegacy: props.isLegacy,
         gasTokenAddress: tokenToSellAddress.value,
         gasTokenDecimals: tokenToSellDecimals.value,
-        // isDepositOnlyMode.value
-        complexity: tokenToSellAddress.value === tokenToBuyAddress.value ? 0 : 1,
+        complexity: isDepositOnlyMode.value ? 0 : 1,
         estimationSkip: props.skipRelayReward || props.skipEstimation,
     }));
 
@@ -94,12 +102,6 @@ export default function useWeb3SmartWalletSwap() {
         // @TODO now Hub fee is not included and actually it is value *before* deposit
         // estimated amount after swap and after deposit to Minter
         amountEstimationAfterSwapToHub: '',
-    });
-
-
-    // deposit without swap
-    const isDepositOnlyMode = computed(() => {
-        return tokenToSellAddress.value === tokenToBuyAddress.value;
     });
 
     const isSmartWalletSwapParamsLoading = computed(() => {
@@ -263,11 +265,10 @@ export default function useWeb3SmartWalletSwap() {
     }
 
     /**
-     * @param {object} [options]
-     * @param {number} [options.overrideExtraNonce]
+     * @param {SmartWalletOverrideProps} [smartWalletOverrideProps]
      * @return {Promise<SmartWalletRelaySubmitTxResult>}
      */
-    async function buildTxListAndCallSmartWallet({overrideExtraNonce} = {}) {
+    async function buildTxListAndCallSmartWallet(smartWalletOverrideProps) {
         if (props.skipRelayReward) {
             throw new Error('Can\'t call smart-wallet with disabled relay reward. Use build and call manually');
         }
@@ -296,7 +297,7 @@ export default function useWeb3SmartWalletSwap() {
             : await buildSwapTxList(options);
         console.log(txListForRelayReward);
         console.log(swapTxList);
-        return callSmartWallet([].concat(txListForRelayReward, swapTxList), {overrideExtraNonce})
+        return callSmartWallet([].concat(txListForRelayReward, swapTxList), smartWalletOverrideProps)
             .then((result) => {
                 console.log(result);
                 return result;

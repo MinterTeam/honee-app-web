@@ -2,7 +2,7 @@ import {reactive, computed, toRefs, watch} from 'vue';
 import {getFeeAmount} from '~/api/web3.js';
 import {NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
 import {wait} from '~/assets/utils/wait.js';
-import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
+import useWeb3SmartWalletWithRelayReward from '~/composables/use-web3-smartwallet-relay-reward.js';
 
 
 export default function useWeb3SmartWalletPortfolio({estimationThrottle = undefined} = {}) {
@@ -17,7 +17,7 @@ export default function useWeb3SmartWalletPortfolio({estimationThrottle = undefi
         recalculateEstimation,
         buildTxForRelayReward,
         callSmartWallet,
-    } = useWeb3SmartWallet({estimationThrottle});
+    } = useWeb3SmartWalletWithRelayReward({estimationThrottle});
 
     const props = reactive({
         gasTokenAddress: '',

@@ -13,6 +13,23 @@ function getWrappedNativeContractAddress(chainId) {
     return HUB_CHAIN_BY_ID[chainId]?.wrappedNativeContractAddress;
 }
 
+/**
+ * @param {ChainId} chainId
+ * @param {string} tokenContractAddress
+ */
+export function fixNativeContractAddress(chainId, tokenContractAddress) {
+    tokenContractAddress = tokenContractAddress?.toLowerCase();
+    const isNativeToken = tokenContractAddress === '0x0000000000000000000000000000000000000000'
+        || tokenContractAddress === NATIVE_COIN_ADDRESS
+        || tokenContractAddress === getWrappedNativeContractAddress(chainId);
+
+    if (isNativeToken) {
+        return NATIVE_COIN_ADDRESS;
+    } else {
+        return tokenContractAddress;
+    }
+}
+
 export default function useHubToken() {
     const {initPromise, hubTokenList, hubPriceList} = useHubOracle({
         subscribeTokenList: true,

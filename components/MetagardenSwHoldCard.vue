@@ -21,6 +21,7 @@ export default {
         const {smartWalletAddress, setSmartWalletProps} = useWeb3SmartWallet();
         setSmartWalletProps({
             evmAccountAddress: vm.$store.getters.evmAddress,
+            skipCheckExistence: true,
         });
 
         const {balance, setWeb3TokenProps} = useWeb3TokenBalance();
