@@ -13,9 +13,8 @@ export default [
             category: 'Стратегия',
         },
     },
-    /*
     {
-        title: 'Miner',
+        title: 'Lucky Miner',
         description: 'Mining Metagarden platform tokens is an exciting process in the form of a game. Buy a Miner and receive daily rewards with many other bonuses.',
         coin: 'METAGARDEN',
         slug: 'mining-spot',
@@ -24,7 +23,6 @@ export default [
             description: 'Майнинг токенов платформы Metagarden — это увлекательный процесс в игровой форме. Купите майнер и получайте ежедневные вознаграждения с множеством других бонусов.',
         },
     },
-    */
     {
         title: 'Wonder Game',
         description: 'Buy Magic Boxes or get them for free. Each box contains coins or other valuable prizes.',

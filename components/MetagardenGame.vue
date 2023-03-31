@@ -17,7 +17,7 @@ export default {
             return metagardenGames.find((game) => game.slug === this.gameSlug);
         },
         otherGameList() {
-            return metagardenGames.filter((game) => !game.isComingSoon && game.slug !== this.gameSlug);
+            return metagardenGames.filter((game) => !game?.isComingSoon && game?.slug !== this.gameSlug);
         },
     },
     methods: {
@@ -34,7 +34,7 @@ export default {
     <div class="u-section u-container u-container--mg-cards-2">
         <div class="u-relative mg-game__cover u-mb-10">
             <img class="u-image" :src="`/img/game-${gameSlug}.jpg`" :srcset="`/img/game-${gameSlug}@2x.jpg 2x`" alt="" role="presentation">
-            <div class="card__badge card__badge--coming-soon" v-if="game.isComingSoon">
+            <div class="card__badge card__badge--coming-soon" v-if="game?.isComingSoon">
                 {{ $td('Coming soon', 'mg-games.label-coming') }}
             </div>
         </div>
@@ -59,9 +59,9 @@ export default {
                     </div>
                 </div>
             </div>
-        </template>
 
-        <slot :game="game"/>
+            <slot :game="game"/>
+        </template>
 
         <h2 class="u-h--uppercase u-mb-10 u-mt-25">{{ $td('Find more games', 'mg-games.find-more') }}</h2>
         <div class="mg-cards">

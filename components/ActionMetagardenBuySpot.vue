@@ -30,7 +30,7 @@ const MODE = {
     BUY_USD: 'buy_usd',
 };
 export const SPOT_PRICE_METAGARDEN = 1000;
-export const SPOT_PRICE_USD = 160;
+export const SPOT_PRICE_USD = 80;
 const SPOT_MIN_AMOUNT = 0.1;
 const SPOT_BUY_ADDRESS = 'Mxfb758e0516e3ced06eb90387b7fee61ecaad0000';
 
@@ -74,8 +74,10 @@ export default {
 
         return {
             form: {
-                coin: availableSpots > 0 ? METAGARDEN_SYMBOL : '',
-                spotAmount: availableSpots || 1,
+                coin: '',
+                spotAmount: undefined,
+                // coin: availableSpots > 0 ? METAGARDEN_SYMBOL : '',
+                // spotAmount: availableSpots || 1,
             },
             estimation: 0,
             estimationSpendForMetagarden: 0,
@@ -114,10 +116,14 @@ export default {
         currentMode() {
             // 0.04 price check is made by comparing estimation (which is made based on 1000 and 40 prices)
             // const isMetagardenCheaper = this.estimationSpendForUsd <= 0 || Number(this.estimationSpendForMetagarden) <= Number(this.estimationSpendForUsd);
+            /* disable SEND_METAGARDEN mode
             if (this.form.coin === METAGARDEN_SYMBOL) {
                 return MODE.SEND_METAGARDEN;
-            } else if (this.form.coin === USD_SYMBOL) {
+            } else
+            */
+            if (this.form.coin === USD_SYMBOL) {
                 return MODE.SEND_USD;
+            // disable BUY_METAGARDEN mode
             // } else if (isMetagardenCheaper) {
             //     return MODE.BUY_METAGARDEN;
             } else {
@@ -258,6 +264,7 @@ export default {
                             <div class="h-field__title">{{ $td('Spots amount', 'metagarden.spot-amount-label') }}</div>
                             <InputMaskedAmount
                                 class="h-field__input h-field__input--medium"
+                                placeholder="0"
                                 :scale="undefined"
                                 v-model="form.spotAmount"
                                 @blur="$v.form.spotAmount.$touch()"
