@@ -8,7 +8,7 @@ import maxValue from 'vuelidate/src/validators/maxValue.js';
 import Big from '~/assets/big.js';
 import {buildTransferTx, toErcDecimals} from '~/api/web3.js';
 import {pretty} from '~/assets/utils.js';
-import {HUB_NETWORK, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
+import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA} from '~/assets/variables.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3SmartWalletWithRelayReward from '~/composables/use-web3-smartwallet-relay-reward.js';
@@ -69,16 +69,7 @@ export default {
     computed: {
         /** @type {HubChainDataItem} */
         hubChainData() {
-            return HUB_CHAIN_DATA[HUB_NETWORK.BSC];
-        },
-        tokenAddressFixed() {
-            if (this.form.token === 'BNB') {
-                return NATIVE_COIN_ADDRESS;
-            }
-            if (this.form.token.length === 42 && this.form.token.indexOf('0x') === 0) {
-                return this.form.token;
-            }
-            return '';
+            return HUB_CHAIN_DATA[HUB_NETWORK_SLUG.BSC];
         },
         isTokenDecimalsFetched() {
             return this.tokenDecimals > 0;

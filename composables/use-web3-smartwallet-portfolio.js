@@ -6,8 +6,7 @@ import useHubOracle from '~/composables/use-hub-oracle.js';
 import useWeb3SmartWalletWithRelayReward from '~/composables/use-web3-smartwallet-relay-reward.js';
 
 
-//@TODO rename to relay-reward-portfolio
-export default function useWeb3SmartWalletPortfolio({estimationThrottle = undefined} = {}) {
+export default function useWeb3SmartWalletWithRelayRewardForPortfolio({estimationThrottle = undefined} = {}) {
     const {networkGasPrice, setHubOracleProps} = useHubOracle({
         subscribePriceList: true,
     });

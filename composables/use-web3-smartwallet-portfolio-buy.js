@@ -4,7 +4,7 @@ import Big, {BIG_ROUND_DOWN, BIG_ROUND_UP} from '~/assets/big.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {HUB_WITHDRAW_SPEED, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import useHubToken from '~/composables/use-hub-token.js';
-import useWeb3SmartWalletPortfolio from '~/composables/use-web3-smartwallet-portfolio.js';
+import useWeb3SmartWalletWithRelayRewardForPortfolio from '~/composables/use-web3-smartwallet-portfolio.js';
 import useWeb3SmartWalletSwapWithdraw from '~/composables/use-web3-smartwallet-swap-withdraw.js';
 import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
 
@@ -17,7 +17,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         recalculateAmountEstimationLimit,
         buildTxForRelayReward,
         callSmartWallet,
-    } = useWeb3SmartWalletPortfolio({estimationThrottle: 500});
+    } = useWeb3SmartWalletWithRelayRewardForPortfolio({estimationThrottle: 500});
     const {
         tokenDecimals: tokenToSellDecimals,
         tokenContractAddressFixNative: tokenToSellAddress,
