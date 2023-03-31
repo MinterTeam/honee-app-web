@@ -1,6 +1,6 @@
 <script>
 import {claimSpotReward, getSpotInfo} from '~/api/metagarden.js';
-import {pretty} from '~/assets/utils.js';
+import {getCard2MinterUrl, pretty} from '~/assets/utils.js';
 import {getErrorText} from '~/assets/server-error.js';
 import tooltip from 'v-tooltip/src/directives/v-tooltip.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
@@ -48,6 +48,10 @@ export default {
                     : 'Собирать награды можно каждый день. Несобранные награды копятся только за последние 7 дней, их можно забрать одним разом. Начисленные, но не собранные награды 8 и более дней назад недоступны для получения.',
                 trigger: 'click hover focus',
             };
+        },
+        card2MinterUrl() {
+            const MINER_SPOT_COIN_SYMBOL = '_SPOT';
+            return getCard2MinterUrl(this.$store.getters.address, window.location.href, MINER_SPOT_COIN_SYMBOL);
         },
     },
     methods: {
@@ -132,9 +136,22 @@ export default {
             <span class="button__content" v-else>{{ $td('Start mining', 'metagarden.start-mining-button') }}</span>
             <BaseLoader class="button__loader" :isLoading="true"/>
         </button>
-        <nuxt-link :to="$i18nGetPreferredPath('/metagarden/buy-spot')" class="button button--full">
-            {{ $td('Buy miners', 'metagarden.buy-more-button') }}
-        </nuxt-link>
+
+        <div class="u-h--uppercase u-mb-05 u-mt-15">{{ $td('Buy miners', 'metagarden.buy-more-button') }}</div>
+        <div class="u-grid u-grid--smaller-mobile">
+            <div class="u-cell u-cell--1-2">
+                <a :href="card2MinterUrl" class="button button--full button--very-narrow">
+                    <img class="button__icon" src="/img/icon-topup-card.svg" alt="" role="presentation"/>
+                    {{ $td('With card', 'todo') }}
+                </a>
+            </div>
+            <div class="u-cell u-cell--1-2">
+                <nuxt-link :to="$i18nGetPreferredPath('/metagarden/buy-spot')" class="button button--full button--narrow">
+                    <img class="button__icon" src="/img/icon-blockchain.svg" alt="" role="presentation"/>
+                    {{ $td('With crypto', 'todo') }}
+                </nuxt-link>
+            </div>
+        </div>
 
         <div class="form__error u-mt-10" v-if="serverError">
             {{ serverError }}

@@ -74,6 +74,12 @@
 .u-cell--2-3 { width: 66.6666%;}
 .u-cell--4-10 { width: 40%;}
 .u-cell--6-10 { width: 60%;}
+@media (max-width: @breakpoint-small-down) {
+    .u-grid--smaller-mobile {
+        margin-left: -12px;
+        & > .u-cell { padding-left: 12px;}
+    }
+}
 //@media (min-width: @breakpoint-small-up) {
 //    .u-cell--small--1-2 {width: 50%;}
 //}

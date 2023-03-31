@@ -236,8 +236,9 @@ export default {
 
 <template>
     <div>
-        <div class="u-mt-15" v-if="$fetchState.pending">{{ $td('Loading…', 'index.loading') }}</div>
+        <div class="card__content card__content--medium" v-if="$fetchState.pending">{{ $td('Loading…', 'index.loading') }}</div>
         <TxSequenceWithSwapForm
+            class="card__content card__content--medium"
             :coin-to-sell="form.coin"
             :coin-to-buy="sendTokenSymbol"
             :value-to-buy="sendAmount"
@@ -342,5 +343,11 @@ export default {
                 </div>
             </template>
         </TxSequenceWithSwapForm>
+
+        <div class="card__content card__content--medium">
+            <nuxt-link class="button button--full button--ghost-main" :to="$i18nGetPreferredPath('/topup/instant')">
+                {{ $td('+ Instant deposit', 'index.topup-instant') }}
+            </nuxt-link>
+        </div>
     </div>
 </template>
