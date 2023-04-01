@@ -716,9 +716,6 @@ export default {
         'your-account': 'Ваш аккаунт',
         'buy-button-card': 'Картой',
         'buy-button-crypto': 'Криптой',
-        '': '',
-        '': '',
-        '': '',
     },
     'mg-lootbox': {
         'title-inactive': 'Лутбокс еще не готов',
