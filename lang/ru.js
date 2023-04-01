@@ -696,7 +696,7 @@ export default {
     },
     metagarden: {
         'title': 'Майнеры Metagarden',
-        'description': 'Вы можете купить от 0.1 майнера. Стоимость 0.1 майнера составляет $16 или 100 токенов METAGARDEN.',
+        'description': 'Вы можете купить от 0.1 майнера. Стоимость 0.1 майнера составляет $8.',
         'spot-amount-label': 'Количество майнеров',
         'confirm-title': 'Подтвердите покупку',
         'mining-spots': 'Майнеры',
@@ -714,6 +714,11 @@ export default {
         'balance-smart-wallet': 'METAGARDEN на Smart-кошельке',
         'back-mg': 'Назад',
         'your-account': 'Ваш аккаунт',
+        'buy-button-card': 'Картой',
+        'buy-button-crypto': 'Криптой',
+        '': '',
+        '': '',
+        '': '',
     },
     'mg-lootbox': {
         'title-inactive': 'Лутбокс еще не готов',

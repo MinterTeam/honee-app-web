@@ -261,7 +261,7 @@ export default {
                 <div class="form-row">
                     <div class="h-field" :class="{'is-error': $v.form.spotAmount.$error}">
                         <div class="h-field__content">
-                            <div class="h-field__title">{{ $td('Spots amount', 'metagarden.spot-amount-label') }}</div>
+                            <div class="h-field__title">{{ $td('Miners amount', 'metagarden.spot-amount-label') }}</div>
                             <InputMaskedAmount
                                 class="h-field__input h-field__input--medium"
                                 placeholder="0"

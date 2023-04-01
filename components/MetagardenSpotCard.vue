@@ -142,13 +142,13 @@ export default {
             <div class="u-cell u-cell--1-2">
                 <a :href="card2MinterUrl" class="button button--full button--very-narrow">
                     <img class="button__icon" src="/img/icon-topup-card.svg" alt="" role="presentation"/>
-                    {{ $td('With card', 'todo') }}
+                    {{ $td('With card', 'metagarden.buy-button-card') }}
                 </a>
             </div>
             <div class="u-cell u-cell--1-2">
                 <nuxt-link :to="$i18nGetPreferredPath('/metagarden/buy-spot')" class="button button--full button--narrow">
                     <img class="button__icon" src="/img/icon-blockchain.svg" alt="" role="presentation"/>
-                    {{ $td('With crypto', 'todo') }}
+                    {{ $td('With crypto', 'metagarden.buy-button-crypto') }}
                 </nuxt-link>
             </div>
         </div>
