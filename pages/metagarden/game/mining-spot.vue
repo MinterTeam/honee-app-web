@@ -1,28 +1,14 @@
 <script>
-import MetagardenGame from '~/components/MetagardenGame.vue';
-import MetagardenSpotCard from '~/components/MetagardenSpotCard.vue';
-import MetagardenSwHoldCard from '~/components/MetagardenSwHoldCard.vue';
-
 export default {
-    layout: 'metagarden',
-    components: {
-        MetagardenGame,
-        MetagardenSpotCard,
-        MetagardenSwHoldCard,
-    },
-    data() {
-        return {
-        };
-    },
-    computed: {
+    layout: 'splash',
+    asyncData({redirect, app}) {
+        return redirect(app.i18nGetPreferredPath('/metagarden/game/miner'));
     },
 };
 </script>
 
 <template>
-    <MetagardenGame>
-        <MetagardenSpotCard :hide-head="true"/>
-
-        <MetagardenSwHoldCard class="u-mt-10"/>
-    </MetagardenGame>
+    <div class="u-section u-container u-container--small">
+        Loading…
+    </div>
 </template>

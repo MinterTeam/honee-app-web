@@ -3,7 +3,7 @@ import metagardenGames from '~/data/metagarden-games.js';
 import CardMetagardenGame from '~/components/CardMetagardenGame.vue';
 
 const recentSlugList = [
-    'mining-spot',
+    'miner',
     'magic-box',
 ];
 
