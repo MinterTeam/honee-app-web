@@ -34,7 +34,7 @@ export default {
 
 <template>
     <div class="u-section u-container u-container--mg-cards-4">
-        <div class="button-group button-group--center">
+        <div class="button-group button-group--center u-mb-25">
             <a class="wallet__topup-button link link--main link--opacity" :href="card2MinterUrl">
                 <InlineSvg class="button__icon" src="/img/icon-topup-card.svg" width="24" height="24" alt="" role="presentation"/>
                 {{ $td('Topup with cards', 'deposit.title-cards') }}

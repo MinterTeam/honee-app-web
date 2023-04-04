@@ -228,6 +228,9 @@ export default {
         'title-minter': 'Minter Network',
         'description-minter': 'Переведите любой токен из Minter на этот адрес.',
         'minter-address': 'Адрес Minter кошелька',
+        'title-cards': 'Пополнить картой',
+        'title-crypto': 'Пополнить криптой',
+        'title-buy-more': 'Купить токены',
     },
     'topup-network': {
         'title': 'Пополнить через',
