@@ -2,7 +2,6 @@
 import AddressAssets from '~/components/AddressAssets.vue';
 import MetagardenSpotCard from '~/components/MetagardenSpotCard.vue';
 import MetagardenSwHoldCard from '~/components/MetagardenSwHoldCard.vue';
-import MetagardenLootboxCard from '~/components/MetagardenLootboxCard.vue';
 
 export default {
     layout: 'metagarden',
@@ -10,7 +9,6 @@ export default {
         AddressAssets,
         MetagardenSpotCard,
         MetagardenSwHoldCard,
-        MetagardenLootboxCard,
     },
     fetch() {
         this.$store.commit('SET_METAGARDEN');
@@ -38,8 +36,6 @@ export default {
 <template>
     <div>
         <AddressAssets class="card--metagarden u-mb-10"/>
-
-        <MetagardenLootboxCard class="u-mt-10 u-mb-10"/>
 
         <MetagardenSpotCard/>
 

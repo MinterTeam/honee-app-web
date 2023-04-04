@@ -423,18 +423,20 @@
 .wallet__balance {margin-right: auto;}
 .wallet__balance-value {font-size: 30px; line-height: 36px; font-weight: 700; font-feature-settings: "zero" on;}
 .wallet__balance-buy-link {}
-.wallet__action-button {}
+.wallet__action-button {
+    padding: 40px 0 0; min-width: 72px; position: relative;
+    &, &:hover, &:active, &:focus {background: none; color: var(--color-main);}
+    .button__icon {margin: 0; position: absolute; left: 50%; top: ((40px - 24px) / 2); margin-left: -12px;}
+}
+.wallet__topup-button {
+    padding: 48px 0 0; font-weight: 700; position: relative; width: 96px; text-align: center;
+    .button__icon {margin: 0; position: absolute; left: 50%; top: ((40px - 24px) / 2); margin-left: -12px; fill: #fff;}
+    &:before {content: ''; position: absolute; top: 0; left: 50%; margin-left: -20px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid #fff;}
+}
 .wallet__controls {display: flex; flex-direction: column; align-items: center;}
 @media (max-width: @breakpoint-small-down) {
     .wallet__balance {width: 100%;}
 }
-//@media (max-width: @breakpoint-medium-down) {
-    .wallet__action-button {
-        padding: 40px 0 0; min-width: 72px; position: relative;
-        &, &:hover, &:active, &:focus {background: none; color: var(--color-main);}
-        .button__icon {margin: 0; position: absolute; left: 50%; top: ((40px - 24px) / 2); margin-left: -12px;}
-    }
-//}
 @media (min-width: @breakpoint-medium-up) {
     @margin: 8px;
     //.wallet__balance-wrap {margin-top: (8px - @margin); margin-inline: (-@margin / 2);}
@@ -442,6 +444,7 @@
     .wallet__balance-value {font-size: 40px; line-height: 48px;}
     html:not(.metagarden-layout) .wallet__balance-divider {display: none;}
     .wallet__action-button {min-width: 96px;}
+    .wallet__topup-button {width: auto;}
 }
 @media (min-width: @breakpoint-large-up) {
     .wallet__controls {flex-direction: row; justify-content: space-between;}

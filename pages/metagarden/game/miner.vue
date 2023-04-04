@@ -2,6 +2,7 @@
 import MetagardenGame from '~/components/MetagardenGame.vue';
 import MetagardenSpotCard from '~/components/MetagardenSpotCard.vue';
 import MetagardenSwHoldCard from '~/components/MetagardenSwHoldCard.vue';
+import MetagardenLootboxCard from '~/components/MetagardenLootboxCard.vue';
 
 export default {
     layout: 'metagarden',
@@ -9,6 +10,7 @@ export default {
         MetagardenGame,
         MetagardenSpotCard,
         MetagardenSwHoldCard,
+        MetagardenLootboxCard,
     },
     data() {
         return {
@@ -21,7 +23,9 @@ export default {
 
 <template>
     <MetagardenGame>
-        <MetagardenSpotCard :hide-head="true"/>
+        <MetagardenLootboxCard/>
+
+        <MetagardenSpotCard class="u-mt-10" :hide-head="true"/>
 
         <MetagardenSwHoldCard class="u-mt-10"/>
     </MetagardenGame>
