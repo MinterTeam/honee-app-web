@@ -1,5 +1,5 @@
 import { ref, reactive, computed, watch, set} from 'vue';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {BSC_CHAIN_ID, ETHEREUM_CHAIN_ID, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from '~/assets/variables.js';
 import {arrayToMap} from '~/assets/utils/collection.js';
 import {wait} from '~/assets/utils/wait.js';

@@ -3,7 +3,7 @@ import {watchDebounced} from '@vueuse/core';
 import {fromErcDecimals, toErcDecimals, buildDepositWithApproveTxList} from '~/api/web3.js';
 import {buildSwapWithApproveTxList as buildSwapWithApproveTxListOneInch, getQuoteForSwap} from '~/api/swap-1inch.js';
 import {buildSwapWithApproveTxList as buildSwapWithApproveTxListHub} from '~/api/swap-hub-deposit-proxy.js';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {getErrorText} from '~/assets/server-error.js';
 import useWeb3SmartWalletWithRelayReward from '~/composables/use-web3-smartwallet-relay-reward.js';
 import useHubToken, {fixNativeContractAddress} from '~/composables/use-hub-token.js';

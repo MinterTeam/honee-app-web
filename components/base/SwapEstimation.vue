@@ -5,7 +5,7 @@ import required from 'vuelidate/src/validators/required.js';
 import minLength from 'vuelidate/src/validators/minLength.js';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import useEstimateSwap from '~/composables/use-estimate-swap.js';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {pretty, decreasePrecisionSignificant} from '~/assets/utils.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 
@@ -296,9 +296,10 @@ export default {
 };
 
 /**
- * @param {boolean} isSelling
- * @param {boolean} isPool
- * @param {boolean} [isSellAll]
+ * @param {object} options
+ * @param {boolean} options.isSelling
+ * @param {boolean} options.isPool
+ * @param {boolean} [options.isSellAll]
  * @return {TX_TYPE}
  */
 export function getTxType({isPool, isSelling, isSellAll}) {

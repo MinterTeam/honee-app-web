@@ -4,7 +4,7 @@ import {toErcDecimals, fromErcDecimals, getFeeAmount} from '~/api/web3.js';
 import {ParaSwapSwapSide} from '~/api/swap-paraswap-models.d.ts';
 // import {buildTxForSwap as buildTxForParaSwap, getEstimationLimit as getParaSwapEstimationLimit} from '~/api/swap-paraswap.js';
 import {buildTxForSwap as buildTxForZeroExSwap, getEstimationLimit as getZeroExEstimationLimit} from '~/api/swap-0x.js';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {SMART_WALLET_RELAY_BROADCASTER_ADDRESS, NATIVE_COIN_ADDRESS, HUB_CHAIN_BY_ID, BSC_CHAIN_ID} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {wait} from '~/assets/utils/wait.js';

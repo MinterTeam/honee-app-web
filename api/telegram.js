@@ -1,12 +1,13 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
+import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 import addEcdsaAuthInterceptor, {signRequest, authHeaderKeyGenerator} from '~/assets/axios-ecdsa-auth.js';
-import {TELEGRAM_AUTH_API_URL, TELEGRAM_LEGACY_AUTH_API_URL} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
+import {TELEGRAM_AUTH_API_URL, TELEGRAM_LEGACY_AUTH_API_URL} from "~/assets/variables.js";
 
 const instance = axios.create({
     baseURL: TELEGRAM_AUTH_API_URL,
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, {
+    adapter: cacheAdapterEnhancer(getDefaultAdapter(), {
         enabledByDefault: false,
         cacheKeyGenerator: authHeaderKeyGenerator,
     }),

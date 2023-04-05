@@ -1,8 +1,9 @@
 import axios from 'axios';
 import {Cache, cacheAdapterEnhancer} from 'axios-extensions';
+import Big from 'minterjs-util/src/big.js';
 import {ParaSwapSwapSide} from '~/api/swap-paraswap-models';
 import {fromErcDecimals, getAllowance, buildApproveTx} from '~/api/web3.js';
-import Big from '~/assets/big.js';
+import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 import {getMaxEstimationLimit, getMinEstimationLimit} from '~/assets/utils/swap-limit.js';
 // import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {PARASWAP_API_URL, NETWORK, MAINNET, SMART_WALLET_RELAY_BROADCASTER_ADDRESS, NATIVE_COIN_ADDRESS} from "~/assets/variables.js";
@@ -10,7 +11,7 @@ import {PARASWAP_API_URL, NETWORK, MAINNET, SMART_WALLET_RELAY_BROADCASTER_ADDRE
 
 const instance = axios.create({
     baseURL: PARASWAP_API_URL,
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
+    adapter: cacheAdapterEnhancer(getDefaultAdapter(), { enabledByDefault: false}),
 });
 // addToCamelInterceptor(instance);
 

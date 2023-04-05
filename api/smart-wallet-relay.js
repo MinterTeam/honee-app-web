@@ -1,6 +1,7 @@
 import axios from 'axios';
 // import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
 import {HUB_CHAIN_BY_ID, SMART_WALLET_RELAY_API_URL} from "~/assets/variables.js";
+import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {createCancelableSignal} from '~/assets/utils/cancelable-signal.js';
 import CancelError from '~/assets/utils/error-cancel.js';
@@ -8,7 +9,7 @@ import {wait} from '~/assets/utils/wait.js';
 
 const instance = axios.create({
     baseURL: SMART_WALLET_RELAY_API_URL,
-    // adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
+    // adapter: cacheAdapterEnhancer(getDefaultAdapter(), { enabledByDefault: false}),
 });
 addToCamelInterceptor(instance);
 

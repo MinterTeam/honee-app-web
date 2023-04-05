@@ -1,7 +1,7 @@
 import { ChainId, Token, WETH as WETH_TOKEN_DATA, Fetcher, Route, Trade, TokenAmount, TradeType } from '@uniswap/sdk';
 import IUniswapV2Router from '@uniswap/v2-periphery/build/IUniswapV2Router02.json';
 import {CloudflareProvider, JsonRpcProvider} from '@ethersproject/providers';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {ETHEREUM_API_URL, ETHEREUM_CHAIN_ID, MAINNET, NETWORK} from '~/assets/variables.js';
 import {web3Abi, toErcDecimals} from '~/api/web3.js';
 

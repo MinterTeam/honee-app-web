@@ -3,7 +3,7 @@ import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required';
 import minLength from 'vuelidate/src/validators/minLength';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {pretty} from '~/assets/utils.js';
 import SwapEstimation from '~/components/base/SwapEstimation.vue';
 import TxSequenceForm from '~/components/base/TxSequenceForm.vue';

@@ -1,10 +1,11 @@
 import axios from 'axios';
 import {Cache, cacheAdapterEnhancer} from 'axios-extensions';
 import {ONE_INCH_API_URL, NETWORK, MAINNET, NATIVE_COIN_ADDRESS} from "~/assets/variables.js";
-import preventConcurrencyAdapter from '~/assets/axios-prevent-concurrency.js';
+import preventConcurrencyAdapter from 'axios-prevent-concurrency';
 import {fromErcDecimals, addApproveTx} from '~/api/web3.js';
+import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 
-const adapter = (($ = axios.defaults.adapter) => {
+const adapter = (($ = getDefaultAdapter()) => {
     $ = cacheAdapterEnhancer($, { enabledByDefault: false});
     $ = preventConcurrencyAdapter($);
     return $;

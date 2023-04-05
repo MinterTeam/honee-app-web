@@ -1,8 +1,3 @@
-/**
- * @author Kuitos
- * @homepage https://github.com/kuitos/
- * @since 2017-10-12
- */
 import { AxiosInstance } from 'axios';
 declare module 'axios' {
     interface AxiosRequestConfig {

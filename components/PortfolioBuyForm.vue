@@ -5,7 +5,7 @@ import required from 'vuelidate/src/validators/required.js';
 import minLength from 'vuelidate/src/validators/minLength.js';
 import minValue from 'vuelidate/src/validators/minValue.js';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import Big, {BIG_ROUND_DOWN, BIG_ROUND_UP} from '~/assets/big.js';
+import Big, {BIG_ROUND_DOWN, BIG_ROUND_UP} from 'minterjs-util/src/big.js';
 import {pretty} from '~/assets/utils.js';
 import {wait} from '~/assets/utils/wait.js';
 import {HUB_CHAIN_DATA, HUB_NETWORK} from '~/assets/variables.js';

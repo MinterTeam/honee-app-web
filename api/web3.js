@@ -1,4 +1,4 @@
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import Eth from 'web3-eth';
 import Utils from 'web3-utils';
 import Contract from 'web3-eth-contract';

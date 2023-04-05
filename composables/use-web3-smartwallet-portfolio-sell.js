@@ -1,6 +1,6 @@
 import {ref, reactive, computed, watch, set} from 'vue';
 import {watchDebounced} from '@vueuse/core';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import useWeb3SmartWalletSwapWithdraw from '~/composables/use-web3-smartwallet-swap-withdraw.js';
 
 

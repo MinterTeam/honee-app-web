@@ -1,12 +1,13 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
 import {METAGARDEN_API_URL, METAGARDEN_ADMIN_API_KEY, NETWORK, MAINNET} from "~/assets/variables.js";
+import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import addEcdsaAuthInterceptor, {authHeaderKeyGenerator} from '~/assets/axios-ecdsa-auth.js';
 
 const instance = axios.create({
     baseURL: METAGARDEN_API_URL,
-    // adapter: cacheAdapterEnhancer(axios.defaults.adapter, {
+    // adapter: cacheAdapterEnhancer(getDefaultAdapter(), {
     //     enabledByDefault: false,
     //     cacheKeyGenerator: authHeaderKeyGenerator,
     // }),

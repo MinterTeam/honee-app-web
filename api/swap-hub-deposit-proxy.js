@@ -2,10 +2,11 @@ import axios from 'axios';
 import {Cache, cacheAdapterEnhancer} from 'axios-extensions';
 import {HUB_DEPOSIT_PROXY_API_URL, HUB_DEPOSIT_PROXY_ETHEREUM_CONTRACT_ADDRESS, HUB_DEPOSIT_PROXY_BSC_CONTRACT_ADDRESS, NATIVE_COIN_ADDRESS, HUB_CHAIN_BY_ID} from "~/assets/variables.js";
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
-import preventConcurrencyAdapter from '~/assets/axios-prevent-concurrency.js';
+import preventConcurrencyAdapter from 'axios-prevent-concurrency';
 import {buildTxForSwap as buildOneInchTx, prepareProtocolsCached} from '~/api/swap-1inch.js';
 import {AbiEncoder, addApproveTx, getHubDestinationAddressBytes, getHubDestinationChainBytes} from '~/api/web3.js';
 import hubProxyAbi from '~/assets/abi-hub-proxy.js';
+import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 
 const HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS_LIST = {
     1: HUB_DEPOSIT_PROXY_ETHEREUM_CONTRACT_ADDRESS,
@@ -13,7 +14,7 @@ const HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS_LIST = {
 };
 
 
-const adapter = (($ = axios.defaults.adapter) => {
+const adapter = (($ = getDefaultAdapter()) => {
     $ = cacheAdapterEnhancer($, { enabledByDefault: false});
     $ = preventConcurrencyAdapter($);
     return $;

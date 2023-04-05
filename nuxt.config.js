@@ -289,6 +289,7 @@ module.exports = {
             'camelcase-keys',
             'web3-core-method',
             // 'nuxt-i18n/src',
+            'axios-prevent-concurrency/src',
             'v-file-input/src',
             'clipbrd/src',
             'pretty-num/src',

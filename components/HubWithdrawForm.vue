@@ -1,5 +1,5 @@
 <script>
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required.js';
 import minValue from 'vuelidate/src/validators/minValue.js';

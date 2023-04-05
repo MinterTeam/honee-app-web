@@ -1,5 +1,5 @@
 <script>
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {isCoinId} from 'minter-js-sdk/src/utils.js';
 import stripZeros from 'pretty-num/src/strip-zeros.js';
 import checkEmpty from '~/assets/v-check-empty';

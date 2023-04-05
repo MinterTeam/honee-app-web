@@ -5,7 +5,7 @@ import minLength from 'vuelidate/src/validators/minLength';
 import maxLength from 'vuelidate/src/validators/maxLength';
 import minValue from 'vuelidate/src/validators/minValue.js';
 import maxValue from 'vuelidate/src/validators/maxValue.js';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {buildTransferTx, toErcDecimals} from '~/api/web3.js';
 import {pretty} from '~/assets/utils.js';
 import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA} from '~/assets/variables.js';

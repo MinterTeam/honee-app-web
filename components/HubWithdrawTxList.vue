@@ -3,7 +3,7 @@ import {VueNowMixinFactory} from 'vue-now';
 import {convertFromPip} from 'minterjs-util/src/converter.js';
 import {getTransferFee, subscribeTransfer} from '~/api/hub.js';
 import {getChainIdByHubNetwork} from '~/api/web3.js';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {getExplorerTxUrl, getEvmTxUrl, getTimeDistance, getTimeStamp as getTime, shortHashFilter, pretty, isHubTransferFinished} from '~/assets/utils.js';
 import {HUB_CHAIN_DATA, HUB_TRANSFER_STATUS as WITHDRAW_STATUS} from '~/assets/variables.js';
 import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';

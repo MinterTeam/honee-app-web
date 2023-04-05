@@ -1,5 +1,5 @@
 import { ref, reactive, computed, watch, set } from 'vue';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {FeePrice} from 'minterjs-util/src/fee.js';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import decorateTxParams from 'minter-js-sdk/src/tx-decorator/index.js';

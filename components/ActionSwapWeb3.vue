@@ -5,7 +5,7 @@ import minLength from 'vuelidate/src/validators/minLength';
 import maxLength from 'vuelidate/src/validators/maxLength';
 import minValue from 'vuelidate/src/validators/minValue.js';
 import maxValue from 'vuelidate/src/validators/maxValue.js';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {getTokenSymbolForNetwork} from '~/api/hub.js';
 import {pretty} from '~/assets/utils.js';
 import {wait} from '~/assets/utils/wait.js';

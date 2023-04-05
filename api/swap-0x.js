@@ -4,7 +4,8 @@ import {NATIVE_COIN_ADDRESS, ZERO_X_ETHEREUM_API_URL, ZERO_X_BSC_API_URL} from "
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {getMaxEstimationLimit, getMinEstimationLimit} from '~/assets/utils/swap-limit.js';
 import {buildApproveTx, getAllowance} from '~/api/web3.js';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
+import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 
 const ZERO_X_API_URL_LIST = {
     1: ZERO_X_ETHEREUM_API_URL,
@@ -14,7 +15,7 @@ const ZERO_X_API_URL_LIST = {
 
 const instance = axios.create({
     // baseURL: ZERO_X_API_URL,
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
+    adapter: cacheAdapterEnhancer(getDefaultAdapter(), { enabledByDefault: false}),
 });
 // addToCamelInterceptor(instance);
 

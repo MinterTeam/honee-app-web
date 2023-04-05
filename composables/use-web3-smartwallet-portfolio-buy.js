@@ -1,6 +1,6 @@
 import {ref, reactive, computed, watch, watchEffect, toRefs, set} from 'vue';
 import {watchDebounced} from '@vueuse/core';
-import Big, {BIG_ROUND_DOWN, BIG_ROUND_UP} from '~/assets/big.js';
+import Big, {BIG_ROUND_DOWN, BIG_ROUND_UP} from 'minterjs-util/src/big.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {HUB_WITHDRAW_SPEED, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import useHubToken from '~/composables/use-hub-token.js';

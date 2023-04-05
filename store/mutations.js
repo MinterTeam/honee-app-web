@@ -1,4 +1,4 @@
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 
 export default {
     ADD_AUTH_ADVANCED: (state, mnemonic) => {

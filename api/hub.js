@@ -5,14 +5,15 @@ import stripZeros from 'pretty-num/src/strip-zeros.js';
 import {isValidAddress as isValidMinterAddress} from 'minterjs-util';
 import {isValidAddress as isValidEthAddress} from 'ethereumjs-util';
 import {getCoinList, getTransaction} from '~/api/explorer.js';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {HUB_API_URL, HUB_TRANSFER_STATUS, HUB_CHAIN_ID, HUB_NETWORK, NETWORK, MAINNET, BASE_COIN, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_COIN_DATA, NATIVE_COIN_ADDRESS, HUB_BUY_STAGE as LOADING_STAGE} from "~/assets/variables.js";
+import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {isHubTransferFinished} from '~/assets/utils.js';
 
 const instance = axios.create({
     baseURL: HUB_API_URL,
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
+    adapter: cacheAdapterEnhancer(getDefaultAdapter(), { enabledByDefault: false}),
 });
 addToCamelInterceptor(instance);
 

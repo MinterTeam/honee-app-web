@@ -1,4 +1,4 @@
-import Big, {BIG_ROUND_DOWN, BIG_ROUND_UP} from '~/assets/big.js';
+import Big, {BIG_ROUND_DOWN, BIG_ROUND_UP} from 'minterjs-util/src/big.js';
 
 /**
  * Get max to spend amount

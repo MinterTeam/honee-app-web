@@ -1,5 +1,5 @@
 import { reactive, computed, watch } from 'vue';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {BSC_CHAIN_ID, ETHEREUM_CHAIN_ID} from '~/assets/variables.js';
 import {wait} from '~/assets/utils/wait.js';
 import CancelError from '~/assets/utils/error-cancel.js';

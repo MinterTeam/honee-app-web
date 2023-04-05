@@ -10,7 +10,7 @@ import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {web3Utils, AbiEncoder, toErcDecimals, getHubDestinationAddressBytes, getHubDestinationChainBytes} from '~/api/web3.js';
 import {isValidAmount} from '~/assets/utils/validators.js';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import initRampPurchase, {fiatRampPurchaseNetwork} from '~/assets/fiat-ramp.js';
 import {pretty, prettyPrecise, prettyRound, prettyExact, decreasePrecisionSignificant, getExplorerTxUrl, getEvmTxUrl, shortHashFilter} from '~/assets/utils.js';
 import erc20ABI from '~/assets/abi-erc20.js';
