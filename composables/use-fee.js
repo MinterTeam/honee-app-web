@@ -33,7 +33,7 @@ import CancelError from '~/assets/utils/error-cancel.js';
  */
 
 /**
- * @return {{fee: ComputedRef<FeeData>, feeProps: feeProps, setFeeProps: setProps, refineByIndex: function(index: number): Promise<FeeItemData>}}
+ * @return {{fee: ComputedRef<FeeData>, feeProps: feeProps, setFeeProps: setProps, refineByIndex: (index: number) => Promise<FeeItemData>}}
  */
 export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinToSpend, isOffline}*/) {
     const idPrimary = Math.random().toString();
@@ -65,10 +65,14 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     const coinMap = ref({});
     const state = reactive({
         resultListSource: [],
+        /** @type {string|number} */
         priceCoinCommission: 0,
+        /** @type {string|number} */
         baseCoinCommission: 0,
         isBaseCoinEnough: true,
+        /** @type {string|number} */
         gasCoin: BASE_COIN,
+        /** @type {string|number} */
         commission: '',
         feeError: '',
         /** @type CommissionPriceData|null */
@@ -375,7 +379,7 @@ async function estimateFeeWithFallback(txParams, fallbackToCoinToSpend, baseCoin
     const secondaryCoinToCheck = getSecondaryCoinToCheck(txParams, fallbackToCoinToSpend);
 
     const isFallbackMode = !isGasCoinDefined;
-    const hasBaseCoinAmount = baseCoinAmount > 0;
+    const hasBaseCoinAmount = Number(baseCoinAmount) > 0;
     const skipFallbackToBaseCoin = isFallbackMode && !hasBaseCoinAmount && secondaryCoinToCheck;
 
     let feeData;

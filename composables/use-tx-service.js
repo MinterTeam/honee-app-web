@@ -207,7 +207,7 @@ function estimateTxGas({to, value, data}) {
 }
 
 /**
- * @typedef {Partial<TxParams> & {extra: object}} PrepareTxParamsResult
+ * @typedef {Partial<TxParams> & {extra?: {fee?: FeeData} & object}} PrepareTxParamsResult
  */
 /**
  * @typedef {function(PostTxResponse?, PrepareTxParamsResult?): (Promise<PrepareTxParamsResult>|PrepareTxParamsResult)} PrepareTxParams

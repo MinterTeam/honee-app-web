@@ -9,8 +9,7 @@ import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import {pretty, getDateAmerican, getTimeDistance} from '~/assets/utils.js';
-import {getFarmProgramWithPoolData, getAmountFromPool} from '~/api/farm.js';
-import {getBlock} from '~/api/explorer.js';
+import {prepareSpendMaxOrAfterSwap} from '~/assets/utils/sequence.js';
 import SwapEstimation from '~/components/base/SwapEstimation.vue';
 import TxSequenceWithSwapForm from '~/components/base/TxSequenceWithSwapForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
@@ -40,10 +39,10 @@ export default {
     METAGARDEN_SYMBOL,
     USD_SYMBOL,
     components: {
-        SwapEstimation,
+        // SwapEstimation,
         TxSequenceWithSwapForm,
         BaseAmountEstimation,
-        InputMaskedAmount,
+        // InputMaskedAmount,
         FieldCombined,
     },
     directives: {
@@ -74,11 +73,14 @@ export default {
 
         return {
             form: {
+                // coin to spend
                 coin: '',
-                spotAmount: undefined,
+                // spend from balance
+                spendAmount: undefined,
                 // coin: availableSpots > 0 ? METAGARDEN_SYMBOL : '',
                 // spotAmount: availableSpots || 1,
             },
+            isUseMax: false,
             estimation: 0,
             estimationSpendForMetagarden: 0,
             estimationSpendForUsd: 0,
@@ -94,22 +96,26 @@ export default {
                 required,
                 minLength: minLength(3),
             },
-            spotAmount: {
+            spendAmount: {
                 required,
-                minValue: minValue(SPOT_MIN_AMOUNT),
+                maxValue: (value) => maxValue(this.selectedBalance)(value),
             },
         };
 
         return {
             form,
             estimation: {
-                minValue: (value) => this.isModeBuy ? value > 0 : true,
-                maxValue: (value) => this.isModeBuy ? maxValue(this.selectedBalance)(value) : true,
+                minValue: (value) => this.isModeSwap ? value > 0 : true,
+                // maxValue: (value) => this.isModeSwap ? maxValue(this.selectedBalance)(value) : true,
                 finished: (value) => !this.isEstimationLoading,
             },
-            sendAmount: {
-                required: (value) => value > 0,
+            spotAmount: {
+                required,
+                minValue: minValue(SPOT_MIN_AMOUNT),
             },
+            // sendAmount: {
+            //     required: (value) => value > 0,
+            // },
         };
     },
     computed: {
@@ -130,7 +136,7 @@ export default {
                 return MODE.BUY_USD;
             }
         },
-        isModeBuy() {
+        isModeSwap() {
             return this.currentMode === MODE.BUY_METAGARDEN || this.currentMode === MODE.BUY_USD;
         },
         // coin in 'SEND' tx
@@ -143,25 +149,19 @@ export default {
         },
         // value in 'SEND' tx
         sendAmount() {
-            if (this.currentMode === MODE.SEND_METAGARDEN || this.currentMode === MODE.BUY_METAGARDEN) {
-                return this.spotsPriceMetagarden;
-            } else {
-                return this.spotsPriceUsd;
-            }
-        },
-        // spend from balance
-        spendAmount() {
-            if (this.isModeBuy) {
+            if (this.isModeSwap) {
                 return this.estimation;
             } else {
-                return this.currentMode === MODE.SEND_METAGARDEN ? this.spotsPriceMetagarden : this.spotsPriceUsd;
+                return this.form.spendAmount;
             }
         },
-        spotsPriceMetagarden() {
-            return this.form.spotAmount * SPOT_PRICE_METAGARDEN;
-        },
-        spotsPriceUsd() {
-            return this.form.spotAmount * SPOT_PRICE_USD;
+        // receive spots
+        spotAmount() {
+            if (this.currentMode === MODE.SEND_METAGARDEN || this.currentMode === MODE.BUY_METAGARDEN) {
+                return this.sendAmount / SPOT_PRICE_METAGARDEN;
+            } else {
+                return this.sendAmount / SPOT_PRICE_USD;
+            }
         },
         selectedBalance() {
             return this.$store.getters.getBalanceAmount(this.form.coin);
@@ -179,6 +179,8 @@ export default {
 
 
         sequenceParams() {
+            const prepare = prepareSpendMaxOrAfterSwap(this.isUseMax, this.isModeSwap, () => this.$store.getters.getBalanceItem(this.form.coin));
+
             const sendTxParams = {
                 data: {
                     value: this.sendAmount,
@@ -187,9 +189,11 @@ export default {
                 },
                 type: TX_TYPE.SEND,
             };
+
             return {
                 // refineFee is not needed if no 'prepare'
-                prepareGasCoinPosition: 'skip',
+                prepareGasCoinPosition: prepare ? 'start' : 'skip',
+                prepare,
                 txParams: sendTxParams,
                 feeTxParams: {
                     ...sendTxParams,
@@ -202,9 +206,9 @@ export default {
         },
     },
     watch: {
-        'form.spotAmount': {
+        'form.spendAmount': {
             handler() {
-                if (!(this.form.spotAmount > 0)) {
+                if (!(this.form.spendAmount > 0)) {
                     this.estimation = 0;
                 }
             },
@@ -224,16 +228,10 @@ export default {
                 locale: this.$i18n.locale,
             });
         },
-        fetchLatestBlock() {
-            return getBlock('latest')
-                .then((block) => {
-                    this.latestBlockHeight = block.height;
-                });
-        },
         clearForm() {
             // this.form.value = '';
             this.form.coin = '';
-            this.form.spotAmount = '';
+            this.form.spendAmount = '';
             this.$v.$reset();
         },
     },
@@ -247,23 +245,45 @@ export default {
             class="card__content card__content--medium"
             :coin-to-sell="form.coin"
             :coin-to-buy="sendTokenSymbol"
-            :value-to-buy="sendAmount"
+            :value-to-sell="form.spendAmount"
+            :is-use-max="isUseMax"
             :sequence-params="sequenceParams"
             :v$sequence-params="$v"
-            :before-post-sequence="fetchLatestBlock"
             @update:estimation="estimation = $event"
             @update:fetch-state="estimationFetchState = $event"
             @clear-form="clearForm()"
             @success="$emit('success')"
             @success-modal-close="$emit('success-modal-close')"
         >
+            <!--:value-to-buy="sendAmount"-->
             <template v-slot:default="{fee, estimation}">
+                <div class="form-row">
+                    <FieldCombined
+                        :coin.sync="form.coin"
+                        :$coin="$v.form.coin"
+                        :coinList="$store.state.balance"
+                        :fallbackToFullList="false"
+                        :amount.sync="form.spendAmount"
+                        :$amount="$v.form.spendAmount"
+                        :useBalanceForMaxValue="true"
+                        :fee="fee.resultList[0]"
+                        :label="$td('Coin to spend', 'form.you-spend')"
+                        @update:is-use-max="isUseMax = $event"
+                    />
+                    <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
+                    <span class="form-field__error" v-else-if="$v.form.coin.$dirty && !$v.form.coin.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
+                    <span class="form-field__error" v-else-if="$v.estimation.$dirty && !$v.estimation.minValue">{{ $td('Can\'t swap', 'form.swap-error') }}</span>
+                    <span class="form-field__error" v-else-if="$v.form.spendAmount.$dirty && !$v.form.spendAmount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
+                    <span class="form-field__error" v-else-if="$v.form.spendAmount.$dirty && !$v.form.spendAmount.maxValue">{{ $td('Not enough coin balance', 'form.spots-error-balance') }}</span>
+                </div>
+
+                <!--
                 <div class="form-row">
                     <div class="h-field" :class="{'is-error': $v.form.spotAmount.$error}">
                         <div class="h-field__content">
                             <div class="h-field__title">{{ $td('Miners amount', 'metagarden.spot-amount-label') }}</div>
                             <InputMaskedAmount
-                                class="h-field__input h-field__input--medium"
+                                class="h-field__input h-field__input&#45;&#45;medium"
                                 placeholder="0"
                                 :scale="undefined"
                                 v-model="form.spotAmount"
@@ -274,37 +294,24 @@ export default {
                     <span class="form-field__error" v-if="$v.form.spotAmount.$dirty && !$v.form.spotAmount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.spotAmount.$dirty && !$v.form.spotAmount.minValue">{{ $td('Minimum', 'form.amount-error-min') }} {{ $options.SPOT_MIN_AMOUNT }}</span>
                 </div>
+                -->
 
-                <div class="form-row">
-                    <FieldCombined
-                        :coin.sync="form.coin"
-                        :$coin="$v.form.coin"
-                        :coinList="$store.state.balance"
-                        :fallbackToFullList="false"
-                        :amount="spendAmount"
-                        :is-estimation="true"
-                        :isLoading="isEstimationLoading"
-                        :label="$td('Coin to spend', 'form.you-spend')"
-                    />
-                    <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
-                    <span class="form-field__error" v-else-if="$v.form.coin.$dirty && !$v.form.coin.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
-                    <span class="form-field__error" v-else-if="$v.estimation.$dirty && !$v.estimation.minValue">{{ $td('Can\'t swap', 'form.swap-error') }}</span>
-                    <span class="form-field__error" v-else-if="!$v.estimation.maxValue">{{ $td('Not enough coin balance to buy spots', 'form.spots-error-balance') }}</span>
+                <div class="information form-row">
+                    <h3 class="information__title">{{ $td('You will buy', 'todo') }}</h3>
+                    <BaseAmountEstimation :coin="'Miners'" :amount="spotAmount || 0" :format="isModeSwap ? 'approx' : undefined" :is-loading="isEstimationLoading"/>
+
+                    <div class="u-text-warn u-fw-700 u-text-small u-mt-05 u-text-right" v-if="$v.spotAmount.$error">
+                        {{ $td('Minimum', 'form.amount-error-min') }} {{ $options.SPOT_MIN_AMOUNT }}
+                    </div>
                 </div>
 
-                <!--<div class="information form-row">-->
-                <!--    <template v-if="!isSelectedLockCoin">-->
-                <!--        <h3 class="information__title">{{ $td('You will buy and stake approximately', 'stake-by-lock.estimation-buy') }}</h3>-->
-                <!--        <BaseAmountEstimation :coin="lockTokenSymbol" :amount="estimation || 0" format="approx"/>-->
-                <!--    </template>-->
-                <!--</div>-->
-
+                <!--
                 <SwapEstimation
                     class="u-text-medium form-row u-hidden"
                     ref="estimationMetagarden"
                     id-prevent-concurrency="swapFormMetagarden"
                     :coin-to-sell="form.coin"
-                    :coin-to-buy="isModeBuy ? $options.METAGARDEN_SYMBOL : ''"
+                    :coin-to-buy="isModeSwap ? $options.METAGARDEN_SYMBOL : ''"
                     :value-to-buy="spotsPriceMetagarden"
                     :is-use-max="false"
                     :fee="null"
@@ -316,13 +323,14 @@ export default {
                     ref="estimationUsd"
                     id-prevent-concurrency="swapFormUsd"
                     :coin-to-sell="form.coin"
-                    :coin-to-buy="isModeBuy ? $options.USD_SYMBOL : ''"
+                    :coin-to-buy="isModeSwap ? $options.USD_SYMBOL : ''"
                     :value-to-buy="spotsPriceUsd"
                     :is-use-max="false"
                     :fee="null"
                     @update:estimation="estimationSpendForUsd = $event"
                     @update:fetch-state="estimationFetchStateUsd = $event"
                 />
+                -->
             </template>
 
             <template v-slot:submit-title>
@@ -338,15 +346,10 @@ export default {
             <template v-slot:confirm-modal-body>
                 <div class="information form-row">
                     <h3 class="information__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
-                    <BaseAmountEstimation :coin="form.coin" :amount="spendAmount" format="approx"/>
+                    <BaseAmountEstimation :coin="form.coin" :amount="form.spendAmount"/>
 
-                    <h3 class="information__title">{{ $td('To buy spots', 'todo') }}</h3>
-                    <div class="information__item">
-                        <div class="information__coin">
-                            <div class="information__coin-symbol">{{ form.spotAmount }}</div>
-                        </div>
-                    </div>
-                    <!--<BaseAmountEstimation :coin="'Spots'" :amount="form.spotAmount" format="exact"/>-->
+                    <h3 class="information__title">{{ $td('You will buy', 'todo') }}</h3>
+                    <BaseAmountEstimation :coin="'Miners'" :amount="spotAmount" :format="isModeSwap ? 'approx' : undefined"/>
                 </div>
             </template>
         </TxSequenceWithSwapForm>
