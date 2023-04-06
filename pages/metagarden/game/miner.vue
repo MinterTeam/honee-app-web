@@ -25,7 +25,7 @@ export default {
     <MetagardenGame>
         <MetagardenLootboxCard/>
 
-        <MetagardenSpotCard class="u-mt-10" :hide-head="true"/>
+        <MetagardenSpotCard class="u-mt-10" :hide-head="false"/>
 
         <MetagardenSwHoldCard class="u-mt-10"/>
     </MetagardenGame>
