@@ -16,7 +16,7 @@ export enum ParaSwapSwapSide {
 
 /**
  * Supported DEXs. The list may change
- * @example SushiSwap
+ * @example "SushiSwap"
  */
 export enum ParaSwapDEXs {
   Uniswap = "Uniswap",
@@ -25,7 +25,7 @@ export enum ParaSwapDEXs {
   Oasis = "Oasis",
   Compound = "Compound",
   Fulcrum = "Fulcrum",
-  Type0X = "0x",
+  Value0X = "0x",
   MakerDAO = "MakerDAO",
   Chai = "Chai",
   ParaSwapPool = "ParaSwapPool",
@@ -43,7 +43,7 @@ export enum ParaSwapDEXs {
   Beth = "Beth",
   UniswapV2 = "UniswapV2",
   Balancer = "Balancer",
-  Type0XRFQt = "0xRFQt",
+  Value0XRFQt = "0xRFQt",
   ParaSwapPool2 = "ParaSwapPool2",
   ParaSwapPool3 = "ParaSwapPool3",
   ParaSwapPool4 = "ParaSwapPool4",
@@ -113,7 +113,12 @@ export enum ParaSwapContractMethod {
   Buy = "buy",
 }
 
-export type ParaSwapNetwork = 1 | 3 | 56 | 137;
+export enum ParaSwapNetwork {
+  Value1 = 1,
+  Value3 = 3,
+  Value56 = 56,
+  Value137 = 137,
+}
 
 export interface ParaSwapToken {
   symbol: string;
@@ -122,23 +127,20 @@ export interface ParaSwapToken {
   decimals: ParaSwapTokenDecimals;
   img: string;
   network: ParaSwapNetwork;
+  /** @default false */
   newToken: boolean;
   connectors: string[];
   tokenType: "ETH" | "ERC20" | "SYNTH" | "cToken" | "iToken" | "aToken" | "aToken2" | "idleToken" | "Chai" | "bDAI";
 }
 
-/**
- * @min 0
- */
+/** @min 0 */
 export type ParaSwapTokenDecimals = number;
 
 export interface ParaSwapTokensList {
   tokens?: ParaSwapToken[];
 }
 
-/**
- * Response Body returned from `/prices` endpoint.
- */
+/** Response Body returned from `/prices` endpoint. */
 export interface ParaSwapPriceRoute {
   /**
    * @min 0
@@ -148,39 +150,39 @@ export interface ParaSwapPriceRoute {
   network: ParaSwapNetwork;
   /**
    * Source Token Address
-   * @example 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
+   * @example "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
    */
   srcToken: string;
   srcDecimals: ParaSwapTokenDecimals;
-  /** @example 1000000000000000000 */
+  /** @example "1000000000000000000" */
   srcAmount: string;
   /**
    * Destination Token Address
-   * @example 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+   * @example "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
    */
   destToken: string;
   destDecimals: ParaSwapTokenDecimals;
-  /** @example 1000000000000000000 */
+  /** @example "1000000000000000000" */
   destAmount: string;
   bestRoute: ParaSwapOptimalRoute;
   /** Available if `/prices` endpoint was called with `otherExchangePrices=true` in query */
   others?: ParaSwapOptionalRate;
-  /** @example 11.947163 */
+  /** @example "11.947163" */
   gasCostUSD: string;
-  /** @example 111435 */
+  /** @example "111435" */
   gasCost: string;
   side: ParaSwapSwapSide;
-  /** @example 0x3e7d31751347BAacf35945074a4a4A41581B2271 */
+  /** @example "0x3e7d31751347BAacf35945074a4a4A41581B2271" */
   tokenTransferProxy: string;
-  /** @example 0x485D2446711E141D2C8a94bC24BeaA5d5A110D74 */
+  /** @example "0x485D2446711E141D2C8a94bC24BeaA5d5A110D74" */
   contractAddress: string;
-  /** @example swapOnUniswap */
+  /** @example "swapOnUniswap" */
   contractMethod: string;
-  /** @example 3230.3000000000 */
+  /** @example "3230.3000000000" */
   srcUSD: string;
-  /** @example 3218.9300566052 */
+  /** @example "3218.9300566052" */
   destUSD: string;
-  /** @example paraswap.io */
+  /** @example "paraswap.io" */
   partner: string;
   /**
    * @min 0
@@ -189,7 +191,7 @@ export interface ParaSwapPriceRoute {
   partnerFee: number;
   /** @example false */
   maxImpactReached: boolean;
-  /** @example 319c5cf83098a07aeebb11bed6310db51311201f */
+  /** @example "319c5cf83098a07aeebb11bed6310db51311201f" */
   hmac: string;
 }
 
@@ -205,9 +207,7 @@ export enum ParaSwapPriceErrorMessage {
   AnErrorHasOccurredPleaseTryAgainLaterOrContactOurSupport = "An error has occurred, please try again later or contact our support",
 }
 
-/**
- * @example {"error":"computePrice Error"}
- */
+/** @example {"error":"computePrice Error"} */
 export interface ParaSwapPriceError {
   error: ParaSwapPriceErrorMessage;
 }
@@ -217,7 +217,7 @@ export interface ParaSwapPriceRouteWithError {
   /**
    * price impact %
    * @pattern ^\d+(\.\d+)?%$
-   * @example 99%
+   * @example "99%"
    */
   value: string;
   /** Response Body returned from `/prices` endpoint. */
@@ -225,10 +225,10 @@ export interface ParaSwapPriceRouteWithError {
 }
 
 export interface ParaSwapOptimalSwap {
-  /** @example 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE */
+  /** @example "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" */
   srcToken: string;
   srcDecimals: ParaSwapTokenDecimals;
-  /** @example 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 */
+  /** @example "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" */
   destToken: string;
   destDecimals: ParaSwapTokenDecimals;
   swapExchanges: ParaSwapOptimalSwapExchange[];
@@ -241,11 +241,11 @@ export interface ParaSwapOptimalRoute {
 }
 
 export interface ParaSwapOptimalSwapExchange {
-  /** @example UniswapV2 */
+  /** @example "UniswapV2" */
   exchange: string;
-  /** @example 1000000000000000000 */
+  /** @example "1000000000000000000" */
   srcAmount: string;
-  /** @example 1000000000000000000 */
+  /** @example "1000000000000000000" */
   destAmount: string;
   /** @example 100 */
   percent: number;
@@ -254,25 +254,23 @@ export interface ParaSwapOptimalSwapExchange {
 }
 
 export interface ParaSwapOptionalRate {
-  /** @example UniswapV2 */
+  /** @example "UniswapV2" */
   exchange: string;
-  /** @example 1000000000000000000 */
+  /** @example "1000000000000000000" */
   srcAmount: string;
-  /** @example 3255989380 */
+  /** @example "3255989380" */
   destAmount: string;
-  /** @example 3255989380 */
+  /** @example "3255989380" */
   unit?: string;
   /** @example {"$ref":"#/components/examples/ExchangeDataExample/value"} */
   data?: object;
 }
 
-/**
- * @example {"$ref":"#/components/examples/TransactionsRequestBodyExample/value"}
- */
+/** @example {"$ref":"#/components/examples/TransactionsRequestBodyExample/value"} */
 export interface ParaSwapTransactionsRequestPayload {
   /**
    * Source Token Address. Only Token Symbol could be speciﬁed for tokens from `/tokens`.
-   * @example 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
+   * @example "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
    */
   srcToken: string;
   /**
@@ -282,7 +280,7 @@ export interface ParaSwapTransactionsRequestPayload {
   srcDecimals?: number;
   /**
    * Destination Token Address. Only Token Symbol could be speciﬁed for tokens from `/tokens`.
-   * @example 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+   * @example "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
    */
   destToken: string;
   /**
@@ -308,7 +306,7 @@ export interface ParaSwapTransactionsRequestPayload {
   slippage?: number;
   /**
    * Address of the Signer
-   * @example 0xF7B2F3cD946052f8b397F801299b80F053515AF9
+   * @example "0xF7B2F3cD946052f8b397F801299b80F053515AF9"
    */
   userAddress: string;
   /** Whenever msg.sender (userAddress) is different than the address calling the paraswap contract, `txOrigin` must be passed along with `userAddress`. */
@@ -325,7 +323,7 @@ export interface ParaSwapTransactionsRequestPayload {
   partnerFeePercent?: number;
   /**
    * Partner string. If `partnerAddress` not provided, partnerFeePercent is matched against known partners
-   * @example metamask
+   * @example "metamask"
    */
   partner?: string;
   /** Permit-hash (hex-string) to omit approving the user before swap. Helps in saving gas. */
@@ -337,20 +335,20 @@ export interface ParaSwapTransactionsRequestPayload {
 }
 
 export interface ParaSwapTransactionsBuildResponse {
-  /** @example 0xbe0eb53f46cd790cd13851d5eff43d12404d33e8 */
+  /** @example "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8" */
   from?: string;
-  /** @example 0xDEF171Fe48CF0115B1d80b88dc8eAB59176FEe57 */
+  /** @example "0xDEF171Fe48CF0115B1d80b88dc8eAB59176FEe57" */
   to?: string;
-  /** @example 10000000000000000 */
+  /** @example "10000000000000000" */
   value?: string;
-  /** @example 0xf566103400000000000000000000000075e48c954594d64ef9613aeef97ad85370f13807b2b53dca60cae1d1f93f64d80703b888689f28b63c483459183f2f4271fa0308000000000000000000000000000000000000000000000000002386f26fc100000000000000000000000000000000000000000000000000000000000001c2354900000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000002000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee000000000000000000000000dac17f958d2ee523a2206206994597c13d831ec7 */
+  /** @example "0xf566103400000000000000000000000075e48c954594d64ef9613aeef97ad85370f13807b2b53dca60cae1d1f93f64d80703b888689f28b63c483459183f2f4271fa0308000000000000000000000000000000000000000000000000002386f26fc100000000000000000000000000000000000000000000000000000000000001c2354900000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000002000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee000000000000000000000000dac17f958d2ee523a2206206994597c13d831ec7" */
   data?: string;
-  /** @example 42452400000 */
+  /** @example "42452400000" */
   gasPrice?: string;
   chainId?: ParaSwapNetwork;
   /**
    * `gas` is included only if neither of `ignoreChecks` and `ignoreGasEstimate` are true
-   * @example 197142
+   * @example "197142"
    */
   gas?: string;
 }
@@ -382,9 +380,7 @@ export enum ParaSwapTransactionsErrorMessage {
   AnErrorHasOccurredPleaseTryAgainLaterOrContactOurSupport = "An error has occurred, please try again later or contact our support",
 }
 
-/**
- * @example {"error":"Unable to process the transaction"}
- */
+/** @example {"error":"Unable to process the transaction"} */
 export interface ParaSwapTransactionsError {
   error: ParaSwapTransactionsErrorMessage;
 }
@@ -398,7 +394,7 @@ export type ParaSwapRouterParameters = (string | string[])[];
 export interface ParaSwapPricesListParams {
   /**
    * Source Token Address or Token Symbol (for tokens from /tokens).
-   * @example 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
+   * @example "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
    */
   srcToken: string;
   /**
@@ -408,7 +404,7 @@ export interface ParaSwapPricesListParams {
   srcDecimals?: ParaSwapTokenDecimals;
   /**
    * Destination Token Address or Token Symbol (for tokens from /tokens).
-   * @example 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+   * @example "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
    */
   destToken: string;
   /**
@@ -419,7 +415,7 @@ export interface ParaSwapPricesListParams {
   /**
    * Amount in the Denomination of Source Token
    * @pattern ^\d+$
-   * @example 1000000000000000000
+   * @example "1000000000000000000"
    */
   amount: string;
   /** Side of the swap. */
@@ -450,7 +446,6 @@ export interface ParaSwapTransactionsCreateParams {
   /**
    * Allows the API to skip performing onchain checks such as balances, allowances, as well as transaction simulations.
    * <b>Note:</b> The response does not contain <b><u>gas</u></b> parameter when <i>ignoreChecks</i> is set to `true`.
-   *
    */
   ignoreChecks?: boolean;
   /** Allows the API to skip gas checks <b>Note:</b> The response does not contain <b><u>gas</u></b> parameter when <i>ignoreGasEstimate</i> is set to `true`. */

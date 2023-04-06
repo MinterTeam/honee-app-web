@@ -21,7 +21,7 @@ export interface OneInchApproveCalldataResponseDto {
   gasPrice: string;
   /**
    * Token address that will be allowed to exchange through 1inch router
-   * @example 0x6b175474e89094c44da98b954eedeac495271d0f
+   * @example "0x6b175474e89094c44da98b954eedeac495271d0f"
    */
   to: string;
   /** Native token value in WEI (for approve is always 0) */
@@ -81,12 +81,12 @@ export interface OneInchQuoteResponseDto {
 export interface OneInchNestErrorMeta {
   /**
    * Type of field
-   * @example fromTokenAddress
+   * @example "fromTokenAddress"
    */
   type: string;
   /**
    * Value of field
-   * @example 0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+   * @example "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
    */
   value: object;
 }
@@ -99,7 +99,7 @@ export interface OneInchSwapErrorDto {
   statusCode: number;
   /**
    * Error code description
-   * @example Bad Request
+   * @example "Bad Request"
    */
   error: string;
   /** Error description (one of the following) */
@@ -137,12 +137,12 @@ export interface OneInchSwapResponseDto {
 export interface OneInchChainApproveControllerGetCallDataParams {
   /**
    * Token address you want to exchange
-   * @example 0x111111111117dc0aa78b770fa6a738034120c302
+   * @example "0x111111111117dc0aa78b770fa6a738034120c302"
    */
   tokenAddress: string;
   /**
    * The number of tokens that the 1inch router is allowed to spend.If not specified, it will be allowed to spend an infinite amount of tokens.
-   * @example 100000000000
+   * @example "100000000000"
    */
   amount?: string;
 }
@@ -150,7 +150,7 @@ export interface OneInchChainApproveControllerGetCallDataParams {
 export interface OneInchChainApproveControllerGetAllowanceParams {
   /**
    * Token address you want to exchange
-   * @example 0x111111111117dc0aa78b770fa6a738034120c302
+   * @example "0x111111111117dc0aa78b770fa6a738034120c302"
    */
   tokenAddress: string;
   /** Wallet address for which you want to check */
@@ -158,11 +158,11 @@ export interface OneInchChainApproveControllerGetAllowanceParams {
 }
 
 export interface OneInchExchangeControllerGetQuoteParams {
-  /** @example 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE */
+  /** @example "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" */
   fromTokenAddress: string;
-  /** @example 0x111111111117dc0aa78b770fa6a738034120c302 */
+  /** @example "0x111111111117dc0aa78b770fa6a738034120c302" */
   toTokenAddress: string;
-  /** @example 10000000000000000 */
+  /** @example "10000000000000000" */
   amount: string;
   /** default: all */
   protocols?: string;
@@ -182,11 +182,11 @@ export interface OneInchExchangeControllerGetQuoteParams {
 }
 
 export interface OneInchExchangeControllerGetSwapParams {
-  /** @example 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE */
+  /** @example "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" */
   fromTokenAddress: string;
-  /** @example 0x111111111117dc0aa78b770fa6a738034120c302 */
+  /** @example "0x111111111117dc0aa78b770fa6a738034120c302" */
   toTokenAddress: string;
-  /** @example 10000000000000000 */
+  /** @example "10000000000000000" */
   amount: string;
   /** The address that calls the 1inch contract */
   fromAddress: string;
