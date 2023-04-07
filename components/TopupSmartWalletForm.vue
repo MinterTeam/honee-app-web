@@ -1,6 +1,6 @@
 <script>
 import * as clipboard from 'clipbrd';
-import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
+import useWeb3SmartWallet from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet.js';
 import QrcodeVue from 'qrcode.vue';
 import BaseButtonCopyIcon from '~/components/base/BaseButtonCopyIcon.vue';
 

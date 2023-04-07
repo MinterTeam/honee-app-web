@@ -8,7 +8,7 @@ import maxValue from 'vuelidate/src/validators/maxValue.js';
 import Big from 'minterjs-util/src/big.js';
 import {getTokenSymbolForNetwork} from '~/api/hub.js';
 import {pretty} from '~/assets/utils.js';
-import {wait} from '~/assets/utils/wait.js';
+import {wait} from '@shrpne/utils/src/wait.js';
 import {HUB_NETWORK, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';

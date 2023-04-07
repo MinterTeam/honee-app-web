@@ -8,13 +8,13 @@ import minLength from 'vuelidate/src/validators/minLength.js';
 import withParams from 'vuelidate/src/withParams.js';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import {web3Utils, AbiEncoder, toErcDecimals, getHubDestinationAddressBytes, getHubDestinationChainBytes} from '~/api/web3.js';
+import {AbiMethodEncoder, toErcDecimals, getHubDestinationAddressBytes, getHubDestinationChainBytes} from 'minter-js-web3-sdk/src/web3.js';
 import {isValidAmount} from '~/assets/utils/validators.js';
 import Big from 'minterjs-util/src/big.js';
 import initRampPurchase, {fiatRampPurchaseNetwork} from '~/assets/fiat-ramp.js';
 import {pretty, prettyPrecise, prettyRound, prettyExact, decreasePrecisionSignificant, getExplorerTxUrl, getEvmTxUrl, shortHashFilter} from '~/assets/utils.js';
-import erc20ABI from '~/assets/abi-erc20.js';
-import hubABI from '~/assets/abi-hub.js';
+import erc20ABI from 'minter-js-web3-sdk/src/abi/erc20.js';
+import hubABI from 'minter-js-web3-sdk/src/abi/hub.js';
 import wethAbi from '~/assets/abi-weth.js';
 import {NETWORK, MAINNET, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID, HUB_COIN_DATA as DEPOSIT_COIN_DATA} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
@@ -591,7 +591,7 @@ export default {
 */
         unwrapToNativeCoin({nonce, gasPrice} = {}) {
             const amountToUnwrap = toErcDecimals(this.amountToUnwrap, this.coinDecimals);
-            const data = AbiEncoder(wethAbi)('withdraw', amountToUnwrap);
+            const data = AbiMethodEncoder(wethAbi)('withdraw', amountToUnwrap);
             return this.sendEthTx({
                 to: this.wrappedNativeContractAddress,
                 data,
@@ -607,7 +607,7 @@ export default {
         },
         sendApproveTx({nonce, gasPrice} = {}) {
             let amountToUnlock = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-            let data = AbiEncoder(erc20ABI)('approve', this.hubAddress, amountToUnlock);
+            let data = AbiMethodEncoder(erc20ABI)('approve', this.hubAddress, amountToUnlock);
 
             return this.sendEthTx({to: this.coinContractAddress, data, nonce, gasPrice, gasLimit: GAS_LIMIT_UNLOCK}, LOADING_STAGE.APPROVE_BRIDGE);
         },
@@ -618,7 +618,7 @@ export default {
             if (this.isEthSelected) {
                 txParams = {
                     value: this.depositAmountAfterGas,
-                    data: AbiEncoder(hubABI)(
+                    data: AbiMethodEncoder(hubABI)(
                         'transferETHToChain',
                         destinationChain,
                         address,
@@ -627,7 +627,7 @@ export default {
                 };
             } else {
                 txParams = {
-                    data: AbiEncoder(hubABI)(
+                    data: AbiMethodEncoder(hubABI)(
                         'transferToChain',
                         destinationChain,
                         address,

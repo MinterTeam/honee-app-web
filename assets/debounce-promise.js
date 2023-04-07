@@ -1,4 +1,4 @@
-import CancelError from '~/assets/utils/error-cancel.js';
+import CancelError from '@shrpne/utils/src/error-cancel.js';
 
 /**
  * Based on https://github.com/bjoerge/debounce-promise

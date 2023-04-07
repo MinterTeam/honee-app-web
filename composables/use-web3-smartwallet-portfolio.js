@@ -1,9 +1,9 @@
 import {reactive, computed, toRefs, watch} from 'vue';
-import {getFeeAmount} from '~/api/web3.js';
+import {getFeeAmount} from 'minter-js-web3-sdk/src/web3.js';
 import {HUB_CHAIN_BY_ID, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
-import {wait} from '~/assets/utils/wait.js';
+import {wait} from '@shrpne/utils/src/wait.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
-import useWeb3SmartWalletWithRelayReward from '~/composables/use-web3-smartwallet-relay-reward.js';
+import useWeb3SmartWalletWithRelayReward from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet-relay-reward.js';
 
 
 export default function useWeb3SmartWalletWithRelayRewardForPortfolio({estimationThrottle = undefined} = {}) {

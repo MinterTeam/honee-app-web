@@ -6,12 +6,12 @@ import maxLength from 'vuelidate/src/validators/maxLength';
 import minValue from 'vuelidate/src/validators/minValue.js';
 import maxValue from 'vuelidate/src/validators/maxValue.js';
 import Big from 'minterjs-util/src/big.js';
-import {buildTransferTx, toErcDecimals} from '~/api/web3.js';
+import {buildTransferTx, toErcDecimals} from 'minter-js-web3-sdk/src/web3.js';
 import {pretty} from '~/assets/utils.js';
 import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA} from '~/assets/variables.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
-import useWeb3SmartWalletWithRelayReward from '~/composables/use-web3-smartwallet-relay-reward.js';
+import useWeb3SmartWalletWithRelayReward from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet-relay-reward.js';
 import FieldAddress from '~/components/base/FieldAddress.vue';
 
 

@@ -6,7 +6,7 @@ import {reactive, watchEffect} from 'vue';
 import {HUB_WITHDRAW_SPEED, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
-import useWeb3SmartWalletSwap from '~/composables/use-web3-smartwallet-swap.js';
+import useWeb3SmartWalletSwap from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet-swap.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 
 

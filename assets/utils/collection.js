@@ -2,13 +2,14 @@ import get from 'lodash-es/get.js';
 
 /**
  * @template {object} T
+ * @template {any} V
  * @param {Array<T>} arr
  * @param {keyof T} path
- * @param {function(T): any} [itemTransformer]
- * @return {Record<T[path], T>}
+ * @param {function(T): V} [itemTransformer]
+ * @return {Record<string, T|V>}
  */
 export function arrayToMap(arr, path, itemTransformer) {
-    /** @type {ReturnType<arrayToMap>} */
+    /** @type {Record<string, T|V>} */
     const map = {};
     arr.forEach((item) => {
         const key = get(item, path);
@@ -23,7 +24,7 @@ export function arrayToMap(arr, path, itemTransformer) {
  * Ensure empty fields to be undefined
  * @template {object} T
  * @param {T} obj
- * @return {T}
+ * @return {Partial<T>}
  */
 export function clearEmptyFields(obj) {
     let result = {};
@@ -72,7 +73,7 @@ export function deepMerge(target, ...sources) {
 /**
  *
  * @param {object} source
- * @param {function(key: string, value: any): [string, any]} mapper
+ * @param {(key: string, value: any) => [string, any]} mapper
  * @return {object}
  */
 export function mapObject(source, mapper) {

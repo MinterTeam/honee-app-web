@@ -2,9 +2,9 @@ import { ref, reactive, computed, watch, set} from 'vue';
 import Big from 'minterjs-util/src/big.js';
 import {BSC_CHAIN_ID, ETHEREUM_CHAIN_ID, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from '~/assets/variables.js';
 import {arrayToMap} from '~/assets/utils/collection.js';
-import {wait} from '~/assets/utils/wait.js';
-import {createCancelableSignal} from '~/assets/utils/cancelable-signal.js';
-import CancelError from '~/assets/utils/error-cancel.js';
+import {wait} from '@shrpne/utils/src/wait.js';
+import {createCancelableSignal} from '@shrpne/utils/src/cancelable-signal.js';
+import CancelError from '@shrpne/utils/src/error-cancel.js';
 import {getWalletBalances} from '~/api/web3-moralis.js';
 
 // workaround for `set` not trigger computed properly

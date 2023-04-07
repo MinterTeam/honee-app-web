@@ -6,7 +6,7 @@ import Big from 'minterjs-util/src/big.js';
 import {isValidAmount} from '~/assets/utils/validators.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
-import {wait} from '~/assets/utils/wait.js';
+import {wait} from '@shrpne/utils/src/wait.js';
 import {pretty} from '~/assets/utils.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';

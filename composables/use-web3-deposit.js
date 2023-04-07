@@ -1,11 +1,10 @@
 import {ref, reactive, computed, watch} from 'vue';
 
 import {waitHubTransferToMinter} from '~/api/hub.js';
-import {getProviderByChain, toErcDecimals, buildDepositTx, getFeeAmount as getFee} from '~/api/web3.js';
+import {getProviderByChain, toErcDecimals, buildDepositTx, getFeeAmount as getFee} from 'minter-js-web3-sdk/src/web3.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_TRANSFER_STATUS, MAINNET, NETWORK} from '~/assets/variables.js';
 import Big from 'minterjs-util/src/big.js';
 import wethAbi from '~/assets/abi-weth.js';
-import hubABI from '~/assets/abi-hub.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';

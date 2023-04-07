@@ -3,7 +3,7 @@ import {ApiUtils} from '@moralisweb3/api-utils';
 import { CommonEvmUtils, EvmChain, Erc20Value, EvmChainResolver } from '@moralisweb3/common-evm-utils';
 // import MoralisEvmApi from '@moralisweb3/evm-api';
 import MoralisEvmApi from '~/api/web3-moralis-evm-api.js';
-import {getProviderByChain} from '~/api/web3.js';
+import {getProviderByChain} from 'minter-js-web3-sdk/src/web3.js';
 import {NATIVE_COIN_ADDRESS, MORALIS_API_URL, MORALIS_API_KEY, HUB_CHAIN_BY_ID} from "~/assets/variables.js";
 
 

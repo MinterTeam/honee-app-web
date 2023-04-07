@@ -1,5 +1,5 @@
 // @ts-nocheck
-import {waitCondition} from '~/assets/utils/wait.js';
+import {waitCondition} from '@shrpne/utils/src/wait.js';
 import {GOATCOUNTER_HOST, GOATCOUNTER_SCRIPT_HASH} from '~/assets/variables.js';
 
 export default ({ app }) => {

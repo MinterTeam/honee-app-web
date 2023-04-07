@@ -10,7 +10,7 @@ import {BASE_COIN, CHAIN_ID} from '~/assets/variables.js';
 import {estimateTxCommission, replaceCoinSymbol} from '~/api/gate.js';
 import {getCoinList} from '~/api/explorer.js';
 import {getErrorText} from '~/assets/server-error.js';
-import CancelError from '~/assets/utils/error-cancel.js';
+import CancelError from '@shrpne/utils/src/error-cancel.js';
 
 
 /**

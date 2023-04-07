@@ -3,7 +3,7 @@ import IUniswapV2Router from '@uniswap/v2-periphery/build/IUniswapV2Router02.jso
 import {CloudflareProvider, JsonRpcProvider} from '@ethersproject/providers';
 import Big from 'minterjs-util/src/big.js';
 import {ETHEREUM_API_URL, ETHEREUM_CHAIN_ID, MAINNET, NETWORK} from '~/assets/variables.js';
-import {web3Abi, toErcDecimals} from '~/api/web3.js';
+import {web3Abi, toErcDecimals} from 'minter-js-web3-sdk/src/web3.js';
 
 const wethToken = WETH_TOKEN_DATA[ETHEREUM_CHAIN_ID];
 const uniswapV2Abi = IUniswapV2Router.abi;
