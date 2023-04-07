@@ -46,6 +46,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        hideIcon: {
+            type: Boolean,
+            default: false,
+        },
         // baseCoinAmount: {
         //     type: [String, Number],
         // },

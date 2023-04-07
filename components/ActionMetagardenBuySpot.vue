@@ -298,7 +298,13 @@ export default {
 
                 <div class="information form-row">
                     <h3 class="information__title">{{ $td('You will buy', 'todo') }}</h3>
-                    <BaseAmountEstimation :coin="'Miners'" :amount="spotAmount || 0" :format="isModeSwap ? 'approx' : undefined" :is-loading="isEstimationLoading"/>
+                    <BaseAmountEstimation
+                        :coin="'Miners'"
+                        :amount="spotAmount || 0"
+                        :format="isModeSwap ? 'approx' : undefined"
+                        :hide-icon="true"
+                        :is-loading="isEstimationLoading"
+                    />
 
                     <div class="u-text-warn u-fw-700 u-text-small u-mt-05 u-text-right" v-if="$v.spotAmount.$error">
                         {{ $td('Minimum', 'form.amount-error-min') }} {{ $options.SPOT_MIN_AMOUNT }}
@@ -349,7 +355,12 @@ export default {
                     <BaseAmountEstimation :coin="form.coin" :amount="form.spendAmount"/>
 
                     <h3 class="information__title">{{ $td('You will buy', 'todo') }}</h3>
-                    <BaseAmountEstimation :coin="'Miners'" :amount="spotAmount" :format="isModeSwap ? 'approx' : undefined"/>
+                    <BaseAmountEstimation
+                        :coin="'Miners'"
+                        :amount="spotAmount"
+                        :format="isModeSwap ? 'approx' : undefined"
+                        :hide-icon="true"
+                    />
                 </div>
             </template>
         </TxSequenceWithSwapForm>
