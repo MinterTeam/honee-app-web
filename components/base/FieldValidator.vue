@@ -36,10 +36,12 @@ export default {
     },
     emits: [
         'input',
+        'select-suggestion',
     ],
     data() {
         return {
             isSelectVisible: false,
+            selectedSuggestion: undefined,
             hasCamera: false,
         };
     },
@@ -55,9 +57,11 @@ export default {
                     iconUrl: item.iconUrl,
                     name: item.name || '',
                     publicKey: item.publicKey,
-                    value: item.publicKey,
                 };
             });
+        },
+        displayValue() {
+            return this.selectedSuggestion?.name || this.selectedSuggestion?.publicKey || this.value;
         },
     },
     mounted() {
@@ -68,7 +72,7 @@ export default {
     methods: {
         shortHashFilter,
         getIconUrl(suggestion) {
-            return suggestion.iconUrl ? suggestion.iconUrl : '/img/logo-minter.svg';
+            return suggestion?.iconUrl ? suggestion.iconUrl : '/img/logo-minter.svg';
         },
         openDropdown() {
             if (this.isSelectDisabled) {
@@ -77,19 +81,11 @@ export default {
             this.isSelectVisible = true;
         },
         handleSelect(item) {
-            this.$emit('input', item.value || item);
+            this.$emit('input', item.publicKey || item);
         },
         handleQrScanned(result) {
             this.handleSelect(result);
             // this.$value.$touch();
-        },
-        suggestionFilterDefault(item, query) {
-            if (!query) {
-                return true;
-            }
-
-            const visibleTitle = item.name || item.publicKey;
-            return visibleTitle.toLowerCase().indexOf(query.toLowerCase()) >= 0;
         },
     },
 };
@@ -100,24 +96,27 @@ export default {
         <div class="h-field__content">
             <div class="h-field__title">{{ label }}</div>
             <button class="h-field__select-button u-semantic-button" type="button" @click="openDropdown()" :disabled="isSelectDisabled">
-                <img class="h-field__select-icon" :src="getIconUrl(value)" width="24" height="24" alt="" role="presentation" v-if="value">
-                <span class="h-field__select-value">{{ value || $td('Select validator', 'form.select-validator') }}</span>
+                <img class="h-field__select-icon" :src="getIconUrl(selectedSuggestion)" width="24" height="24" alt="" role="presentation" v-if="value">
+                <span class="h-field__select-value">{{ displayValue || $td('Select validator', 'form.select-validator') }}</span>
                 <img class="h-field__select-icon-arrow" src="/img/icon-dropdown.svg" alt="" role="presentation" width="24" height="24" v-if="!isSelectDisabled">
             </button>
         </div>
 
         <FieldCombinedBaseDropdown
             :list="list"
+            value-attribute="publicKey"
+            display-attribute="name"
             :max-suggestions="64"
             :is-open.sync="isSelectVisible"
             :input-uppercase="false"
-            :filter="suggestionFilterDefault"
+            :selected-value="value"
             @select="handleSelect($event)"
+            @select-suggestion="selectedSuggestion = $event; $emit('select-suggestion', $event)"
         >
             <template v-slot:suggestion-item="{suggestion}">
                 <img class="h-field__suggestion-icon" :src="getIconUrl(suggestion)" width="24" height="24" alt="" role="presentation">
                 <span class="u-fw-600" v-if="suggestion.name">{{ suggestion.name }}</span>
-                <span v-else class="u-ovh u-text-wrap">{{ suggestion.value }}</span>
+                <span v-else class="u-ovh u-text-wrap">{{ suggestion.publicKey }}</span>
                 <span v-if="suggestion.delegatedAmount">({{ suggestion.delegatedAmount }})</span>
             </template>
         </FieldCombinedBaseDropdown>

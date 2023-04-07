@@ -13,7 +13,7 @@
 @import "include/modal";
 @import "include/layout";
 
-:root {
+:root, .theme--default {
     --color-bg: #fff;
     --color-bg-tint: @body-bg-color;
     --color-divider: #0001; // #eee, rgba(0,0,0,0.06667)
@@ -23,8 +23,10 @@
     --color-text-muted: @c-black-light;
     --color-text-muted2: @c-black-half-transparent;
     --color-text-muted-hard: @c-black-hard-transparent;
+    --color-text-disabled-button: #fff;
     --color-main: @c-main;
     --color-main-rgb: @c-main-rgb;
+    --color-main-invert: #fff;
 }
 
 .theme--metagarden {
@@ -37,15 +39,19 @@
     --color-text-muted: @c-metagarden-text-muted;
     --color-text-muted2: @c-white-half-transparent;
     --color-text-muted-hard: @c-white-hard-transparent;
+    --color-text-disabled-button: @c-night;
     --color-main: @c-metagarden;
     --color-main-rgb: @c-metagarden-rgb;
+    --color-main-invert: @c-night-dark;
 
 
+    background: @c-night-dark; color: #fff;
     .wallet__action-button .color-main-light {display: none;}
-    .card {
-        .card--metagarden();
-    }
+    .card--light-grey {.card--metagarden();}
+    .card--invert {background: transparent;}
+    .card--invert .card.card__content {border-top: none;}
     .card__action-title-type, .card__action-stats-caption {color: @c-metagarden-text-muted; opacity: 1;}
+    .information {background: transparent; color: #fff; border-color: @c-metagarden-highlight;}
 }
 
 
@@ -92,6 +98,8 @@
     padding: 20px; background: #fff;
     canvas {vertical-align: top;}
 }
+// qr-code
+.qr-wrap {padding: 8px; display: inline-block; line-height: 0; background: #fff;}
 // nuxt-content
 .nuxt-content {
     h3 {.u-h5(); margin-bottom: 8px;}
@@ -143,7 +151,7 @@
 .splash-layout__inner {width: 100%; margin-top: auto; margin-bottom: auto;}
 
 .metagarden-layout {
-    background: @c-night-dark; color: #fff;
+    //background: @c-night-dark; color: #fff;
     .metagarden-layout__hide {display: none !important;}
 }
 .simple-layout {background: #fff;}
@@ -178,24 +186,25 @@
 /* stretch card vertically to fit siblings */
 .card-wrap-cell {display: flex;}
 .card {
-    background: #fff; color: @c-black; box-shadow: 0 4px 4px rgba(0,0,0,0.05); position: relative; border-radius: 16px; /*overflow: hidden;*/ display: block;
+    background: var(--color-bg); color: var(--color-text); box-shadow: 0 4px 4px rgba(0,0,0,0.05); position: relative; border-radius: 16px; /*overflow: hidden; not clip dropdowns inside card */ display: block;
     &::before {content: ''; display: table;} // fix firefox incorrect collapsing negative margin
     .card {box-shadow: none;}
 }
 .card--pop {
-    margin-top: 12px;
-    & > .card__content:first-child, &&.card__content {
-        padding-top: 0;
-        & > .h-field:first-child,
-        & > .information:first-child,
-        & .form-row:first-child .h-field,
-        & .form-row:first-child .information {
-            margin-top: -12px;
+    html:not(.theme--metagarden) & {
+        margin-top: 12px;
+        & > .card__content:first-child, &&.card__content {
+            padding-top: 0;
+            & > .h-field:first-child,
+            & > .information:first-child,
+            & .form-row:first-child .h-field,
+            & .form-row:first-child .information {
+                margin-top: -12px;
+            }
+            & .card__pop-item--20 {
+                margin-top: -20px;
+            }
         }
-        & .card__pop-item--20 {
-            margin-top: -20px;
-        }
-
     }
 }
 .card--invert {background: @c-black; color: #fff;}
@@ -206,6 +215,11 @@
 .card--portfolio-battle {background: url(../img/bg-portfolio-battle-1.svg) top right no-repeat, url(../img/bg-portfolio-battle-2.svg) bottom left no-repeat;}
 .card--twitter {background: url(../img/bg-share-to-earn.svg) no-repeat 20px 0 #1DA1F2;}
 .card--metagarden {background: @c-night; color: #fff;}
+.card--metagarden-game {
+    width: @mg-card-width; flex-shrink: 0;
+    &+& {margin-left: @mg-card-gap;}
+}
+.card--metagarden-lootbox {background: url(../img/metagarden-lootbox-fancy-bg.svg) center bottom no-repeat, radial-gradient(58% 118% at 42% 27%, #242122 0%, #A91880 100%);}
 //.card--metagarden-buy-spot-backup {background: url(../img/card-metagarden.svg) top left no-repeat, linear-gradient(100.01deg, #42DF81 -5.26%, #1E8045 43.33%, #1A6D3B 119.14%); color: #fff;}
 .card--metagarden-buy-spot {
     background: url(../img/metagarden-spot-bg.svg) -160px 35% no-repeat,
@@ -222,7 +236,8 @@
 }
 .card__content {
     .card-content-base-padding();
-    &+& {border-top: 1px solid var(--color-divider);}
+    &:empty {display: none;}
+    &:not(:empty):not(.u-hidden) + & {border-top: 1px solid var(--color-divider);}
 
     .card__fake-divider {margin: 16px -16px; border-top: 1px solid var(--color-divider); align-self: stretch; flex-basis: 100%; flex-grow: 2;}
 }
@@ -267,6 +282,10 @@
     &+& {margin-left: -6px;}
 }
 
+.card__cover {border-radius: 16px 16px 0 0; vertical-align: top; width: 100%;}
+.card__badge {.u-h--uppercase(); position: absolute; bottom: 16px; right: 0; padding: 4px 8px; box-shadow: 0px 2px 2px rgba(0,0,0, 0.25); border-radius: 8px 0px 0px 8px; color: @c-black;}
+.card__badge--coming-soon {background: #faff00;}
+
 @media (min-width: @breakpoint-medium-up) {
     .card__content {
         padding: 24px @card-padding-large;
@@ -290,15 +309,12 @@
 @header-height-large: 80px;
 .header {background: var(--color-bg); box-shadow: 0 4px 4px @c-darker-light; color: var(--color-text);}
 .header__container {
-    display: flex; align-items: center; justify-content: center; flex-wrap: wrap; top: 0;
+    display: flex; align-items: center; justify-content: center; flex-wrap: wrap; top: 0; min-height: @header-height;
     &+& {border-top: 1px solid var(--color-divider);}
 }
 .header__logo {display: flex; align-items: center; flex-grow: 2;}
-.header__image-logo {vertical-align: top;}
-.header__image-back {margin-right: 24px;}
-.header__icon {vertical-align: top;}
-.header__logo-text {font-size: 26px; font-weight: 700; font-family: @heading-font-family; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-//.header__controls {display: flex; height: 100%;}
+.header__image-back {margin-right: 8px;}
+.header__logo-text {font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 .header__horizontal-divider {min-width: 100%; flex-grow: 2; border-top: 1px solid var(--color-divider); margin: 0 -@container-padding;}
 .header__controls-divider {margin: 0; border: none; border-right: 1px solid var(--color-divider);}
 .header__controls-link {
@@ -308,8 +324,10 @@
     &.is-active::after {background: var(--color-main);}
 }
 .header__controls-user {display: flex; align-items: center; /*max-width: calc(100vw - 220px);*/ /*margin-right: 16px;*/}
-//.header__controls-user-name {overflow: hidden; text-overflow: ellipsis;white-space: nowrap;}
-.header__controls-user-avatar {width: 24px; height: 24px; border-radius: 50%; background: @c-black-light; object-fit: cover; margin-right: 8px; flex-shrink: 0;}
+.header__controls-user-avatar {border-radius: 50%; background: @c-black-light; object-fit: cover;
+    flex-shrink: 0;}
+.header__controls-mg-user-name {.u-text-small(); color: @c-metagarden-text-muted;}
+.header__controls-mg-user-balance {.u-text-medium(); /*.u-text-small(); color: @c-metagarden-highlight;*/}
 .header__controls-language {display: flex; align-items: center; /*margin-left: 16px;*/}
 .header__language-container {padding-top: 16px; padding-bottom: 16px; display: flex; justify-content: flex-end;}
 .header__language-button {line-height: 0; display: block;}
@@ -321,18 +339,10 @@
     }
 }
 @media (min-width: @breakpoint-small-up) {
-    //.header__logo {margin-right: 70px;}
     .header__controls-link {margin-left: 24px;}
-    .header__controls-user {/*max-width: calc(100vw - 260px);*/ /*margin-right: 24px;*/}
-    .header__controls-user-avatar {margin-right: 12px;}
-    .header__controls-language {/*margin-left: 24px;*/}
 }
 @media (max-width: @breakpoint-small-down) {
     .header__horizontal-divider {margin: 0 -16px;}
-}
-@media (min-width: @breakpoint-large-up) {
-    //.header {height: @header-height-large;}
-    //.header__controls-user {max-width: calc(100vw - 340px);}
 }
 
 // back button
@@ -413,24 +423,28 @@
 .wallet__balance {margin-right: auto;}
 .wallet__balance-value {font-size: 30px; line-height: 36px; font-weight: 700; font-feature-settings: "zero" on;}
 .wallet__balance-buy-link {}
-.wallet__action-button {}
+.wallet__action-button {
+    padding: 40px 0 0; min-width: 72px; position: relative;
+    &, &:hover, &:active, &:focus {background: none; color: var(--color-main);}
+    .button__icon {margin: 0; position: absolute; left: 50%; top: ((40px - 24px) / 2); margin-left: -12px;}
+}
+.wallet__topup-button {
+    padding: 48px 0 0; font-weight: 700; position: relative; width: 96px; text-align: center;
+    .button__icon {margin: 0; position: absolute; left: 50%; top: ((40px - 24px) / 2); margin-left: -12px; fill: #fff;}
+    &:before {content: ''; position: absolute; top: 0; left: 50%; margin-left: -20px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid #fff;}
+}
 .wallet__controls {display: flex; flex-direction: column; align-items: center;}
 @media (max-width: @breakpoint-small-down) {
     .wallet__balance {width: 100%;}
 }
-//@media (max-width: @breakpoint-medium-down) {
-    .wallet__action-button {
-        padding: 40px 0 0; min-width: 72px; position: relative;
-        &, &:hover, &:active, &:focus {background: none; color: var(--color-main);}
-        .button__icon {margin: 0; position: absolute; left: 50%; top: ((40px - 24px) / 2); margin-left: -12px;}
-    }
-//}
 @media (min-width: @breakpoint-medium-up) {
     @margin: 8px;
-    .wallet__balance-wrap {margin-top: (8px - @margin); margin-inline: (-@margin / 2);}
-    & > * {margin-top: @margin; margin-inline: (@margin / 2);}
+    //.wallet__balance-wrap {margin-top: (8px - @margin); margin-inline: (-@margin / 2);}
+    //& > * {margin-top: @margin; margin-inline: (@margin / 2);}
     .wallet__balance-value {font-size: 40px; line-height: 48px;}
+    html:not(.metagarden-layout) .wallet__balance-divider {display: none;}
     .wallet__action-button {min-width: 96px;}
+    .wallet__topup-button {width: auto;}
 }
 @media (min-width: @breakpoint-large-up) {
     .wallet__controls {flex-direction: row; justify-content: space-between;}
@@ -476,10 +490,11 @@
 .convert__reverse {
 }
 .convert__reverse-button {
-    padding: 5px; margin-inline: auto; display: flex;
+    /*padding: 5px; */margin-inline: auto; display: flex;
     // alt text fallback styles
-    font-size: 20px; line-height: 24px; text-align: center; color: @c-black-light;
-    &:hover, &:focus {color: @c-black;}
+    font-size: 20px; line-height: 24px; text-align: center; color: var(--color-main);
+    //&:hover, &:focus {color: @c-black;}
+    svg {fill: currentColor;}
 }
 .convert__panel {
     background: #fff; border-radius: 8px; padding: 16px; text-align: left; position: relative;
@@ -492,11 +507,11 @@
 
 
 
-.information {padding: (@h-field-vertical-padding - 1px) (@h-field-horizontal-padding - 1px); background: #d7def6; border: 1px dashed #707ba3; border-radius: 12px; font-size: 16px; line-height: 20px; font-weight: 500;}
+.information {padding: (@h-field-vertical-padding - 1px) (@h-field-horizontal-padding - 1px); background: #d7def6; color: @c-black; border: 1px dashed #707ba3; border-radius: 12px; font-size: 16px; line-height: 20px; font-weight: 500;}
 .information--warning {background: @c-yellow-light; border-color: @c-yolk;}
 .information--field {background: #fff; border-color: transparent;}
 .information__title {
-    font-weight: 700;font-size: 10px;line-height: 12px;letter-spacing: 1px;text-transform: uppercase; color: @c-black-light;
+    font-weight: 700;font-size: 10px;line-height: 12px;letter-spacing: 1px; text-transform: uppercase; color: var(--color-text-muted);
     &:not(:first-child) {margin-top: 16px;}
 }
 .information__item {
@@ -584,6 +599,25 @@
 }
 
 
+
+.mg-cards {display: flex; margin-inline: -@container-padding-small; padding-inline: @container-padding-small; overflow-y: auto;}
+@media (min-width: @breakpoint-small-up) {
+    margin-inline: -@container-padding; padding-inline: @container-padding;
+}
+@media (min-width: @breakpoint-medium-up) {
+    .mg-cards {
+        flex-wrap: wrap; margin-top: -16px; margin-left: -16px; margin-right: 0; padding: 0; overflow-y: visible;
+         & > .card {margin-top: 16px; margin-left: 16px;}
+    }
+}
+
+
+.mg-game__cover {border-radius: 16px; margin-inline: auto; overflow: hidden;}
+@media (max-width: @mg-card-width * 2 + @mg-card-gap) {
+    .mg-game__cover {margin-inline: -@container-padding-small; margin-top: -@section-margin; border-radius: 0;}
+}
+
+
 .footer-garden {
     background: #6bd84b; color: #fff; padding-bottom: 32px;
     &::before {
@@ -603,4 +637,7 @@
 }
 .button--full {
     &+& {margin-top: 10px;}
+}
+.spot-video {
+    background: transparent;
 }

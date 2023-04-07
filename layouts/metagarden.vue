@@ -1,6 +1,6 @@
 <script>
 import HeaderBanner from '~/layouts/_header-banner.vue';
-import TheHeader from '~/layouts/_header.vue';
+import TheHeader from '~/layouts/_header-metagarden.vue';
 import TheFooter from '~/layouts/_footer.vue';
 import FooterGarden from '~/components/layout/FooterGarden.vue';
 import BackButtonFull from '~/components/layout/BackButtonFull.vue';
@@ -12,7 +12,7 @@ export default {
         HeaderBanner,
         TheHeader,
         TheFooter,
-        FooterGarden,
+        // FooterGarden,
         // BackButtonFull,
         ConnectionNotice,
         Snackbar,
@@ -36,12 +36,10 @@ export default {
 
         <!--<BackButtonFull/>-->
 
-        <div class="u-section u-container">
-            <nuxt class=""/> <!--data-nuxt-page-->
-        </div>
+        <nuxt class="u-section u-container"/> <!--data-nuxt-page-->
 
         <TheFooter/>
-        <FooterGarden/>
+        <!--<FooterGarden/>-->
 
         <ConnectionNotice/>
         <Snackbar/>

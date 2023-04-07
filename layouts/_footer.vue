@@ -1,8 +1,10 @@
 <script>
 import InlineSvg from 'vue-inline-svg';
+import Language from '~/components/layout/Language.vue';
 export default {
     components: {
         InlineSvg,
+        Language,
     },
 };
 </script>
@@ -42,9 +44,12 @@ export default {
             <nuxt-link class="footer__logo" :to="$i18nGetPreferredPath('/')">
                 <InlineSvg src="/img/logo-honee.svg" alt="Honee" width="82" height="16" fill="currentColor"/>
             </nuxt-link>
-            <div class="footer__copyright">
-                Copyright © {{ (new Date()).getFullYear() }} Grom R&D Limited.<br>
-                All Rights Reserved.
+            <div class="u-flex u-flex--align-end u-flex--justify-between">
+                <div class="footer__copyright">
+                    Copyright © {{ (new Date()).getFullYear() }} Grom R&D Limited.<br>
+                    All Rights Reserved.
+                </div>
+                <Language/>
             </div>
         </div>
     </footer>

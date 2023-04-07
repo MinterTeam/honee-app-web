@@ -49,12 +49,6 @@ export function getEvmTxUrl(chainId, hash) {
     return host + '/tx/' + hash;
 }
 
-/**
- * @deprecated
- */
-export function getEthereumTxUrl(hash) {
-    return '';
-}
 
 /**
  * @param {number} chainId
@@ -66,8 +60,8 @@ export function getEvmAddressUrl(chainId, hash) {
     return host + '/address/' + hash;
 }
 
-export function getCard2MinterUrl(address, backUrl) {
-    return `${CARD_TO_MINTER_HOST}/?coin=BIP&address=${address}&return_url=${backUrl}`;
+export function getCard2MinterUrl(address, backUrl, coin = 'BIP') {
+    return `${CARD_TO_MINTER_HOST}/?coin=${coin}&address=${address}&return_url=${backUrl}`;
 }
 
 /**
@@ -94,9 +88,10 @@ export function pretty(value) {
     if (!value && value !== 0) {
         return '';
     }
-    const PRECISION = 2;
+    const PRECISION_FIXED = 2;
+    const PRECISION = 4;
     if (value >= 1 || value <= -1 || Number(value) === 0) {
-        return prettyNumber(value, PRECISION, PRECISION_SETTING.FIXED);
+        return prettyNumber(value, PRECISION_FIXED, PRECISION_SETTING.FIXED);
     } else {
         value = prettyNumber(value, PRECISION, PRECISION_SETTING.REDUCE_SIGNIFICANT);
         value = value.substr(0, 10);
@@ -346,7 +341,7 @@ export function fromBase64(str) {
  * @param {function(...any): Promise<T>} [fn]
  * @param {any|Array<any>} [args]
  * @param {object} [options]
- * @param {boolean} [fallbackToArg]
+ * @param {boolean} [options.fallbackToArg]
  * @return {Promise<T>}
  */
 export function ensurePromise(fn, args, {fallbackToArg} = {}) {
@@ -377,7 +372,7 @@ export function suggestionValidatorFilter(suggestion, query) {
 }
 
 /**
- * @typedef {Object} SuggestionValidatorListItem
+ * @typedef {object} SuggestionValidatorListItem
  * @property {string} [name]
  * @property {string} value
  * @property {string} [delegatedAmount]

@@ -9,9 +9,9 @@ import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import {pretty, getDateAmerican, getTimeDistance} from '~/assets/utils.js';
+import {prepareSpendMaxOrAfterSwap} from '~/assets/utils/sequence.js';
 import {getStakingProgram} from '~/api/staking.js';
 import {getBlock} from '~/api/explorer.js';
-import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';
 import TxSequenceWithSwapForm from '~/components/base/TxSequenceWithSwapForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
@@ -175,48 +175,26 @@ export default {
             return JSON.stringify({lock_id: this.stakingProgram?.id});
         },
         sequenceParams() {
-            const prepareUseMaxLockCoin = this.isUseMax ? (dummyTx, prevPrepareGasCoin) => {
-                const selectedBalanceItem = this.$store.getters.getBalanceItem(this.lockTokenSymbol);
-                const value = getAvailableSelectedBalance(selectedBalanceItem, prevPrepareGasCoin.extra.fee);
+            const prepare = prepareSpendMaxOrAfterSwap(this.isUseMax, !this.isSelectedLockCoin, () => this.$store.getters.getBalanceItem(this.lockTokenSymbol));
 
-                return {
-                    data: {
-                        value,
-                    },
-                };
-            } : undefined;
-            const prepareAfterSwap = (swapTx, prevPrepareGasCoin) => {
-                const coinToBuy = swapTx.data.coin_to_buy || swapTx.data.coins.find((item) => item.id === swapTx.tags['tx.coin_to_buy']);
-                // @TODO if user had some coinToBuy on balance, it's better to deduct fee from old balance, than from swapTx.returnAmount
-                const value = getAvailableSelectedBalance({
-                    coin: coinToBuy,
-                    amount: swapTx.returnAmount,
-                }, prevPrepareGasCoin.extra.fee);
-
-                return {
-                    data: {
-                        value,
-                    },
-                };
+            const lockTxParams = {
+                data: this.txData,
+                type: TX_TYPE.LOCK,
+                payload: this.payload,
             };
-            const prepare = this.isSelectedLockCoin ? prepareUseMaxLockCoin : prepareAfterSwap;
+
             return {
                 // refineFee is not needed if no 'prepare'
                 prepareGasCoinPosition: prepare ? 'start' : 'skip',
                 prepare,
-                txParams: {
-                    data: this.txData,
-                    type: TX_TYPE.LOCK,
-                    payload: this.payload,
-                },
+                txParams: lockTxParams,
                 feeTxParams: {
+                    ...lockTxParams,
                     data: {
-                        coin: this.txData.coin,
+                        coin: lockTxParams.data.coin,
                         value: 0,
                         dueBlock: 1,
                     },
-                    type: TX_TYPE.LOCK,
-                    payload: this.payload,
                 },
             };
         },

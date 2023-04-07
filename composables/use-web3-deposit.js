@@ -1,8 +1,7 @@
 import {ref, reactive, computed, watch} from 'vue';
 
-import {subscribeTransfer} from '~/api/hub.js';
-import {getProviderByChain, web3Utils, toErcDecimals, buildDepositTx} from '~/api/web3.js';
-import {getTransaction} from '~/api/explorer.js';
+import {waitHubTransferToMinter} from '~/api/hub.js';
+import {getProviderByChain, toErcDecimals, buildDepositTx, getFeeAmount as getFee} from '~/api/web3.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_TRANSFER_STATUS, MAINNET, NETWORK} from '~/assets/variables.js';
 import Big from '~/assets/big.js';
 import wethAbi from '~/assets/abi-weth.js';
@@ -31,7 +30,9 @@ export default function useWeb3Deposit(destinationMinterAddress) {
     const props = reactive({
         destinationMinterAddress: destinationMinterAddress || '',
         accountAddress: '',
+        /** @type {ChainId} */
         chainId: 0,
+        /** @type {number|string} */
         amount: 0,
         tokenSymbol: '',
         freezeGasPrice: false,
@@ -97,7 +98,6 @@ export default function useWeb3Deposit(destinationMinterAddress) {
     });
 
 // @TODO gasPrice not updated during isFormSending and may be too low/high after waiting pin gasPrice on submit
-// @TODO use *network*_fee instead of 'prices'
 // @TODO use web3.eth.getGasPrice for testnet @see https://web3js.readthedocs.io/en/v1.7.3/web3-eth.html#getgasprice
     const gasPriceGwei = ref(0);
     watch(networkGasPrice, () => {
@@ -112,11 +112,6 @@ export default function useWeb3Deposit(destinationMinterAddress) {
 
         return getFee(gasPriceGwei.value, totalGasLimit);
     });
-    function getFee(gasPriceGwei, gasLimit) {
-        // gwei to ether
-        const gasPrice = web3Utils.fromWei(web3Utils.toWei(gasPriceGwei.toString(), 'gwei'), 'ether');
-        return new Big(gasPrice).times(gasLimit).toString();
-    }
     const depositAmountAfterGas = computed(() => {
         let amount = new Big(props.amount || 0).minus(gasTotalFee.value);
         amount = amount.gt(0) ? amount.toString() : 0;
@@ -171,28 +166,9 @@ export default function useWeb3Deposit(destinationMinterAddress) {
         const depositReceipt = await waitPendingStep(LOADING_STAGE.SEND_BRIDGE);
 
         addStepData(LOADING_STAGE.WAIT_BRIDGE, {coin: props.tokenSymbol /* calculate receive amount? */}, true);
-        return subscribeTransfer(depositReceipt.transactionHash)
-            .then((transfer) => {
-                if (transfer.status !== HUB_TRANSFER_STATUS.batch_executed) {
-                    throw new Error(`Unsuccessful bridge transfer: ${transfer.status}`);
-                }
-                console.log('transfer', transfer);
-                return getTransaction(transfer.outTxHash);
-            })
-            .then((minterTx) => {
-                console.log('minterTx', minterTx);
-
-                if (!minterTx.data.list) {
-                    throw new Error('Minter tx transfer has invalid data');
-                }
-                const multisendItem = minterTx.data.list.find((item) => item.to === props.destinationMinterAddress && item.coin.symbol === props.tokenSymbol);
-                if (!multisendItem) {
-                    throw new Error(`Minter tx transfer does not include ${props.tokenSymbol} deposit to the current user`);
-                }
-
-                const outputAmount = multisendItem.value;
+        return waitHubTransferToMinter(depositReceipt.transactionHash, props.destinationMinterAddress, props.tokenSymbol)
+            .then(({ tx: minterTx, outputAmount}) => {
                 addStepData(LOADING_STAGE.WAIT_BRIDGE, {amount: outputAmount, tx: minterTx, finished: true});
-
                 return outputAmount;
             });
     }
@@ -240,7 +216,7 @@ export default function useWeb3Deposit(destinationMinterAddress) {
 
 
     function sendCoinTx({nonce, gasPrice}) {
-        const txParams = buildDepositTx(props.chainId, isNativeToken.value ? undefined : tokenAddress.value, tokenDecimals.value, props.destinationMinterAddress, depositAmountAfterGas.value);
+        const txParams = buildDepositTx(props.chainId, isNativeToken.value ? undefined : tokenAddress.value, tokenDecimals.value, props.destinationMinterAddress, depositAmountAfterGas.value, true);
 
         return sendEthTx({
             ...txParams,

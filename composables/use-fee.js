@@ -14,7 +14,7 @@ import CancelError from '~/assets/utils/error-cancel.js';
 
 
 /**
- * @typedef {Object} FeeItemData
+ * @typedef {object} FeeItemData
  * @property {Coin} priceCoin
  * @property {boolean} isBaseCoin
  * @property {boolean} isBaseCoinEnough
@@ -33,7 +33,7 @@ import CancelError from '~/assets/utils/error-cancel.js';
  */
 
 /**
- * @return {{fee: ComputedRef<FeeData>, feeProps: feeProps, setFeeProps: setProps, refineByIndex: function(index: number): Promise<FeeItemData>}}
+ * @return {{fee: ComputedRef<FeeData>, feeProps: feeProps, setFeeProps: setProps, refineByIndex: (index: number) => Promise<FeeItemData>}}
  */
 export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinToSpend, isOffline}*/) {
     const idPrimary = Math.random().toString();
@@ -45,7 +45,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         txParamsList: [],
         //@TODO invalid behavior with TxSequence with different privateKey
         baseCoinAmount: 0,
-        /** @type {Boolean} - by default fallback to baseCoin, additionally it can try to fallback to coinToSpend, if baseCoin is not enough */
+        /** @type {boolean} - by default fallback to baseCoin, additionally it can try to fallback to coinToSpend, if baseCoin is not enough */
         fallbackToCoinToSpend: false,
         isOffline: false,
         isLocked: false,
@@ -53,19 +53,26 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         precision: FEE_PRECISION_SETTING.PRECISE,
     });
 
+    /**
+     * @param {Partial<feeProps>} newProps
+     */
     function setProps(newProps) {
         Object.assign(feeProps, newProps);
     }
 
 
-    /** @type {Object.<number, string>}*/
+    /** @type {Ref<UnwrapRef<Record<number, string>>>}*/
     const coinMap = ref({});
     const state = reactive({
         resultListSource: [],
+        /** @type {string|number} */
         priceCoinCommission: 0,
+        /** @type {string|number} */
         baseCoinCommission: 0,
         isBaseCoinEnough: true,
+        /** @type {string|number} */
         gasCoin: BASE_COIN,
+        /** @type {string|number} */
         commission: '',
         feeError: '',
         /** @type CommissionPriceData|null */
@@ -372,7 +379,7 @@ async function estimateFeeWithFallback(txParams, fallbackToCoinToSpend, baseCoin
     const secondaryCoinToCheck = getSecondaryCoinToCheck(txParams, fallbackToCoinToSpend);
 
     const isFallbackMode = !isGasCoinDefined;
-    const hasBaseCoinAmount = baseCoinAmount > 0;
+    const hasBaseCoinAmount = Number(baseCoinAmount) > 0;
     const skipFallbackToBaseCoin = isFallbackMode && !hasBaseCoinAmount && secondaryCoinToCheck;
 
     let feeData;
@@ -426,8 +433,8 @@ function isBaseCoin(coinIdOrSymbol) {
 /**
  * @pure
  * @nosideeffects
- * @param txType
- * @param txData
+ * @param {TX_TYPE} txType
+ * @param {TxData} txData
  * @return {boolean}
  */
 function isValidTxData(txType, txData) {

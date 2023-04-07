@@ -1,25 +1,39 @@
 <script>
+import {defineComponent} from 'vue';
 import customTokens from '~/data/tokens.js';
 
-export default {
+export default defineComponent({
     functional: true,
     /*
     customTokens,
+    */
     props: {
-        coin: {
+        network: {
             type: String,
         },
     },
-    */
     render(createElement, context) {
         const coinSymbol = context.children?.[0].text?.trim();
         const customToken = customTokens[coinSymbol];
         const content = customToken?.name
-            ? [customToken.name + ' ', createElement('span', {class: 'u-text-muted'}, customToken.network)]
-            : context.children;
+            ? renderCoinWithNetwork(createElement, customToken.name, customToken.network)
+            : context.props.network
+                ? renderCoinWithNetwork(createElement, coinSymbol, context.props.network)
+                : context.children;
         return createElement('span', context.data, content);
     },
-};
+});
+
+/**
+ *
+ * @param {CreateElement} createElement
+ * @param {string} coinSymbol
+ * @param {string} network
+ * @return {(string|*)[]}
+ */
+function renderCoinWithNetwork(createElement, coinSymbol, network) {
+    return [coinSymbol + ' ', createElement('span', {class: 'u-text-muted'}, network)];
+}
 </script>
 
 <dummy-template functional>

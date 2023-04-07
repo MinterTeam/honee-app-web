@@ -1,7 +1,9 @@
 import Big from '~/assets/big.js';
-import Eth from 'web3-eth';
+/** @type {import('web3-eth').Eth} */
+import _Eth from 'web3-eth';
 import Utils from 'web3-utils';
-import Contract from 'web3-eth-contract';
+/** @type {import('web3-eth-contract').Contract} */
+import _Contract from 'web3-eth-contract';
 import AbiCoder from 'web3-eth-abi';
 import {TinyEmitter as Emitter} from 'tiny-emitter';
 import {ETHEREUM_API_URL, BSC_API_URL, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, HUB_DEPOSIT_TX_PURPOSE, HUB_CHAIN_ID, HUB_CHAIN_DATA, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
@@ -9,6 +11,13 @@ import erc20ABI from '~/assets/abi-erc20.js';
 import hubABI from '~/assets/abi-hub.js';
 
 export const CONFIRMATION_COUNT = 5;
+
+/** @type {import('web3-eth').Eth} - fix https://github.com/web3/web3.js/issues/5543 */
+// @ts-expect-error
+const Eth = _Eth;
+/** @type {import('web3-eth-contract').Contract} - fix https://github.com/web3/web3.js/issues/5543*/
+// @ts-expect-error
+const Contract = _Contract;
 
 export const web3Utils = Utils;
 /** @deprecated use getProviderByChain instead */
@@ -36,7 +45,7 @@ const transactionPollingInterval = 5000;
 /**
  *
  * @param {object} abi
- * @return {function(method: string, ...[*]): string} abiMethodEncoder
+ * @return {(method: string, ...args: any[]) => string} abiMethodEncoder
  */
 export function AbiEncoder(abi) {
     const contract = new Contract(abi);
@@ -77,9 +86,9 @@ export function toErcDecimals(balance, ercDecimals = 18) {
 /**
  * @typedef {Promise} PromiseWithEmitter
  * @implements {Promise}
- * @property {function} on
- * @property {function} once
- * @property {function} unsubscribe
+ * @property {Function} on
+ * @property {Function} once
+ * @property {Function} unsubscribe
  */
 
 /**
@@ -371,10 +380,13 @@ export function getAllowance(chainId, tokenContractAddress, accountAddress, spen
 /**
  * @param {string} tokenContractAddress
  * @param {string} spenderContractAddress
+ * @param {string|number} [amount]
  * @return {{data: string, to, value: string}}
  */
-export function buildApproveTx(tokenContractAddress, spenderContractAddress) {
-    const amountToUnlock = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+export function buildApproveTx(tokenContractAddress, spenderContractAddress, amount) {
+    const amountToUnlock = typeof amount === 'undefined'
+        ? '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+        : amount;
     const data = AbiEncoder(erc20ABI)('approve', spenderContractAddress, amountToUnlock);
 
     return {
@@ -406,17 +418,18 @@ export function buildTransferTx(tokenContractAddress, recipientAddress, amount) 
  * @param {number} tokenDecimals
  * @param {string} destinationMinterAddress
  * @param {string|number} amount - in ether or coins
+ * @param {boolean} [keepValueAsEther]
  * @return {{data: string, to: string, value: string|number}}
  */
-export function buildDepositTx(chainId, tokenContractAddress, tokenDecimals, destinationMinterAddress, amount) {
+export function buildDepositTx(chainId, tokenContractAddress, tokenDecimals, destinationMinterAddress, amount, keepValueAsEther) {
     const hubBridgeContractAddress = HUB_CHAIN_BY_ID[chainId]?.hubContractAddress;
-    const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(destinationMinterAddress.replace("Mx", "0x")))]);
-    const destinationChain = Buffer.from('minter', 'utf-8');
+    const address = getHubDestinationAddressBytes(destinationMinterAddress);
+    const destinationChain = getHubDestinationChainBytes();
     const isNativeToken = !tokenContractAddress;
     if (isNativeToken) {
         return {
             to: hubBridgeContractAddress,
-            value: amount,
+            value: keepValueAsEther ? amount : toErcDecimals(amount, tokenDecimals),
             data: AbiEncoder(hubABI)(
                 'transferETHToChain',
                 destinationChain,
@@ -534,10 +547,22 @@ export async function getDepositTxInfo(tx, chainId, hubCoinList, skipAmount) {
 }
 
 /**
+ * Calculate fee in native coin from gas price and gas limit
+ * @param {number|string} gasPriceGwei
+ * @param {number|string} gasLimit
+ * @return {number|string}
+ */
+export function getFeeAmount(gasPriceGwei, gasLimit) {
+    // gwei to ether
+    const gasPrice = web3Utils.fromWei(web3Utils.toWei(gasPriceGwei.toString(), 'gwei'), 'ether');
+    return new Big(gasPrice).times(gasLimit).toString();
+}
+
+/**
  *
  * @param {string} hex
  * @param {string} tokenContract
- * @param {number} chainId
+ * @param {ChainId} chainId
  * @param {Array<HubCoinItem>} [hubCoinList]
  * @return {Promise<string>}
  */
@@ -552,7 +577,7 @@ async function getAmountFromInputValue(hex, tokenContract, chainId, hubCoinList)
 /**
  *
  * @param {Array<HubCoinItem>} hubCoinList
- * @param {number} chainId
+ * @param {ChainId} chainId
  * @return {Array<TokenInfo.AsObject>}
  */
 export function getExternalCoinList(hubCoinList, chainId) {
@@ -572,7 +597,7 @@ export function getExternalCoinList(hubCoinList, chainId) {
 }
 
 /**
- * @param {number} chainId
+ * @param {ChainId} chainId
  * @return {Eth}
  */
 export function getProviderByChain(chainId) {
@@ -589,7 +614,7 @@ export function getProviderByChain(chainId) {
 }
 
 /**
- * @param {number} chainId
+ * @param {ChainId} chainId
  * @return {string}
  */
 function getProviderHostByChain(chainId) {
@@ -602,24 +627,24 @@ function getProviderHostByChain(chainId) {
 }
 
 /**
- * @param {number} chainId
- * @return {HUB_CHAIN_ID}
+ * @param {ChainId} chainId
+ * @return {HUB_NETWORK_SLUG}
  */
 export function getHubNetworkByChain(chainId) {
     validateChainId(chainId);
-    return HUB_CHAIN_BY_ID[chainId]?.hubChainId;
+    return HUB_CHAIN_BY_ID[chainId]?.hubNetworkSlug;
 }
 
 /**
- * @param {HUB_CHAIN_ID} network
- * @return {number}
+ * @param {HUB_NETWORK_SLUG} network
+ * @return {ChainId}
  */
 export function getChainIdByHubNetwork(network) {
     return HUB_CHAIN_DATA[network].chainId;
 }
 
 /**
- * @param {number} chainId
+ * @param {ChainId} chainId
  * @return {string}
  */
 export function getEvmNetworkName(chainId) {
@@ -646,4 +671,20 @@ function validateChainId(chainId) {
     if (chainId && typeof chainId !== 'number') {
         throw new Error(`chainId should be a number`);
     }
+}
+
+/**
+ * @param {string} destinationAddress
+ * @return {Buffer}
+ */
+export function getHubDestinationAddressBytes(destinationAddress) {
+    return Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(destinationAddress.replace("Mx", "0x")))]);
+}
+
+/**
+ * @param {string} [chain='minter']
+ * @return {Buffer}
+ */
+export function getHubDestinationChainBytes(chain = 'minter') {
+    return Buffer.from(chain, 'utf-8');
 }

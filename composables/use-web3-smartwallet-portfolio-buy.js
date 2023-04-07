@@ -45,6 +45,7 @@ export default function useWeb3SmartWalletPortfolioBuy() {
         privateKey: '',
         evmAccountAddress: '',
         depositDestinationAddress: '',
+        /** @type {ChainId} */
         chainId: 0,
         coinToSell: '',
         // amount used to withdraw (before sell to hub)
@@ -59,6 +60,9 @@ export default function useWeb3SmartWalletPortfolioBuy() {
 
     });
 
+    /**
+     * @param {Partial<props>} newProps
+     */
     function setProps(newProps) {
         Object.assign(props, newProps);
         setHubTokenToSellProps({

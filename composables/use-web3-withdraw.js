@@ -14,6 +14,7 @@ export default function useWeb3Withdraw(destinationAddress) {
     const { hubCoin, tokenPrice, tokenDecimals, setHubTokenProps } = useHubToken();
 
     const props = reactive({
+        /** @type {HUB_NETWORK|''} */
         hubNetworkSlug: '',
         amountToSend: 0,
         // amountToReceive: 0,
@@ -25,7 +26,9 @@ export default function useWeb3Withdraw(destinationAddress) {
         smartWalletTx: '',
     });
 
-
+    /**
+     * @param {Partial<props>} newProps
+     */
     function setProps(newProps) {
         Object.assign(props, newProps);
         setHubTokenProps({

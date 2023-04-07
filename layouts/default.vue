@@ -1,4 +1,5 @@
 <script>
+import {DASHBOARD_URL_METAGARDEN} from '~/assets/variables.js';
 import HeaderBanner from '~/layouts/_header-banner.vue';
 import TheHeader from '~/layouts/_header.vue';
 import TheFooter from '~/layouts/_footer.vue';
@@ -21,6 +22,11 @@ export default {
         bodyAttrs: {
             class: 'default-layout',
         },
+    },
+    fetch() {
+        if (this.$store.state.isMetagarden) {
+            return this.$router.replace(this.$i18nGetPreferredPath(DASHBOARD_URL_METAGARDEN));
+        }
     },
 };
 </script>

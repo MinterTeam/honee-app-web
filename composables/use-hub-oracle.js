@@ -7,6 +7,9 @@ import usePolling from '~/composables/use-polling.js';
 
 // workaround for `set` not trigger computed properly
 // @see https://github.com/vuejs/composition-api/issues/580
+/**
+ * @return {Record<HUB_NETWORK, DestinationFee>}
+ */
 function getInitialChainData() {
     return Object.fromEntries(Object.values(HUB_NETWORK).map((hubNetworkSlug) => [hubNetworkSlug, getEmptyItem()]));
 
@@ -26,14 +29,14 @@ const priceList = ref([]);
 
 /**
  * Withdraw tx fee for destination network in dollars (e.g. fee to send bsc tx from hub to recipient)
- * @type {UnwrapRef<Object.<HUB_NETWORK, DestinationFee>>}
+ * @type {UnwrapNestedRefs<Record<HUB_NETWORK, DestinationFee>>}
  */
 const destinationFeeMap = reactive(getInitialChainData());
 
 
 /**
  * Gas price in external network in gwei
- * @type {ComputedRef<Object.<HUB_NETWORK, (number|string)>>}
+ * @type {ComputedRef<Record<HUB_NETWORK, (number|string)>>}
  */
 const gasPriceMap = computed(() => {
     const entries = Object.values(HUB_NETWORK)
@@ -70,7 +73,7 @@ function fetchPriceList() {
 
 /**
  * @param {HUB_NETWORK} hubNetwork
- * @return {Promise<undefined>}
+ * @return {Promise<void>}
  */
 function fetchDestinationFee(hubNetwork) {
     if (!hubNetwork) {
@@ -100,11 +103,13 @@ export default function useHubOracle({
 } = {}) {
 
     const props = reactive({
+        /** @type {HUB_NETWORK_SLUG|''} */
         hubNetworkSlug: '',
+        fixInvalidGasPriceWithDummy: true,
     });
 
     /**
-     * @param {{hubNetworkSlug?: HUB_NETWORK}} newProps
+     * @param {Partial<props>} newProps
      */
     function setProps(newProps) {
         Object.assign(props, newProps);
@@ -136,7 +141,7 @@ export default function useHubOracle({
     const networkGasPrice = computed(() => {
         let gasPriceGwei = gasPriceMap.value[props.hubNetworkSlug];
         if (!(gasPriceGwei > 0)) {
-            gasPriceGwei = 100;
+            gasPriceGwei = props.fixInvalidGasPriceWithDummy ? 100 : 0;
         }
 
         // return NETWORK === MAINNET ? gasPriceGwei : 5;

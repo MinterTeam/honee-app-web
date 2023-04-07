@@ -2,6 +2,7 @@
 import * as clipboard from 'clipbrd';
 import {BASE_COIN, HUB_NETWORK} from '~/assets/variables.js';
 import QrcodeVue from 'qrcode.vue';
+import BackButton from '~/components/layout/BackButton.vue';
 import TopupWaitMinter from '~/components/TopupWaitMinter.vue';
 import TopupWaitEvm from '~/components/TopupWaitEvm.vue';
 
@@ -33,6 +34,7 @@ export default {
     HUB_NETWORK,
     components: {
         QrcodeVue,
+        BackButton,
         TopupWaitMinter,
         TopupWaitEvm,
     },
@@ -51,6 +53,7 @@ export default {
         },
         backUrl: {
             type: [String, Boolean],
+            default: '',
         },
         showWaitIndicator: {
             type: Boolean,
@@ -84,6 +87,13 @@ export default {
         },
         isShareSupported() {
             return window.navigator.share;
+        },
+        backButtonText() {
+            if (this.successDeposit) {
+                return this.$td('Finish', 'common.finish');
+            } else {
+                return this.$td('Cancel', 'topup.back');
+            }
         },
     },
     methods: {
@@ -168,28 +178,33 @@ export default {
 
             <qrcode-vue
                 v-show="isQrVisible"
-                class="u-mt-15 u-text-center"
+                class="u-mt-10 qr-wrap u-text-center"
                 :value="address"
                 :size="160"
                 level="L"
-                background="transparent"
+                background="#fff"
             />
         </template>
 
         <component
             :is="networkSlug === $options.HUB_NETWORK.MINTER ? 'TopupWaitMinter' : 'TopupWaitEvm'"
-            class="u-text-center u-mt-15 u-text-medium"
+            class="u-text-center u-mt-10 u-text-medium"
             :showWaitIndicator="showWaitIndicator"
             :network-slug="networkSlug"
             @update:processing="isDepositProcessing = $event"
             @topup="successDeposit = $event; $emit('topup', $event)"
         />
 
-        <button v-if="isOnlyCloseOnBack" class="button button--ghost button--full u-mt-10" type="button" @click="$emit('click-back')">
-            {{ $td('Cancel', 'topup.back') }}
-        </button>
-        <nuxt-link v-else class="button button--ghost button--full u-mt-10" :to="backUrl || $i18nGetPreferredPath('/topup')">
-            {{ $td('Cancel', 'topup.back') }}
-        </nuxt-link>
+        <template v-if="!isDepositProcessing">
+            <button v-if="isOnlyCloseOnBack" class="button button--ghost button--full u-mt-10" type="button" @click="$emit('click-back')">
+                {{ backButtonText }}
+            </button>
+            <nuxt-link v-else-if="backUrl || successDeposit" class="button button--ghost button--full u-mt-10" :to="backUrl || $getDashboardUrl()">
+                {{ backButtonText }}
+            </nuxt-link>
+            <BackButton v-else class="u-mt-10" button-class="button button--ghost button--full">
+                {{ backButtonText }}
+            </BackButton>
+        </template>
     </div>
 </template>

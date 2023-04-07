@@ -5,11 +5,16 @@ export default {
     components: {
         InlineSvg,
     },
+    props: {
+        buttonClass: {
+            type: String,
+        },
+    },
     computed: {
         backUrl() {
             // if no history use '/' as backUrl
             if (!this.$store.state.history.length) {
-                return '/';
+                return this.$getDashboardUrl();
             } else {
                 return undefined;
             }
@@ -27,14 +32,27 @@ export default {
 </script>
 
 <template>
-    <div class="u-fw-700 u-hidden-medium-down" v-if="!isIndexPage">
-        <nuxt-link v-if="backUrl" class="back-button" :to="backUrl">
-            <InlineSvg class="back-button__icon" src="/img/icon-back.svg" width="24" height="24" alt="" role="presentation"/>
-            <span class="back-button__label">{{ $td('Back to wallet', 'index.back-index') }}</span>
+    <div class="" v-if="!isIndexPage">
+        <nuxt-link
+            v-if="backUrl"
+            :class="buttonClass ? buttonClass : 'back-button'"
+            :to="backUrl"
+        >
+            <slot>
+                <InlineSvg class="back-button__icon" src="/img/icon-back.svg" width="24" height="24" alt="" role="presentation"/>
+                <span class="back-button__label">{{ $td('Back to wallet', 'index.back-index') }}</span>
+            </slot>
         </nuxt-link>
-        <button v-else type="button" class="back-button u-semantic-button" @click="goBack()">
-            <InlineSvg class="back-button__icon" src="/img/icon-back.svg" width="24" height="24" alt="" role="presentation"/>
-            <span class="back-button__label">{{ $td('Back', 'index.back') }}</span>
+        <button
+            v-else
+            type="button"
+            :class="buttonClass ? buttonClass : 'back-button u-semantic-button'"
+            @click="goBack()"
+        >
+            <slot>
+                <InlineSvg class="back-button__icon" src="/img/icon-back.svg" width="24" height="24" alt="" role="presentation"/>
+                <span class="back-button__label">{{ $td('Back', 'index.back') }}</span>
+            </slot>
         </button>
     </div>
 </template>

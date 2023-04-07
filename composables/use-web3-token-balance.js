@@ -5,6 +5,7 @@ import {wait} from '~/assets/utils/wait.js';
 import CancelError from '~/assets/utils/error-cancel.js';
 import useWeb3Balance from '~/composables/use-web3-balance.js';
 import useHubToken from '~/composables/use-hub-token.js';
+import {createCancelableSignal} from '~/assets/utils/cancelable-signal.js';
 
 const { web3Balance, web3Allowance, getBalance, getAllowance} = useWeb3Balance();
 
@@ -13,6 +14,7 @@ export default function useWeb3TokenBalance() {
 
     const props = reactive({
         accountAddress: '',
+        /** @type {ChainId} */
         chainId: 0,
         tokenSymbol: '',
     });
@@ -114,52 +116,33 @@ export default function useWeb3TokenBalance() {
 
     /**
      * @param {number|string} [targetAmount] - current balance will be used by default
-     * @return {Promise&{canceler: function}}
+     * @return {[promise: Promise<void>, cancel: CancelableSignal['cancel']]}
      */
     function waitEnoughTokenBalance(targetAmount) {
         // save request if balance already enough
         if (targetAmount && new Big(balance.value).gte(targetAmount)) {
-            return Promise.resolve();
+            return [Promise.resolve(), () => {}];
         } else {
-            let promiseReject;
-            let isCanceled = {value: false};
-            let promise = new Promise((resolve, reject) => {
-                promiseReject = reject;
-                _waitEnoughTokenBalance(targetAmount, isCanceled).then(resolve).catch(reject);
-            });
-            promise.canceler = () => {
-                promiseReject(new CancelError());
-                isCanceled.value = true;
-            };
-            // keep custom `canceler` property during chaining
-            // consider https://stackoverflow.com/a/41797215/4936667 or https://stackoverflow.com/a/48500142/4936667
-            const originalThen = promise.then;
-            const originalCatch = promise.catch;
-            promise.then = function(...args) {
-                const newPromise = originalThen.call(promise, ...args);
-                newPromise.canceler = promise.canceler;
-                return newPromise;
-            };
-            promise.catch = function(...args) {
-                const newPromise = originalCatch.call(promise, ...args);
-                newPromise.canceler = promise.canceler;
-                return newPromise;
-            };
-            return promise;
+            const signal = createCancelableSignal();
+
+            return [
+                _waitEnoughTokenBalance(targetAmount, signal),
+                signal.cancel,
+            ];
         }
     }
 
     /**
      * @param {number|string|undefined} targetAmount
-     * @param {{value: boolean}} isCanceled
-     * @return {Promise}
+     * @param {CancelableSignal} signal
+     * @return {Promise<void>}
      * @private
      */
-    function _waitEnoughTokenBalance(targetAmount, isCanceled) {
+    function _waitEnoughTokenBalance(targetAmount, signal) {
         return updateTokenBalance()
             .then(() => {
                 // Sending was canceled
-                if (isCanceled.value) {
+                if (signal.isCanceled) {
                     return Promise.reject(new CancelError());
                 }
                 // use current balance as default value
@@ -167,9 +150,9 @@ export default function useWeb3TokenBalance() {
                     targetAmount = new Big(balance.value).plus(1e-18).toString();
                 }
                 if (new Big(balance.value).gte(targetAmount)) {
-                    return true;
+                    return;
                 } else {
-                    return wait(10000).then(() => _waitEnoughTokenBalance(targetAmount, isCanceled));
+                    return wait(10000).then(() => _waitEnoughTokenBalance(targetAmount, signal));
                 }
             });
     }

@@ -8,7 +8,8 @@ import minLength from 'vuelidate/src/validators/minLength.js';
 import withParams from 'vuelidate/src/withParams.js';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import {web3Utils, AbiEncoder, toErcDecimals} from '~/api/web3.js';
+import {web3Utils, AbiEncoder, toErcDecimals, getHubDestinationAddressBytes, getHubDestinationChainBytes} from '~/api/web3.js';
+import {isValidAmount} from '~/assets/utils/validators.js';
 import Big from '~/assets/big.js';
 import initRampPurchase, {fiatRampPurchaseNetwork} from '~/assets/fiat-ramp.js';
 import {pretty, prettyPrecise, prettyRound, prettyExact, decreasePrecisionSignificant, getExplorerTxUrl, getEvmTxUrl, shortHashFilter} from '~/assets/utils.js';
@@ -56,10 +57,6 @@ let waitingCancel;
 
 let timer;
 
-
-const isValidAmount = withParams({type: 'validAmount'}, (value) => {
-    return parseFloat(value) >= 0;
-});
 
 export default {
     FIAT_RAMP_NETWORK,
@@ -474,12 +471,12 @@ export default {
                 this.addStepData(LOADING_STAGE.WAIT_ETH, {
                     coin: this.externalTokenSymbol,
                     amount: targetAmount,
-                    network: this.hubChainData.hubChainId,
+                    network: this.hubChainData.hubNetworkSlug,
                 });
 
-                const promise = this.waitEnoughTokenBalance(targetAmount);
+                const [promise, canceler] = this.waitEnoughTokenBalance(targetAmount);
                 waitingCancel = () => {
-                    promise.canceler();
+                    canceler();
                     waitingCancel = null;
                 };
                 return promise;
@@ -615,8 +612,8 @@ export default {
             return this.sendEthTx({to: this.coinContractAddress, data, nonce, gasPrice, gasLimit: GAS_LIMIT_UNLOCK}, LOADING_STAGE.APPROVE_BRIDGE);
         },
         sendCoinTx({nonce}) {
-            const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(this.$store.getters.address.replace("Mx", "0x")))]);
-            const destinationChain = Buffer.from('minter', 'utf-8');
+            const address = getHubDestinationAddressBytes(this.$store.getters.address);
+            const destinationChain = getHubDestinationChainBytes();
             let txParams;
             if (this.isEthSelected) {
                 txParams = {
@@ -757,7 +754,7 @@ export default {
                         :$amount="$v.form.amountEth"
                         :label="$td('You spend', 'form.you-spend')"
                         :max-value="maxAmount"
-                        @blur="handleInputBlur(); $v.form.buyAmount.$touch()"
+                        @blur="handleInputBlur(); $v.form.amountEth.$touch()"
                     />
                     <span class="form-field__error" v-if="$v.form.amountEth.$dirty && !$v.form.amountEth.required">{{ $td('Enter amount', 'form.enter-amount') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && (!$v.form.amountEth.validAmount || !$v.form.amountEth.minValue)">{{ $td('Invalid amount', 'form.invalid-amount') }}</span>
@@ -774,7 +771,7 @@ export default {
                         :fallback-to-full-list="false"
                         :is-estimation="true"
                         :isLoading="isEstimationWaiting"
-                        @blur="handleInputBlur(); $v.form.buyAmount.$touch()"
+                        @blur="handleInputBlur(); $v.form.amountEth.$touch()"
                     />
 
                     <span class="form-field__error" v-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.required">{{ $td('Enter coin symbol', 'form.enter-coin-symbol') }}</span>
@@ -805,7 +802,7 @@ export default {
                         </div>
                     </div>
 
-                    <HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
+                    <!--<HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>-->
                 </template>
 
                 <button
@@ -898,6 +895,8 @@ export default {
                     </div>
                     <div class="information__value">≈ ${{ pretty(currentPrice) }}</div>
                 </div>
+
+                <HubFeeImpact class="u-mt-05 u-text-right" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
             </div>
 
             <!--
@@ -908,8 +907,6 @@ export default {
                 </div>
             </div>
             -->
-
-            <HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
 
             <div class="form-row">
                 <button

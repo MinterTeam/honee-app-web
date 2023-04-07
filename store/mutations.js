@@ -92,7 +92,7 @@ export default {
     SET_SNACKBAR_INACTIVE: (state) => {
         state.isSnackbarActive = false;
     },
-    SET_METAGARDEN: (state) => {
-        state.isMetagarden = true;
+    SET_METAGARDEN: (state, data = true) => {
+        state.isMetagarden = data;
     },
 };

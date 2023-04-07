@@ -1,5 +1,6 @@
 <script>
 import {entropyToMnemonic} from 'bip39';
+import {DASHBOARD_URL_METAGARDEN} from '~/assets/variables.js';
 
 export default {
     layout: 'splash',
@@ -19,7 +20,9 @@ export default {
         store.commit('ADD_AUTH_ADVANCED', mnemonic);
         store.commit('SET_METAGARDEN');
 
-        return app.router.replace(app.i18nGetPreferredPath('/' + game))
+        const newPath = game === 'metagarden' ? DASHBOARD_URL_METAGARDEN : '/' + game;
+
+        return app.router.replace(app.i18nGetPreferredPath(newPath))
             .catch((error) => {
                 // fix error on double redirect @see https://stackoverflow.com/a/65326844
                 if (error.type !== app.router.constructor.NavigationFailureType.redirected) {

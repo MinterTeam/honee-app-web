@@ -1,14 +1,14 @@
 <script>
 import AddressAssets from '~/components/AddressAssets.vue';
 import MetagardenSpotCard from '~/components/MetagardenSpotCard.vue';
-import MetagardenLootboxCard from '~/components/MetagardenLootboxCard.vue';
+import MetagardenSwHoldCard from '~/components/MetagardenSwHoldCard.vue';
 
 export default {
     layout: 'metagarden',
     components: {
         AddressAssets,
         MetagardenSpotCard,
-        MetagardenLootboxCard,
+        MetagardenSwHoldCard,
     },
     fetch() {
         this.$store.commit('SET_METAGARDEN');
@@ -25,6 +25,10 @@ export default {
             this.$store.commit('LOGOUT');
             this.$router.push(this.$i18nGetPreferredPath('/auth'));
         },
+        backToHonee() {
+            this.$store.commit('SET_METAGARDEN', false);
+            this.$router.push(this.$i18nGetPreferredPath('/'));
+        },
     },
 };
 </script>
@@ -35,8 +39,13 @@ export default {
 
         <MetagardenSpotCard/>
 
-        <MetagardenLootboxCard class="u-mt-10"/>
+        <MetagardenSwHoldCard class="u-mt-10"/>
 
         <button type="button" class="button button--full button--ghost-red u-mt-10" @click="logout()">{{ $td('Logout', 'common.logout') }}</button>
+
+        <button type="button" class="button button--full button--ghost u-mt-10" @click="backToHonee()">
+            <img class="button__icon" src="/favicon.png" width="24" height="24" alt="" role="presentation" style="border-radius: 50%;">
+            {{ $td('Go to Honee', 'metagarden.back-to-honee') }}
+        </button>
     </div>
 </template>

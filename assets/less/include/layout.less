@@ -6,6 +6,7 @@
 .u-container {padding-inline: @container-padding-small; margin: 0 auto; width: 100%;}
 .u-container-margin {margin: 0 auto;}
 .u-container--mini--always {max-width: 312px + @container-padding-small * 2;}
+.u-container--small {max-width: 376px + @container-padding-small * 2;}
 @media (min-width: @breakpoint-small-up) {
     .u-container {padding-inline: @container-padding; max-width: @container-width + @container-padding * 2;}
     .u-container--small {max-width: 376px + @container-padding * 2;}
@@ -14,6 +15,8 @@
     .u-container--large {max-width: @container-width-large + @container-padding * 2;}
     .u-container--2k {max-width: 2560px;}
     .u-container--wide {max-width: none;}
+    .u-container--mg-cards-2 {max-width: @mg-card-width * 2 + @mg-card-gap + @container-padding * 2;}
+    .u-container--mg-cards-4 {max-width: @mg-card-width * 4 + @mg-card-gap * 3 + @container-padding * 2;}
 }
 
 .u-section, .u-section--only:not(.u-section .u-section--only) {
@@ -71,6 +74,12 @@
 .u-cell--2-3 { width: 66.6666%;}
 .u-cell--4-10 { width: 40%;}
 .u-cell--6-10 { width: 60%;}
+@media (max-width: @breakpoint-small-down) {
+    .u-grid--smaller-mobile {
+        margin-left: -12px;
+        & > .u-cell { padding-left: 12px;}
+    }
+}
 //@media (min-width: @breakpoint-small-up) {
 //    .u-cell--small--1-2 {width: 50%;}
 //}

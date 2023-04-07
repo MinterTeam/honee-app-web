@@ -406,13 +406,13 @@ export default {
                     />
                 </div>
 
-                <SwapPriceImpact
+                <!--<SwapPriceImpact
                     class="form-row"
                     :coin-to-sell="form.coinToSell"
                     :value-to-sell="form.valueToSell"
                     :coin-to-buy="form.coinToBuy"
                     :value-to-buy="depositAmountToReceive"
-                />
+                />-->
             </template>
 
 <!--            <template v-slot:submit-title>-->

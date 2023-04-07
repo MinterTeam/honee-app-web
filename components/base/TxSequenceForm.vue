@@ -218,10 +218,11 @@ export default {
 };
 
 /**
- * @param {Array<function>} target
- * @param {function} item
+ * @template T
+ * @param {Array<T>} target
+ * @param {T} item
  * @param {'start'|'end'} position
- * @return {Array<function>}
+ * @return {Array<T>}
  */
 function arrayInsertAtPosition(target, item, position) {
     if (!item) {

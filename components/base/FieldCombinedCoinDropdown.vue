@@ -15,10 +15,13 @@ export default {
             type: Boolean,
             required: true,
         },
+        selectedValue: {
+            type: String,
+        },
         /**
          * Flat array or array of balance items
-         * @type Array<string>|Array<BalanceItem>
-         * */
+         * @type Array<string>|Array<BalanceItem>|Array<TokenBalanceItem>
+         */
         coinList: {
             type: Array,
             default: () => [],
@@ -35,6 +38,7 @@ export default {
     emits: [
         'update:isOpen',
         'select',
+        'select-suggestion',
     ],
     computed: {
         useSpecifiedCoinList() {
@@ -46,7 +50,7 @@ export default {
         currentCoinList() {
             if (this.useSpecifiedCoinList) {
                 return this.coinList
-                    .filter((balanceItem) => typeof balanceItem === 'object' ? ofType(balanceItem.coin.type, this.coinType) : true);
+                    .filter((balanceItem) => balanceItem.coin?.type ? ofType(balanceItem.coin.type, this.coinType) : true);
             } else {
                 return this.$store.state.explorer.coinList
                     .filter((coin) => ofType(coin.type, this.coinType))
@@ -54,18 +58,26 @@ export default {
             }
         },
         valueAttribute() {
-            return this.currentCoinList.length && this.currentCoinList[0].coin?.symbol ? 'coin.symbol' : undefined;
+            return getValueAttribute(this.currentCoinList[0]);
+        },
+        displayAttribute() {
+            return getDisplayAttribute(this.currentCoinList[0]);
         },
         maxSuggestions() {
             return this.useSpecifiedCoinList ? 100 : undefined;
         },
     },
     methods: {
-        getCoinIconUrl(coin) {
-            return this.$store.getters['explorer/getCoinIcon'](coin);
+        getSuggestionIconUrl(suggestion) {
+            return this.$store.getters['explorer/getCoinIcon'](this.getSuggestionCoin(suggestion));
         },
         getSuggestionCoin(suggestion) {
-            return suggestion.coin?.symbol || suggestion;
+            if (suggestion.coin?.symbol) {
+                return suggestion.coin?.symbol;
+            } else if (suggestion.tokenContractAddress) {
+                return (suggestion.tokenSymbol || suggestion.tokenName);
+            }
+            return suggestion;
         },
         getSuggestionAmount(suggestion) {
             const amount = suggestion.value || suggestion.amount;
@@ -73,6 +85,36 @@ export default {
         },
     },
 };
+
+function isMinterBalanceItem(item) {
+    return !!item?.coin?.symbol && !item?.tokenContractAddress;
+}
+// token known by Hub bridge
+function isKnownTokenBalanceItem(item) {
+    return !!item?.tokenContractAddress && !!item?.coin?.symbol;
+}
+function isTokenBalanceItem(item) {
+    return !!item?.tokenContractAddress;
+}
+export function getValueAttribute(item) {
+    if (isMinterBalanceItem(item)) {
+        return 'coin.symbol';
+    }
+    if (isTokenBalanceItem(item) || isKnownTokenBalanceItem(item)) {
+        return 'id';
+    }
+    return undefined;
+}
+function getDisplayAttribute(item) {
+    if (isKnownTokenBalanceItem(item)) {
+        return 'coin.symbol';
+    }
+    if (isTokenBalanceItem(item)) {
+        return 'search';
+    }
+    return undefined;
+}
+
 
 function ofType(coinType, selectedType) {
     if (selectedType === COIN_TYPE.ANY) {
@@ -89,15 +131,18 @@ function ofType(coinType, selectedType) {
     <FieldCombinedBaseDropdown
         v-bind="$attrs"
         :list="currentCoinList"
+        :selected-value="selectedValue"
         :value-attribute="valueAttribute"
+        :display-attribute="displayAttribute"
         :max-suggestions="maxSuggestions"
         :is-open="isOpen"
         @update:isOpen="$emit('update:isOpen', $event)"
         @select="$emit('select', $event);"
+        @select-suggestion="$emit('select-suggestion', $event);"
     >
         <template v-slot:suggestion-item="{suggestion}">
-            <img class="h-field__suggestion-icon" :src="getCoinIconUrl(getSuggestionCoin(suggestion))" width="24" height="24" alt="" role="presentation">
-            <BaseCoinSymbol class="h-field__suggestion-symbol">{{ getSuggestionCoin(suggestion) }}</BaseCoinSymbol>
+            <img class="h-field__suggestion-icon" :src="getSuggestionIconUrl(suggestion)" width="24" height="24" alt="" role="presentation">
+            <BaseCoinSymbol class="h-field__suggestion-symbol" :network="suggestion.hubNetworkSlug?.toUpperCase()">{{ getSuggestionCoin(suggestion) }}</BaseCoinSymbol>
             <span class="h-field__suggestion-amount" v-if="getSuggestionAmount(suggestion)">{{ getSuggestionAmount(suggestion) }}</span>
         </template>
     </FieldCombinedBaseDropdown>

@@ -8,12 +8,13 @@
     &:active {background: #ddd;}
     &[disabled], &.is-disabled {
         cursor: default;
-        &:not(.is-loading) {background: shade(#fff, 50%); /* maybe var(--color-text-muted2)*/}
+        &:not(.is-loading) {background: rgba(0,0,0, 0.45); color: var(--color-text-disabled-button);}
     }
     &.is-loading .button__content {color: transparent;}
 }
 .button--large {padding-top: 16px; padding-bottom: 16px;}
 .button--narrow {padding-inline: 12px;}
+.button--very-narrow {padding-inline: 6px;}
 .button--medium {min-width: auto; width: 100%;}
 .button--small {padding: 6px 13px; font-size: 14px; line-height: 18px;}
 //.button--icon {padding-left: 48px;}
@@ -29,9 +30,9 @@
     .button--medium {min-width: 312px; width: auto;}
 }
 .button--main {
-    color: #fff; background: @c-main; /*box-shadow: 0 2px 4px rgba(0,0,0,0.5);*/
-    &:hover, &:focus {background: tint(@c-main, 15%);}
-    &:active {background: shade(@c-main, 6%);}
+    color: var(--color-main-invert); background: var(--color-main);
+    &:hover, &:focus {background: rgba(var(--color-main-rgb), 0.83);}
+    &:active {background: rgba(var(--color-main-rgb), 0.7);}
 }
 .button--yellow-light {
     color: @c-black; background: @c-yellow-light; /*box-shadow: 0 2px 4px rgba(0,0,0,0.5);*/
@@ -125,11 +126,11 @@
 
 .button-group {
     display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; margin-top: -10px; margin-left: -16px;
-    .button, .link--default {margin-top: 10px; margin-left: 16px;}
+    .button, .link, .link--default {margin-top: 10px; margin-left: 16px;}
 }
 .button-group--small {
     margin-left: -8px;
-    .button, .link--default {margin-left: 8px;}
+    .button, .link, .link--default {margin-left: 8px;}
 }
 .button-group--center {justify-content: center;}
 
@@ -188,7 +189,7 @@
         box-shadow: none; border: 1px solid @c-border; background: @c-white-light; padding: (@h-field-vertical-padding - 1px) (@h-field-horizontal-padding - 1px);
     }
 }
-.h-field--is-dashed {box-shadow: none; border: 2px dashed @c-border;}
+.h-field--is-dashed {box-shadow: none; border: 2px dashed @c-border; /* var(--color-divider) */}
 .h-field__content {flex-grow: 2; max-width: 100%; min-width: 0; text-align: left;}
 .h-field__title {.h-field-title-text(); color: @c-black-light; margin-bottom: @h-field-title-margin; display: block;}
 .h-field__select-button {

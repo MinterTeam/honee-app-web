@@ -5,7 +5,7 @@ import {fromErcDecimals, getAllowance, buildApproveTx} from '~/api/web3.js';
 import Big from '~/assets/big.js';
 import {getMaxEstimationLimit, getMinEstimationLimit} from '~/assets/utils/swap-limit.js';
 // import addToCamelInterceptor from '~/assets/axios-to-camel.js';
-import {PARASWAP_API_URL, NETWORK, MAINNET, SMART_WALLET_RELAY_BROADCASTER_ADDRESS, HUB_DEPOSIT_PROXY_CONTRACT_ADDRESS, NATIVE_COIN_ADDRESS} from "~/assets/variables.js";
+import {PARASWAP_API_URL, NETWORK, MAINNET, SMART_WALLET_RELAY_BROADCASTER_ADDRESS, NATIVE_COIN_ADDRESS} from "~/assets/variables.js";
 
 
 const instance = axios.create({

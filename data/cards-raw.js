@@ -10,18 +10,34 @@ export default {
             {
                 style: 'metagarden-buy-spot',
                 caption: 'Mining',
-                title: 'Buy mining spots',
+                title: 'Miners',
                 coin: `METAGARDEN`,
                 description: 'Metagarden — a play-to-earn platform with mini games. Become the platform miner to earn crypto.',
-                buttonLabel: 'Buy spot',
+                buttonLabel: 'Buy miners',
                 tags: [],
-                action: `/metagarden/buy-spot`,
+                action: `/metagarden/buy-miner`,
                 ru: {
                     caption: 'Майнинг',
-                    title: 'Майнинг-споты',
+                    title: 'Майнеры',
                     description: 'Metagarden — play-to-earn платформа с мини-играми. Станьте майнером платформы, чтобы зарабатывать криптовалюту.',
-                    buttonLabel: 'Купить спот',
+                    buttonLabel: 'Купить майнеры',
 
+                },
+            },
+            {
+                caption: 'Yield farming',
+                coin: ['WONDER', 'BNB'],
+                description: 'Put your WONDER and BNB into a liquidity pool for getting daily rewards.',
+                stats: {
+                    apr: {
+                        percent: '120',
+                    },
+                },
+                tags: ['Farming'],
+                action: `/farm/WONDER/BNB`,
+                ru: {
+                    description: 'Поместите свои WONDER и BNB в пул ликвидности, чтобы получать ежедневные вознаграждения.',
+                    caption: 'Фарминг',
                 },
             },
             {
@@ -100,26 +116,6 @@ export default {
                 ru: {
                     description: 'Децентрализованный торговый фонд на основе Топ-10 портфелей экспертов.',
                     caption: 'Купить',
-                },
-            },
-            {
-                caption: 'Lucky Farmer',
-                coin: 'CARROTS',
-                description: 'Win up to 200% of your carrots daily by planting them in your garden.',
-                buttonLabel: 'Plant',
-                stats: {
-                    caption: 'Win up to',
-                    value: '200%',
-                },
-                tags: ['Lottery', 'CARROTS'],
-                action: '/win/CARROTS/GARDEN',
-                ru: {
-                    caption: 'Везучий фермер',
-                    description: 'Каждый день вы можете выиграть до 200% своих морковок, посадив их в саду.',
-                    buttonLabel: 'Посадить',
-                    stats: {
-                        caption: 'Приз до',
-                    },
                 },
             },
             {

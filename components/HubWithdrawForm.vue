@@ -7,8 +7,8 @@ import maxValue from 'vuelidate/src/validators/maxValue.js';
 import minLength from 'vuelidate/src/validators/minLength.js';
 import {FEE_PRECISION_SETTING} from 'minter-js-sdk/src/api/estimate-tx-commission.js';
 import {postTx} from '~/api/gate.js';
-import {getExplorerTxUrl, pretty, prettyPrecise} from '~/assets/utils.js';
-import {HUB_CHAIN_ID, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
+import {getExplorerTxUrl, pretty, prettyPrecise, shortHashFilter, getEvmAddressUrl} from '~/assets/utils.js';
+import {HUB_CHAIN_ID, HUB_NETWORK_SLUG, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import useFee from '~/composables/use-fee.js';
@@ -26,6 +26,7 @@ import HubFeeImpact from '~/components/HubFeeImpact.vue';
 
 export default {
     HUB_CHAIN_ID,
+    HUB_NETWORK_SLUG,
     HUB_CHAIN_DATA,
     components: {
         Loader,
@@ -39,6 +40,9 @@ export default {
     directives: {
     },
     mixins: [validationMixin],
+    emits: [
+        'success-modal-close',
+    ],
     setup() {
         const {fee, setFeeProps} = useFee();
         const {
@@ -79,11 +83,11 @@ export default {
     data() {
         return {
             form: {
-                coin: '',
-                amount: "",
-                address: this.$store.getters.address.replace('Mx', '0x'),
+                coin: this.$route.query.coin || '',
+                amount: this.$route.query.amount || '',
+                address: this.$route.query.address || this.$store.getters.evmAddress,
                 speed: HUB_WITHDRAW_SPEED.FAST,
-                networkTo: HUB_CHAIN_ID.ETHEREUM,
+                networkTo: this.$route.query.network || HUB_NETWORK_SLUG.BSC,
             },
             isFormSending: false,
             serverSuccess: null,
@@ -227,6 +231,8 @@ export default {
         pretty,
         prettyPrecise,
         getExplorerTxUrl,
+        shortHashFilter: (value) => shortHashFilter(value, 6),
+        getEvmAddressUrl,
         getDestinationFee({checkWarning} = {}) {
             return this.fetchHubDestinationFee()
                 .then((fee) => {
@@ -309,9 +315,9 @@ export default {
         },
         clearForm() {
             this.$v.$reset();
-            this.form.address = '';
+            // this.form.address = this.$route.query.address || '';
             this.form.amount = '';
-            this.form.coin = '';
+            this.form.coin = this.$route.query.coin || '';
             // this.form.speed = SPEED_MIN;
         },
     },
@@ -322,7 +328,7 @@ export default {
     <div class="">
         <!-- Form -->
         <form class="panel__section" @submit.prevent="submitConfirm()">
-            <div class="form-row">
+            <div class="form-row" v-if="!$route.query.network">
                 <FieldSelect
                     v-model="form.networkTo"
                     :label="$td('Select network', 'form.select-network')"
@@ -363,7 +369,7 @@ export default {
                 <span class="form-field__error" v-else-if="$v.form.amount.$dirty && (!$v.form.amount.minValue)">{{ $td(`Minimum ${minAmount}`, 'form.amount-error-min', {min: minAmount}) }}</span>
                 <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.maxValue">{{ $td('Not enough', 'form.amount-error-not-enough') }} {{ form.coin }} ({{ $td('max.', 'hub.max') }} {{ pretty(maxAmount) }})</span>
             </div>
-            <div class="form-row">
+            <div class="form-row" v-if="!$route.query.address">
                 <FieldAddress
                     v-model.trim="form.address"
                     :$value="$v.form.address"
@@ -373,23 +379,37 @@ export default {
                 <span class="form-field__error" v-if="$v.form.address.$dirty && !$v.form.address.required">{{ $td('Enter', 'hub.withdraw-address-required') }} {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} {{ $td('address', 'hub.withdraw-address-title') }}</span>
                 <span class="form-field__error" v-else-if="$v.form.address.$dirty && !$v.form.address.validAddress">{{ $td('Invalid', 'hub.withdraw-address-invalid') }} {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} {{ $td('address', 'hub.withdraw-address-title') }}</span>
             </div>
-            <div class="information form-row" v-if="form.coin">
-                <h3 class="information__title">{{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} {{ $td('fee', 'hub.withdraw-eth-fee') }}</h3>
-                <BaseAmountEstimation :coin="form.coin" :amount="coinFee" format="pretty"/>
+            <div class="information form-row" v-if="form.coin || $route.query.address">
+                <template v-if="$route.query.address">
+                    <h3 class="information__title">{{ $td('To the address', 'form.wallet-send-confirm-address') }}</h3>
+                    <div class="information__item information__item--content u-text-wrap">
+                        {{ form.address }}
+                        <!--
+                        <a class="link&#45;&#45;default" :href="getEvmAddressUrl($options.HUB_CHAIN_DATA[form.networkTo]?.chainId, $route.query.address)" target="_blank">
+                            {{ shortHashFilter($route.query.address) }}
+                        </a>
+                        -->
+                    </div>
+                </template>
+                <template v-if="form.coin">
+                    <h3 class="information__title">{{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} {{ $td('fee', 'hub.withdraw-eth-fee') }}</h3>
+                    <BaseAmountEstimation :coin="form.coin" :amount="coinFee" format="pretty"/>
 
-                <h3 class="information__title">{{ $td('Bridge fee', 'hub.withdraw-hub-fee') }} ({{ hubFeeRatePercent }}%)</h3>
-                <BaseAmountEstimation :coin="form.coin" :amount="hubFee" format="pretty"/>
-                <div class="information__item information__item--content u-text-medium" v-if="discountUpsidePercent">
-                    <a :href="$td('https://www.minter.network/howto/cross-chain-discounts', 'form.hub-reduce-fee-url')" class="link--hover link--main" target="_blank">
-                        {{ $td('How to reduce fee up to', 'form.hub-reduce-fee') }}
-                        {{ discountUpsidePercent }}%
-                    </a>
-                </div>
+                    <h3 class="information__title">{{ $td('Bridge fee', 'hub.withdraw-hub-fee') }} ({{ hubFeeRatePercent }}%)</h3>
+                    <BaseAmountEstimation :coin="form.coin" :amount="hubFee" format="pretty"/>
+                    <div class="information__item information__item--content u-text-medium" v-if="discountUpsidePercent">
+                        <a :href="$td('https://www.minter.network/howto/cross-chain-discounts', 'form.hub-reduce-fee-url')" class="link--hover link--main" target="_blank">
+                            {{ $td('How to reduce fee up to', 'form.hub-reduce-fee') }}
+                            {{ discountUpsidePercent }}%
+                        </a>
+                    </div>
 
-                <h3 class="information__title">{{ $td('You will receive', 'hub.withdraw-estimate') }}</h3>
-                <BaseAmountEstimation :coin="form.coin" :amount="amountToReceive" format="exact"/>
+                    <h3 class="information__title">{{ $td('You will receive', 'hub.withdraw-estimate') }}</h3>
+                    <BaseAmountEstimation :coin="form.coin" :amount="amountToReceive" format="exact"/>
+
+                    <!--<HubFeeImpact class="u-mt-05 u-text-right" :coin="form.coin" :fee-impact="totalFeeImpact" :network="$options.HUB_CHAIN_DATA[form.networkTo].shortName"/>-->
+                </template>
             </div>
-            <HubFeeImpact class="form-row" :coin="form.coin" :fee-impact="totalFeeImpact" :network="$options.HUB_CHAIN_DATA[form.networkTo].shortName"/>
             <!--
             <div class="form-row">
                 <div class="form-check-label">Tx speed</div>
@@ -418,8 +438,9 @@ export default {
 
             <div class="form-row u-text-muted u-text-small">
                 <template v-if="$i18n.locale === 'en'">
-                    <p class="u-mb-05"><span class="u-emoji">⚠️</span> <strong class="u-fw-600">Withdrawal notice</strong></p>
-                    <ul class="list-simple">
+                    <p class="u-mb-05"><strong class="u-fw-600">Withdrawal notice</strong></p>
+                    <p>Do not withdraw to an exchange because many do not accept deposits from smart contracts and your tokens will be lost. Withdraw only to the wallet you have a seed phrase to.</p>
+                    <!--<ul class="list-simple">
                         <li>Withdraw to the wallet you own first (the one you have a seed phrase to);</li>
                         <li>Do not withdraw to an exchange because many do not accept deposits from smart contracts and your tokens will be lost;</li>
                         <li>Pay attention to {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} and Minter Hub fees;</li>
@@ -428,16 +449,17 @@ export default {
                             <a class="link--default" href="https://github.com/MinterTeam/mhub2" target="_blank">{{ $td('open-source', 'hub.warning-description-3') }}</a>.
                             {{ $td('If needed, you may investigate its code before making use of the features offered on this page.', 'hub.warning-description-4') }}
                         </li>
-                    </ul>
+                    </ul>-->
                 </template>
                 <template v-if="$i18n.locale === 'ru'">
-                    <p class="u-mb-05"><span class="u-emoji">⚠️</span> <strong class="u-fw-600">Внимание</strong></p>
-                    <ul class="list-simple">
+                    <p class="u-mb-05"><strong class="u-fw-600">Внимание!</strong></p>
+                    <p>Вывод средств возможен только на ваш персональный адрес. Не допускается вывод средств на смарт-контракты, адреса бирж или адреса, к которым у вас нет доступа по seed-фразе.</p>
+                    <!--<ul class="list-simple">
                         <li>Вывод средств возможен только на ваш персональный адрес;</li>
                         <li>Не допускается вывод средств на смарт-контракты, адреса бирж или адреса, к которым у вас нет прямого доступа;</li>
                         <li>Всегда обращайте внимание на комиссии в {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }} и Minter Hub;</li>
                         <li>Minter Hub имеет открытый <a class="link--default" href="https://github.com/MinterTeam/mhub2" target="_blank">исходный код</a>, изучите его при необходимости.</li>
-                    </ul>
+                    </ul>-->
                 </template>
             </div>
         </form>
@@ -457,9 +479,9 @@ export default {
                 <div class="information__item information__item--content u-text-wrap">
                     {{ form.address }}
                 </div>
-            </div>
 
-            <HubFeeImpact class="form-row" :coin="form.coin" :fee-impact="totalFeeImpact" :network="$options.HUB_CHAIN_DATA[form.networkTo].shortName"/>
+                <HubFeeImpact class="u-mt-05 u-text-right" :coin="form.coin" :fee-impact="totalFeeImpact" :network="$options.HUB_CHAIN_DATA[form.networkTo].shortName"/>
+            </div>
 
             <div class="form-row">
                 <button
@@ -488,7 +510,7 @@ export default {
         </Modal>
 
         <!-- Success Modal -->
-        <Modal :isOpen.sync="isSuccessModalVisible">
+        <Modal :isOpen.sync="isSuccessModalVisible" @modal-close="$emit('success-modal-close')">
             <h2 class="u-h3 u-mb-10">{{ $td('Success!', 'form.success-title') }}</h2>
 
             <div class="u-mb-10">

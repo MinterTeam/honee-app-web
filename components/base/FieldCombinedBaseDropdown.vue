@@ -33,6 +33,9 @@ export default {
             type: String,
             default: 'value',
         },
+        displayAttribute: {
+            type: String,
+        },
         inputUppercase: {
             type: Boolean,
             default: true,
@@ -40,10 +43,14 @@ export default {
         inputPlaceholder: {
             type: String,
         },
+        selectedValue: {
+            type: String,
+        },
     },
     emits: [
         'update:isOpen',
         'select',
+        'select-suggestion',
         'blur',
         'focus',
     ],
@@ -71,6 +78,15 @@ export default {
                 })
                 .slice(0, this.maxSuggestions);
         },
+        selectedSuggestion() {
+            return this.list.find((suggestion) => {
+                if (typeof suggestion !== 'object') {
+                    return;
+                }
+                const value = _get(suggestion, this.valueAttribute);
+                return this.selectedValue === value;
+            });
+        },
     },
     watch: {
         isOpen(newVal) {
@@ -87,6 +103,11 @@ export default {
                 }, 500);
             }
         },
+        selectedSuggestion: {
+            handler() {
+                this.$emit('select-suggestion', this.selectedSuggestion);
+            },
+        },
     },
     created() {
         window.document.documentElement.addEventListener('click', this.handleOutsideClick);
@@ -101,8 +122,11 @@ export default {
             if (!query) {
                 return true;
             }
+            query = query.toLowerCase();
+            const value = this.getSuggestionValue(item).toLowerCase();
+            const display = this.getSuggestionDisplay(item).toLowerCase();
             // keep only values started with query (e.g. remove "WALLET" for "LET" query)
-            return this.getSuggestionValue(item).toLowerCase().indexOf(query.toLowerCase()) === 0;
+            return value.indexOf(query) === 0 || display.indexOf(query) === 0;
         },
         handleSuggestionClick(value) {
             if (value) {
@@ -142,6 +166,12 @@ export default {
                 return suggestion;
             }
             return _get(suggestion, this.valueAttribute);
+        },
+        getSuggestionDisplay(suggestion) {
+            if (!this.displayAttribute || typeof suggestion !== 'object') {
+                return '';
+            }
+            return _get(suggestion, this.displayAttribute);
         },
     },
 };
