@@ -289,6 +289,7 @@ module.exports = {
             'camelcase-keys',
             'web3-core-method',
             // 'nuxt-i18n/src',
+            '@shrpne/utils/src',
             'axios-prevent-concurrency/src',
             'v-file-input/src',
             'clipbrd/src',
@@ -298,6 +299,7 @@ module.exports = {
             'minterjs-tx',
             'minterjs-wallet',
             'minter-js-sdk',
+            'minter-js-web3-sdk',
         ],
     },
 };
