@@ -13,22 +13,6 @@ function getWrappedNativeContractAddress(chainId) {
     return HUB_CHAIN_BY_ID[chainId]?.wrappedNativeContractAddress;
 }
 
-/**
- * @param {ChainId} chainId
- * @param {string} tokenContractAddress
- */
-export function fixNativeContractAddress(chainId, tokenContractAddress) {
-    tokenContractAddress = tokenContractAddress?.toLowerCase();
-    const isNativeToken = tokenContractAddress === '0x0000000000000000000000000000000000000000'
-        || tokenContractAddress === NATIVE_COIN_ADDRESS
-        || tokenContractAddress === getWrappedNativeContractAddress(chainId);
-
-    if (isNativeToken) {
-        return NATIVE_COIN_ADDRESS;
-    } else {
-        return tokenContractAddress;
-    }
-}
 
 export default function useHubToken() {
     const {initPromise, hubTokenList, hubPriceList} = useHubOracle({
@@ -71,8 +55,9 @@ export default function useHubToken() {
     const tokenData = computed(() => {
         return hubCoin.value?.[HUB_CHAIN_BY_ID[props.chainId]?.hubNetworkSlug];
     });
+    const isUseHubTokenId = computed(() => !props.tokenAddress);
     const tokenContractAddress = computed(() => {
-        if (props.tokenAddress) {
+        if (!isUseHubTokenId.value) {
             if (props.tokenAddress.length === 42 && props.tokenAddress.indexOf('0x') === 0) {
                 return props.tokenAddress.toLowerCase();
             } else {
@@ -84,7 +69,8 @@ export default function useHubToken() {
     // fixed for 1inch and swapAndDepositToHubProxy
     const tokenContractAddressFixNative = computed(() => {
         // const isNative = HUB_CHAIN_BY_ID[props.chainId] && props.tokenSymbol === HUB_CHAIN_BY_ID[props.chainId].coinSymbol;
-        if (isNativeToken.value) {
+        const isWrappedNative = !isUseHubTokenId.value && tokenContractAddress.value === getWrappedNativeContractAddress(props.chainId);
+        if (isNativeToken.value && !isWrappedNative) {
             return NATIVE_COIN_ADDRESS;
         } else {
             return tokenContractAddress.value;
