@@ -2,7 +2,7 @@ import Eth from 'web3-eth';
 import {TinyEmitter as Emitter} from 'tiny-emitter';
 import {web3Eth, web3EthEth, web3EthBsc, getTokenDecimals as _getTokenDecimals, getBlockNumber, getWrappedNativeContractAddress, fixNativeContractAddress} from 'minter-js-web3-sdk/src/web3.js';
 import {wait} from '@shrpne/utils/src/wait.js';
-import {ETHEREUM_API_URL, BSC_API_URL, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, NATIVE_COIN_ADDRESS, HUB_CHAIN_ID, HUB_CHAIN_DATA, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+import {NATIVE_COIN_ADDRESS, HUB_NETWORK_SLUG, HUB_CHAIN_DATA, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 
 
 export const CONFIRMATION_COUNT = 5;
@@ -240,7 +240,7 @@ export function getTokenDecimals(tokenContractAddress, chainId, hubCoinList = []
  * @return {Array<TokenInfo.AsObject>}
  */
 export function getExternalCoinList(hubCoinList, chainId) {
-    let externalNetworks = Object.values(HUB_CHAIN_ID);
+    let externalNetworks = Object.values(HUB_NETWORK_SLUG);
     if (chainId) {
         externalNetworks = externalNetworks.filter((network) => network === getHubNetworkByChain(chainId));
     }
