@@ -32,11 +32,10 @@ export default {
     },
     mixins: [validationMixin],
     fetch() {
-        this.fetchLatestBlock();
-
         let programId = this.params.id;
 
-        return getFarmProgramWithPoolData(programId)
+        return this.fetchLatestBlock()
+            .then(() => getFarmProgramWithPoolData(programId))
             .then((program) => {
                 this.program = program;
                 this.form.coin = program.tokenSymbol;

@@ -104,11 +104,19 @@ export function getBlockList(params) {
 
 /**
  * @param {number|'latest'} height
+ * @param {number|boolean} [validateExpiry] - validate if 'latest' block is expired
  * @return {Promise<Block>}
  */
-export function getBlock(height) {
+export function getBlock(height, validateExpiry = 120000) {
     if (height === 'latest') {
-        return getBlockList({limit: 1}).then((blockList) => blockList.data[0]);
+        return getBlockList({limit: 1}).then((blockList) => {
+            const block = blockList.data[0];
+            const isValidate = typeof validateExpiry === 'number' && validateExpiry > 0;
+            if (isValidate && Date.now() - new Date(block.timestamp).getTime() > validateExpiry) {
+                throw new Error('Can\'t get latest block. Explorer state expired');
+            }
+            return block;
+        });
     }
     return explorer.get(`blocks/${height}`)
         .then((response) => response.data.data);

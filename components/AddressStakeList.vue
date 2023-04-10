@@ -56,7 +56,7 @@ export default {
          * @return {number}
          */
         getUnlockTime(lockItem) {
-            if (!this.$store.state.explorer.status) {
+            if (!this.$store.state.explorer.status || this.$store.state.explorer.status.latestBlockHeight <= 0) {
                 return Date.now();
             }
             const latestBlockTimestamp = new Date(this.$store.state.explorer.status.latestBlockTime).getTime();
@@ -94,12 +94,15 @@ export default {
                         <BaseCoinSymbol class="wallet__coin-name">{{ lockItem.program.lockCoin.symbol }}</BaseCoinSymbol>
                     </td>
                     <td>
-                        <div class="u-fw-600">
-                            {{ getTimeDistance(getUnlockTime(lockItem)) }}
-                        </div>
-                        <div class="u-text-small u-text-muted u-fw-600">
-                            ≈ {{ getDate(getUnlockTime(lockItem)) }}
-                        </div>
+                        <template v-if="$store.state.explorer.status?.latestBlockHeight > 0">
+                            <div class="u-fw-600">
+                                {{ getTimeDistance(getUnlockTime(lockItem)) }}
+                            </div>
+                            <div class="u-text-small u-text-muted u-fw-600">
+                                ≈ {{ getDate(getUnlockTime(lockItem)) }}
+                            </div>
+                        </template>
+                        <template v-else>—</template>
                     </td>
                     <td class="u-fw-600">{{ prettyRound(getApr(lockItem)) }}%</td>
                     <td>
