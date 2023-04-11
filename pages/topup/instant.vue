@@ -1,8 +1,7 @@
 <script>
 import * as clipboard from 'clipbrd';
-import {HUB_NETWORK_SLUG} from '~/assets/variables.js';
+import {HUB_NETWORK_SLUG, MAINNET, NETWORK} from '~/assets/variables.js';
 import getTitle from '~/assets/get-title.js';
-import {getCard2MinterUrl} from '~/assets/utils.js';
 import BaseButtonCopyIcon from '~/components/base/BaseButtonCopyIcon.vue';
 import TopupSmartWalletForm from '~/components/TopupSmartWalletForm.vue';
 import TopupWaitMinter from '~/components/TopupWaitMinter.vue';
@@ -44,12 +43,8 @@ export default {
         isShareSupported() {
             return window.navigator.share;
         },
-        card2MinterUrl() {
-            if (this.$options.isOnboarding) {
-                return getCard2MinterUrl(this.$store.getters.address, window.location.origin + this.$i18nGetPreferredPath('/onboarding/topup/finish-card2minter'));
-            } else {
-                return getCard2MinterUrl(this.$store.getters.address, window.location.origin);
-            }
+        isMainnet() {
+            return NETWORK === MAINNET;
         },
     },
     methods: {
@@ -66,6 +61,10 @@ export default {
                 title: this.$td('My address', 'index.my-address'),
                 text: this.address,
             });
+        },
+        getTopupInnerPage(inner) {
+            const base = this.$options.isOnboarding ? '/onboarding/topup/' : '/topup/';
+            return this.$i18nGetPreferredPath(base + inner);
         },
     },
 };
@@ -107,18 +106,23 @@ export default {
                 </div>
 
                 <div class="card__content card__content--medium" v-if="!isDepositProcessing && !successDeposit">
+                    <!-- evm -->
                     <TopupSmartWalletForm/>
 
-                    <h2 class="u-h--uppercase-solid u-mt-20 u-mb-025 u-flex u-flex--align-center">
-                        <img class="u-mr-05" src="/img/icon-card.svg" alt="" role="presentation" width="24" height="24">
-                        {{ $td('Bank cards', 'deposit.title-card') }}
-                    </h2>
-                    <p class="u-text-medium">
-                        {{ $td('Top up your balance via bank card.', 'deposit.description-card') }}
-                    </p>
-                    <a class="button button--main button--full u-mt-10" :href="card2MinterUrl" target="_blank">{{ $td('Top up with Card', 'deposit.button-card') }}</a>
+                    <!-- p2p -->
+                    <template v-if="isMainnet">
+                        <h2 class="u-h--uppercase-solid u-mt-20 u-mb-025 u-flex u-flex--align-center">
+                            <img class="u-mr-05" src="/img/icon-card.svg" alt="" role="presentation" width="24" height="24">
+                            {{ $td('Bank cards', 'deposit.title-card') }}
+                        </h2>
+                        <p class="u-text-medium">
+                            {{ $td('Top up your balance via bank card.', 'deposit.description-card') }}
+                        </p>
+                        <nuxt-link class="button button--main button--full u-mt-10" :to="getTopupInnerPage('card')">{{ $td('Top up with Card', 'deposit.button-card') }}</nuxt-link>
+                    </template>
 
 
+                    <!-- minter -->
                     <h2 class="u-h--uppercase-solid u-mt-20 u-mb-025 u-flex u-flex--align-center">
                         <img class="u-mr-05" src="/img/logo-minter.svg" alt="" role="presentation" width="24" height="24">
                         {{ $td('Minter Network', 'deposit.title-minter') }}
@@ -127,7 +131,7 @@ export default {
                         {{ $td('Transfer any token from Minter to this address.', 'deposit.description-minter') }}
                     </p>
 
-                    <div class="h-field u-mt-10 u-mb-10">
+                    <div class="h-field u-mt-10">
                         <div class="h-field__content" @click="copy($store.getters.address)">
                             <div class="h-field__title">{{ $td('Minter wallet address', 'deposit.minter-address') }}</div>
                             <div class="h-field__input h-field__input--medium is-not-empty">{{ $store.getters.address }}</div>

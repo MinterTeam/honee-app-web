@@ -81,7 +81,7 @@ export default {
             <table class="u-hidden-medium-down">
                 <thead>
                 <tr>
-                    <th>{{ $td('Token', 'index.assets-stakes-table-token') }}</th>
+                    <th>{{ $td('Token', 'common.token') }}</th>
                     <th>{{ $td('Unlocks in', 'index.assets-stakes-table-unlock') }}</th>
                     <th>{{ $td('APR', 'common.apr') }}</th>
                     <th>{{ $td('Amount', 'index.assets-stakes-table-amount') }}</th>

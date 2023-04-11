@@ -60,8 +60,24 @@ export function getEvmAddressUrl(chainId, hash) {
     return host + '/address/' + hash;
 }
 
-export function getCard2MinterUrl(address, backUrl, coin = 'BIP') {
-    return `${CARD_TO_MINTER_HOST}/?coin=${coin}&address=${address}&return_url=${backUrl}`;
+export function getCard2MinterUrl({address, returnUrl, finishUrl, coin = 'BIP'}) {
+    const query = queryToString({address, returnUrl, finishUrl, coin});
+    return `${CARD_TO_MINTER_HOST}/?${query}`;
+}
+
+/**
+ * camelCase query params to snake_case query string
+ * @param {object} queryParams - object with camelCase keys
+ * @return {string}
+ */
+function queryToString(queryParams) {
+    return Object.entries(queryParams)
+        .filter(([key, value]) => value !== undefined && value !== null)
+        .map(([key, value]) => {
+            const snakeCaseKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+            return `${snakeCaseKey}=${value}`;
+        })
+        .join('&');
 }
 
 /**

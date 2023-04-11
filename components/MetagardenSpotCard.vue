@@ -51,7 +51,11 @@ export default {
         },
         card2MinterUrl() {
             const MINER_SPOT_COIN_SYMBOL = '_SPOT';
-            return getCard2MinterUrl(this.$store.getters.address, window.location.href, MINER_SPOT_COIN_SYMBOL);
+            return getCard2MinterUrl({
+                address: this.$store.getters.address,
+                returnUrl: window.location.href,
+                coin: MINER_SPOT_COIN_SYMBOL,
+            });
         },
     },
     methods: {

@@ -26,7 +26,11 @@ export default {
             return metagardenGames.filter((game) => game.isComingSoon);
         },
         card2MinterUrl() {
-            return getCard2MinterUrl(this.$store.getters.address, window.location.origin, 'METAGARDEN');
+            return getCard2MinterUrl({
+                address: this.$store.getters.address,
+                returnUrl: window.location.origin,
+                coin: 'METAGARDEN',
+            });
         },
     },
 };
