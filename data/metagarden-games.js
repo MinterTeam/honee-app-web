@@ -36,6 +36,18 @@ export default [
         },
     },
     {
+        title: 'Snatch',
+        description: 'A multiplayer game where you have to unlock bank safes to collect prizes.',
+        category: 'Lottery',
+        coin: 'SNATCH',
+        slug: 'snatch',
+        isComingSoon: true,
+        ru: {
+            description: 'Многопользовательская игра, в которой необходимо открывать банковские ячейки, чтобы забирать призы.',
+            category: 'Лотерея',
+        },
+    },
+    {
         title: 'Chess',
         description: 'Play classic chess against each other. Earn crypto by playing chess matches, climb the rankings to get rewards.',
         category: 'Board game',
