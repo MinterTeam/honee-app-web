@@ -84,6 +84,14 @@ export default defineComponent({
                     enoughToPayFee: (value) => Number(value) >= Number(this.currentData?.smartWalletRelayReward || 0),
                 },
             },
+            currentData: {
+                smartWalletSwapParamsError: {
+                    valid: (value) => !value,
+                },
+                estimationLimitForRelayRewardsError: {
+                    valid: (value) => !value,
+                },
+            },
         };
     },
     computed: {
@@ -165,6 +173,9 @@ export default defineComponent({
         showSomething() {
             return this.showExistingBalance || this.processingId || this.currentData?.showSomething;
         },
+        isLoading() {
+            return this.currentData?.isSmartWalletSwapParamsLoading || this.isConfirmationLoading;
+        },
     },
     watch: {
         showSomething: {
@@ -196,7 +207,7 @@ export default defineComponent({
                 this.$v.$touch();
                 return;
             }
-            if (this.isConfirmationLoading) {
+            if (this.isLoading) {
                 return;
             }
 
@@ -210,7 +221,7 @@ export default defineComponent({
                 console.log(error);
             }
 
-            this.isConfirmationLoading = true;
+            this.isConfirmationLoading = false;
         },
         // cancel waiting and deposit existing balance
         deposit() {
@@ -285,10 +296,12 @@ function getComponentPropsItem(networkSlug, isLegacy) {
                 <span class="form-field__error" v-if="$v.form.amount.$dirty && !$v.form.amount.required">{{ $td('Enter amount', 'form.enter-amount') }}</span>
                 <span class="form-field__error" v-else-if="$v.form.amount.$dirty && (!$v.form.amount.validAmount || !$v.form.amount.minValue)">{{ $td('Invalid amount', 'form.invalid-amount') }}</span>
                 <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.enoughToPayFee">{{ $td('Not enough to pay fee', 'form.not-enough-to-pay-fee') }}</span>
+                <span class="form-field__error" v-else-if="currentData?.estimationLimitForRelayRewardsError">{{ currentData.estimationLimitForRelayRewardsError }}</span>
+                <span class="form-field__error" v-else-if="currentData?.smartWalletSwapParamsError">{{ currentData.smartWalletSwapParamsError }}</span>
                 <!--                        <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.maxValue">{{ $td('Not enough', 'form.not-enough') }} {{ form.coinToGet }} ({{ $td('max.', 'form.max') }} {{ pretty(maxAmount) }})</span>-->
             </div>
 
-            <button type="button" class="button button--main button--full u-mt-10" :class="{'is-loading': isConfirmationLoading, 'is-disabled': $v.$invalid}" @click="openDepositConfirmation()">
+            <button type="button" class="button button--main button--full u-mt-10" :class="{'is-loading': isLoading, 'is-disabled': $v.$invalid}" @click="openDepositConfirmation()">
                 <span class="button__content">{{ $td('Deposit', 'topup.deposit-evm-balance-button') }}</span>
                 <BaseLoader class="button__loader" :isLoading="true"/>
             </button>

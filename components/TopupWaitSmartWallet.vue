@@ -100,9 +100,11 @@ export default defineComponent({
             amountEstimationAfterSwapToHub,
             amountToDeposit,
             amountAfterDeposit,
+            smartWalletAddress,
             isSmartWalletSwapParamsLoading,
             smartWalletSwapParamsError,
-            smartWalletAddress,
+            estimationAfterSwapToHubError,
+            estimationLimitForRelayRewardsError,
             /*feeTxParams: smartWalletTxParams,*/
             buildTxListAndCallSmartWallet,
             setSmartWalletSwapProps,
@@ -140,6 +142,8 @@ export default defineComponent({
             amountAfterDeposit,
             isSmartWalletSwapParamsLoading,
             smartWalletSwapParamsError,
+            estimationAfterSwapToHubError,
+            estimationLimitForRelayRewardsError,
             smartWalletAddress,
             /*feeTxParams: smartWalletTxParams,*/
             buildTxListAndCallSmartWallet,
@@ -320,6 +324,11 @@ export default defineComponent({
                 addressBalance: this.addressBalance,
                 amountAfterDeposit: this.amountAfterDeposit,
                 smartWalletRelayReward: this.smartWalletRelayReward,
+                // relay reward error
+                estimationLimitForRelayRewardsError: this.estimationLimitForRelayRewardsError,
+                // combined error
+                smartWalletSwapParamsError: this.smartWalletSwapParamsError,
+                isSmartWalletSwapParamsLoading: this.isSmartWalletSwapParamsLoading,
                 totalFeeImpact: this.totalFeeImpact,
                 showSomething: this.showSomething,
             }),
