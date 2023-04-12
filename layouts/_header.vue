@@ -25,6 +25,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        showLanguage:{
+            type: Boolean,
+            default: false,
+        },
         isMetagarden: {
             type: Boolean,
             default: false,
@@ -112,7 +116,7 @@ export default {
             <nuxt-link v-if="!isAuthorized && !simple && !isAuthPage" :to="$i18nGetPreferredPath('/auth')" type="button" class="header__controls-link">
                 {{ $td('Sign in', 'index.sign-in') }}
             </nuxt-link>
-            <div class="header__controls-language header__controls-link">
+            <div class="header__controls-language header__controls-link" v-if="showLanguage">
                 <Language/>
             </div>
             <!--</div>-->
