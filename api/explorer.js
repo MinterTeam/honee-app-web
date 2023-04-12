@@ -150,6 +150,17 @@ export function getTransaction(hash) {
  */
 export async function getBalance(address) {
     const response = await explorer.get('addresses/' + address + '?with_sum=true');
+
+    // replace empty BIP with BEE
+    const bipBalance = response.data.data.balances.find((item) => item.coin.symbol === BASE_COIN);
+    if (bipBalance && Number(bipBalance.amount) === 0) {
+        bipBalance.coin = {
+            symbol: 'BEE',
+            id: 2361,
+            type: 'token',
+        };
+    }
+
     response.data.data.balances = await prepareBalance(response.data.data.balances);
     return response.data;
 }
@@ -174,7 +185,7 @@ export async function getBalance(address) {
  * @return {Promise<Array<BalanceItem>>}
  */
 export async function prepareBalance(balanceList) {
-    balanceList = await markVerified(Promise.resolve(balanceList), 'balance');
+    balanceList = await markVerified(Promise.resolve(balanceList));
 
     return balanceList.sort((a, b) => {
             // base coin goes first
@@ -205,10 +216,9 @@ export async function prepareBalance(balanceList) {
 /**
  * @template {Coin|BalanceItem} T
  * @param {Promise<Array<T>>} coinListPromise
- * @param {'coin'|'balance'} itemType
  * @return {Promise<Array<T>>}
  */
-function markVerified(coinListPromise, itemType = 'coin') {
+function markVerified(coinListPromise) {
     const verifiedMinterCoinListPromise = getVerifiedMinterCoinList()
         .catch((error) => {
             console.log(error);
@@ -223,7 +233,8 @@ function markVerified(coinListPromise, itemType = 'coin') {
             });
 
             return coinList.map((coinItem) => {
-                const coinItemData = itemType === 'coin' ? coinItem : coinItem.coin;
+                /** @type {Coin}*/
+                const coinItemData = 'coin' in coinItem ? coinItem.coin : coinItem;
                 let verified = false;
                 if (verifiedMap[coinItemData.id]) {
                     verified = true;

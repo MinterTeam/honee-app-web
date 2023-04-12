@@ -15,6 +15,12 @@ export default {
         };
     },
     computed: {
+        hasBalance() {
+            return this.$store.state.balance.some((item) => item.amount > 0);
+        },
+        isShortBalanceLength() {
+            return this.$store.state.balance.length <= this.$options.SHORT_COUNT;
+        },
         visibleCoinList() {
             // filter zero BIP
             const cleanList = this.$store.state.balance.length <= 1
@@ -51,7 +57,7 @@ export default {
             </div>
         </div>
         <div class="u-text-right u-mt-15">
-            <div class="wallet__coin-control" v-if="$store.state.balance.length <= $options.SHORT_COUNT || isFullListActive">
+            <div class="wallet__coin-control" v-if="hasBalance && (isShortBalanceLength || isFullListActive)">
                 <nuxt-link class="link--default u-hidden-medium-down" :to="$i18nGetPreferredPath('/sell-all-balance')">
                     {{ $td('Sell all coins', 'index.assets-coins-sell-all') }}
                 </nuxt-link>
@@ -59,7 +65,7 @@ export default {
                     {{ $td('Sell all coins', 'index.assets-coins-sell-all') }}
                 </nuxt-link>
             </div>
-            <div class="wallet__coin-control" v-if="$store.state.balance.length > $options.SHORT_COUNT">
+            <div class="wallet__coin-control" v-if="!isShortBalanceLength">
                 <button
                     type="button"
                     class="link--default u-semantic-button u-hidden-medium-down"

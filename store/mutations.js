@@ -20,7 +20,7 @@ export default {
         state.transactionListInfo = txListInfo;
     },
     SET_BALANCE: (state, balanceList) => {
-        state.balance = balanceList || [];
+        state.balance = Object.freeze(balanceList) || [];
     },
     SET_BALANCE_TOTAL: (state, balanceData) => {
         state.totalBalanceSum = balanceData.totalBalanceSum;
