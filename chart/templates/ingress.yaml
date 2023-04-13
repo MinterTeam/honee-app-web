@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ include "chart.fullname" . }}
@@ -24,12 +24,9 @@ spec:
       http:
         paths:
           - backend:
-              service:
-                name: "{{ include "chart.fullname" . }}"
-                port:
-                 number: {{ .Values.service.port }}
+              serviceName: "{{ include "chart.fullname" . }}"
+              servicePort: {{ .Values.service.port }}
             path: /
-            pathType: ImplementationSpecific
   tls:
     - hosts:
         - {{ .Values.ingress.domain }}
