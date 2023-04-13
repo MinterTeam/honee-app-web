@@ -204,6 +204,8 @@ export default {
         'cam-allow': 'Разрешите доступ к камере',
 
         'confirm-logout-title': 'Вы действительно хотите выйти?',
+
+        'show-all-earn-options-link': 'Показать другие варианты',
     },
     topup: {
         'title': 'Пополнить баланс',
@@ -397,6 +399,7 @@ export default {
         'category-swap': 'Обмен',
         'category-earn': 'Заработок',
         'category-win': 'Розыгрыш',
+        'category-bee': 'Зарабатывай с BEE',
     },
     form: {
         'toggle-simple-mode': 'Убрать сообщение',
