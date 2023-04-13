@@ -15,8 +15,12 @@
     "checkJs": true,
     "strict": false,
     "noImplicitThis": true,
-    "noEmit": true,
+    //    "noEmit": true,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "outFile": "types/types.d.ts",
     "allowImportingTsExtensions": true,
+//    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
@@ -51,6 +55,7 @@
 //    "scripts/**/*",
     "store/**/*",
 
+    "tmp/@types/nuxt.d.ts",
     "tmp/@types/types.d.ts"
   ],
   "exclude": [

@@ -125,6 +125,7 @@
     "imagemin-svgo": "^10.0.1",
     "jest": "^29.5.0",
     "jsdoc": "^3.6.11",
+    "jsdoc-plugin-intersection": "^1.0.4",
     "less-loader": "^7",
     "minter-js-hub": "^0.0.6",
     "node-jq": "^2.3.5",

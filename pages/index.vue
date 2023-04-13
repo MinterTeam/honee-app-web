@@ -2,6 +2,7 @@
 import cardList from '~/data/cards.js';
 import Card from '~/components/Card.vue';
 import CardHead from '~/components/CardHead.vue';
+import CardPremium from '~/components/CardPremium.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
 import InvestmentList from '~/components/InvestmentList.vue';
 import PortfolioLeaderboard from '~/components/PortfolioLeaderboard.vue';
@@ -37,6 +38,7 @@ export default {
     components: {
         Card,
         CardHead,
+        CardPremium,
         AddressAssets,
         InvestmentList,
         PortfolioLeaderboard,
@@ -100,31 +102,15 @@ export default {
     <div class="u-container--large">
         <AddressAssets/>
 
-        <PortfolioList class="u-mt-25" limit="3"/>
-        <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio')">
-            {{ $td('View all portfolios', 'portfolio.view-all') }}
-        </nuxt-link>
-
-        <InvestmentList
-            class="u-mt-25"
-        />
-        <!--
-        <nuxt-link class="button button&#45;&#45;ghost-main button&#45;&#45;full u-mt-20" v-show="portfolioListCopied.length > 3" :to="$i18nGetPreferredPath('/portfolio/copied')">
-            {{ $td('View all copied portfolios', 'portfolio.view-all-copied') }}
-        </nuxt-link>
-        -->
-
+        <!-- BEE earning options -->
         <div class="u-mt-25">
             <h2 class="u-h2 u-mb-15">
-                <template v-if="!isShowOtherEarnOptions">
-                    {{ $td('Earn with BEE', `action.category-bee`) }}
-                </template>
-                <template v-else>
-                    {{ $td($options.cardList.earn.title, `action.category-earn`) }}
-                </template>
+                {{ $td('Earn with BEE', `action.category-bee`) }}
             </h2>
             <div class="u-grid u-grid--vertical-margin">
-                <!-- BEE earning options -->
+                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
+                    <CardPremium/>
+                </div>
                 <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnBeeList" :key="card.action">
                     <Card :card="card" v-if="card.action"/>
                 </div>
@@ -135,19 +121,42 @@ export default {
                         <a class="button button--full u-mt-10" href="https://t.me/MinterContestBot" target="_blank">{{ $td('Share to earn', 'index.card-twitter-button') }}</a>
                     </div>
                 </div>-->
+            </div>
+        </div>
 
-                <!-- Other earning options -->
-                <template v-if="isShowOtherEarnOptions">
+        <InvestmentList
+            class="u-mt-25"
+        />
+
+        <button v-if="!isShowOtherEarnOptions" type="button" class="button button--ghost-main button--full u-mt-25" @click="isShowOtherEarnOptions = true">
+            {{ $td('Show other options', 'index.show-all-earn-options-link') }}
+        </button>
+
+        <!-- Other -->
+        <template v-if="isShowOtherEarnOptions">
+            <!-- earning options -->
+            <div class="u-mt-25">
+                <h2 class="u-h2 u-mb-15">
+                    {{ $td($options.cardList.earn.title, `action.category-earn`) }}
+                </h2>
+                <div class="u-grid u-grid--vertical-margin">
                     <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnOtherList" :key="card.action">
                         <Card :card="card" v-if="card.action"/>
                     </div>
-                </template>
+                </div>
             </div>
 
-            <button v-if="!isShowOtherEarnOptions" type="button" class="button button--ghost-main button--full u-mt-10" @click="isShowOtherEarnOptions = true">
-                {{ $td('Show other options', 'index.show-all-earn-options-link') }}
-            </button>
-        </div>
+            <PortfolioList class="u-mt-25" limit="3"/>
+            <nuxt-link class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio')">
+                {{ $td('View all portfolios', 'portfolio.view-all') }}
+            </nuxt-link>
+            <!--
+            <nuxt-link class="button button&#45;&#45;ghost-main button&#45;&#45;full u-mt-20" v-show="portfolioListCopied.length > 3" :to="$i18nGetPreferredPath('/portfolio/copied')">
+                {{ $td('View all copied portfolios', 'portfolio.view-all-copied') }}
+            </nuxt-link>
+            -->
+
+
 
         <!--<div class="u-mt-25" v-for="(categoryCards, categorySlug) in cardList" :key="categorySlug">
             <h2 class="u-h2 u-mb-15">
@@ -230,5 +239,7 @@ export default {
         <nuxt-link v-if="portfolioListManaged.length === 0" class="button button--ghost-main button--full u-mt-20" :to="$i18nGetPreferredPath('/portfolio/new')">
             + {{ $td('Create portfolio', 'portfolio.create-new-link') }}
         </nuxt-link>
+
+        </template>
     </div>
 </template>
