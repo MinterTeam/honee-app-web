@@ -1,13 +1,13 @@
 <script>
 import InlineSvg from 'vue-inline-svg';
-import {HUB_NETWORK, DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR} from '~/assets/variables.js';
+import {HUB_NETWORK_SLUG, DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR} from '~/assets/variables.js';
 import Language from '~/components/layout/Language.vue';
 import Modal from '~/components/base/Modal.vue';
 import Topup from '~/components/Topup.vue';
 import ReferralCard from '~/components/ReferralCard.vue';
 
 export default {
-    HUB_NETWORK,
+    HUB_NETWORK_SLUG,
     components: {
         InlineSvg,
         Language,
@@ -25,6 +25,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        showLanguage:{
+            type: Boolean,
+            default: false,
+        },
         isMetagarden: {
             type: Boolean,
             default: false,
@@ -33,6 +37,7 @@ export default {
     data() {
         return {
             isTopupModalOpen: false,
+            isLogoutModalOpen: false,
         };
     },
     computed: {
@@ -106,13 +111,13 @@ export default {
                 <img class="header__controls-user-avatar u-mr-05 u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation" width="24" height="24"/>
                 <span class="header__controls-user-name">{{ $store.getters.username }}</span>
             </button>
-            <button v-if="isAuthorized && !simple && !isMetagarden" type="button" class="header__controls-link link u-semantic-button metagarden-layout__hide" @click="logout()">
+            <button v-if="isAuthorized && !simple && !isMetagarden" type="button" class="header__controls-link link u-semantic-button metagarden-layout__hide" @click="isLogoutModalOpen = true">
                 <img src="/img/icon-logout.svg" width="24" height="24" alt="Logout">
             </button>
             <nuxt-link v-if="!isAuthorized && !simple && !isAuthPage" :to="$i18nGetPreferredPath('/auth')" type="button" class="header__controls-link">
                 {{ $td('Sign in', 'index.sign-in') }}
             </nuxt-link>
-            <div class="header__controls-language header__controls-link">
+            <div class="header__controls-language header__controls-link" v-if="showLanguage">
                 <Language/>
             </div>
             <!--</div>-->
@@ -125,12 +130,32 @@ export default {
             :disableOutsideClick="false"
         >
             <Topup
-                :network-slug="$options.HUB_NETWORK.MINTER"
+                :network-slug="$options.HUB_NETWORK_SLUG.MINTER"
                 :title="$td('Your wallet address', 'receive.title')"
                 :description="false"
                 :back-url="false"
                 @click-back="isTopupModalOpen = false"
             />
+        </Modal>
+
+        <Modal
+            modalContainerClass="card card__content u-text-center"
+            :isOpen.sync="isLogoutModalOpen"
+            :hideCloseButton="false"
+            :disableOutsideClick="false"
+        >
+            <h2 class="u-h3 u-mb-10">
+                {{ $td('Are you sure you want to logout?', 'index.confirm-logout-title') }}
+            </h2>
+            <button
+                class="button button--main button--full" type="button" data-focus-on-open
+                @click="logout()"
+            >
+                <span class="button__content">{{ $td('Logout', 'form.submit-confirm-button') }}</span>
+            </button>
+            <button class="button button--ghost-main button--full" type="button" @click="isLogoutModalOpen = false">
+                {{ $td('Cancel', 'form.submit-cancel-button') }}
+            </button>
         </Modal>
     </header>
 </template>

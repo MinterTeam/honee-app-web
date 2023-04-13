@@ -104,11 +104,19 @@ export function getBlockList(params) {
 
 /**
  * @param {number|'latest'} height
+ * @param {number|boolean} [validateExpiry] - validate if 'latest' block is expired
  * @return {Promise<Block>}
  */
-export function getBlock(height) {
+export function getBlock(height, validateExpiry = 120000) {
     if (height === 'latest') {
-        return getBlockList({limit: 1}).then((blockList) => blockList.data[0]);
+        return getBlockList({limit: 1}).then((blockList) => {
+            const block = blockList.data[0];
+            const isValidate = typeof validateExpiry === 'number' && validateExpiry > 0;
+            if (isValidate && Date.now() - new Date(block.timestamp).getTime() > validateExpiry) {
+                throw new Error('Can\'t get latest block. Explorer state expired');
+            }
+            return block;
+        });
     }
     return explorer.get(`blocks/${height}`)
         .then((response) => response.data.data);
@@ -142,6 +150,17 @@ export function getTransaction(hash) {
  */
 export async function getBalance(address) {
     const response = await explorer.get('addresses/' + address + '?with_sum=true');
+
+    // replace empty BIP with BEE
+    const bipBalance = response.data.data.balances.find((item) => item.coin.symbol === BASE_COIN);
+    if (bipBalance && Number(bipBalance.amount) === 0) {
+        bipBalance.coin = {
+            symbol: 'BEE',
+            id: 2361,
+            type: 'token',
+        };
+    }
+
     response.data.data.balances = await prepareBalance(response.data.data.balances);
     return response.data;
 }
@@ -166,7 +185,7 @@ export async function getBalance(address) {
  * @return {Promise<Array<BalanceItem>>}
  */
 export async function prepareBalance(balanceList) {
-    balanceList = await markVerified(Promise.resolve(balanceList), 'balance');
+    balanceList = await markVerified(Promise.resolve(balanceList));
 
     return balanceList.sort((a, b) => {
             // base coin goes first
@@ -197,10 +216,9 @@ export async function prepareBalance(balanceList) {
 /**
  * @template {Coin|BalanceItem} T
  * @param {Promise<Array<T>>} coinListPromise
- * @param {'coin'|'balance'} itemType
  * @return {Promise<Array<T>>}
  */
-function markVerified(coinListPromise, itemType = 'coin') {
+function markVerified(coinListPromise) {
     const verifiedMinterCoinListPromise = getVerifiedMinterCoinList()
         .catch((error) => {
             console.log(error);
@@ -215,7 +233,8 @@ function markVerified(coinListPromise, itemType = 'coin') {
             });
 
             return coinList.map((coinItem) => {
-                const coinItemData = itemType === 'coin' ? coinItem : coinItem.coin;
+                /** @type {Coin}*/
+                const coinItemData = 'coin' in coinItem ? coinItem.coin : coinItem;
                 let verified = false;
                 if (verifiedMap[coinItemData.id]) {
                     verified = true;

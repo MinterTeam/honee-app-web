@@ -46,6 +46,7 @@ export default {
         'terms': 'Условия',
         'learn-more': 'Подробнее',
         'buy': 'Купить',
+        'token': 'Токен',
     },
     error: {
         'title-error': 'Ошибка',
@@ -133,7 +134,6 @@ export default {
         'assets-coins-view-all': 'Показать все монеты',
         'assets-coins-view-less': 'Показать меньше монет',
         'assets-stakes': 'Стейки',
-        'assets-stakes-table-token': 'Токен',
         'assets-stakes-table-unlock': 'Разблокировка',
         'assets-stakes-table-unlock-on': 'Разблокировка',
         'assets-stakes-table-amount': 'Количество',

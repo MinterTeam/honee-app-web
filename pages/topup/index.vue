@@ -1,7 +1,6 @@
 <script>
 import getTitle from '~/assets/get-title.js';
 import {CARD_TO_MINTER_HOST, NETWORK, MAINNET} from '~/assets/variables.js';
-import {getCard2MinterUrl} from '~/assets/utils.js';
 import InlineSvg from 'vue-inline-svg';
 
 export default {
@@ -27,21 +26,14 @@ export default {
         };
     },
     computed: {
-        card2MinterUrl() {
-            if (this.$options.isOnboarding) {
-                return getCard2MinterUrl(this.$store.getters.address, window.location.origin + this.$i18nGetPreferredPath('/onboarding/topup/finish-card2minter'));
-            } else {
-                return getCard2MinterUrl(this.$store.getters.address, window.location.origin);
-            }
-        },
         isMainnet() {
             return NETWORK === MAINNET;
         },
     },
     methods: {
-        getTopupNetworkPage(network) {
+        getTopupInnerPage(inner) {
             const base = this.$options.isOnboarding ? '/onboarding/topup/' : '/topup/';
-            return this.$i18nGetPreferredPath(base + network);
+            return this.$i18nGetPreferredPath(base + inner);
         },
     },
 };
@@ -55,19 +47,19 @@ export default {
             </h1>
             <p>{{ $td('Choose one of these options', 'topup.description') }}</p>
 
-            <a class="button button--main button--full u-mt-10" :href="card2MinterUrl" v-if="isMainnet">
+            <nuxt-link class="button button--main button--full u-mt-10" :to="getTopupInnerPage('card')" v-if="isMainnet">
                 <InlineSvg class="button__icon" src="/img/icon-topup-card.svg" alt="" role="presentation"/>
                 {{ $td('Card to card', 'topup.top-up-with-card2card') }}
-            </a>
-            <nuxt-link class="button button--main button--full u-mt-10" :to="getTopupNetworkPage('bsc')">
+            </nuxt-link>
+            <nuxt-link class="button button--main button--full u-mt-10" :to="getTopupInnerPage('bsc')">
                 <InlineSvg class="button__icon" src="/img/icon-topup-bnb.svg" alt="" role="presentation"/>
                 {{ $td('Top up with BNB', 'topup.top-up-with-network', {network: 'BNB'}) }}
             </nuxt-link>
-            <nuxt-link class="button button--main button--full u-mt-10" :to="getTopupNetworkPage('ethereum')">
+            <nuxt-link class="button button--main button--full u-mt-10" :to="getTopupInnerPage('ethereum')">
                 <InlineSvg class="button__icon" src="/img/icon-topup-eth.svg" alt="" role="presentation"/>
                 {{ $td('Top up with ETH', 'topup.top-up-with-network', {network: 'ETH'}) }}
             </nuxt-link>
-            <nuxt-link class="button button--main button--full u-mt-10" :to="getTopupNetworkPage('minter')">
+            <nuxt-link class="button button--main button--full u-mt-10" :to="getTopupInnerPage('minter')">
                 <InlineSvg class="button__icon" src="/img/icon-topup-minter.svg" alt="" role="presentation"/>
                 {{ $td('Top up with Minter', 'topup.top-up-with-network', {network: 'Minter'}) }}
             </nuxt-link>

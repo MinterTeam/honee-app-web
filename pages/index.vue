@@ -55,9 +55,23 @@ export default {
         return {
             portfolioListCopied: [],
             portfolioListManaged: [],
+            isShowOtherEarnOptions: false,
         };
     },
     computed: {
+        earnBeeList() {
+            return this.$options.cardList.earn.cards.filter((card) => {
+                return card.action === '/stake/19';
+            });
+        },
+        earnOtherList() {
+            return this.$options.cardList.earn.cards.filter((card) => {
+                const isBee = this.earnBeeList.some((beeCard) => {
+                    return beeCard.action === card.action;
+                });
+                return !isBee;
+            });
+        },
         cardList() {
             let result = {};
             // transform cards
@@ -100,7 +114,42 @@ export default {
         </nuxt-link>
         -->
 
-        <div class="u-mt-25" v-for="(categoryCards, categorySlug) in cardList" :key="categorySlug">
+        <div class="u-mt-25">
+            <h2 class="u-h2 u-mb-15">
+                <template v-if="!isShowOtherEarnOptions">
+                    {{ $td('Earn with BEE', `action.category-bee`) }}
+                </template>
+                <template v-else>
+                    {{ $td($options.cardList.earn.title, `action.category-earn`) }}
+                </template>
+            </h2>
+            <div class="u-grid u-grid--vertical-margin">
+                <!-- BEE earning options -->
+                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnBeeList" :key="card.action">
+                    <Card :card="card" v-if="card.action"/>
+                </div>
+                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
+                    <div class="card card--action card--invert card--twitter card__content--small">
+                        <CardHead :card="$options.TWITTER_CARD_HEAD"/>
+                        <p class="card__action-description">{{ $td('Earn BEE by retweeting and liking on Twitter! Proceed to Telegram-bot for further instructions.', 'index.card-twitter-description') }}</p>
+                        <a class="button button--full u-mt-10" href="https://t.me/MinterContestBot" target="_blank">{{ $td('Share to earn', 'index.card-twitter-button') }}</a>
+                    </div>
+                </div>
+
+                <!-- Other earning options -->
+                <template v-if="isShowOtherEarnOptions">
+                    <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnOtherList" :key="card.action">
+                        <Card :card="card" v-if="card.action"/>
+                    </div>
+                </template>
+            </div>
+
+            <button v-if="!isShowOtherEarnOptions" type="button" class="button button--ghost-main button--full u-mt-10" @click="isShowOtherEarnOptions = true">
+                {{ $td('Show other options', 'index.show-all-earn-options-link') }}
+            </button>
+        </div>
+
+        <!--<div class="u-mt-25" v-for="(categoryCards, categorySlug) in cardList" :key="categorySlug">
             <h2 class="u-h2 u-mb-15">
                 {{ $td(capitalize($options.cardList[categorySlug].title || categorySlug), `action.category-${categorySlug.toLowerCase()}`) }}
             </h2>
@@ -108,7 +157,7 @@ export default {
                 <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in categoryCards" :key="card.action || card">
                     <Card :card="card" v-if="card.action"/>
 
-                    <!--<div class="card card__content--small" v-if="card === $options.BASE_CARD.DELEGATION">
+                    <div class="card card__content--small" v-if="card === $options.BASE_CARD.DELEGATION">
                         <h3 class="card__action-title-value u-mb-05">{{ $td('Delegation', 'index.delegation') }}</h3>
                         <p class="">{{ $td('Bonding your BIP or custom coins to a network validator and getting rewards (portion of block rewards + transaction fees). The returns are shared among all delegators proportionally to their stake, minus validator’s fee.', 'index.delegation-desc') }}</p>
 
@@ -121,9 +170,9 @@ export default {
                         <a class="button button--ghost-main button--full u-mt-05" href="https://chainik.io/validators" target="_blank">
                             {{ $td('Validators', 'index.validators') }}
                         </a>
-                    </div>-->
+                    </div>
 
-                    <!--<div class="card card__content--small" v-if="card === $options.BASE_CARD.LIQUIDITY">
+                    <div class="card card__content&#45;&#45;small" v-if="card === $options.BASE_CARD.LIQUIDITY">
                         <h3 class="card__action-title-value u-mb-05">{{ $td('Providing liquidity', 'index.providing-liquidity') }}</h3>
                         <p class="">
                             <template v-if="$i18n.locale === 'en'">
@@ -149,7 +198,7 @@ export default {
                         <a class="button button--ghost-main button--full u-mt-05" href="https://chainik.io/lottery/" target="_blank">
                             {{ $td('Giveaway programs', 'index.giveaway-programs') }}
                         </a>
-                    </div>-->
+                    </div>
                 </div>
 
                 <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
@@ -160,7 +209,7 @@ export default {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
 
         <PortfolioLeaderboard class="u-mt-25" limit="5"/>
 

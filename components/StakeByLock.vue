@@ -34,7 +34,6 @@ export default {
     },
     mixins: [validationMixin],
     fetch() {
-        this.fetchLatestBlock();
 
         let programId = this.params.id;
         if (programId === 'BEE') {
@@ -44,7 +43,8 @@ export default {
             programId = 2;
         }
 
-        return getStakingProgram(programId)
+        return this.fetchLatestBlock()
+            .then(() => getStakingProgram(programId))
             .then((stakingProgram) => {
                 this.stakingProgram = stakingProgram;
                 const isValidQueryDuration = !!stakingProgram.options[this.$route.query.duration];
@@ -112,10 +112,10 @@ export default {
     },
     computed: {
         isProgramTimedOut() {
-            if (!this.stakingProgram || !this.$store.state.explorer.status) {
+            if (!this.stakingProgram || !this.latestBlockHeight) {
                 return false;
             }
-            return this.stakingProgram.joinEndAtBlock - this.$store.state.explorer.status.latestBlockHeight <= 12;
+            return this.stakingProgram.joinEndAtBlock - this.latestBlockHeight <= 12;
         },
         maxValueToLock() {
             if (!this.stakingProgram?.limit) {
