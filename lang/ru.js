@@ -202,6 +202,8 @@ export default {
         'giveaway-programs': 'Лотереи',
 
         'cam-allow': 'Разрешите доступ к камере',
+
+        'confirm-logout-title': 'Вы действительно хотите выйти?',
     },
     topup: {
         'title': 'Пополнить баланс',
@@ -745,5 +747,9 @@ export default {
         'join-channel': 'Подписаться на канал',
         'join-conversation': 'Вступить в группу',
         'game-community': 'Сообщество игры',
+    },
+    'deposit-p2p': {
+        'title': 'Пополнение с карты',
+        'description': 'Выберите токен, который хотите купить',
     },
 };

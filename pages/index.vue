@@ -128,13 +128,13 @@ export default {
                 <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnBeeList" :key="card.action">
                     <Card :card="card" v-if="card.action"/>
                 </div>
-                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
+                <!--<div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
                     <div class="card card--action card--invert card--twitter card__content--small">
                         <CardHead :card="$options.TWITTER_CARD_HEAD"/>
                         <p class="card__action-description">{{ $td('Earn BEE by retweeting and liking on Twitter! Proceed to Telegram-bot for further instructions.', 'index.card-twitter-description') }}</p>
                         <a class="button button--full u-mt-10" href="https://t.me/MinterContestBot" target="_blank">{{ $td('Share to earn', 'index.card-twitter-button') }}</a>
                     </div>
-                </div>
+                </div>-->
 
                 <!-- Other earning options -->
                 <template v-if="isShowOtherEarnOptions">
