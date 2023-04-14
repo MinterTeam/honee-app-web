@@ -41,6 +41,38 @@ export default {
                 },
             },
             {
+                caption: 'Yield farming',
+                coin: ['BEE', 'USDTE'],
+                description: 'Put your BEE and USDTE into a liquidity pool for getting daily rewards.',
+                stats: {
+                    apr: {
+                        percent: '73',
+                    },
+                },
+                tags: ['Farming'],
+                action: `/farm/BEE/USDTE`,
+                ru: {
+                    description: 'Поместите свои BEE и USDTE в пул ликвидности, чтобы получать ежедневные вознаграждения.',
+                    caption: 'Фарминг',
+                },
+            },
+            {
+                caption: 'Yield farming',
+                coin: ['BEE', 'USDTBSC'],
+                description: 'Put your BEE and USDTBSC into a liquidity pool for getting daily rewards.',
+                stats: {
+                    apr: {
+                        percent: '73',
+                    },
+                },
+                tags: ['Farming'],
+                action: `/farm/BEE/USDTBSC`,
+                ru: {
+                    description: 'Поместите свои BEE и USDTBSC в пул ликвидности, чтобы получать ежедневные вознаграждения.',
+                    caption: 'Фарминг',
+                },
+            },
+            {
                 caption: 'Stake & Earn',
                 coin: `BEE`,
                 description: 'Stake BEE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
