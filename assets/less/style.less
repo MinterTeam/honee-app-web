@@ -336,6 +336,9 @@
 @media (max-width: @breakpoint-large-down) {
     .header__premium-item {
         order: 2;
+        margin-left: 0;
+        .header__controls-link {margin-left: 0;}
+        &.header__controls-divider {margin-inline: 16px;}
     }
 }
 @media (min-width: @breakpoint-small-up) {
