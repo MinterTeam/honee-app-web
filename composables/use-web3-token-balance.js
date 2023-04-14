@@ -1,11 +1,11 @@
 import { reactive, computed, watch } from 'vue';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {BSC_CHAIN_ID, ETHEREUM_CHAIN_ID} from '~/assets/variables.js';
-import {wait} from '~/assets/utils/wait.js';
-import CancelError from '~/assets/utils/error-cancel.js';
+import {wait} from '@shrpne/utils/src/wait.js';
+import CancelError from '@shrpne/utils/src/error-cancel.js';
 import useWeb3Balance from '~/composables/use-web3-balance.js';
 import useHubToken from '~/composables/use-hub-token.js';
-import {createCancelableSignal} from '~/assets/utils/cancelable-signal.js';
+import {createCancelableSignal} from '@shrpne/utils/src/cancelable-signal.js';
 
 const { web3Balance, web3Allowance, getBalance, getAllowance} = useWeb3Balance();
 

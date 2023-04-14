@@ -9,7 +9,7 @@
  * ---------------------------------------------------------------
  */
 
-export interface CoinItem {
+interface CoinItem {
   /**
    * @format float64
    * @example 118.6
@@ -42,11 +42,11 @@ export interface CoinItem {
   price?: number;
 }
 
-export interface CoinList {
+interface CoinList {
   list: CoinItem[];
 }
 
-export interface ConsumerPortfolio {
+interface ConsumerPortfolio {
   coins: PortfolioItem[];
   /** @example "my desc" */
   description: string;
@@ -78,7 +78,7 @@ export interface ConsumerPortfolio {
   title: string;
 }
 
-export interface ConsumerPortfolioList {
+interface ConsumerPortfolioList {
   /**
    * @format float64
    * @example 2038.2
@@ -88,9 +88,9 @@ export interface ConsumerPortfolioList {
   pagination: Pagination;
 }
 
-export type OwnerAddress = string;
+type OwnerAddress = string;
 
-export interface Pagination {
+interface Pagination {
   /**
    * @format uint32
    * @example 2
@@ -113,7 +113,7 @@ export interface Pagination {
   total: number;
 }
 
-export interface Portfolio {
+interface Portfolio {
   coins: PortfolioItem[];
   /** @example "my desc" */
   description: string;
@@ -129,7 +129,7 @@ export interface Portfolio {
   title: string;
 }
 
-export interface PortfolioError {
+interface PortfolioError {
   /**
    * @format int32
    * @example 999
@@ -140,7 +140,7 @@ export interface PortfolioError {
   type?: string;
 }
 
-export interface PortfolioInterval {
+interface PortfolioInterval {
   coins: PortfolioItem[];
   /** @example "my desc" */
   description: string;
@@ -170,7 +170,7 @@ export interface PortfolioInterval {
   title: string;
 }
 
-export interface PortfolioItem {
+interface PortfolioItem {
   /**
    * @format float64
    * @min 5
@@ -185,17 +185,17 @@ export interface PortfolioItem {
   id: number;
 }
 
-export interface PortfolioList {
+interface PortfolioList {
   list: Portfolio[];
   pagination: Pagination;
 }
 
-export interface PortfolioListInterval {
+interface PortfolioListInterval {
   list: PortfolioInterval[];
   pagination: Pagination;
 }
 
-export interface Profit {
+interface Profit {
   /**
    * @format float64
    * @example 21.59
@@ -233,7 +233,7 @@ export interface Profit {
   weekly: number;
 }
 
-export interface UpdateConsumerPortfolio {
+interface UpdateConsumerPortfolio {
   /**
    * @format int64
    * @example 1902
@@ -249,7 +249,7 @@ export interface UpdateConsumerPortfolio {
   timestamp: string;
 }
 
-export interface UpdatePortfolio {
+interface UpdatePortfolio {
   /**
    * @maxItems 10
    * @minItems 2

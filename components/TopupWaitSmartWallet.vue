@@ -3,15 +3,15 @@ import {defineComponent} from 'vue';
 import stripZeros from 'pretty-num/src/strip-zeros.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_NETWORK_SLUG} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
-import {wait, waitCondition} from '~/assets/utils/wait.js';
+import {wait, waitCondition} from '@shrpne/utils/src/wait.js';
 import {pretty} from '~/assets/utils.js';
 import {findHubCoinItemByTokenAddress, findHubCoinItem, waitHubTransferToMinter} from '~/api/hub.js';
-import {waitRelayTxSuccess} from '~/api/smart-wallet-relay.js';
+import {waitRelayTxSuccess} from 'minter-js-web3-sdk/src/api/smart-wallet-relay.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3AddressBalance from '~/composables/use-web3-address-balance';
-import useWeb3SmartWalletSwap from '~/composables/use-web3-smartwallet-swap.js';
+import useWeb3SmartWalletSwap from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet-swap.js';
 import useTxService from '~/composables/use-tx-service.js';
 import {TOP_UP_NETWORK} from '~/components/Topup.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
@@ -61,6 +61,7 @@ export default defineComponent({
         const {
             initPromise: hubInfoInitPromise,
             networkNativeCoin,
+            networkGasPrice,
             hubTokenList,
             setHubOracleProps,
             fetchHubPriceList,
@@ -94,15 +95,16 @@ export default defineComponent({
 
             gasPrice,
             relayRewardAmount,
-            // maxRelayRewardAmount,
             amountEstimationLimitForRelayReward: smartWalletRelayReward,
             amountToSellForSwapToHub,
             amountEstimationAfterSwapToHub,
             amountToDeposit,
             amountAfterDeposit,
+            smartWalletAddress,
             isSmartWalletSwapParamsLoading,
             smartWalletSwapParamsError,
-            smartWalletAddress,
+            estimationAfterSwapToHubError,
+            estimationLimitForRelayRewardsError,
             /*feeTxParams: smartWalletTxParams,*/
             buildTxListAndCallSmartWallet,
             setSmartWalletSwapProps,
@@ -117,6 +119,7 @@ export default defineComponent({
 
             hubInfoInitPromise,
             // networkNativeCoin,
+            networkGasPrice,
             hubTokenList,
             setHubOracleProps,
             fetchHubPriceList,
@@ -132,7 +135,6 @@ export default defineComponent({
 
             gasPrice,
             relayRewardAmount,
-            // maxRelayRewardAmount,
             smartWalletRelayReward,
             amountToSellForSwapToHub,
             amountEstimationAfterSwapToHub,
@@ -140,6 +142,8 @@ export default defineComponent({
             amountAfterDeposit,
             isSmartWalletSwapParamsLoading,
             smartWalletSwapParamsError,
+            estimationAfterSwapToHubError,
+            estimationLimitForRelayRewardsError,
             smartWalletAddress,
             /*feeTxParams: smartWalletTxParams,*/
             buildTxListAndCallSmartWallet,
@@ -204,14 +208,17 @@ export default defineComponent({
             }
             return '';
         },
+        /** @type {HubCoinItem|undefined} */
         fallbackHubCoin() {
             return findHubCoinItem(this.hubTokenList, this.fallbackSymbol);
         },
+        /** @type {HubCoinItem|undefined} */
         depositHubCoin() {
             // if token to sell exists in Hub bridge, then set is as tokenToBuy, so swap will be skipped and token will be deposited as is
             // otherwise buy USDT
             return this.hubCoin || this.fallbackHubCoin;
         },
+        /** @type {TokenInfo.AsObject|undefined} */
         depositHubToken() {
             return this.depositHubCoin
                 ? this.depositHubCoin[this.hubChainData.hubNetworkSlug]
@@ -268,8 +275,10 @@ export default defineComponent({
                 return {
                     privateKey: this.$store.getters.privateKey,
                     evmAccountAddress: this.$store.getters.evmAddress,
+                    depositDestinationAddress: this.$store.getters.evmAddress,
                     chainId: this.hubChainData.chainId,
                     isLegacy: this.isLegacy,
+                    gasPrice: this.networkGasPrice,
                     valueToSell: this.selectedAmount,
                     tokenToSellContractAddress: this.selectedBalanceItem?.tokenContractAddress,
                     tokenToSellDecimals: this.selectedBalanceItem?.decimals,
@@ -315,6 +324,11 @@ export default defineComponent({
                 addressBalance: this.addressBalance,
                 amountAfterDeposit: this.amountAfterDeposit,
                 smartWalletRelayReward: this.smartWalletRelayReward,
+                // relay reward error
+                estimationLimitForRelayRewardsError: this.estimationLimitForRelayRewardsError,
+                // combined error
+                smartWalletSwapParamsError: this.smartWalletSwapParamsError,
+                isSmartWalletSwapParamsLoading: this.isSmartWalletSwapParamsLoading,
                 totalFeeImpact: this.totalFeeImpact,
                 showSomething: this.showSomething,
             }),

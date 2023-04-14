@@ -5,10 +5,10 @@ import required from 'vuelidate/src/validators/required';
 import minLength from 'vuelidate/src/validators/minLength';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {convertFromPip} from 'minterjs-util/src/converter.js';
-import Big, {BIG_ROUND_DOWN} from '~/assets/big.js';
+import Big, {BIG_ROUND_DOWN} from 'minterjs-util/src/big.js';
 import {PREMIUM_STAKE_PROGRAM_ID, PREMIUM_STAKE_LOCK_DURATION, SUCCESS_FEE_TEAM_ADDRESS, SUCCESS_FEE_FUND_ADDRESS, HUB_CHAIN_DATA, HUB_NETWORK} from '~/assets/variables.js';
 import {pretty} from '~/assets/utils.js';
-import {wait} from '~/assets/utils/wait.js';
+import {wait} from '@shrpne/utils/src/wait.js';
 import {getBalance, getBlock} from '~/api/explorer.js';
 import {postConsumerPortfolio} from '~/api/portfolio.js';
 import usePortfolioWallet from '~/composables/use-portfolio-wallet.js';
@@ -298,7 +298,7 @@ export default {
                     prepare: () => {
                         // wait for computed depended on withdrawFee and withdrawValue to recalculate
                         return wait(50)
-                            .then(() => this.swsList[index].buildTxListAndCallSmartWallet({overrideExtraNonce: swsExtraNonce}))
+                            .then(() => this.swsList[index].buildTxListAndCallSmartWallet({extraNonce: swsExtraNonce}))
                             .then((result) => {
                                 swsExtraNonce += result.callCount;
 

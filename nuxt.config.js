@@ -7,7 +7,9 @@ const envConfig = dotenv.config();
 const envConfigParsed = envConfig.error ? {} : envConfig.parsed;
 
 import {BASE_TITLE, BASE_DESCRIPTION, I18N_ROUTE_NAME_SEPARATOR, ROUTE_NAME_SPLITTER, LANGUAGE_COOKIE_KEY, GOATCOUNTER_HOST, GOATCOUNTER_SCRIPT_HASH} from "./assets/variables.js";
-import * as varsConfig from "./assets/variables.js";
+import * as varsLocalConfig from "./assets/variables.js";
+import * as varsSdkConfig from "minter-js-web3-sdk/src/config.js";
+const varsConfig = {...varsLocalConfig, ...varsSdkConfig};
 
 const NUXT_LOADING_INLINE_SCRIPT_SHA = process.env.NODE_ENV === 'production'
     ? [
@@ -287,7 +289,10 @@ module.exports = {
             'vuelidate/src',
             'lodash-es',
             'camelcase-keys',
+            'web3-core-method',
             // 'nuxt-i18n/src',
+            '@shrpne/utils/src',
+            'axios-prevent-concurrency/src',
             'v-file-input/src',
             'clipbrd/src',
             'pretty-num/src',
@@ -296,6 +301,7 @@ module.exports = {
             'minterjs-tx',
             'minterjs-wallet',
             'minter-js-sdk',
+            'minter-js-web3-sdk',
         ],
     },
 };

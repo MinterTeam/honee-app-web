@@ -5,7 +5,7 @@ import {pretty} from '~/assets/utils.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {BSC_CHAIN_ID, HUB_NETWORK_SLUG} from '~/assets/variables.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
-import useWeb3SmartWallet from '~/composables/use-web3-smartwallet.js';
+import useWeb3SmartWallet from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet.js';
 
 
 export default {
@@ -21,6 +21,7 @@ export default {
         const {smartWalletAddress, setSmartWalletProps} = useWeb3SmartWallet();
         setSmartWalletProps({
             evmAccountAddress: vm.$store.getters.evmAddress,
+            skipCheckExistence: true,
         });
 
         const {balance, setWeb3TokenProps} = useWeb3TokenBalance();

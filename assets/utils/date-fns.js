@@ -46,7 +46,7 @@ export function differenceInCalendarUTCISOWeeks(dateLeft, dateRight) {
  *
  * ISO week-numbering year: http://en.wikipedia.org/wiki/ISO_week_date
  *
- * @param {Date|Number} date - the original date
+ * @param {Date|Number} dirtyDate - the original date
  * @returns {Date} the end of an ISO week-numbering year
  *
  * @example

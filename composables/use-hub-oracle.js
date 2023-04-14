@@ -1,6 +1,6 @@
 import {ref, computed, reactive, set, watch} from 'vue';
 import isEqual from 'lodash-es/isEqual.js';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {findNativeCoin, getOracleCoinList, getOracleFee, getOraclePriceList} from '~/api/hub.js';
 import {HUB_NETWORK, HUB_WITHDRAW_SPEED, MAINNET, NETWORK} from '~/assets/variables.js';
 import usePolling from '~/composables/use-polling.js';

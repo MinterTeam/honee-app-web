@@ -6,13 +6,14 @@ import {PORTFOLIO_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
 import {toSnake} from '~/assets/utils/snake-case.js';
 import {arrayToMap} from '~/assets/utils/collection.js';
 import NotFoundError from '~/assets/utils/error-404.js';
+import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import addEcdsaAuthInterceptor, {authHeaderKeyGenerator} from '~/assets/axios-ecdsa-auth.js';
 
 
 const instance = axios.create({
     baseURL: PORTFOLIO_API_URL,
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, {
+    adapter: cacheAdapterEnhancer(getDefaultAdapter(), {
         enabledByDefault: false,
         cacheKeyGenerator: authHeaderKeyGenerator,
     }),
@@ -62,6 +63,7 @@ export function updatePortfolio(id, portfolio, privateKey) {
 }
 
 /**
+ * @param {string|number} id
  * @return {Promise<Portfolio>}
  */
 export function getPortfolio(id) {

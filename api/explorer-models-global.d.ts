@@ -9,7 +9,7 @@
  * ---------------------------------------------------------------
  */
 
-export interface SwapPoolRouteResponse {
+interface SwapPoolRouteResponse {
   /**
    * Input coin amount
    * @example "1.000000000000000000"
@@ -24,12 +24,12 @@ export interface SwapPoolRouteResponse {
   coins: CoinIdResource[];
 }
 
-export interface PoolStatsCollectionResponse {
+interface PoolStatsCollectionResponse {
   /** Pool stats */
   data: PoolStatsResponse[];
 }
 
-export interface PoolStatsResponse {
+interface PoolStatsResponse {
   /**
    * Date
    * @example "2021-10-12T00:00:00Z"
@@ -52,21 +52,21 @@ export interface PoolStatsResponse {
   bipVolume?: string;
 }
 
-export interface PoolsPaginatedCollectionResponse {
+interface PoolsPaginatedCollectionResponse {
   /** Pools */
   data: PoolResponse[];
   links: PaginationLinksResponse;
   meta: PaginationMetaResponse;
 }
 
-export interface PoolProvidersPaginatedCollectionResponse {
+interface PoolProvidersPaginatedCollectionResponse {
   /** Pools */
   data: PoolProviderResponse[];
   links: PaginationLinksResponse;
   meta: PaginationMetaResponse;
 }
 
-export interface PoolProviderResponse {
+interface PoolProviderResponse {
   /**
    * Provider Minter address
    * @example "Mxe449e9fd85fd553fa45d245b62e30253bce29cc7"
@@ -105,7 +105,7 @@ export interface PoolProviderResponse {
   liquidityShare: string;
 }
 
-export interface PoolResponse {
+interface PoolResponse {
   /** Pool coin0 */
   coin0: CoinIdResource;
   /** Pool coin1 */
@@ -134,7 +134,7 @@ export interface PoolResponse {
   liquidityBip: string;
 }
 
-export interface CheckResponse {
+interface CheckResponse {
   /**
    * Check issuer
    * @example "Mxa55b52bc4a5a90f84ebc7832a8b359c2ae3c0f41"
@@ -171,14 +171,14 @@ export interface CheckResponse {
   rawCheck: string;
 }
 
-export interface CheckPaginatedCollectionResponse {
+interface CheckPaginatedCollectionResponse {
   /** Checks */
   data: CheckResponse[];
   links: PaginationLinksResponse;
   meta: PaginationMetaResponse;
 }
 
-export interface BlockResponse {
+interface BlockResponse {
   /**
    * Block height
    * @example 34863
@@ -221,7 +221,7 @@ export interface BlockResponse {
   validatorsCount: number;
 }
 
-export interface BlockDetailedResponse {
+interface BlockDetailedResponse {
   /**
    * Block height
    * @example 34863
@@ -261,18 +261,18 @@ export interface BlockDetailedResponse {
   validators: BlockValidatorResponse[];
 }
 
-export interface BlockPaginatedCollectionResponse {
+interface BlockPaginatedCollectionResponse {
   /** Blocks */
   data: BlockResponse[];
   links: PaginationLinksResponse;
   meta: PaginationMetaResponse;
 }
 
-export interface CoinCollectionResponse {
+interface CoinCollectionResponse {
   data: CoinResponse[];
 }
 
-export interface CoinResponse {
+interface CoinResponse {
   /**
    * Coin id
    * @example 1
@@ -330,7 +330,7 @@ export interface CoinResponse {
   type: string;
 }
 
-export interface PaginationLinksResponse {
+interface PaginationLinksResponse {
   /**
    * First page
    * @example "https://testnet.explorer.minter.network/blocks?page=1"
@@ -353,7 +353,7 @@ export interface PaginationLinksResponse {
   next: string | null;
 }
 
-export interface PaginationMetaResponse {
+interface PaginationMetaResponse {
   /**
    * Current page number
    * @example 2
@@ -381,11 +381,11 @@ export interface PaginationMetaResponse {
   total: number;
 }
 
-export interface AddressCollectionResponse {
+interface AddressCollectionResponse {
   data: AddressResponse[];
 }
 
-export interface AddressResponse {
+interface AddressResponse {
   /**
    * Minter address
    * @example "Mxe449e9fd85fd553fa45d245b62e30253bce29cc7"
@@ -395,7 +395,7 @@ export interface AddressResponse {
   balances: AddressBalanceResponse[];
 }
 
-export interface AddressWithSumResponse {
+interface AddressWithSumResponse {
   /**
    * Minter address
    * @example "Mxe449e9fd85fd553fa45d245b62e30253bce29cc7"
@@ -415,7 +415,7 @@ export interface AddressWithSumResponse {
   balances: AddressBalanceResponse[];
 }
 
-export interface AddressBalanceResponse {
+interface AddressBalanceResponse {
   coin: CoinIdTypeResource;
   /**
    * Amount of coin
@@ -429,7 +429,7 @@ export interface AddressBalanceResponse {
   bipAmount?: string;
 }
 
-export interface TransactionResponse {
+interface TransactionResponse {
   /**
    * Transaction number
    * @example 17653
@@ -510,7 +510,7 @@ export interface TransactionResponse {
   commissionPriceCoin: CoinIdResource;
 }
 
-export interface CoinIdResource {
+interface CoinIdResource {
   /**
    * Coin id
    * @example 10
@@ -523,7 +523,7 @@ export interface CoinIdResource {
   symbol: string;
 }
 
-export interface CoinIdTypeResource {
+interface CoinIdTypeResource {
   /**
    * Coin id
    * @example 10
@@ -541,7 +541,7 @@ export interface CoinIdTypeResource {
   type: string;
 }
 
-export interface InvalidTransactionResponse {
+interface InvalidTransactionResponse {
   /**
    * Transaction hash
    * @example "Mtc923c18c1d842dcba262c63df22003d5ee4e683dc2927acf9580f083ad9e193e"
@@ -569,14 +569,14 @@ export interface InvalidTransactionResponse {
   from: string;
 }
 
-export interface TransactionPaginatedCollectionResponse {
+interface TransactionPaginatedCollectionResponse {
   /** Transactions */
   data: TransactionResponse[];
   links: PaginationLinksResponse;
   meta: PaginationMetaResponse;
 }
 
-export interface BlockValidatorResponse {
+interface BlockValidatorResponse {
   /**
    * Is block signed by validator
    * @example true
@@ -585,14 +585,14 @@ export interface BlockValidatorResponse {
   validator: Validator;
 }
 
-export interface ValidatorBanPaginatedCollectionResponse {
+interface ValidatorBanPaginatedCollectionResponse {
   /** Bans */
   data: ValidatorBanResponse[];
   links: PaginationLinksResponse;
   meta: PaginationMetaResponse;
 }
 
-export interface ValidatorBanResponse {
+interface ValidatorBanResponse {
   /**
    * Block height
    * @example 215
@@ -605,14 +605,14 @@ export interface ValidatorBanResponse {
   timestamp: string;
 }
 
-export interface AddressBanPaginatedCollectionResponse {
+interface AddressBanPaginatedCollectionResponse {
   /** Bans */
   data: AddressBanResponse[];
   links: PaginationLinksResponse;
   meta: PaginationMetaResponse;
 }
 
-export interface AddressBanResponse {
+interface AddressBanResponse {
   /**
    * Block height
    * @example 215
@@ -626,14 +626,14 @@ export interface AddressBanResponse {
   timestamp: string;
 }
 
-export interface SlashPaginatedCollectionResponse {
+interface SlashPaginatedCollectionResponse {
   /** Slashes */
   data: SlashResponse[];
   links: PaginationLinksResponse;
   meta: PaginationMetaResponse;
 }
 
-export interface SlashResponse {
+interface SlashResponse {
   /**
    * Block height
    * @example 215
@@ -658,12 +658,12 @@ export interface SlashResponse {
   timestamp: string;
 }
 
-export interface UnbondCollectionResponse {
+interface UnbondCollectionResponse {
   /** Slashes */
   data: UnbondResponse[];
 }
 
-export interface UnbondResponse {
+interface UnbondResponse {
   coin: CoinIdResource;
   /**
    * Minter address
@@ -683,14 +683,14 @@ export interface UnbondResponse {
   height: number;
 }
 
-export interface AggregatedRewardPaginatedCollectionResponse {
+interface AggregatedRewardPaginatedCollectionResponse {
   /** Rewards */
   data: AggregatedRewardResponse[];
   links: PaginationLinksResponse;
   meta: PaginationMetaResponse;
 }
 
-export interface AggregatedRewardResponse {
+interface AggregatedRewardResponse {
   /**
    * Time id
    * @deprecated
@@ -720,12 +720,12 @@ export interface AggregatedRewardResponse {
   validator: Validator;
 }
 
-export interface RewardStatisticCollectionResponse {
+interface RewardStatisticCollectionResponse {
   /** Chart data */
   data: RewardStatisticResponse[];
 }
 
-export interface RewardStatisticResponse {
+interface RewardStatisticResponse {
   /**
    * Timestamp
    * @example "2019-02-18 00:00:00+03"
@@ -738,7 +738,7 @@ export interface RewardStatisticResponse {
   amount: string;
 }
 
-export interface OrderResponse {
+interface OrderResponse {
   /**
    * Limit order id
    * @example 215
@@ -788,19 +788,19 @@ export interface OrderResponse {
   status?: string;
 }
 
-export interface OrderPaginatedCollectionResponse {
+interface OrderPaginatedCollectionResponse {
   /** Bans */
   data: OrderResponse[];
   links: PaginationLinksResponse;
   meta: PaginationMetaResponse;
 }
 
-export interface DelegationCollectionResponse {
+interface DelegationCollectionResponse {
   /** Delegations data */
   data: DelegationResponse[];
 }
 
-export interface DelegationPaginatedCollectionResponse {
+interface DelegationPaginatedCollectionResponse {
   /** Blocks */
   data: DelegationResponse[];
   links: PaginationLinksResponse;
@@ -840,7 +840,7 @@ export interface DelegationPaginatedCollectionResponse {
   };
 }
 
-export interface DelegationResponse {
+interface DelegationResponse {
   coin: CoinIdResource;
   /**
    * Amount
@@ -860,7 +860,7 @@ export interface DelegationResponse {
   isWaitlisted: boolean;
 }
 
-export interface Validator {
+interface Validator {
   /**
    * Validator public key
    * @example "Mp8f053f3802d33f5e7092bb01ca99ae77606f4faf759c72560d5ee69b8e191a56"
@@ -893,13 +893,13 @@ export interface Validator {
   status: number;
 }
 
-export interface ValidatorCollectionResponse {
+interface ValidatorCollectionResponse {
   /** Validators data */
   data: ValidatorResponse[];
 }
 
 /** Validator data */
-export interface ValidatorResponse {
+interface ValidatorResponse {
   /**
    * Validator public_key
    * @example "Mp65758496f8a5d626cac77f5a38894beae0050fdef862da201964cd2fd8111111"
@@ -957,12 +957,12 @@ export interface ValidatorResponse {
   delegatorCount: number;
 }
 
-export interface StakeCollectionResponse {
+interface StakeCollectionResponse {
   /** Chart data */
   data: StakeResponse[];
 }
 
-export interface StakeResponse {
+interface StakeResponse {
   coin: CoinIdResource;
   /**
    * Minter address
@@ -986,12 +986,12 @@ export interface StakeResponse {
   isWaitlisted: boolean;
 }
 
-export interface StatisticCollectionResponse {
+interface StatisticCollectionResponse {
   /** Chart data */
   data: StatisticResponse[];
 }
 
-export interface StatisticResponse {
+interface StatisticResponse {
   /**
    * Timestamp
    * @example "2019-02-19T00:00:00+03:00"
@@ -1004,7 +1004,7 @@ export interface StatisticResponse {
   transactionCount: number;
 }
 
-export interface StatusResponse {
+interface StatusResponse {
   data: {
     /**
      * Average block time in seconds.
@@ -1049,7 +1049,7 @@ export interface StatusResponse {
   };
 }
 
-export interface StatusPageResponse {
+interface StatusPageResponse {
   data: {
     /**
      * Active candidates.
@@ -1134,7 +1134,7 @@ export interface StatusPageResponse {
   };
 }
 
-export interface TxSendCoinData {
+interface TxSendCoinData {
   coin?: CoinIdResource;
   /**
    * Receiver address
@@ -1148,7 +1148,7 @@ export interface TxSendCoinData {
   value?: string;
 }
 
-export interface TxBuyCoinData {
+interface TxBuyCoinData {
   coinToBuy?: CoinIdResource;
   coinToSell?: CoinIdResource;
   /**
@@ -1168,7 +1168,7 @@ export interface TxBuyCoinData {
   maximumValueToSell?: string;
 }
 
-export interface TxSellCoinData {
+interface TxSellCoinData {
   coinToBuy?: CoinIdResource;
   coinToSell?: CoinIdResource;
   /**
@@ -1188,7 +1188,7 @@ export interface TxSellCoinData {
   maximumValueToBuy?: string;
 }
 
-export interface TxSellAllCoinData {
+interface TxSellAllCoinData {
   coinToBuy?: CoinIdResource;
   coinToSell?: CoinIdResource;
   /**
@@ -1208,7 +1208,7 @@ export interface TxSellAllCoinData {
   maximumValueToBuy?: string;
 }
 
-export interface TxCreateCoinData {
+interface TxCreateCoinData {
   /**
    * Coin name
    * @example "Minter"
@@ -1236,7 +1236,7 @@ export interface TxCreateCoinData {
   constantReserveRatio?: string;
 }
 
-export interface TxSetCandidateData {
+interface TxSetCandidateData {
   /**
    * Candidate public key
    * @example "Mpc8c6834da8ba2b0b24f7e5ab67049509278e709cde925f14184586f74dcc9d0b"
@@ -1244,7 +1244,7 @@ export interface TxSetCandidateData {
   pubKey?: string;
 }
 
-export interface TxUnbondData {
+interface TxUnbondData {
   /**
    * Validator public key
    * @example "Mpc8c6834da8ba2b0b24f7e5ab67049509278e709cde925f14184586f74dcc9d0b"
@@ -1258,7 +1258,7 @@ export interface TxUnbondData {
   value?: string;
 }
 
-export interface TxRedeemCheckData {
+interface TxRedeemCheckData {
   /** Check */
   rawCheck?: string;
   /** Check proof */
@@ -1276,7 +1276,7 @@ export interface TxRedeemCheckData {
   };
 }
 
-export interface TxEditCandidateData {
+interface TxEditCandidateData {
   /**
    * Validator public key
    * @example "Mpc8c6834da8ba2b0b24f7e5ab67049509278e709cde925f14184586f74dcc9d0b"
@@ -1294,7 +1294,7 @@ export interface TxEditCandidateData {
   ownerAddress?: string;
 }
 
-export interface TxDelegateCoinData {
+interface TxDelegateCoinData {
   /**
    * Validator public key
    * @example "Mpc8c6834da8ba2b0b24f7e5ab67049509278e709cde925f14184586f74dcc9d0b"
@@ -1308,7 +1308,7 @@ export interface TxDelegateCoinData {
   stake?: string;
 }
 
-export interface TxDeclareCandidacyData {
+interface TxDeclareCandidacyData {
   /**
    * Address
    * @example "Mx184ac726059e43643e67290666f7b3195093f870"
@@ -1332,7 +1332,7 @@ export interface TxDeclareCandidacyData {
   stake?: string;
 }
 
-export interface TxCreateMultisigData {
+interface TxCreateMultisigData {
   /**
    * Address
    * @example "10"
@@ -1344,12 +1344,12 @@ export interface TxCreateMultisigData {
   addresses?: string[];
 }
 
-export interface TxMultisendData {
+interface TxMultisendData {
   /** List of receivers */
   list?: TxSendCoinData[];
 }
 
-export interface ErrorResponse {
+interface ErrorResponse {
   error: {
     /** @example -1 */
     code: number;
@@ -1358,7 +1358,7 @@ export interface ErrorResponse {
   };
 }
 
-export interface ValidationErrorResponse {
+interface ValidationErrorResponse {
   error: {
     /** @example -1 */
     code: number;

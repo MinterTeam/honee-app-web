@@ -1,11 +1,9 @@
 import {ref, reactive, computed, watch} from 'vue';
 
 import {waitHubTransferToMinter} from '~/api/hub.js';
-import {getProviderByChain, toErcDecimals, buildDepositTx, getFeeAmount as getFee} from '~/api/web3.js';
+import {getProviderByChain, toErcDecimals, buildDepositTx, getFeeAmount as getFee, buildWethUnwrap} from 'minter-js-web3-sdk/src/web3.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_TRANSFER_STATUS, MAINNET, NETWORK} from '~/assets/variables.js';
-import Big from '~/assets/big.js';
-import wethAbi from '~/assets/abi-weth.js';
-import hubABI from '~/assets/abi-hub.js';
+import Big from 'minterjs-util/src/big.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
@@ -60,13 +58,6 @@ export default function useWeb3Deposit(destinationMinterAddress) {
     const state = reactive({
 
     });
-
-    function getHubContractAddress() {
-        return HUB_CHAIN_BY_ID[props.chainId]?.hubContractAddress;
-    }
-    function getWrappedNativeContractAddress() {
-        return HUB_CHAIN_BY_ID[props.chainId]?.wrappedNativeContractAddress;
-    }
 
     /**
      * @type {ComputedRef<HubChainDataItem>}
@@ -174,15 +165,11 @@ export default function useWeb3Deposit(destinationMinterAddress) {
     }
 
     function unwrapToNativeCoin({nonce, gasPrice} = {}) {
-        const web3Eth = getProviderByChain(props.chainId);
         addStepData(LOADING_STAGE.UNWRAP_ETH, {amount: amountToUnwrap.value}, true);
 
         const amountToUnwrapWei = toErcDecimals(amountToUnwrap.value, tokenDecimals.value);
-        const wrappedNativeContract = new web3Eth.Contract(wethAbi, getWrappedNativeContractAddress());
-        const data = wrappedNativeContract.methods.withdraw(amountToUnwrapWei).encodeABI();
         return sendEthTx({
-            to: getWrappedNativeContractAddress(),
-            data,
+            ...buildWethUnwrap(props.chainId, amountToUnwrapWei),
             nonce,
             gasPrice,
             gasLimit: GAS_LIMIT_UNWRAP,
@@ -216,7 +203,7 @@ export default function useWeb3Deposit(destinationMinterAddress) {
 
 
     function sendCoinTx({nonce, gasPrice}) {
-        const txParams = buildDepositTx(props.chainId, isNativeToken.value ? undefined : tokenAddress.value, tokenDecimals.value, props.destinationMinterAddress, depositAmountAfterGas.value, true);
+        const txParams = buildDepositTx(props.chainId, isNativeToken.value ? undefined : tokenAddress.value, tokenDecimals.value, props.destinationMinterAddress, depositAmountAfterGas.value, {keepValueAsEther: true});
 
         return sendEthTx({
             ...txParams,

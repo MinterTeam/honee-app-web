@@ -3,6 +3,7 @@ import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
 import coinBlockList from 'minter-coin-block-list';
 import {FARM_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
 import {arrayToMap} from '~/assets/utils/collection.js';
+import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {getPoolList, getPoolByToken} from '~/api/explorer.js';
 
@@ -26,7 +27,7 @@ function isFarmTrusted(farmItem) {
 
 const instance = axios.create({
     baseURL: FARM_API_URL,
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
+    adapter: cacheAdapterEnhancer(getDefaultAdapter(), { enabledByDefault: false}),
 });
 addToCamelInterceptor(instance);
 
@@ -35,7 +36,8 @@ addToCamelInterceptor(instance);
 const farmCache = new Cache({ttl: 1 * 60 * 1000, max: 100});
 
 /**
- * @param {boolean} [onlyTrusted=false]
+ * @param {object} [options]
+ * @param {boolean} [options.onlyTrusted=false]
  * @return {Promise<Array<FarmItem>>}
  */
 export function getFarmList({onlyTrusted = false} = {}) {
@@ -61,11 +63,13 @@ export function getFarmList({onlyTrusted = false} = {}) {
                 .forEach((farmItem) => {
                     // ensure farm map item
                     if (!farmMap[farmItem.tokenSymbol]) {
-                        const cleanFarmItem = {...farmItem};
+                        const cleanFarmItem = /** @type {FarmItem} */({
+                            ...farmItem,
+                            rewardCoinList: [],
+                            percent: 0,
+                            finishDateList: [],
+                        });
                         delete cleanFarmItem.rewardCoin;
-                        cleanFarmItem.rewardCoinList = [];
-                        cleanFarmItem.percent = 0;
-                        cleanFarmItem.finishDateList = [];
                         farmMap[farmItem.tokenSymbol] = cleanFarmItem;
                     }
 
@@ -75,7 +79,7 @@ export function getFarmList({onlyTrusted = false} = {}) {
                     // check if finishDateList should be updated
                     const hasCurrentDate = farmMap[farmItem.tokenSymbol].finishDateList.find((item) => {
                         // less than 1 day difference
-                        return Math.abs(new Date(item) - new Date(farmItem.finishAt)) <= 24 * 60 * 60 * 1000;
+                        return Math.abs(new Date(item).getTime() - new Date(farmItem.finishAt).getTime()) <= 24 * 60 * 60 * 1000;
                     });
                     if (!hasCurrentDate) {
                         farmMap[farmItem.tokenSymbol].finishDateList.push(farmItem.finishAt);
@@ -153,7 +157,8 @@ function prepareFarmProgram(farmItem) {
 /**
  * Fill with pool data and aggregate identical pools
  * @param {Promise<Array<FarmItem>>|Array<FarmItem>} farmPromise
- * @param {boolean} [trySharePoolsRequest] - will fetch default top 50 pools and additionally will fetch all trusted (other untrusted and not in top50 will be skipped)
+ * @param {object} [options]
+ * @param {boolean} [options.trySharePoolsRequest] - will fetch default top 50 pools and additionally will fetch all trusted (other untrusted and not in top50 will be skipped)
  * @return {Promise<Array<FarmItemWithPoolData>>}
  */
 export function fillFarmWithPoolData(farmPromise, {trySharePoolsRequest} = {}) {
@@ -217,7 +222,7 @@ function addPoolFields(farmProgram, pool) {
 /**
  * @param {Pool|FarmProgramWithPoolData|FarmItemWithPoolData} pool
  * @param {string} symbol
- * @return {Pool.amount0|Pool.amount1}
+ * @return {Pool['amount0']|Pool['amount1']}
  */
 export function getAmountFromPool(pool, symbol) {
     if (pool.coin0.symbol === symbol) {
@@ -240,11 +245,11 @@ export function getAmountFromPool(pool, symbol) {
 
 /**
  * @typedef {object} FarmExtraPoolData
- * @property {Pool.liquidity} liquidity
- * @property {Pool.liquidityBip} liquidityBip
- * @property {Pool.tradeVolumeBip1D} tradeVolumeBip1D
- * @property {Pool.amount0} amount0
- * @property {Pool.amount1} amount1
+ * @property {Pool['liquidity']} liquidity
+ * @property {Pool['liquidityBip']} liquidityBip
+ * @property {Pool['tradeVolumeBip1D']} tradeVolumeBip1D
+ * @property {Pool['amount0']} amount0
+ * @property {Pool['amount1']} amount1
  */
 
 /**

@@ -5,15 +5,15 @@ import minLength from 'vuelidate/src/validators/minLength';
 import maxLength from 'vuelidate/src/validators/maxLength';
 import minValue from 'vuelidate/src/validators/minValue.js';
 import maxValue from 'vuelidate/src/validators/maxValue.js';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {getTokenSymbolForNetwork} from '~/api/hub.js';
 import {pretty} from '~/assets/utils.js';
-import {wait} from '~/assets/utils/wait.js';
+import {wait} from '@shrpne/utils/src/wait.js';
 import {HUB_NETWORK, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
-import useWeb3SmartWalletSwap from '~/composables/use-web3-smartwallet-swap.js';
+import useWeb3SmartWalletSwapWithdraw from '~/composables/use-web3-smartwallet-swap-withdraw.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import TxSequenceWithSwapForm from '~/components/base/TxSequenceWithSwapForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
@@ -71,8 +71,8 @@ export default {
             smartWalletAddress,
             /*feeTxParams: smartWalletTxParams,*/
             buildTxListAndCallSmartWallet,
-            setSmartWalletSwapProps,
-        } = useWeb3SmartWalletSwap();
+            setSmartWalletSwapWithdrawProps,
+        } = useWeb3SmartWalletSwapWithdraw();
 
         return {
             networkHubCoinList,
@@ -102,7 +102,7 @@ export default {
             smartWalletAddress,
             // oneInchSwapParams,
             // smartWalletTxParams,
-            setSmartWalletSwapProps,
+            setSmartWalletSwapWithdrawProps,
             buildTxListAndCallSmartWallet,
         };
     },
@@ -250,13 +250,14 @@ export default {
             () => ({
                 privateKey: this.$store.getters.privateKey,
                 evmAccountAddress: this.$store.getters.evmAddress,
+                depositDestinationAddress: this.$store.getters.evmAddress,
                 chainId: this.hubChainData.chainId,
                 valueToSell: this.withdrawValue,
                 coinToSell: this.withdrawCoin,
                 coinToBuy: this.form.coinToBuy,
                 idPreventConcurrency: 'estimateSwsSwap',
             }),
-            (newVal) => this.setSmartWalletSwapProps(newVal),
+            (newVal) => this.setSmartWalletSwapWithdrawProps(newVal),
             {deep: true, immediate: true},
         );
 

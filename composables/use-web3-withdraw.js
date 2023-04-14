@@ -1,7 +1,7 @@
 import {ref, reactive, computed, watch} from 'vue';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {convertToPip} from 'minterjs-util/src/converter.js';
-import Big, {BIG_ROUND_UP} from '~/assets/big.js';
+import Big, {BIG_ROUND_UP} from 'minterjs-util/src/big.js';
 import {HUB_CHAIN_DATA, HUB_MINTER_MULTISIG_ADDRESS, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
@@ -16,6 +16,7 @@ export default function useWeb3Withdraw(destinationAddress) {
     const props = reactive({
         /** @type {HUB_NETWORK|''} */
         hubNetworkSlug: '',
+        /** @type {number|string} */
         amountToSend: 0,
         // amountToReceive: 0,
         tokenSymbol: '',
