@@ -157,7 +157,6 @@ export default {
         'investments-tabs-label-portfolio': 'Портфели',
         'investments-tabs-label-stake': 'Стейки',
         'investments-list-empty': 'У вас еще нет инвестиций',
-        'stake-more': 'Застейкать еще',
         'total-delegated': 'Делегировано',
         'delegate-more': 'Делегировать',
 
@@ -282,7 +281,6 @@ export default {
         'activate-title': 'Стань премиум пользователем',
         'activate-title-short': 'Премиум',
         'activate-description': 'Для активации премиум аккаунта отправьте в блокировку от 1000 BEE. Срок блокировки 5 лет. После окончания этого срока ваши монеты будут снова доступны для использования.',
-        'card-update-button': 'Повысить уровень',
         'levels-title': 'Уровни премиума',
         'levels-more': 'подробнее',
         'levels-more-url': 'https://honee.app/ru/bee',

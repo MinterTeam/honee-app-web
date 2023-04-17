@@ -14,7 +14,6 @@ export default {
             premiumCard,
             prepareStakeCardList,
         } = useStakeByLockList({
-            $td: vm.$td,
             initFetchAddress: vm.$store.getters.address,
         });
 

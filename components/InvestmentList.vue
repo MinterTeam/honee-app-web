@@ -35,7 +35,6 @@ export default {
             coinLockList,
             prepareStakeCardList,
         } = useStakeByLockList({
-            $td: vm.$td,
             initFetchAddress: vm.$store.getters.address,
         });
 

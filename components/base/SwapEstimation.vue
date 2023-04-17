@@ -70,7 +70,7 @@ export default {
             handleInputBlur,
             estimateSwap,
         } = useEstimateSwap({
-            $td: vm.$td,
+            vm,
             idPreventConcurrency: props.idPreventConcurrency,
         });
 

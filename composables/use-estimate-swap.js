@@ -6,8 +6,8 @@ import {getErrorText} from '~/assets/server-error.js';
 import {decreasePrecisionSignificant} from '~/assets/utils.js';
 
 
-export default function useEstimateSwap({idPreventConcurrency, $td} = {}) {
-    $td = typeof $td === 'function' ? $td : (val) => val;
+export default function useEstimateSwap({idPreventConcurrency, vm} = {}) {
+    const $td = (val, ...otherArgs) => typeof vm?.$td === 'function' ? vm.$td(val, ...otherArgs) : val;
 
     const state = reactive({
         estimation: null,
