@@ -1,8 +1,8 @@
 <script>
 import cardList from '~/data/cards.js';
 import Card from '~/components/Card.vue';
-import CardHead from '~/components/CardHead.vue';
 import CardPremium from '~/components/CardPremium.vue';
+import CardSwHold from '~/components/CardSwHold.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
 import InvestmentList from '~/components/InvestmentList.vue';
 import PortfolioLeaderboard from '~/components/PortfolioLeaderboard.vue';
@@ -37,8 +37,8 @@ export default {
     cardList,
     components: {
         Card,
-        CardHead,
         CardPremium,
+        CardSwHold,
         AddressAssets,
         InvestmentList,
         PortfolioLeaderboard,
@@ -114,6 +114,9 @@ export default {
                 <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnBeeList" :key="card.action">
                     <Card :card="card" v-if="card.action"/>
                 </div>
+                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
+                    <CardSwHold coin="BEE" :is-small="true"/>
+                </div>
                 <!--<div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
                     <div class="card card--action card--invert card--twitter card__content--small">
                         <CardHead :card="$options.TWITTER_CARD_HEAD"/>
@@ -140,8 +143,11 @@ export default {
                     {{ $td($options.cardList.earn.title, `action.category-earn`) }}
                 </h2>
                 <div class="u-grid u-grid--vertical-margin">
+                    <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
+                        <CardSwHold coin="METAGARDEN" :is-small="true"/>
+                    </div>
                     <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnOtherList" :key="card.action">
-                        <Card :card="card" v-if="card.action"/>
+                        <Card :card="card"/>
                     </div>
                 </div>
             </div>

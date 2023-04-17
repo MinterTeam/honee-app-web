@@ -6,16 +6,28 @@ import {getErrorText} from '~/assets/server-error.js';
 import {BSC_CHAIN_ID, HUB_NETWORK_SLUG} from '~/assets/variables.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
 import useWeb3SmartWallet from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet.js';
+import CardHead from '~/components/CardHead.vue';
 
 
 export default {
     HUB_NETWORK_SLUG,
     components: {
+        CardHead,
     },
     directives: {
         tooltip,
     },
-    setup() {
+    props: {
+        coin: {
+            type: String,
+            required: true,
+        },
+        isSmall: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    setup(props) {
         const vm = getCurrentInstance()?.proxy;
 
         const {smartWalletAddress, setSmartWalletProps} = useWeb3SmartWallet();
@@ -28,7 +40,7 @@ export default {
 
         watch(smartWalletAddress, () => {
             setWeb3TokenProps({
-                tokenSymbol: 'METAGARDEN',
+                tokenSymbol: props.coin,
                 chainId: BSC_CHAIN_ID,
                 accountAddress: smartWalletAddress.value,
             });
@@ -45,7 +57,7 @@ export default {
     },
     computed: {
         minterBalance() {
-            return this.$store.getters.getBalanceAmount('METAGARDEN');
+            return this.$store.getters.getBalanceAmount(this.coin);
         },
         apr() {
             // 3% monthly
@@ -68,28 +80,42 @@ export default {
 </script>
 
 <template>
-    <div class="card card__content--small card--sw-hold u-text-center">
-        <div class="card__action-head" v-if="!hideHead">
-            <img class="card__action-logo" alt="" src="/img/logo-metagarden.svg">
-            <div class="card__action-title">
-                <div class="card__action-title-type">Metagarden</div>
-                <div class="card__action-title-value">{{ $td('Smart Hold', 'metagarden.smart-hold-title') }}</div>
+    <div class="card card__content--small card--sw-hold" :class="{'u-text-center': !isSmall, 'card--action': isSmall}">
+        <template v-if="!isSmall">
+            <div class="card__action-head">
+                <img class="card__action-logo" alt="" src="/img/logo-metagarden.svg">
+                <div class="card__action-title">
+                    <div class="card__action-title-type">Metagarden</div>
+                    <div class="card__action-title-value">{{ $td('Smart Hold', 'metagarden.smart-hold-title') }}</div>
+                </div>
             </div>
-        </div>
-        <img
-            class="mg-sw-hold__info" src="/img/icon-metagarden-info.svg" alt="Info"
-            v-tooltip="tooltipOptions"
-        >
+            <img
+                v-if="!isSmall"
+                class="mg-sw-hold__info" src="/img/icon-metagarden-info.svg" alt="Info"
+                v-tooltip="tooltipOptions"
+            >
 
-        <img class="u-image u-image-center u-mt-15 u-mb-10" src="/img/metagarden-sw-hold.png" srcset="/img/metagarden-sw-hold@2x.png 2x" alt="" role="presentation" width="165" height="128">
+            <img v-if="!isSmall" class="u-image u-image-center u-mt-15 u-mb-10" src="/img/metagarden-sw-hold.png" srcset="/img/metagarden-sw-hold@2x.png 2x" alt="" role="presentation" width="165" height="128">
+        </template>
+        <CardHead
+            v-else
+            :card="{
+                caption: $td('Smart Hold', 'metagarden.smart-hold-title'),
+                icon: coin,
+                title: coin,
+                stats: {
+                    apr: {percent: 36},
+                },
+            }"
+        />
 
-        <h2 class="u-h4 u-mb-10">{{ $td('Hold METAGARDEN tokens in your smart wallet and earn 0.1% revenue per day (36% APR).', 'metagarden.smart-hold-description') }}</h2>
+        <p :class="isSmall ? 'card__action-description' : 'u-h4'">{{ $td(`Hold ${coin} tokens in your smart wallet and earn 0.1% revenue per day (36% APR).`, 'metagarden.smart-hold-description', {coin}) }}</p>
 
-        <nuxt-link v-if="minterBalance > 0" class="button button--full" :to="$i18nGetPreferredPath(`/withdraw?coin=METAGARDEN&network=${$options.HUB_NETWORK_SLUG.BSC}&address=${smartWalletAddress}`)">
+        <nuxt-link v-if="minterBalance > 0" class="u-mt-10 button button--full" :to="$i18nGetPreferredPath(`/withdraw?coin=${coin}&network=${$options.HUB_NETWORK_SLUG.BSC}&address=${smartWalletAddress}`)">
             {{ $td('Transfer to Smart-Wallet', 'metagarden.transfer-smart-wallet') }}
         </nuxt-link>
-        <nuxt-link v-else class="button button--main button--full" :to="$i18nGetPreferredPath('/swap/METAGARDEN')">
-            {{ $t('action.title-buy-coin', {coin: 'METAGARDEN'}) }}
+        <nuxt-link v-else class="u-mt-10 button button--full" :class="{'button--main': !isSmall}" :to="$i18nGetPreferredPath(`/swap/${coin}`)">
+            {{ $t('action.title-buy-coin', {coin}) }}
         </nuxt-link>
 
 
@@ -104,33 +130,36 @@ export default {
 
         <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="minterBalance > 0">
             <div class="u-flex u-flex--align-center">
-                <img class="u-image u-mr-05" alt="" src="/img/logo-metagarden.svg" width="24" height="24">
+                <img class="u-image u-image--round u-mr-05" alt="" :src="$store.getters['explorer/getCoinIcon'](coin)" width="24" height="24">
                 <div class="u-h--uppercase u-text-sw-hold">{{ $td('Available for transfer', 'metagarden.available-for-transfer') }}</div>
             </div>
 
             <div class="u-h u-h3">{{ pretty(minterBalance) || '0' }}</div>
         </div>
-        <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="evmBalance > 0">
+        <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="evmBalance > 0 && !isSmall">
             <div class="u-flex u-flex--align-center">
                 <div class="u-mr-05" style="width: 24px"></div>
-                <div class="u-h--uppercase u-text-sw-hold">{{ $td('METAGARDEN in Smart-Wallet', 'metagarden.balance-smart-wallet') }}</div>
+                <div class="u-h--uppercase u-text-sw-hold">{{ $td(`${coin} in Smart-Wallet`, 'metagarden.balance-smart-wallet', {coin}) }}</div>
             </div>
 
-            <div class="u-h u-h3">{{ pretty(evmBalance) || '0' }}</div>
+            <div class="u-h u-h4">{{ pretty(evmBalance) || '0' }}</div>
         </div>
-        <!--<div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="evmBalance > 0">
+        <!--
+        <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="evmBalance > 0 && !isSmall">
             <div class="u-flex u-flex--align-center">
                 <div class="u-mr-05" style="width: 24px"></div>
                 <div class="u-h--uppercase u-text-sw-hold">{{ $td('Rewards for hodl, annual rate of 36%', 'metagarden.todo') }}</div>
             </div>
 
-            <div class="u-h u-h3">{{ pretty(apr) }}</div>
-        </div>-->
+            <div class="u-h u-h4">{{ pretty(apr) }}</div>
+        </div>
+        -->
     </div>
 </template>
 
 <style lang="less">
 .card--sw-hold {
+    color: #fff;
     background: url(/img/metagarden-sw-hold-bg.svg) no-repeat 50% 34px, radial-gradient(57.86% 117.71% at 32.94% 27.08%, #091A57 0%, #1849A9 100%) #1849A9;
 }
 .u-text-sw-hold {color: #a7c1f4;}
