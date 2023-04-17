@@ -61,7 +61,7 @@ export default {
             {{ $td('Ethereum & BNB Smart Chain', 'deposit.title-evm') }}
         </h2>
 
-        <div class="h-field u-mt-10 u-mb-10">
+        <div class="h-field u-mt-10 u-mb-05">
             <div class="h-field__content" @click="copy(smartWalletAddress)">
                 <div class="h-field__title">{{ $td('Smart wallet address', 'deposit.smart-wallet-address') }}</div>
                 <div class="h-field__input h-field__input--medium is-not-empty">{{ smartWalletAddress }}</div>
