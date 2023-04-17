@@ -15,6 +15,12 @@ const BASE_CARD = {
     // LOTTERY: 'lottery',
 };
 
+const BEE_CARD_LIST = [
+    '/stake/19',
+    '/farm/BEE/USDTE',
+    '/farm/BEE/USDTBSC',
+];
+
 /** @type {CardListItemRaw} */
 const TWITTER_CARD_HEAD = {
     icon: '/img/logo-twitter.svg',
@@ -63,7 +69,7 @@ export default {
     computed: {
         earnBeeList() {
             return this.$options.cardList.earn.cards.filter((card) => {
-                return card.action === '/stake/19';
+                return BEE_CARD_LIST.includes(card.action);
             });
         },
         earnOtherList() {

@@ -17,7 +17,8 @@ export default {
 
 <template>
     <SplashLayout>
-        <div class="splash-layout__inner u-section">
+        <!-- workaround for Telegram Web App in iOS web view: opened keyboard covers input field -->
+        <div class="u-section" :class="{'splash-layout__inner': !isIosWebView}">
             <div class="u-relative u-container u-container--mini">
                 <img class="auth__logo" src="/img/logo-honee.svg" alt="Honee" width="280" height="56">
                 <h3 class="auth__subtitle">{{ $td('Crypto wallet that helps you earn', 'index.sign-up-subtitle') }}</h3>

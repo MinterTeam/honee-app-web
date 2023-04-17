@@ -177,6 +177,7 @@ module.exports = {
     ],
     plugins: [
         { src: '~/plugins/global-mixin.js'},
+        { src: '~/plugins/global-mixin-client.js', ssr: false},
         { src: '~/plugins/online.js', ssr: false },
         { src: '~/plugins/custom-event-polyfill.js', ssr: false },
         { src: '~/plugins/persisted-state.js', ssr: false },
