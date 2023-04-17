@@ -115,9 +115,6 @@ export default {
                             <img class="u-mr-05" src="/img/icon-card.svg" alt="" role="presentation" width="24" height="24">
                             {{ $td('Bank cards', 'deposit.title-card') }}
                         </h2>
-                        <p class="u-text-medium">
-                            {{ $td('Top up your balance via bank card.', 'deposit.description-card') }}
-                        </p>
                         <nuxt-link class="button button--main button--full u-mt-10" :to="getTopupInnerPage('card')">{{ $td('Top up with Card', 'deposit.button-card') }}</nuxt-link>
                     </template>
 
@@ -127,9 +124,6 @@ export default {
                         <img class="u-mr-05" src="/img/logo-minter.svg" alt="" role="presentation" width="24" height="24">
                         {{ $td('Minter Network', 'deposit.title-minter') }}
                     </h2>
-                    <p class="u-text-medium">
-                        {{ $td('Transfer any token from Minter to this address.', 'deposit.description-minter') }}
-                    </p>
 
                     <div class="h-field u-mt-10">
                         <div class="h-field__content" @click="copy($store.getters.address)">
