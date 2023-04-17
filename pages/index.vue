@@ -16,6 +16,7 @@ const BASE_CARD = {
 };
 
 const BEE_CARD_LIST = [
+    '/swap/BEE',
     '/stake/19',
     '/farm/BEE/USDTE',
     '/farm/BEE/USDTBSC',
@@ -117,11 +118,11 @@ export default {
                 <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
                     <CardPremium/>
                 </div>
-                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnBeeList" :key="card.action">
-                    <Card :card="card" v-if="card.action"/>
-                </div>
                 <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
                     <CardSwHold coin="BEE" :is-small="true"/>
+                </div>
+                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnBeeList" :key="card.action">
+                    <Card :card="card" v-if="card.action"/>
                 </div>
                 <!--<div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
                     <div class="card card--action card--invert card--twitter card__content--small">

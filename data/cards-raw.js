@@ -41,6 +41,35 @@ export default {
                 },
             },
             {
+                caption: 'Buy',
+                coin: 'BEE',
+                description: 'BEE is a native Honee crypto wallet token. Provides users with many opportunities to earn crypto.',
+                stats: {
+                },
+                tags: ['Exchange'],
+                action: '/swap/BEE',
+                ru: {
+                    description: 'BEE — токен крипто-кошелька Honee. Предоставляет пользователям множество возможностей для заработка.',
+                    caption: 'Купить',
+                },
+            },
+            {
+                caption: 'Stake & Earn',
+                coin: `BEE`,
+                description: 'Stake BEE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
+                stats: {
+                    apr: {
+                        percent: '5-20',
+                    },
+                },
+                tags: ['Staking'],
+                action: `/stake/19`,
+                ru: {
+                    description: 'Стейкуйте BEE на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
+                    caption: 'Стейкинг',
+                },
+            },
+            {
                 caption: 'Yield farming',
                 coin: ['BEE', 'USDTE'],
                 description: 'Put your BEE and USDTE into a liquidity pool for getting daily rewards.',
@@ -70,22 +99,6 @@ export default {
                 ru: {
                     description: 'Поместите свои BEE и USDTBSC в пул ликвидности, чтобы получать ежедневные вознаграждения.',
                     caption: 'Фарминг',
-                },
-            },
-            {
-                caption: 'Stake & Earn',
-                coin: `BEE`,
-                description: 'Stake BEE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
-                stats: {
-                    apr: {
-                        percent: '5-20',
-                    },
-                },
-                tags: ['Staking'],
-                action: `/stake/19`,
-                ru: {
-                    description: 'Стейкуйте BEE на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
-                    caption: 'Стейкинг',
                 },
             },
             {
