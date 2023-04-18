@@ -12,7 +12,6 @@ import {wait} from '@shrpne/utils/src/wait.js';
 import {HUB_NETWORK, HUB_CHAIN_DATA, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
-import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
 import useWeb3SmartWalletSwapWithdraw from '~/composables/use-web3-smartwallet-swap-withdraw.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import TxSequenceWithSwapForm from '~/components/base/TxSequenceWithSwapForm.vue';
@@ -69,7 +68,6 @@ export default {
             isSmartWalletSwapParamsLoading,
             smartWalletSwapParamsError,
             smartWalletAddress,
-            /*feeTxParams: smartWalletTxParams,*/
             buildTxListAndCallSmartWallet,
             setSmartWalletSwapWithdrawProps,
         } = useWeb3SmartWalletSwapWithdraw();
@@ -201,7 +199,6 @@ export default {
 
                 return {
                     data: {
-                        //@TODO withdrawValue (which is used to calculate smart-walet params) may be outdated and differ from this value
                         value,
                     },
                 };
@@ -229,11 +226,6 @@ export default {
                     txParams: this.withdrawTxParams,
                     feeTxParams: this.withdrawFeeTxParams,
                 },
-                // {
-                //     prepareGasCoinPosition: 'skip',
-                //     prepare: this.prepareSmartWalletTxParams,
-                //     txParams: this.smartWalletTxParams,
-                // },
             ];
         },
         suggestionList() {

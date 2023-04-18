@@ -83,16 +83,6 @@ export default defineComponent({
         } = useWeb3AddressBalance();
 
         const {
-            // discountUpsidePercent,
-            // destinationFeeInCoin,
-            // hubFeeRate,
-            // hubFeeRatePercent,
-            // hubFee,
-            // withdrawAmountToReceive,
-            // minAmountToWithdraw,
-            // withdrawTxParams,
-            // withdrawFeeTxParams,
-
             gasPrice,
             relayRewardAmount,
             amountEstimationLimitForRelayReward: smartWalletRelayReward,
