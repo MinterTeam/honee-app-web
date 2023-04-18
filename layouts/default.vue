@@ -34,7 +34,7 @@ export default {
 <template>
     <div>
         <HeaderBanner/>
-        <TheHeader/>
+        <TheHeader :show-language="false"/>
 
         <BackButtonFull/>
 
