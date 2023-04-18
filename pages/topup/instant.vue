@@ -78,7 +78,7 @@ export default {
                     {{ $td('Instant Deposit', 'deposit.title') }}
                 </h1>
                 <p class="u-text-medium">
-                    {{ $td(`Top up your balance with any of the following options.`, 'deposit.description') }}
+                    {{ $td(`Top up your balance with any of these options.`, 'deposit.description') }}
                 </p>
             </div>
             <div class="card card--light-grey">

@@ -221,7 +221,7 @@ export default {
     },
     deposit: {
         'title': 'Мгновенное пополнение',
-        'description': 'Пополните баланс любым из следующих способов.',
+        'description': 'Пополните баланс любым из способов.',
         'title-evm': 'Ethereum & BNB Smart Chain',
         'description-evm': 'Переведите любой токен (ERC20 или BEP20) из сети Ethereum или BNB Smart Chain на этот адрес.',
         'smart-wallet-address': 'Адрес смарт-кошелька',

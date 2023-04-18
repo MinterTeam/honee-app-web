@@ -41,6 +41,7 @@ export default {
                 },
             },
             {
+                style: 'extended-card card--bee-buy',
                 caption: 'Buy',
                 coin: 'BEE',
                 description: 'BEE is a native Honee crypto wallet token. Provides users with many opportunities to earn crypto.',
@@ -54,6 +55,7 @@ export default {
                 },
             },
             {
+                style: 'extended-card card--bee-staking',
                 caption: 'Stake & Earn',
                 coin: `BEE`,
                 description: 'Stake BEE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
@@ -70,6 +72,7 @@ export default {
                 },
             },
             {
+                style: 'extended-card card--bee-farming',
                 caption: 'Yield farming',
                 coin: ['BEE', 'USDTE'],
                 description: 'Put your BEE and USDTE into a liquidity pool for getting daily rewards.',
@@ -86,6 +89,7 @@ export default {
                 },
             },
             {
+                style: 'extended-card card--bee-farming-2',
                 caption: 'Yield farming',
                 coin: ['BEE', 'USDTBSC'],
                 description: 'Put your BEE and USDTBSC into a liquidity pool for getting daily rewards.',

@@ -97,6 +97,7 @@ export default function useStakeByLockList({initFetchAddress}) {
     function getEmptyPremiumCard() {
         return {
             ...getEmptyStakeCard(PREMIUM_STAKE_PROGRAM_ID, PREMIUM_STAKE_PROGRAM_ID),
+            style: 'extended-card card--bee-premium',
             caption: 'Premium',
             title: 'LEVEL 0',
             description: 'Premium is extended account that allows you to get extra rewards without lifting a finger and enjoy additional features.',

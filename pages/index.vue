@@ -119,7 +119,7 @@ export default {
                     <CardPremium/>
                 </div>
                 <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
-                    <CardSwHold coin="BEE" :is-small="true"/>
+                    <CardSwHold class="card--extended-card card--bee-hold" coin="BEE" :is-small="true"/>
                 </div>
                 <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnBeeList" :key="card.action">
                     <Card :card="card" v-if="card.action"/>
