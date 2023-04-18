@@ -48,10 +48,12 @@ export default {
                 stats: {
                 },
                 tags: ['Exchange'],
-                action: '/swap/BEE',
+                action: '/topup/card',
+                buttonLabel: 'Buy BEE',
                 ru: {
                     description: 'BEE — токен крипто-кошелька Honee. Предоставляет пользователям множество возможностей для заработка.',
                     caption: 'Купить',
+                    buttonLabel: 'Купить BEE картой',
                 },
             },
             {
@@ -84,7 +86,7 @@ export default {
                 tags: ['Farming'],
                 action: `/farm/BEE/USDTE`,
                 ru: {
-                    description: 'Поместите свои BEE и USDTE в пул ликвидности, чтобы получать ежедневные вознаграждения.',
+                    description: 'Добавьте свои BEE и USDTE в пул ликвидности, чтобы получать ежедневные вознаграждения.',
                     caption: 'Фарминг',
                 },
             },
@@ -101,7 +103,7 @@ export default {
                 tags: ['Farming'],
                 action: `/farm/BEE/USDTBSC`,
                 ru: {
-                    description: 'Поместите свои BEE и USDTBSC в пул ликвидности, чтобы получать ежедневные вознаграждения.',
+                    description: 'Добавьте свои BEE и USDTBSC в пул ликвидности, чтобы получать ежедневные вознаграждения.',
                     caption: 'Фарминг',
                 },
             },
