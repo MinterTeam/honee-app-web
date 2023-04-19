@@ -184,6 +184,7 @@ module.exports = {
         { src: '~/plugins/click-blur.js', ssr: false },
         { src: '~/plugins/referral.js', ssr: false },
         { src: '~/plugins/telegram.js', ssr: false },
+        { src: '~/plugins/telegram-web-app.js', ssr: false },
         { src: '~/plugins/goatcounter.js', ssr: false },
     ],
     content: {
