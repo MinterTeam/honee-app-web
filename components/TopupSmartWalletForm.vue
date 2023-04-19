@@ -71,22 +71,18 @@ export default {
             </div>
         </div>
 
-        <div class="form-row u-text-muted u-text-small">
+        <ul class="form-row u-text-muted u-text-small">
             <template v-if="$i18n.locale === 'en'">
-                <ul>
-                    <li>Only ERC20 or BEP20 tokens</li>
-                    <li>Supported networks: Ethereum & BNB Smart Chain</li>
-                    <li>Any amount</li>
-                </ul>
+                <li>Only ERC20 or BEP20 tokens</li>
+                <li>Supported networks: Ethereum & BNB Smart Chain</li>
+                <li>Any amount</li>
             </template>
             <template v-if="$i18n.locale === 'ru'">
-                <ul>
-                    <li>Только ERC20 или BEP20 токены</li>
-                    <li>Сети: Ethereum и BNB Smart Chain</li>
-                    <li>Любое количество</li>
-                </ul>
+                <li>Только ERC20 или BEP20 токены</li>
+                <li>Сети: Ethereum и BNB Smart Chain</li>
+                <li>Любое количество</li>
             </template>
-        </div>
+        </ul>
 
 
         <!--<div class="u-grid u-grid&#45;&#45;vertical-margin&#45;&#45;small">-->
