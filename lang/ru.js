@@ -47,6 +47,7 @@ export default {
         'learn-more': 'Подробнее',
         'buy': 'Купить',
         'token': 'Токен',
+        'token-price': 'Цена токена',
     },
     error: {
         'title-error': 'Ошибка',

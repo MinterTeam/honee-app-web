@@ -1,5 +1,6 @@
 <script>
 import get from 'lodash-es/get.js';
+import {pretty} from '~/assets/utils.js';
 
 export default {
     props: {
@@ -42,6 +43,9 @@ export default {
 
                 return result;
             }
+            if (stats?.price && this.card.coin) {
+                return this.$td('Token price', 'common.token-price');
+            }
 
             return this.translate('stats.caption');
         },
@@ -60,6 +64,10 @@ export default {
                 } else {
                     return percent + '%';
                 }
+            }
+            if (stats?.price && this.card.coin) {
+                const price = this.$store.getters['portfolio/getCoinPrice'](this.card.coin);
+                return '$' + pretty(price);
             }
 
             return this.translate('stats.value');

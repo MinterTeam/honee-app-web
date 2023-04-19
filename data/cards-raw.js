@@ -46,6 +46,7 @@ export default {
                 coin: 'BEE',
                 description: 'BEE is a native Honee crypto wallet token. Provides users with many opportunities to earn crypto.',
                 stats: {
+                    price: true,
                 },
                 tags: ['Exchange'],
                 action: '/topup/card',
@@ -353,9 +354,10 @@ export default {
  */
 
 /**
- * @typedef {object} CardDataStats
- * @property {CardDataStatsApr} [apr]
- * @property {CardDataStatsApr} [apy]
+ * @typedef {{apr: CardDataStatsApr} | {apy: CardDataStatsApr} | {price: boolean}} CardDataStats - predefined stats presets
+ *# @property {CardDataStatsApr} [apr]
+ *# @property {CardDataStatsApr} [apy]
+ *# @property {boolean} [price]
  */
 
 /**

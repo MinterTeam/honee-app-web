@@ -105,8 +105,8 @@ export function pretty(value) {
         return '';
     }
     const PRECISION_FIXED = 2;
-    const PRECISION = 4;
-    if (value >= 1 || value <= -1 || Number(value) === 0) {
+    const PRECISION = 3;
+    if (+value >= 1 || +value <= -1 || Number(value) === 0) {
         return prettyNumber(value, PRECISION_FIXED, PRECISION_SETTING.FIXED);
     } else {
         value = prettyNumber(value, PRECISION, PRECISION_SETTING.REDUCE_SIGNIFICANT);
