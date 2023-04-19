@@ -246,7 +246,7 @@ export default {
     },
     referral: {
         'header-button': 'Реф. ссылка',
-        'invite-friend': 'Реферальная ссылка',
+        'invite-friend': 'Реф. ссылка',
         'title': 'Зарабатывай с Honee',
         'activate-button': 'Активировать реферальную ссылку',
         'deactivate-button': 'Деактивировать реферальную ссылку',

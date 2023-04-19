@@ -49,7 +49,7 @@ export default {
                 },
                 tags: ['Exchange'],
                 action: '/topup/card',
-                buttonLabel: 'Buy BEE',
+                buttonLabel: 'Buy BEE with card',
                 ru: {
                     description: 'BEE — токен крипто-кошелька Honee. Предоставляет пользователям множество возможностей для заработка.',
                     caption: 'Купить',
@@ -68,9 +68,11 @@ export default {
                 },
                 tags: ['Staking'],
                 action: `/stake/19`,
+                buttonLabel: 'Earn with staking',
                 ru: {
                     description: 'Стейкуйте BEE на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
                     caption: 'Стейкинг',
+                    buttonLabel: 'Заработать на стейкинге',
                 },
             },
             {
@@ -85,9 +87,11 @@ export default {
                 },
                 tags: ['Farming'],
                 action: `/farm/BEE/USDTE`,
+                buttonLabel: 'Earn with farming',
                 ru: {
                     description: 'Добавьте свои BEE и USDTE в пул ликвидности, чтобы получать ежедневные вознаграждения.',
                     caption: 'Фарминг',
+                    buttonLabel: 'Заработать на фарминге',
                 },
             },
             {
@@ -102,9 +106,11 @@ export default {
                 },
                 tags: ['Farming'],
                 action: `/farm/BEE/USDTBSC`,
+                buttonLabel: 'Earn with farming',
                 ru: {
                     description: 'Добавьте свои BEE и USDTBSC в пул ликвидности, чтобы получать ежедневные вознаграждения.',
                     caption: 'Фарминг',
+                    buttonLabel: 'Заработать на фарминге',
                 },
             },
             {

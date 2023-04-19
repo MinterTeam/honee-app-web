@@ -115,14 +115,14 @@ export default {
                 {{ $td('Earn with BEE', `action.category-bee`) }}
             </h2>
             <div class="u-grid u-grid--vertical-margin">
-                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
+                <!--<div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
                     <CardPremium/>
+                </div>-->
+                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnBeeList" :key="card.action">
+                    <Card :card="card" v-if="card.action"/>
                 </div>
                 <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
                     <CardSwHold class="card--extended-card card--bee-hold" coin="BEE" :is-small="true"/>
-                </div>
-                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnBeeList" :key="card.action">
-                    <Card :card="card" v-if="card.action"/>
                 </div>
                 <!--<div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
                     <div class="card card--action card--invert card--twitter card__content--small">
