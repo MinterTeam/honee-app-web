@@ -58,6 +58,8 @@ export const SMART_WALLET_RELAY_BROADCASTER_ADDRESS = '0x64e51D5930CDBbf99f3cB27
 export const SMART_WALLET_RELAY_MINTER_ADDRESS = "Mxc9b1b39f4c94b1bcbf68c1beba97ab84f7763cf0";
 export const GOATCOUNTER_HOST = 'https://counter-api.minter.network';
 export const GOATCOUNTER_SCRIPT_HASH = 'sha384-Y8F5Ua/zQ+NPBrMSdg9H3WezYaB49Qf3WJsv3LLUntxBwBV2r8pOWJWJ7X7l8DXX';
+export const TWA_SCRIPT_URL = 'https://telegram.org/js/telegram-web-app.js';
+export const TWA_SCRIPT_HASH = 'sha384-rrYCDcTm7U/NeMS1/3PpsuYOwjAtiQZUyC8dUH9dudYxQ3BioJkRzB8ueU0oZ7zg';
 export const BASE_COIN = NETWORK === MAINNET ? 'BIP' : 'MNT';
 export const COIN_NAME = BASE_COIN;
 export const CHAIN_ID = NETWORK === MAINNET ? 1 : 2;
