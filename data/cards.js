@@ -1,4 +1,5 @@
 import cardList from '~/data/cards-raw.js';
+export {cardPresetList, makeCard} from '~/data/cards-raw.js';
 
 /**
  * Fill omitted card properties (title, icon, tags) with data from 'coin' property
