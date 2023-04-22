@@ -134,7 +134,7 @@ export default {
                     },
                 },
             }),
-            makeCard(presets.farm('BEE', 'USDTE'), {
+            makeCard(presets.farm('BEE', 'USDTBSC'), {
                 style: 'extended-card card--bee-farming-2',
                 stats: {
                     apr: {
