@@ -9,13 +9,8 @@ export default {
 };
 </script>
 
-<template functional>
-    <svg
-        class="loader" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"
-        :class="[data.staticClass, data.class]"
-        v-bind="data.attrs"
-        v-if="props.isLoading"
-    >
+<template>
+    <svg class="loader" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" v-if="isLoading">
         <circle class="loader__path" cx="25" cy="25" r="16"/>
     </svg>
 </template>
