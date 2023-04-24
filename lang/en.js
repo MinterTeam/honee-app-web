@@ -18,6 +18,7 @@ export default {
         'title-win': 'Win',
         'title-farm': 'Yield farm',
         'title-add-liquidity': 'Provide liquidity to pool',
+        'title-add-liquidity-zap': 'Provide liquidity to pool',
         'title-remove-liquidity': 'Remove liquidity from pool',
         'title-delegate': 'Delegate',
         'title-unbond': 'Unbond',

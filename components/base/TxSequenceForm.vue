@@ -106,6 +106,7 @@ export default {
         // feeBusParams
         this.$watch(
             () => {
+                /** @type {Array<SendSequenceItem>} */
                 const sequenceParamsArray = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
                 // check only nullish, because 'false' feeTxParams mean 'skip estimation'
                 const txParamsList = sequenceParamsArray.map((item) => item.feeTxParams ?? item.txParams);
@@ -165,14 +166,18 @@ export default {
                         }
 
                         // fill txParams with gasCoin
-                        const isGasCoinSet = !!item.txParams.gasCoin || item.txParams.gasCoin === 0;
-                        const prepareGasCoin = item.prepareGasCoinPosition === 'skip'
-                            ? (isGasCoinSet ? undefined : () => ({gasCoin: this.fee.resultList?.[0]?.coin}))
-                            : () => this.refineByIndex(index).then((fee) => ({
+                        const prepareGasCoin = (() => {
+                            const isGasCoinSet = !!item.txParams.gasCoin || item.txParams.gasCoin === 0;
+                            if (item.prepareGasCoinPosition === 'skip') {
+                                return isGasCoinSet ? undefined : () => ({gasCoin: this.fee.resultList?.[0]?.coin});
+                            }
+                            return () => this.refineByIndex(index).then((fee) => ({
                                 ...(isGasCoinSet || {gasCoin: fee?.coin}),
                                 // extra data to pass to next `prepare`
                                 extra: {fee},
                             }));
+                        })();
+
                         const itemPrepare = Array.isArray(item.prepare)
                             ? item.prepare
                             : (item.prepare ? [item.prepare] : []);

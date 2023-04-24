@@ -41,7 +41,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     const feeProps = reactive({
         /** @type {TxParams} */
         txParams: {},
-        /** @type {Array<TxParams>} */
+        /** @type {Array<TxParams|false>} */
         txParamsList: [],
         //@TODO invalid behavior with TxSequence with different privateKey
         baseCoinAmount: 0,
