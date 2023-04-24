@@ -1,7 +1,7 @@
 <script>
 import AddressAssets from '~/components/AddressAssets.vue';
 import MetagardenSpotCard from '~/components/MetagardenSpotCard.vue';
-import MetagardenSwHoldCard from '~/components/MetagardenSwHoldCard.vue';
+import MetagardenSwHoldCard from '~/components/CardSwHold.vue';
 
 export default {
     layout: 'metagarden',
@@ -39,7 +39,7 @@ export default {
 
         <MetagardenSpotCard/>
 
-        <MetagardenSwHoldCard class="u-mt-10"/>
+        <MetagardenSwHoldCard class="u-mt-10" coin="METAGARDEN" :is-small="false"/>
 
         <button type="button" class="button button--full button--ghost-red u-mt-10" @click="logout()">{{ $td('Logout', 'common.logout') }}</button>
 

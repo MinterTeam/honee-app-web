@@ -3,7 +3,7 @@ import { waitUntil } from 'async-wait-until';
 import getTitle from '~/assets/get-title.js';
 import hashColor from '~/assets/hash-color.js';
 import {isCoinId as isId} from 'minter-js-sdk/src/utils.js';
-import {flatCardList} from '~/data/cards.js';
+import {flatCardList, cardPresetList, makeCard} from '~/data/cards.js';
 import {translateCardField} from '~/components/Card.vue';
 import HubBuyForm from '~/components/HubBuyForm.vue';
 import Swap from '~/components/Swap.vue';
@@ -32,13 +32,15 @@ const addLiquidityAction = {
 
 /**
  * @typedef {ActionItemRaw&{title: string}} ActionItem
- *
+ */
+/**
  * @typedef {object} ActionItemRaw
  * @property {Vue} component
  * @property {Array<string>} [params]
  * @property {Array<string>} [tags]
- *
- * @type {Object.<string, ActionItemRaw>}
+ */
+/**
+ * @type {Object.<string, (ActionItemRaw | function(actionPathParts: Array<string>): ActionItemRaw)>}
  */
 const actionList = {
     buy: {
@@ -173,31 +175,41 @@ export default {
             ...pathParams,
         };
 
-        // action title
-        let title = this.$t(`action.title-${actionType}`);
-        if (actionType === 'delegate' && params.coin) {
-            title += ' ' + params.coin;
-        }
-        if (actionType === 'swap') {
-            title = this.$t('action.title-swap-combined', {
-                coin0: params.coinToSell ? params.coinToSell.toUpperCase() : this.$t('action.title-swap-coin0-empty'),
-                conjunction: params.coinToBuy ? this.$t('action.title-swap-conjunction') : undefined,
-                coin1: params.coinToBuy ? params.coinToBuy.toUpperCase() : undefined,
-            });
-        }
-        if (actionType === 'buy' && params.coinToGet) {
-            title = this.$t('action.title-buy-coin', {coin: params.coinToGet});
-        }
+        let title;
 
         // card
+        // find predefined card
         const pathMatch = this.$route.params.pathMatch.replace(/\/$/, '').toLowerCase();
-        const card = flatCardList.find((card) => card.action.replace(/^\//, '').toLowerCase() === pathMatch);
+        let card = flatCardList.find((card) => card.action.replace(/^\//, '').toLowerCase() === pathMatch);
         this.card = Object.freeze(card);
+
+        // try restore from preset
+        // if (!card) {
+        //     card = cardPresetList[actionType]?.(...actionPathParts);
+        // }
 
         if (card) {
             const cardCaption = translateCardField(card, 'caption', this.$i18n.locale);
             const cardTitle = translateCardField(card, 'title', this.$i18n.locale);
             title = [cardCaption, cardTitle].join(' ');
+        }
+
+        // action title
+        if (!title) {
+            title = this.$t(`action.title-${actionType}`);
+            if (actionType === 'delegate' && params.coin) {
+                title += ' ' + params.coin;
+            }
+            if (actionType === 'swap') {
+                title = this.$t('action.title-swap-combined', {
+                    coin0: params.coinToSell ? params.coinToSell.toUpperCase() : this.$t('action.title-swap-coin0-empty'),
+                    conjunction: params.coinToBuy ? this.$t('action.title-swap-conjunction') : undefined,
+                    coin1: params.coinToBuy ? params.coinToBuy.toUpperCase() : undefined,
+                });
+            }
+            if (actionType === 'buy' && params.coinToGet) {
+                title = this.$t('action.title-buy-coin', {coin: params.coinToGet});
+            }
         }
 
         // action

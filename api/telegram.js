@@ -4,6 +4,7 @@ import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 import addEcdsaAuthInterceptor, {signRequest, authHeaderKeyGenerator} from '~/assets/axios-ecdsa-auth.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {TELEGRAM_AUTH_API_URL, TELEGRAM_LEGACY_AUTH_API_URL} from "~/assets/variables.js";
+import {toSnake} from '~/assets/utils/snake-case.js';
 
 const instance = axios.create({
     baseURL: TELEGRAM_AUTH_API_URL,
@@ -102,6 +103,14 @@ export function getUserPortfolioNotificationList(privateKey) {
         },
     })
         .then((response) => response.data.data);
+}
+
+export function sendAddress(telegramId, address, initData) {
+    return instance.post('/users/address', toSnake({
+        telegramId,
+        address,
+        initData,
+    }));
 }
 
 /**

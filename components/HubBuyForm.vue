@@ -114,7 +114,7 @@ export default {
             handleInputBlur,
             estimateSwap,
         } = useEstimateSwap({
-            $td: vm.$td,
+            vm,
             idPreventConcurrency: 'hubBuy',
         });
         const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();

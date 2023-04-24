@@ -410,5 +410,10 @@ export default {
                 {{ $td('Close', 'form.success-close-button') }}
             </button>
         </Modal>
+        <div class="card__content--instant-block">
+            <nuxt-link class="button button--full button--ghost-main" :to="$i18nGetPreferredPath('/topup/instant')">
+                {{ $td('+ Instant deposit', 'index.topup-instant') }}
+            </nuxt-link>
+        </div>
     </div>
 </template>

@@ -1,8 +1,8 @@
 <script>
 import cardList from '~/data/cards.js';
 import Card from '~/components/Card.vue';
-import CardHead from '~/components/CardHead.vue';
 import CardPremium from '~/components/CardPremium.vue';
+import CardSwHold from '~/components/CardSwHold.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
 import InvestmentList from '~/components/InvestmentList.vue';
 import PortfolioLeaderboard from '~/components/PortfolioLeaderboard.vue';
@@ -14,6 +14,13 @@ const BASE_CARD = {
     // FARM: 'farm',
     // LOTTERY: 'lottery',
 };
+
+const BEE_CARD_LIST = [
+    '/topup/card',
+    '/stake/19',
+    '/farm/BEE/USDTE',
+    '/farm/BEE/USDTBSC',
+];
 
 /** @type {CardListItemRaw} */
 const TWITTER_CARD_HEAD = {
@@ -37,8 +44,8 @@ export default {
     cardList,
     components: {
         Card,
-        CardHead,
         CardPremium,
+        CardSwHold,
         AddressAssets,
         InvestmentList,
         PortfolioLeaderboard,
@@ -63,7 +70,7 @@ export default {
     computed: {
         earnBeeList() {
             return this.$options.cardList.earn.cards.filter((card) => {
-                return card.action === '/stake/19';
+                return BEE_CARD_LIST.includes(card.action);
             });
         },
         earnOtherList() {
@@ -108,11 +115,14 @@ export default {
                 {{ $td('Earn with BEE', `action.category-bee`) }}
             </h2>
             <div class="u-grid u-grid--vertical-margin">
-                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
+                <!--<div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
                     <CardPremium/>
-                </div>
+                </div>-->
                 <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnBeeList" :key="card.action">
                     <Card :card="card" v-if="card.action"/>
+                </div>
+                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
+                    <CardSwHold class="card--extended-card card--bee-hold" coin="BEE" :is-small="true"/>
                 </div>
                 <!--<div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
                     <div class="card card--action card--invert card--twitter card__content--small">
@@ -140,8 +150,11 @@ export default {
                     {{ $td($options.cardList.earn.title, `action.category-earn`) }}
                 </h2>
                 <div class="u-grid u-grid--vertical-margin">
+                    <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
+                        <CardSwHold coin="METAGARDEN" :is-small="true"/>
+                    </div>
                     <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnOtherList" :key="card.action">
-                        <Card :card="card" v-if="card.action"/>
+                        <Card :card="card"/>
                     </div>
                 </div>
             </div>

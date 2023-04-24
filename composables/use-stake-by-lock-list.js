@@ -13,9 +13,7 @@ import {deepMerge} from '~/assets/utils/collection.js';
 /** @type {Ref<Array<StakingProgramAddressLock>>} */
 const lockList = ref([]);
 
-export default function useStakeByLockList({$td, initFetchAddress}) {
-    $td = typeof $td === 'function' ? $td : (val) => val;
-
+export default function useStakeByLockList({initFetchAddress}) {
     // reduce lock list to on item per coin
     /** @type {ComputedRef<Array<CardListItem>>} */
     const coinLockList = computed(() => {
@@ -79,17 +77,18 @@ export default function useStakeByLockList({$td, initFetchAddress}) {
             // dummy action to fill correct actionType
             action: `/stake/${programId}`,
             caption: 'Stake & Earn',
+            buttonLabel: 'Stake more',
             stats: {
                 caption: 'Total staked',
                 value: 0,
             },
             ru: {
                 caption: 'Стейкинг',
+                buttonLabel: 'Застейкать еще',
                 stats: {
                     caption: 'Общий стейк',
                 },
             },
-            buttonLabel: $td('Stake more', 'index.stake-more'),
         });
     }
     /**
@@ -98,19 +97,21 @@ export default function useStakeByLockList({$td, initFetchAddress}) {
     function getEmptyPremiumCard() {
         return {
             ...getEmptyStakeCard(PREMIUM_STAKE_PROGRAM_ID, PREMIUM_STAKE_PROGRAM_ID),
+            style: 'extended-card card--bee-premium',
             caption: 'Premium',
             title: 'LEVEL 0',
             description: 'Premium is extended account that allows you to get extra rewards without lifting a finger and enjoy additional features.',
+            buttonLabel: 'Upgrade your level',
             icon: '/img/icon-premium.svg',
             action: `/premium`,
             ru: {
                 description: 'Premium – это расширенный аккаунт, который позволит получать дополнительный доход, а также добавит новые функции.',
                 caption: 'Premium',
+                buttonLabel: 'Повысить уровень',
                 stats: {
                     caption: 'Общий стейк',
                 },
             },
-            buttonLabel: $td('Upgrade your level', 'premium.card-update-button'),
         };
     }
 

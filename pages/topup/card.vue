@@ -8,10 +8,10 @@ export default {
     HUB_NETWORK_SLUG,
     CARD_COIN_LIST: [
         // 'USDTBSC',
+        'BEE',
         'BIP',
         'HUB',
         'MUSD',
-        'BEE',
         'METAGARDEN',
         'WONDER',
     ],

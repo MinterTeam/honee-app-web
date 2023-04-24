@@ -1,10 +1,12 @@
 <script>
+import {defineComponent} from 'vue';
 import get from 'lodash-es/get.js';
+import {pretty} from '~/assets/utils.js';
 
-export default {
+export default defineComponent({
     props: {
-        /** @type {PropOptions<CardListItem>} */
         card: {
+            /** @type {PropType<CardListItem>} */
             type: Object,
         },
         fallbackTitle: {
@@ -42,6 +44,9 @@ export default {
 
                 return result;
             }
+            if (stats?.price && this.card.coin) {
+                return this.$td('Token price', 'common.token-price');
+            }
 
             return this.translate('stats.caption');
         },
@@ -61,6 +66,10 @@ export default {
                     return percent + '%';
                 }
             }
+            if (stats?.price && typeof this.card.coin === 'string') {
+                const price = this.$store.getters['portfolio/getCoinPrice'](this.card.coin);
+                return '$' + pretty(price);
+            }
 
             return this.translate('stats.value');
         },
@@ -74,7 +83,7 @@ export default {
             return get(this.card?.[this.$i18n.locale], key) || get(this.card, key);
         },
     },
-};
+});
 </script>
 
 <template>

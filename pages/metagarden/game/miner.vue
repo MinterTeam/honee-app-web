@@ -1,7 +1,7 @@
 <script>
 import MetagardenGame from '~/components/MetagardenGame.vue';
 import MetagardenSpotCard from '~/components/MetagardenSpotCard.vue';
-import MetagardenSwHoldCard from '~/components/MetagardenSwHoldCard.vue';
+import MetagardenSwHoldCard from '~/components/CardSwHold.vue';
 import MetagardenLootboxCard from '~/components/MetagardenLootboxCard.vue';
 
 export default {
@@ -27,6 +27,6 @@ export default {
 
         <MetagardenSpotCard class="u-mt-10" :hide-head="false"/>
 
-        <MetagardenSwHoldCard class="u-mt-10"/>
+        <MetagardenSwHoldCard class="u-mt-10" coin="METAGARDEN" :is-small="false"/>
     </MetagardenGame>
 </template>

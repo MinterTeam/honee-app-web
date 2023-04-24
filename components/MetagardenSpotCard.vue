@@ -3,10 +3,12 @@ import {claimSpotReward, getSpotInfo} from '~/api/metagarden.js';
 import {getCard2MinterUrl, pretty} from '~/assets/utils.js';
 import {getErrorText} from '~/assets/server-error.js';
 import tooltip from 'v-tooltip/src/directives/v-tooltip.js';
+import InlineSvg from 'vue-inline-svg';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 
 export default {
     components: {
+        InlineSvg,
         BaseLoader,
     },
     directives: {
@@ -124,10 +126,9 @@ export default {
                     ></div>
                 </div>
 
-                <img
-                    class="mg-spot__days-info" src="/img/icon-metagarden-info.svg" alt="Info"
-                    v-tooltip="tooltipOptions"
-                >
+                <button type="button" class="u-semantic-button" v-tooltip="tooltipOptions" aria-label="More info">
+                    <InlineSvg class="u-image u-text-main" src="/img/icon-info.svg" alt="" fill="currentColor"/>
+                </button>
             </div>
         </template>
 
@@ -186,5 +187,4 @@ export default {
     &:nth-child(6) {--color-spot-day-bg: #f26f19;}
     &:nth-child(7) {--color-spot-day-bg: #fc1b06;}
 }
-.mg-spot__days-info {cursor: help;}
 </style>

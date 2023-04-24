@@ -2,7 +2,7 @@
 import PortfolioManageForm from '~/components/PortfolioManageForm.vue';
 
 export default {
-    layout: 'splash',
+    // layout: 'splash',
     components: {
         PortfolioManageForm,
     },

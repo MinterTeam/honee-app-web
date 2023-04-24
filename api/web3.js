@@ -1,6 +1,6 @@
 import Eth from 'web3-eth';
 import {TinyEmitter as Emitter} from 'tiny-emitter';
-import {web3Eth, web3EthEth, web3EthBsc, getTokenDecimals as _getTokenDecimals, getBlockNumber, getWrappedNativeContractAddress, fixNativeContractAddress} from 'minter-js-web3-sdk/src/web3.js';
+import {web3Eth, web3EthEth, web3EthBsc, getTokenDecimals as _getTokenDecimals, getBlockNumber} from 'minter-js-web3-sdk/src/web3.js';
 import {wait} from '@shrpne/utils/src/wait.js';
 import {NATIVE_COIN_ADDRESS, HUB_NETWORK_SLUG, HUB_CHAIN_DATA, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 
@@ -292,20 +292,3 @@ function validateChainId(chainId) {
         throw new Error(`chainId should be a number`);
     }
 }
-
-
-/**
- * @param {ChainId} chainId
- * @param {string} tokenContractAddress
- */
-export function fixWrappedNativeContractAddress(chainId, tokenContractAddress) {
-    tokenContractAddress = tokenContractAddress?.toLowerCase();
-    const isWrappedNativeToken = tokenContractAddress === getWrappedNativeContractAddress(chainId);
-
-    if (isWrappedNativeToken) {
-        return NATIVE_COIN_ADDRESS;
-    } else {
-        return fixNativeContractAddress(chainId, tokenContractAddress);
-    }
-}
-

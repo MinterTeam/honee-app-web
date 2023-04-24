@@ -60,11 +60,8 @@ export default {
             <img class="u-mr-05" src="https://explorer-static.minter.network/coins/2107.png" alt="" role="presentation" width="24" height="24">
             {{ $td('Ethereum & BNB Smart Chain', 'deposit.title-evm') }}
         </h2>
-        <p class="u-text-medium">
-            {{ $td(`Transfer any token (ERC20 or BEP20) from Ethereum or BNB Smart Chain networks to this address.`, 'deposit.description-evm') }}
-        </p>
 
-        <div class="h-field u-mt-10 u-mb-10">
+        <div class="h-field u-mt-10 u-mb-05">
             <div class="h-field__content" @click="copy(smartWalletAddress)">
                 <div class="h-field__title">{{ $td('Smart wallet address', 'deposit.smart-wallet-address') }}</div>
                 <div class="h-field__input h-field__input--medium is-not-empty">{{ smartWalletAddress }}</div>
@@ -73,6 +70,19 @@ export default {
                 <BaseButtonCopyIcon class="" :copy-text="smartWalletAddress"/>
             </div>
         </div>
+
+        <ul class="form-row u-text-muted u-text-small">
+            <template v-if="$i18n.locale === 'en'">
+                <li>Only ERC20 or BEP20 tokens</li>
+                <li>Supported networks: Ethereum & BNB Smart Chain</li>
+                <li>Any amount</li>
+            </template>
+            <template v-if="$i18n.locale === 'ru'">
+                <li>Только ERC20 или BEP20 токены</li>
+                <li>Сети: Ethereum и BNB Smart Chain</li>
+                <li>Любое количество</li>
+            </template>
+        </ul>
 
 
         <!--<div class="u-grid u-grid&#45;&#45;vertical-margin&#45;&#45;small">-->
