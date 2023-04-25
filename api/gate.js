@@ -5,7 +5,7 @@ import PostTx from 'minter-js-sdk/src/api/post-tx';
 import EstimateCoinSell from 'minter-js-sdk/src/api/estimate-coin-sell';
 import EstimateCoinSellAll from 'minter-js-sdk/src/api/estimate-coin-sell-all.js';
 import EstimateCoinBuy from 'minter-js-sdk/src/api/estimate-coin-buy';
-import EstimateTxCommission from 'minter-js-sdk/src/api/estimate-tx-commission.js';
+import EstimateTxCommission, {FEE_PRECISION_SETTING} from 'minter-js-sdk/src/api/estimate-tx-commission.js';
 import {ESTIMATE_SWAP_TYPE} from 'minter-js-sdk/src/variables.js';
 import {ReplaceCoinSymbol, ReplaceCoinSymbolByPath} from 'minter-js-sdk/src/api/replace-coin.js';
 import {GATE_API_URL, CHAIN_ID} from '~/assets/variables.js';
@@ -93,6 +93,17 @@ export function estimateCoinBuy(params, axiosOptions) {
 const coinCache = new Cache({ttl: 1 * 60 * 1000, max: 100});
 
 export const estimateTxCommission = new EstimateTxCommission(minterApi, {cache: estimateCache}, {cache: coinCache});
+
+export const estimateTxCommissionGasCoinOnly = (txParams) => {
+    return estimateTxCommission({
+        ...txParams,
+        chainId: CHAIN_ID,
+    }, {
+        needGasCoinFee: FEE_PRECISION_SETTING.PRECISE,
+        needBaseCoinFee: FEE_PRECISION_SETTING.OMIT,
+        needPriceCoinFee: FEE_PRECISION_SETTING.OMIT,
+    });
+};
 
 export const replaceCoinSymbol = ReplaceCoinSymbol(minterApi, {cache: coinCache});
 export const replaceCoinSymbolByPath = ReplaceCoinSymbolByPath(minterApi, {cache: coinCache});

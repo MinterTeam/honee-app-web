@@ -1,5 +1,5 @@
 <script>
-import {getCurrentInstance} from 'vue';
+import {getCurrentInstance, defineComponent} from 'vue';
 import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required.js';
 import minLength from 'vuelidate/src/validators/minLength.js';
@@ -10,7 +10,7 @@ import {pretty, decreasePrecisionSignificant} from '~/assets/utils.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 
 //@TODO refactor HubBuyForm
-export default {
+export default defineComponent({
     mixins: [validationMixin],
     emits: [
         'update:v$estimation',
@@ -211,9 +211,12 @@ export default {
             // estimation is not ready until swap props are valid
             return this.isEstimationWaiting || this.$v.propsGroup.$invalid;
         },
+        /** @type {SwapEstimationFetchState} */
         fetchState() {
             return {
+                /** @type {SwapEstimationFetchState['loading']} */
                 loading: this.isEstimationWaiting,
+                /** @type {SwapEstimationFetchState['error']} */
                 error: this.estimationError,
             };
         },
@@ -293,7 +296,7 @@ export default {
             return getTxType({isSelling: this.isTypeSell, isPool: this.isEstimationTypePool, isSellAll: this.isSellAll});
         },
     },
-};
+});
 
 /**
  * @param {object} options
@@ -325,6 +328,12 @@ export function getTxType({isPool, isSelling, isSellAll}) {
     }
     return TX_TYPE.SELL_ALL;
 }
+
+/**
+ * @typedef {object} SwapEstimationFetchState
+ * @property {boolean} loading
+ * @property {string} error
+ */
 </script>
 
 <template>

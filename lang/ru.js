@@ -385,6 +385,7 @@ export default {
         'title-win': 'Выигрывайте',
         'title-farm': 'Участвуйте в фарминге',
         'title-add-liquidity': 'Предоставьте ликвидность в пул',
+        'title-add-liquidity-zap': 'Предоставьте ликвидность в пул',
         'title-remove-liquidity': 'Отзыв ликвидности из пула',
         'title-delegate': 'Делегируйте',
         'title-unbond': 'Отзыв монет из делегирования',

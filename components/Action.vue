@@ -14,6 +14,7 @@ import TxStakeDelegateForm from '~/components/TxStakeDelegateForm.vue';
 import TxStakeUnbondForm from '~/components/TxStakeUnbondForm.vue';
 import StakeByLock from '~/components/StakeByLock.vue';
 import ActionFarmWithLock from '~/components/ActionFarmWithLock.vue';
+import ActionZapPoolAddLiquidity from '~/components/ActionZapPoolAddLiquidity.vue';
 import ActionSwapWeb3 from '~/components/ActionSwapWeb3.vue';
 import ActionSendWeb3 from '~/components/ActionSendWeb3.vue';
 import Modal from '~/components/base/Modal.vue';
@@ -90,6 +91,10 @@ const actionList = {
         params: ['coin0', 'coin1'],
         component: TxPoolRemoveLiquidityForm,
     },
+    'add-liquidity-zap': {
+        params: ['coin0', 'coin1', 'coinToSell'],
+        component: ActionZapPoolAddLiquidity,
+    },
     delegate: {
         params: ['coin', 'publicKey'],
         component: TxStakeDelegateForm,
@@ -140,6 +145,7 @@ export default {
             this.$nuxt.error({
                 status: 404,
                 message: this.$t('action.title-not-found'),
+                useMessage: true,
             });
         }
 

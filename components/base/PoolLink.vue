@@ -31,9 +31,9 @@ export default {
 </script>
 
 <template>
-    <nuxt-link class="link--default" :to="poolUrl">
+    <a class="link--default" :href="poolUrl" target="_blank">
         <BaseCoinSymbol>{{ getCoinSymbol(pool.coin0) }}</BaseCoinSymbol>
         /
         <BaseCoinSymbol>{{ getCoinSymbol(pool.coin1) }}</BaseCoinSymbol>
-    </nuxt-link>
+    </a>
 </template>
