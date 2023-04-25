@@ -26,6 +26,7 @@ export default {
             this.$nuxt.error({
                 status: 404,
                 message: this.$td('You have to top-up first', 'onboarding.require-topup'),
+                useMessage: true,
             });
         }
     },

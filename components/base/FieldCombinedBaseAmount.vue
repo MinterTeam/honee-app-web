@@ -1,5 +1,5 @@
 <script>
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {isCoinId} from 'minter-js-sdk/src/utils.js';
 import stripZeros from 'pretty-num/src/strip-zeros.js';
 import checkEmpty from '~/assets/v-check-empty';
@@ -28,6 +28,10 @@ export default {
         maxValue: {
             type: [String, Number],
             default: undefined,
+        },
+        disableMaxValueWatch: {
+            type: Boolean,
+            default: false,
         },
         // if no maxValue specified
         addressBalance: {
@@ -84,6 +88,9 @@ export default {
         isMaxValueDefined() {
             return typeof this.maxValueComputed !== 'undefined' && this.maxValueComputed > 0;
         },
+        isMaxValueUsed() {
+            return this.isMaxValueDefined && new Big(this.value || 0).eq(this.maxValueComputed);
+        },
         isMaxValueRounded() {
             return this.isMaxValueDefined && !(new Big(this.maxValueComputed).eq(pretty(this.maxValueComputed).replace(/\s/g, '')));
         },
@@ -101,9 +108,14 @@ export default {
                 this.isUseMax = false;
                 return;
             }
-            this.isUseMax = new Big(this.value).eq(this.maxValueComputed);
+            if (!new Big(this.value).eq(this.maxValueComputed)) {
+                this.isUseMax = false;
+            }
         },
         maxValueComputed(newVal) {
+            if (this.disableMaxValueWatch) {
+                return;
+            }
             if (this.isMaxValueDefined && this.isUseMax) {
                 this.useMax();
             }
@@ -130,7 +142,7 @@ export default {
 
 /**
  * @param {BalanceItem} selectedCoin
- * @param {FeeData} fee
+ * @param {Pick<FeeData, 'value'|'coin'>} fee
  * @return {string}
  */
 export function getAvailableSelectedBalance(selectedCoin, fee) {
@@ -156,7 +168,7 @@ function isSelectedCoinSameAsFeeCoin(selectedCoinItem, feeCoinIdOrSymbol) {
     if (isFeeSymbol && selectedCoinItem.symbol === feeCoinIdOrSymbol) {
         return true;
     }
-    if (isFeeId && selectedCoinItem.id === feeCoinIdOrSymbol) {
+    if (isFeeId && Number(selectedCoinItem.id) === Number(feeCoinIdOrSymbol)) {
         return true;
     }
     return false;
@@ -174,7 +186,7 @@ function isSelectedCoinSameAsFeeCoin(selectedCoinItem, feeCoinIdOrSymbol) {
                 />
                 <button
                     class="h-field__aside-max link--main link--opacity u-semantic-button" type="button"
-                    v-else-if="isMaxValueDefined && !isUseMax"
+                    v-else-if="isMaxValueDefined && !isMaxValueUsed"
                     @click="useMax()"
                 >
                     {{ $td('Use max', 'index.use-max') }}. {{ isMaxValueRounded ? '≈' : '' }}{{ pretty(maxValueComputed) }}

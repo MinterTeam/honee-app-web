@@ -1,11 +1,19 @@
 <script>
 import InlineSvg from 'vue-inline-svg';
+import {HUB_NETWORK_SLUG, DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR} from '~/assets/variables.js';
 import Language from '~/components/layout/Language.vue';
+import Modal from '~/components/base/Modal.vue';
+import Topup from '~/components/Topup.vue';
+import ReferralCard from '~/components/ReferralCard.vue';
 
 export default {
+    HUB_NETWORK_SLUG,
     components: {
         InlineSvg,
         Language,
+        Modal,
+        Topup,
+        ReferralCard,
     },
     props: {
         title: {
@@ -17,13 +25,30 @@ export default {
             type: Boolean,
             default: false,
         },
+        showLanguage:{
+            type: Boolean,
+            default: false,
+        },
+        isMetagarden: {
+            type: Boolean,
+            default: false,
+        },
+    },
+    data() {
+        return {
+            isTopupModalOpen: false,
+            isLogoutModalOpen: false,
+        };
     },
     computed: {
         indexUrl() {
+            if (this.isMetagarden) {
+                return DASHBOARD_URL_METAGARDEN;
+            }
             if (this.isAuthBattlePage) {
                 return '/auth/battle';
             }
-            return '/';
+            return DASHBOARD_URL;
         },
         backUrl() {
             // if no history use '/' as backUrl
@@ -34,7 +59,8 @@ export default {
             }
         },
         isAuthPage() {
-            return this.$route.name.indexOf('auth-') === 0 || this.$route.name.indexOf('auth_') === 0;
+            // match ^auth/.* or ^auth___(en|ru)
+            return this.$route.name.indexOf('auth' + ROUTE_NAME_SPLITTER) === 0 || this.$route.name.indexOf('auth' + I18N_ROUTE_NAME_SEPARATOR) === 0;
         },
         isAuthBattlePage() {
             return this.$route.path.includes('/auth/battle');
@@ -63,41 +89,73 @@ export default {
         <div class="header__container u-container u-container--wide">
             <div class="header__logo">
                 <nuxt-link class="header__logo-link" :to="$i18nGetPreferredPath(indexUrl)">
-                    <InlineSvg class="header__image-logo" src="/img/logo-honee.svg" alt="Honee" width="122" height="24" fill="currentColor"/>
+                    <img v-if="isMetagarden" class="u-image" src="/img/logo-metagarden-green.svg" alt="Metagarden" width="32" height="32">
+                    <InlineSvg v-else class="u-image" src="/img/logo-honee.svg" alt="Honee" width="122" height="24" fill="currentColor"/>
                 </nuxt-link>
             </div>
 
-            <div class="header__controls">
-                <template v-if="!isPremiumPage && isAuthorized && !simple">
-                    <nuxt-link class="header__controls-link header__controls-premium u-hidden-medium-down" :to="$i18nGetPreferredPath('/premium')">
-                        <img class="header__controls-premium-icon" src="/img/icon-premium-fancy.svg" alt="" role="presentation" width="64" height="42">
-                        {{ $t('premium.activate-title') }}
-                    </nuxt-link>
-                    <hr class="header__controls-link header__controls-divider u-hidden-large-down"/>
-                </template>
+            <!--<div class="header__controls">-->
+            <template v-if="!isPremiumPage && isAuthorized && !simple && !isMetagarden">
+                <hr class="header__horizontal-divider header__premium-item u-hidden-large-up metagarden-layout__hide"/>
+                <nuxt-link class="header__controls-link u-flex u-flex--align-center header__premium-item metagarden-layout__hide" :to="$i18nGetPreferredPath('/premium')">
+                    <img class="u-mr-05 u-hidden-large-down" src="/img/icon-premium-fancy.svg" alt="" role="presentation" width="64" height="42">
+                    <img class="u-mr-05 u-hidden-large-up" src="/img/icon-premium.svg" alt="" role="presentation" width="24" height="24">
+                    {{ $t('premium.activate-title-short') }}
+                </nuxt-link>
+                <hr class="header__controls-link header__controls-divider header__premium-item metagarden-layout__hide"/>
+                <ReferralCard class="u-flex header__premium-item metagarden-layout__hide" button-class="header__controls-link u-semantic-button"/>
+                <hr class="header__controls-link header__controls-divider header__premium-item u-hidden-large-down metagarden-layout__hide"/>
+            </template>
 
-                <nuxt-link v-if="isAuthorized && !simple" :to="$i18nGetPreferredPath('/receive')" class="header__controls-link header__controls-user">
-                    <div class="header__controls-user-avatar u-hidden-mini-down" :style="`background-image: url(${$store.getters.avatar});`" v-if="$store.getters.avatar"></div>
-                    <div class="header__controls-user-name">{{ $store.getters.username }}</div>
-                </nuxt-link>
-                <button v-if="isAuthorized && !simple" type="button" class="header__controls-link link u-semantic-button" @click="logout()">
-                    <img src="/img/icon-logout.svg" width="24" height="24" alt="Logout">
-                </button>
-                <nuxt-link v-if="!isAuthorized && !simple && !isAuthPage" :to="$i18nGetPreferredPath('/auth')" type="button" class="header__controls-link">
-                    {{ $td('Sign in', 'index.sign-in') }}
-                </nuxt-link>
-                <div class="header__controls-language header__controls-link">
-                    <Language/>
-                </div>
+            <button v-if="isAuthorized && !simple" type="button" class="header__controls-link header__controls-user u-semantic-button" @click="isTopupModalOpen = true">
+                <img class="header__controls-user-avatar u-mr-05 u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation" width="24" height="24"/>
+                <span class="header__controls-user-name">{{ $store.getters.username }}</span>
+            </button>
+            <button v-if="isAuthorized && !simple && !isMetagarden" type="button" class="header__controls-link link u-semantic-button metagarden-layout__hide" @click="isLogoutModalOpen = true">
+                <img src="/img/icon-logout.svg" width="24" height="24" alt="Logout">
+            </button>
+            <nuxt-link v-if="!isAuthorized && !simple && !isAuthPage" :to="$i18nGetPreferredPath('/auth')" type="button" class="header__controls-link">
+                {{ $td('Sign in', 'index.sign-in') }}
+            </nuxt-link>
+            <div class="header__controls-language header__controls-link" v-if="showLanguage">
+                <Language/>
             </div>
+            <!--</div>-->
         </div>
-        <div class="header__container--premium header__container u-container u-hidden-medium-up" v-if="!isPremiumPage && isAuthorized && !simple">
-            <div class="header__controls">
-                <nuxt-link class="header__controls-link header__controls-premium" :to="$i18nGetPreferredPath('/premium')">
-                    <img class="header__controls-premium-icon" src="/img/icon-premium.svg" alt="" role="presentation" width="24" height="24">
-                    {{ $t('premium.activate-title') }}
-                </nuxt-link>
-            </div>
-        </div>
+
+        <Modal
+            modalContainerClass="card card__content u-text-center"
+            :isOpen.sync="isTopupModalOpen"
+            :hideCloseButton="false"
+            :disableOutsideClick="false"
+        >
+            <Topup
+                :network-slug="$options.HUB_NETWORK_SLUG.MINTER"
+                :title="$td('Your wallet address', 'receive.title')"
+                :description="false"
+                :back-url="false"
+                @click-back="isTopupModalOpen = false"
+            />
+        </Modal>
+
+        <Modal
+            modalContainerClass="card card__content u-text-center"
+            :isOpen.sync="isLogoutModalOpen"
+            :hideCloseButton="false"
+            :disableOutsideClick="false"
+        >
+            <h2 class="u-h3 u-mb-10">
+                {{ $td('Are you sure you want to logout?', 'index.confirm-logout-title') }}
+            </h2>
+            <button
+                class="button button--main button--full" type="button" data-focus-on-open
+                @click="logout()"
+            >
+                <span class="button__content">{{ $td('Logout', 'form.submit-confirm-button') }}</span>
+            </button>
+            <button class="button button--ghost-main button--full" type="button" @click="isLogoutModalOpen = false">
+                {{ $td('Cancel', 'form.submit-cancel-button') }}
+            </button>
+        </Modal>
     </header>
 </template>

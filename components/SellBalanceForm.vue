@@ -3,7 +3,7 @@ import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required';
 import minLength from 'vuelidate/src/validators/minLength';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {pretty} from '~/assets/utils.js';
 import SwapEstimation from '~/components/base/SwapEstimation.vue';
 import TxSequenceForm from '~/components/base/TxSequenceForm.vue';
@@ -59,7 +59,15 @@ export default {
     computed: {
         coinList() {
             return this.balanceList
-                .filter((item) => item.coin.symbol.indexOf('LP-') !== 0)
+                .filter((item) => {
+                    if (item.coin.symbol.indexOf('LP-') === 0) {
+                        return false;
+                    }
+                    if (item.amount <= 0) {
+                        return false;
+                    }
+                    return true;
+                })
                 .map((item) => {
                     return {
                         amount: item.amount,
@@ -269,7 +277,7 @@ export default {
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="estimationSum" format="approx" :is-loading="isEstimationFetchLoading"/>
                 </div>
-                <PortfolioPriceImpact class="form-row" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>
+                <!--<PortfolioPriceImpact class="form-row" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>-->
 
                 <SwapEstimation
                     class="u-text-medium form-row u-hidden"
@@ -313,8 +321,9 @@ export default {
 
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="estimationSum" format="approx" :is-loading="isEstimationFetchLoading"/>
+
+                    <PortfolioPriceImpact class="u-mt-05 u-text-right" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>
                 </div>
-                <PortfolioPriceImpact class="form-row" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>
             </template>
         </TxSequenceForm>
     </div>

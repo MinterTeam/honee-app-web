@@ -49,12 +49,6 @@ export function getEvmTxUrl(chainId, hash) {
     return host + '/tx/' + hash;
 }
 
-/**
- * @deprecated
- */
-export function getEthereumTxUrl(hash) {
-    return '';
-}
 
 /**
  * @param {number} chainId
@@ -66,8 +60,24 @@ export function getEvmAddressUrl(chainId, hash) {
     return host + '/address/' + hash;
 }
 
-export function getCard2MinterUrl(address, backUrl) {
-    return `${CARD_TO_MINTER_HOST}/?coin=BEE&address=${address}&return_url=${backUrl}`;
+export function getCard2MinterUrl({address, returnUrl, finishUrl, coin = 'BIP'}) {
+    const query = queryToString({address, returnUrl, finishUrl, coin});
+    return `${CARD_TO_MINTER_HOST}/?${query}`;
+}
+
+/**
+ * camelCase query params to snake_case query string
+ * @param {object} queryParams - object with camelCase keys
+ * @return {string}
+ */
+function queryToString(queryParams) {
+    return Object.entries(queryParams)
+        .filter(([key, value]) => value !== undefined && value !== null)
+        .map(([key, value]) => {
+            const snakeCaseKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+            return `${snakeCaseKey}=${value}`;
+        })
+        .join('&');
 }
 
 /**
@@ -94,9 +104,10 @@ export function pretty(value) {
     if (!value && value !== 0) {
         return '';
     }
-    const PRECISION = 2;
-    if (value >= 1 || value <= -1 || Number(value) === 0) {
-        return prettyNumber(value, PRECISION, PRECISION_SETTING.FIXED);
+    const PRECISION_FIXED = 2;
+    const PRECISION = 3;
+    if (+value >= 1 || +value <= -1 || Number(value) === 0) {
+        return prettyNumber(value, PRECISION_FIXED, PRECISION_SETTING.FIXED);
     } else {
         value = prettyNumber(value, PRECISION, PRECISION_SETTING.REDUCE_SIGNIFICANT);
         value = value.substr(0, 10);
@@ -346,7 +357,7 @@ export function fromBase64(str) {
  * @param {function(...any): Promise<T>} [fn]
  * @param {any|Array<any>} [args]
  * @param {object} [options]
- * @param {boolean} [fallbackToArg]
+ * @param {boolean} [options.fallbackToArg]
  * @return {Promise<T>}
  */
 export function ensurePromise(fn, args, {fallbackToArg} = {}) {
@@ -377,7 +388,7 @@ export function suggestionValidatorFilter(suggestion, query) {
 }
 
 /**
- * @typedef {Object} SuggestionValidatorListItem
+ * @typedef {object} SuggestionValidatorListItem
  * @property {string} [name]
  * @property {string} value
  * @property {string} [delegatedAmount]

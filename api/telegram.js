@@ -1,12 +1,17 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
-import addEcdsaAuthInterceptor, {signRequest} from '~/assets/axios-ecdsa-auth.js';
-import {TELEGRAM_AUTH_API_URL, TELEGRAM_LEGACY_AUTH_API_URL} from "~/assets/variables.js";
+import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
+import addEcdsaAuthInterceptor, {signRequest, authHeaderKeyGenerator} from '~/assets/axios-ecdsa-auth.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
+import {TELEGRAM_AUTH_API_URL, TELEGRAM_LEGACY_AUTH_API_URL} from "~/assets/variables.js";
+import {toSnake} from '~/assets/utils/snake-case.js';
 
 const instance = axios.create({
     baseURL: TELEGRAM_AUTH_API_URL,
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
+    adapter: cacheAdapterEnhancer(getDefaultAdapter(), {
+        enabledByDefault: false,
+        cacheKeyGenerator: authHeaderKeyGenerator,
+    }),
 });
 addToCamelInterceptor(instance);
 addEcdsaAuthInterceptor(instance);
@@ -15,6 +20,7 @@ addEcdsaAuthInterceptor(instance);
 const userCacheTime = 60 * 60 * 1000;
 const tgUserCache = new Cache({ttl: userCacheTime, max: 100});
 /**
+ * @param {string} secretDeviceUuid
  * @return {Promise<TelegramAuthResponse>}
  */
 export function getLegacyAuth(secretDeviceUuid) {
@@ -28,6 +34,8 @@ export function getLegacyAuth(secretDeviceUuid) {
 }
 
 /**
+ * @param {string} secretDeviceUuid
+ * @param {string} privateKey
  * @return {Promise<undefined>}
  */
 export function switchLegacyAuth(secretDeviceUuid, privateKey) {
@@ -42,6 +50,7 @@ export function switchLegacyAuth(secretDeviceUuid, privateKey) {
 }
 
 /**
+ * @param {string} privateKey
  * @return {Promise<TelegramAuthResponse>}
  */
 export function getAuth(privateKey) {
@@ -59,8 +68,8 @@ export function getAuth(privateKey) {
 
 /**
  * @param {number|string} id
- * @param {privateKey} privateKey
- * @return {Promise<AxiosResponse<any>>}
+ * @param {string} privateKey
+ * @return {Promise<import('axios').AxiosResponse<any>>}
  */
 export function portfolioNotificationSubscribe(id, privateKey) {
     return instance.post(`users/portfolios/${id}`, {}, {
@@ -71,8 +80,8 @@ export function portfolioNotificationSubscribe(id, privateKey) {
 }
 /**
  * @param {number|string} id
- * @param {privateKey} privateKey
- * @return {Promise<AxiosResponse<any>>}
+ * @param {string} privateKey
+ * @return {Promise<import('axios').AxiosResponse<any>>}
  */
 export function portfolioNotificationUnsubscribe(id, privateKey) {
     return instance.delete(`users/portfolios/${id}`, {
@@ -94,6 +103,14 @@ export function getUserPortfolioNotificationList(privateKey) {
         },
     })
         .then((response) => response.data.data);
+}
+
+export function sendAddress(telegramId, address, initData) {
+    return instance.post('/users/address', toSnake({
+        telegramId,
+        address,
+        initData,
+    }));
 }
 
 /**

@@ -3,6 +3,7 @@ import {postTx} from '~/api/gate.js';
 import {getErrorText} from "~/assets/server-error";
 import {pretty, prettyExact, prettyPrecise, decreasePrecisionSignificant, getExplorerTxUrl} from '~/assets/utils.js';
 import useFee from '~/composables/use-fee.js';
+import InlineSvg from 'vue-inline-svg';
 import {getTxType} from '~/components/base/SwapEstimation.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
@@ -13,6 +14,7 @@ import SwapPriceImpact from '~/components/SwapPriceImpact.vue';
 
 export default {
     components: {
+        InlineSvg,
         BaseAmountEstimation,
         BaseLoader,
         Modal,
@@ -228,11 +230,11 @@ export default {
             </div>
 
             <button
-                class="form-row button button--white convert__reverse-button" type="button"
+                class="form-row link--opacity convert__reverse-button u-semantic-button" type="button"
                 v-if="!params.coinToSell && !params.coinToBuy"
                 @click="reverseCoins()"
             >
-                <img class="" src="/img/icon-reverse.svg" width="24" height="24" alt="⇅">
+                <InlineSvg class="" src="/img/icon-swap.svg" width="24" height="24" alt="⇅"/>
             </button>
 
             <div class="form-row" v-if="!params.coinToBuy && v$estimation.coinToBuy">
@@ -291,6 +293,7 @@ export default {
                 </template>
             </div>
 
+            <!--
             <SwapPriceImpact
                 class="form-row"
                 :coin-to-sell="form.coinFrom"
@@ -298,6 +301,7 @@ export default {
                 :coin-to-buy="form.coinTo"
                 :value-to-buy="form.buyAmount"
             />
+            -->
 
             <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('The final amount depends on&nbsp;the&nbsp;exchange rate at&nbsp;the&nbsp;moment of&nbsp;transaction.', 'form.swap-confirm-note') }}</p>
 
@@ -367,15 +371,15 @@ export default {
 
                 <div class="u-mt-10 u-fw-700" v-if="fee.isHighFee"><span class="u-emoji">⚠️</span> {{ $td('Transaction requires high fee.', 'form.tx-fee-high') }}</div>
                 -->
-            </div>
 
-            <SwapPriceImpact
-                class="form-row"
-                :coin-to-sell="form.coinFrom"
-                :value-to-sell="form.sellAmount"
-                :coin-to-buy="form.coinTo"
-                :value-to-buy="form.buyAmount"
-            />
+                <SwapPriceImpact
+                    class="u-mt-05 u-text-right"
+                    :coin-to-sell="form.coinFrom"
+                    :value-to-sell="form.sellAmount"
+                    :coin-to-buy="form.coinTo"
+                    :value-to-buy="form.buyAmount"
+                />
+            </div>
 
             <div class="form-row u-text-muted u-text-small u-text-center">
                 * {{ $td('The final amount depends on&nbsp;the&nbsp;exchange rate at&nbsp;the&nbsp;moment of&nbsp;transaction.', 'form.swap-confirm-note') }}
@@ -406,5 +410,10 @@ export default {
                 {{ $td('Close', 'form.success-close-button') }}
             </button>
         </Modal>
+        <div class="card__content--instant-block">
+            <nuxt-link class="button button--full button--ghost-main" :to="$i18nGetPreferredPath('/topup/instant')">
+                {{ $td('+ Instant deposit', 'index.topup-instant') }}
+            </nuxt-link>
+        </div>
     </div>
 </template>

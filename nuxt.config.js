@@ -6,30 +6,43 @@ import webpack from 'webpack';
 const envConfig = dotenv.config();
 const envConfigParsed = envConfig.error ? {} : envConfig.parsed;
 
-import langEn from './lang/en.js';
-import langRu from './lang/ru.js';
-import {BASE_TITLE, BASE_DESCRIPTION, I18N_ROUTE_NAME_SEPARATOR, LANGUAGE_COOKIE_KEY} from "./assets/variables.js";
-import * as varsConfig from "./assets/variables.js";
+import {BASE_TITLE, BASE_DESCRIPTION, I18N_ROUTE_NAME_SEPARATOR, ROUTE_NAME_SPLITTER, LANGUAGE_COOKIE_KEY, GOATCOUNTER_HOST, GOATCOUNTER_SCRIPT_HASH, TWA_SCRIPT_HASH, TWA_SCRIPT_URL} from "./assets/variables.js";
+import * as varsLocalConfig from "./assets/variables.js";
+import * as varsSdkConfig from "minter-js-web3-sdk/src/config.js";
+const varsConfig = {...varsLocalConfig, ...varsSdkConfig};
 
 const NUXT_LOADING_INLINE_SCRIPT_SHA = process.env.NODE_ENV === 'production'
     ? [
         // loader (minified)
-        'tempUn1btibnrWwQxEk37lMGV1Nf8FO/GXxNhLEsPdg=',
+        'sha256-tempUn1btibnrWwQxEk37lMGV1Nf8FO/GXxNhLEsPdg=',
         // module (minified)
-        'yX/iyX7D+2AX+qF0YUk4EXLqu5fIbl/NS5QXjj9BX4M=',
+        'sha256-yX/iyX7D+2AX+qF0YUk4EXLqu5fIbl/NS5QXjj9BX4M=',
         // window.___NUXT___ (prod)
-        'YvYJ5WVzt8kOVVuSB9YcyVJLN4a6HcbOgQpzrg0BLUI=',
+        'sha256-YvYJ5WVzt8kOVVuSB9YcyVJLN4a6HcbOgQpzrg0BLUI=',
     ]
     : [
         // loader (not minified)
-        '9VDmhXS8/iybLLyD3tql7v7NU5hn5+qvu9RRG41mugM=',
+        'sha256-9VDmhXS8/iybLLyD3tql7v7NU5hn5+qvu9RRG41mugM=',
         // window.___NUXT___ (dev)
-        'uMkuBZ4FQVVBqzs6NHOoGr/1vOLA1h9acPURz3E39HA=',
+        // trimmed
+        'sha256-uMkuBZ4FQVVBqzs6NHOoGr/1vOLA1h9acPURz3E39HA=',
+        // not trimmed
+        'sha256-5yLEE/jUF5eoOefsINotD+tXeklSYMKlhm5Zl+biNrg=',
     ];
+
+const CSP_SCRIPT = [].concat(NUXT_LOADING_INLINE_SCRIPT_SHA, [
+    // @TODO firefox doesn't support hashes for external resources so use GOATCOUNTER_HOST for now
+    // @see https://bugzilla.mozilla.org/show_bug.cgi?id=1409200
+    // @see https://bugzilla.mozilla.org/show_bug.cgi?id=1730668
+    GOATCOUNTER_SCRIPT_HASH,
+    TWA_SCRIPT_HASH,
+    GOATCOUNTER_HOST,
+    TWA_SCRIPT_URL,
+]);
 
 /**
  * prepare CSP string from env config
- * @param {Object} env - env config
+ * @param {object} env - env config
  * @param {Function} keyFilter
  */
 function prepareCSP(env, keyFilter) {
@@ -63,8 +76,9 @@ const connectCSP = prepareCSP(varsConfig, (item) => {
 const imageCSP = prepareCSP(varsConfig, (item) => {
     return item === 'APP_ACCOUNTS_API_URL';
 });
-const scriptCSP = NUXT_LOADING_INLINE_SCRIPT_SHA.map((item) => {
-    return `'sha256-${item}'`;
+const scriptCSP = CSP_SCRIPT.map((item) => {
+    // wrap sha-strings with quotes
+    return item.indexOf('sha') === 0 ? `'${item}'` : item;
 }).join(' ');
 
 
@@ -90,6 +104,7 @@ module.exports = {
                     font-src 'self' data:;
                     base-uri 'none';
                     form-action 'none';
+                    object-src 'none';
                     frame-ancestors https://honee.app;
                     report-uri https://csp-report-collector.minter.network https://1ba68dd21788a2dfc5522a62c6674f25.report-uri.com/r/d/csp/enforce;
                     report-to default;
@@ -115,6 +130,8 @@ module.exports = {
     router: {
         linkActiveClass: 'is-active-inner',
         linkExactActiveClass: 'is-active',
+        // fix foo-bar.vue shadowing foo/bar.vue, by default they have same name, so change '-' separator to '/'
+        routeNameSplitter: ROUTE_NAME_SPLITTER,
         middleware: [
             'auth',
             'history',
@@ -150,13 +167,7 @@ module.exports = {
             routesNameSeparator: I18N_ROUTE_NAME_SEPARATOR,
             strategy: 'prefix_except_default',
             rootRedirect: null,
-            vueI18n: {
-                fallbackLocale: 'en',
-                messages: {
-                    ru: langRu,
-                    en: langEn,
-                },
-            },
+            vueI18n: '~/nuxt-vue-i18n-options.js',
             seo: false,
             detectBrowserLanguage: false,
         }],
@@ -176,13 +187,14 @@ module.exports = {
     ],
     plugins: [
         { src: '~/plugins/global-mixin.js'},
-        { src: '~/plugins/composition-api.js'},
+        { src: '~/plugins/global-mixin-client.js', ssr: false},
         { src: '~/plugins/online.js', ssr: false },
         { src: '~/plugins/custom-event-polyfill.js', ssr: false },
         { src: '~/plugins/persisted-state.js', ssr: false },
         { src: '~/plugins/click-blur.js', ssr: false },
         { src: '~/plugins/referral.js', ssr: false },
         { src: '~/plugins/telegram.js', ssr: false },
+        { src: '~/plugins/telegram-web-app.js', ssr: false },
         { src: '~/plugins/goatcounter.js', ssr: false },
     ],
     content: {
@@ -233,6 +245,19 @@ module.exports = {
                 include: /node_modules/,
                 type: "javascript/auto",
             });
+
+            // add ts support
+            config.resolve.extensions.push('.d.ts');
+            const babelLoaderIndex = config.module.rules.findIndex((item) => item.use?.[0].loader.includes('/babel-loader/'));
+            config.module.rules[babelLoaderIndex].test = /\.(js|mjs|jsx|ts|tsx)$/i;
+            // ts-loader doesn't work because of https://github.com/vuejs/vue-cli/issues/2132
+            // config.module.rules.push({
+            //     test: /\.tsx?$/,
+            //     loader: 'ts-loader',
+            //     options: {
+            //         transpileOnly: true,
+            //     },
+            // });
         },
         plugins: [
             new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
@@ -252,6 +277,12 @@ module.exports = {
             ],
             plugins: [
                 // '@babel/plugin-proposal-optional-chaining',
+                [
+                    "@babel/plugin-transform-typescript",
+                    {
+                        optimizeConstEnums: true,
+                    },
+                ],
             ],
             // prevent @babel/plugin-transform-runtime from inserting `import` statement into commonjs files (bc. it breaks webpack)
             sourceType: 'unambiguous',
@@ -264,11 +295,16 @@ module.exports = {
             'vue-simple-suggest/dist/es7',
             'vue-simple-suggest/lib',
             'centrifuge/src',
+            'v-tooltip/src',
             'autonumeric/src',
             'vue-autonumeric/src',
             'vuelidate/src',
             'lodash-es',
+            'camelcase-keys',
+            'web3-core-method',
             // 'nuxt-i18n/src',
+            '@shrpne/utils/src',
+            'axios-prevent-concurrency/src',
             'v-file-input/src',
             'clipbrd/src',
             'pretty-num/src',
@@ -277,6 +313,7 @@ module.exports = {
             'minterjs-tx',
             'minterjs-wallet',
             'minter-js-sdk',
+            'minter-js-web3-sdk',
         ],
     },
 };

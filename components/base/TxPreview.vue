@@ -1,5 +1,5 @@
 <script>
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {pretty, txTypeFilter} from '~/assets/utils.js';
 import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';

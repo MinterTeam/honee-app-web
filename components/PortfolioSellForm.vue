@@ -1,15 +1,18 @@
 <script>
+import {getCurrentInstance} from 'vue';
 import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required';
 import minLength from 'vuelidate/src/validators/minLength';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {convertFromPip} from 'minterjs-util/src/converter.js';
-import Big, {BIG_ROUND_DOWN} from '~/assets/big.js';
-import {PREMIUM_STAKE_PROGRAM_ID, PREMIUM_STAKE_LOCK_DURATION, SUCCESS_FEE_TEAM_ADDRESS, SUCCESS_FEE_FUND_ADDRESS} from '~/assets/variables.js';
+import Big, {BIG_ROUND_DOWN} from 'minterjs-util/src/big.js';
+import {PREMIUM_STAKE_PROGRAM_ID, PREMIUM_STAKE_LOCK_DURATION, SUCCESS_FEE_TEAM_ADDRESS, SUCCESS_FEE_FUND_ADDRESS, HUB_CHAIN_DATA, HUB_NETWORK} from '~/assets/variables.js';
 import {pretty} from '~/assets/utils.js';
+import {wait} from '@shrpne/utils/src/wait.js';
 import {getBalance, getBlock} from '~/api/explorer.js';
 import {postConsumerPortfolio} from '~/api/portfolio.js';
 import usePortfolioWallet from '~/composables/use-portfolio-wallet.js';
+import useWeb3SmartWalletPortfolioSell from '~/composables/use-web3-smartwallet-portfolio-sell.js';
 import SwapEstimation from '~/components/base/SwapEstimation.vue';
 import TxSequenceForm from '~/components/base/TxSequenceForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
@@ -40,11 +43,33 @@ export default {
             required: true,
         },
     },
-    setup(props, context) {
-        const {getWallet} = usePortfolioWallet(context.root.$store.getters.mnemonic);
+    setup(props) {
+        const vm = getCurrentInstance()?.proxy;
+        const {getWallet} = usePortfolioWallet(vm.$store.getters.mnemonic);
+        const {
+            minAmountToWithdrawList,
+            withdrawTxParamsList,
+            withdrawFeeTxParamsList,
+
+            swsList,
+            swsSelectedIndices,
+            amountEstimationBeforeRelayRewardList,
+            amountEstimationToReceiveAfterDepositList,
+            setSmartWalletPortfolioSellProps,
+        } = useWeb3SmartWalletPortfolioSell();
 
         return {
             portfolioWallet: getWallet(props.portfolio.id),
+
+            minAmountToWithdrawList,
+            withdrawTxParamsList,
+            withdrawFeeTxParamsList,
+
+            swsList,
+            swsSelectedIndices,
+            amountEstimationBeforeRelayRewardList,
+            amountEstimationToReceiveAfterDepositList,
+            setSmartWalletPortfolioSellProps,
         };
     },
     fetch() {
@@ -67,7 +92,7 @@ export default {
             form: {
                 coin: this.$route.query.coin || '',
             },
-            // fee: {},
+            fee: {},
             estimationList: [],
             estimationTxDataList: [],
             v$estimationList: [],
@@ -75,6 +100,7 @@ export default {
             v$serviceFeeSwapEstimation: {},
             serviceFeeSwapEstimation: 0,
             serviceFeeSwapTxData: {},
+            isSequenceProcessing: false,
         };
     },
     validations() {
@@ -93,6 +119,10 @@ export default {
         };
     },
     computed: {
+        /** @type {HubChainDataItem} */
+        hubChainData() {
+            return HUB_CHAIN_DATA[HUB_NETWORK.BSC];
+        },
         coinList() {
             return this.balanceList
                 // .filter((item) => item.coin.symbol.indexOf('LP-') !== 0)
@@ -104,7 +134,23 @@ export default {
                     };
                 });
         },
-
+        withdrawCoinList() {
+            return this.coinList
+                .map((item, index) => {
+                    return {
+                        ...item,
+                        amount: new Big(item.amount).minus(this.withdrawFeeDataList?.[index]?.value || 0).toString(),
+                    };
+                });
+        },
+        selectedIndices() {
+            return Object.keys(this.coinList);
+            // @TODO
+            // eslint-disable-next-line no-unreachable
+            return Object.keys(this.coinList)
+                .filter((indexString) => !this.swsSelectedIndices.includes(indexString));
+        },
+        //@TODO subtract minter fee from withdraw amount
         /* not needed for sellAll
         // amount minus fee to properly calculate estimation and slippage
         valueToSwapList() {
@@ -155,9 +201,19 @@ export default {
                 const enoughToPayFee = Number(item.amount) > Number(this.fee.resultList?.[index]?.value);
                 */
 
+                const minterEstimation = this.estimationList[index] || 0;
+                // @TODO
+                // const smartWalletEstimation = this.amountEstimationToReceiveAfterDepositList[index] || 0;
+                const smartWalletEstimation = 0;
+                const isSmartWalletSwapBetter = new Big(smartWalletEstimation).gt(minterEstimation);
+                const finalEstimation = isSmartWalletSwapBetter ? smartWalletEstimation : minterEstimation;
+
                 return {
                     ...result,
-                    amountToGet: this.estimationList[index] ?? '',
+                    amountMinter: minterEstimation ?? '',
+                    amountSmartWallet: smartWalletEstimation ?? '',
+                    amountToGet: finalEstimation ?? '',
+                    isSmartWalletSwapBetter,
                     /* loading indicator not needed for amountToSell (it's already known)
                     isLoading,
                      */
@@ -204,6 +260,7 @@ export default {
             const coinToReturn = this.form.coin;
             const privateKey = this.portfolioWallet.privateKey;
 
+            let swsExtraNonce = 0;
             // const swapReturnList = [];
             let swapTotalReturn = 0;
             let swapServiceFeeReturn = 0;
@@ -215,11 +272,62 @@ export default {
             // total gas used for premium fee txs
             let premiumFeeTotalGas = 0;
 
+            // if no minter swaps mean that address will be empty after sws withdrawals, so
+            // - nothing to swap for serviceFee
+            // - no coins to pay fee for send tx with type: sell payload
+            // - no premiumFee to lock
+            const hasMinterTxs = this.selectedIndices.length > 0;
+
+            const swsSequence = this.coinList.map((coinItem, index) => {
+                // ? maybe use swsSelectedIndices ?
+                const isSwsBetter = this.estimationView[index]?.isSmartWalletSwapBetter;
+
+                return {
+                    // pass skip to not send tx in sequence
+                    skip: !isSwsBetter,
+                    txParams: {
+                        ...this.withdrawTxParamsList[index],
+                        gasCoin: coinItem.symbol,
+                    },
+                    feeTxParams: {
+                        ...this.withdrawFeeTxParamsList[index],
+                        gasCoin: coinItem.symbol,
+                    },
+                    privateKey,
+                    prepareGasCoinPosition: 'start',
+                    prepare: () => {
+                        // wait for computed depended on withdrawFee and withdrawValue to recalculate
+                        return wait(50)
+                            .then(() => this.swsList[index].buildTxListAndCallSmartWallet({extraNonce: swsExtraNonce}))
+                            .then((result) => {
+                                swsExtraNonce += result.callCount;
+
+                                const newPayload = JSON.parse(this.withdrawTxParamsList[index].payload);
+                                newPayload.smartWalletTx = result.hash;
+
+                                return {
+                                    payload: JSON.stringify(newPayload),
+                                    data: {
+                                        value: this.withdrawTxParamsList[index].data.value,
+                                    },
+                                };
+                            });
+                    },
+                    // @TODO extract swapReturn from receiveAfterDepositAmount (can try to extract part of it from minter swap result)
+                    // finalize: (tx) => {
+                    //     const swapReturn = convertFromPip(tx.tags['tx.return']);
+                    //     // swapReturnList.push(swapReturn);
+                    //     swapTotalReturn = new Big(swapTotalReturn).plus(swapReturn).toString();
+                    //     return tx;
+                    // },
+                };
+            });
+
             const swapSequence = this.coinList.map((coinItem, index) => {
                 const coinSymbol = coinItem.symbol;
                 const needSwap = this.checkNeedSwapEqual(coinSymbol);
-                const isDisabled = this.estimationView.find((item) => item.coin === coinSymbol)?.disabled;
-                const skip = !needSwap || isDisabled;
+                const estimationViewItem = this.estimationView[index];
+                const skip = !needSwap || estimationViewItem?.disabled || estimationViewItem?.isSmartWalletSwapBetter;
 
                 if (!needSwap) {
                     // swapReturnList.push(coinItem.amount);
@@ -227,12 +335,11 @@ export default {
                 }
 
                 return {
-                    // pass null to txParams to not perform fee calculation
-                    txParams: needSwap ? {
+                    txParams: {
                         type: this.getEstimationRef(index)?.getTxType(),
                         data: this.estimationTxDataList[index],
                         gasCoin: coinSymbol,
-                    } : null,
+                    },
                     feeTxParams: false,
                     /* no need to calculate fee for sellAll tx
                     feeTxParams: needSwap ? {
@@ -269,13 +376,14 @@ export default {
 
             // SWAP SERVICE FEE TX
             const swapServiceFee = {
-                skip: !this.isNeedSwapServiceFee,
-                // pass null to txParams to not perform fee calculation
-                txParams: this.isNeedSwapServiceFee ? {
+                skip: !this.isNeedSwapServiceFee || !hasMinterTxs,
+                txParams: {
                     type: this.$refs.estimationServiceFee?.getTxType(),
                     data: this.serviceFeeSwapTxData,
                     gasCoin: coinToReturn,
-                } : null,
+                },
+                feeTxParams: false,
+                /* no need to calculate fee because NOT selling all (main part destined to receive after portfolio-selling should be enough to cover fee)
                 feeTxParams: this.isNeedSwapServiceFee ? {
                     type: TX_TYPE.SELL_SWAP_POOL,
                     data: {
@@ -283,8 +391,9 @@ export default {
                     },
                     gasCoin: coinToReturn,
                 } : undefined,
+                */
                 privateKey,
-                // prepareGasCoin position not matter because not selling all
+                // prepareGasCoin position not matter because NOT selling all
                 prepareGasCoinPosition: 'skip',
                 prepare: (swapTx) => {
                     premiumFeeInCoin = getPremiumFee(swapTotalReturn);
@@ -313,6 +422,7 @@ export default {
 
 
             const send = {
+                skip: !hasMinterTxs,
                 prepareGasCoinPosition: 'start',
                 prepare: (swapTx, prevPrepareGasCoin) => {
                     premiumFeeAmount = this.isNeedSwapServiceFee ? restorePremiumFee(swapServiceFeeReturn, this.portfolio.profit) : premiumFeeInCoin;
@@ -380,6 +490,7 @@ export default {
 
             // LOCK TX
             const lock = {
+                skip: !hasMinterTxs,
                 txParams: {
                     type: TX_TYPE.LOCK,
                     data: {
@@ -391,6 +502,8 @@ export default {
                     gasCoin: coinToReturn,
                     payload: JSON.stringify({lock_id: PREMIUM_STAKE_PROGRAM_ID}),
                 },
+                feeTxParams: false,
+                // skip, because value to return after portfolio-selling should be enough to pay fee anyway (since fee is payed in coinToReturn)
                 prepareGasCoinPosition: 'skip',
                 prepare: async () => {
                     const block = await getBlock('latest');
@@ -402,17 +515,51 @@ export default {
                         },
                     };
                 },
-                finalize: (tx) => {
-                    const gasUsed = convertFromPip(tx.tags['tx.commission_amount']);
-                    premiumFeeTotalGas = new Big(premiumFeeTotalGas).plus(gasUsed).toString();
-                    return tx;
-                },
+                // ? not needed in lock
+                // finalize: (tx) => {
+                //     const gasUsed = convertFromPip(tx.tags['tx.commission_amount']);
+                //     premiumFeeTotalGas = new Big(premiumFeeTotalGas).plus(gasUsed).toString();
+                //     return tx;
+                // },
             };
 
-            return swapSequence.concat(swapServiceFee, send, lock);
+            return swsSequence.concat(swapSequence, swapServiceFee, send, lock);
+        },
+        withdrawFeeDataList() {
+            return this.fee?.resultList?.slice(0, this.coinList.length) || [];
         },
     },
     watch: {
+    },
+    created() {
+        // smartWalletPortfolioSellProps
+        this.$watch(
+            () => ({
+                privateKey: this.$store.getters.privateKey,
+                evmAccountAddress: this.$store.getters.evmAddress,
+                withdrawOriginAddress: this.portfolioWallet.address,
+                depositDestinationAddress: this.$store.getters.address,
+                chainId: this.hubChainData.chainId,
+                coinToSellList: this.withdrawCoinList,
+                coinToBuy: this.form.coin,
+                minterEstimationList: this.estimationList,
+                // minterFeeToDeduct: this.withdrawFeeToDeduct,
+                // isLocked: this.isSequenceProcessing && !this.isWithdrawProcessing,
+            }),
+            (newVal) => {
+                // @TODO
+                // eslint-disable-next-line no-constant-condition
+                if (newVal.isLocked || true) {
+                    this.setSmartWalletPortfolioSellProps({
+                        // only update isLocked to reduce recalculations
+                        isLocked: true,
+                    });
+                } else {
+                    this.setSmartWalletPortfolioSellProps(newVal);
+                }
+            },
+            {deep: true, immediate: true},
+        );
     },
     methods: {
         pretty,
@@ -556,7 +703,8 @@ function percent(amount, percent) {
             :sequence-params="sequenceParams"
             :v$sequence-params="$v"
             :before-success-sequence="beforeSuccessSequence"
-            @update:fee="/*fee = $event*/"
+            @update:fee="fee = $event"
+            @update:is-sequence-processing="isSequenceProcessing = $event"
             @clear-form="clearForm()"
             @success="$emit('success')"
             @success-modal-close="$emit('success-modal-close')"
@@ -605,7 +753,7 @@ function percent(amount, percent) {
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="estimationAfterFee" format="approx" :is-loading="isEstimationFetchLoading"/>
                 </div>
-                <PortfolioPriceImpact class="form-row" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>
+                <!--<PortfolioPriceImpact class="form-row" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>-->
 
                 <SwapEstimation
                     class="u-text-medium form-row u-hidden"
@@ -669,8 +817,9 @@ function percent(amount, percent) {
 
                     <h3 class="information__title">{{ $td('You get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
                     <BaseAmountEstimation :coin="form.coin" :amount="estimationSum" format="approx" :is-loading="isEstimationFetchLoading"/>
+
+                    <PortfolioPriceImpact class="u-mt-05 u-text-right" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>
                 </div>
-                <PortfolioPriceImpact class="form-row" :estimation-view-usd="estimationViewUsd" :price-unavailable="priceImpactUnavailable"/>
             </template>
         </TxSequenceForm>
     </div>

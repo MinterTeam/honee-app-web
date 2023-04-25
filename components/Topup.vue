@@ -1,7 +1,8 @@
 <script>
 import * as clipboard from 'clipbrd';
-import {BASE_COIN, HUB_CHAIN_ID} from '~/assets/variables.js';
+import {BASE_COIN, HUB_NETWORK} from '~/assets/variables.js';
 import QrcodeVue from 'qrcode.vue';
+import BackButton from '~/components/layout/BackButton.vue';
 import TopupWaitMinter from '~/components/TopupWaitMinter.vue';
 import TopupWaitEvm from '~/components/TopupWaitEvm.vue';
 
@@ -9,20 +10,20 @@ import TopupWaitEvm from '~/components/TopupWaitEvm.vue';
  * @typedef {{prefix: string, name: string, coin: string}} TopUpNetwork
  */
 /**
- * @enum {Object.<'minter'|'bnb'|'eth', TopUpNetwork>}
+ * @enum {Record.<'minter'|'bnb'|'eth', TopUpNetwork>}
  */
 export const TOP_UP_NETWORK = {
-    [HUB_CHAIN_ID.MINTER]: {
+    [HUB_NETWORK.MINTER]: {
         prefix: 'Mx',
         name: 'Minter',
         coin: BASE_COIN,
     },
-    [HUB_CHAIN_ID.ETHEREUM]: {
+    [HUB_NETWORK.ETHEREUM]: {
         prefix: '0x',
         name: 'Ethereum',
         coin: 'ETH',
     },
-    [HUB_CHAIN_ID.BSC]: {
+    [HUB_NETWORK.BSC]: {
         prefix: '0x',
         name: 'BNB Smart Chain',
         coin: 'BNB',
@@ -30,14 +31,15 @@ export const TOP_UP_NETWORK = {
 };
 
 export default {
-    HUB_CHAIN_ID,
+    HUB_NETWORK,
     components: {
         QrcodeVue,
+        BackButton,
         TopupWaitMinter,
         TopupWaitEvm,
     },
     props: {
-        /** @type {HUB_CHAIN_ID} */
+        /** @type {HUB_NETWORK} */
         networkSlug: {
             type: String,
             required: true,
@@ -50,7 +52,8 @@ export default {
             default: undefined,
         },
         backUrl: {
-            type: String,
+            type: [String, Boolean],
+            default: '',
         },
         showWaitIndicator: {
             type: Boolean,
@@ -59,6 +62,7 @@ export default {
     },
     emits: [
         'topup',
+        'click-back',
     ],
     data() {
         return {
@@ -75,11 +79,21 @@ export default {
         address() {
             return this.network.prefix + this.$store.getters.address.slice(2);
         },
+        isOnlyCloseOnBack() {
+            return this.backUrl === false;
+        },
         isClipboardSupported() {
             return clipboard.isSupported();
         },
         isShareSupported() {
             return window.navigator.share;
+        },
+        backButtonText() {
+            if (this.successDeposit) {
+                return this.$td('Finish', 'common.finish');
+            } else {
+                return this.$td('Cancel', 'topup.back');
+            }
         },
     },
     methods: {
@@ -164,25 +178,33 @@ export default {
 
             <qrcode-vue
                 v-show="isQrVisible"
-                class="u-mt-15 u-text-center"
+                class="u-mt-10 qr-wrap u-text-center"
                 :value="address"
                 :size="160"
                 level="L"
-                background="transparent"
+                background="#fff"
             />
         </template>
 
         <component
-            :is="networkSlug === $options.HUB_CHAIN_ID.MINTER ? 'TopupWaitMinter' : 'TopupWaitEvm'"
-            class="u-text-center u-mt-15 u-text-medium"
+            :is="networkSlug === $options.HUB_NETWORK.MINTER ? 'TopupWaitMinter' : 'TopupWaitEvm'"
+            class="u-text-center u-mt-10 u-text-medium"
             :showWaitIndicator="showWaitIndicator"
             :network-slug="networkSlug"
             @update:processing="isDepositProcessing = $event"
             @topup="successDeposit = $event; $emit('topup', $event)"
         />
 
-        <nuxt-link class="button button--ghost button--full u-mt-15" :to="backUrl || $i18nGetPreferredPath('/topup')">
-            {{ $td('Back', 'topup.back') }}
-        </nuxt-link>
+        <template v-if="!isDepositProcessing">
+            <button v-if="isOnlyCloseOnBack" class="button button--ghost button--full u-mt-10" type="button" @click="$emit('click-back')">
+                {{ backButtonText }}
+            </button>
+            <nuxt-link v-else-if="backUrl || successDeposit" class="button button--ghost button--full u-mt-10" :to="backUrl || $getDashboardUrl()">
+                {{ backButtonText }}
+            </nuxt-link>
+            <BackButton v-else class="u-mt-10" button-class="button button--ghost button--full">
+                {{ backButtonText }}
+            </BackButton>
+        </template>
     </div>
 </template>

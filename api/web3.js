@@ -1,84 +1,29 @@
-import Big from '~/assets/big.js';
 import Eth from 'web3-eth';
-import Utils from 'web3-utils';
-import Contract from 'web3-eth-contract';
-import AbiCoder from 'web3-eth-abi';
 import {TinyEmitter as Emitter} from 'tiny-emitter';
-import {ETHEREUM_API_URL, BSC_API_URL, ETHEREUM_CHAIN_ID, BSC_CHAIN_ID, HUB_DEPOSIT_TX_PURPOSE, HUB_CHAIN_ID, HUB_CHAIN_DATA, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
-import erc20ABI from '~/assets/abi-erc20.js';
+import {web3Eth, web3EthEth, web3EthBsc, getTokenDecimals as _getTokenDecimals, getBlockNumber} from 'minter-js-web3-sdk/src/web3.js';
+import {wait} from '@shrpne/utils/src/wait.js';
+import {NATIVE_COIN_ADDRESS, HUB_NETWORK_SLUG, HUB_CHAIN_DATA, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
+
 
 export const CONFIRMATION_COUNT = 5;
 
-export const web3Utils = Utils;
-/** @deprecated use getProviderByChain instead */
-export const web3Eth = new Eth(ETHEREUM_API_URL);
-export const web3EthEth = new Eth(ETHEREUM_API_URL);
-export const web3EthBsc = new Eth(BSC_API_URL);
-export const web3Abi = AbiCoder;
-/** @deprecated */
-const utils = Utils;
-
-/**
- * @deprecated
- * don't use eth, use getProviderByChain instead to ensure correct provider
- * don't use eth.Contract for encodeAbi(), use AbiEncoder instead
- */
-export default {
-    eth: web3Eth,
-    utils: Utils,
-};
 
 const transactionPollingInterval = 5000;
 [web3Eth, web3EthEth, web3EthBsc]
     .forEach((eth) => eth.transactionPollingInterval = transactionPollingInterval);
 
-/**
- *
- * @param {object} abi
- * @return {function(method: string, ...[*]): string}
- * @constructor
- */
-export function AbiEncoder(abi) {
-    const contract = new Contract(abi);
-    return function abiMethodEncoder(method, ...args) {
-        return contract.methods[method](...args).encodeABI();
-    };
-}
-
-const WEI_DECIMALS = 18;
-/**
- * @param {number|string} balance - balance in erc20 decimals
- * @param {number} [ercDecimals=18]
- * @return {string}
- */
-export function fromErcDecimals(balance, ercDecimals = 18) {
-    const decimalsDelta = Math.max(WEI_DECIMALS - ercDecimals, 0);
-    balance = new Big(10).pow(decimalsDelta).times(balance).toFixed(0);
-    return utils.fromWei(balance, "ether");
-}
 
 /**
- * @param {number|string} balance
- * @param {number} [ercDecimals=18]
- * @return {string}
- */
-export function toErcDecimals(balance, ercDecimals = 18) {
-    balance = new Big(balance).toFixed(Number(ercDecimals));
-    balance = utils.toWei(balance, "ether");
-    const decimalsDelta = Math.max(WEI_DECIMALS - ercDecimals, 0);
-    const tens = new Big(10).pow(decimalsDelta);
-    return new Big(balance).div(tens).toFixed(0);
-}
-
-/**
- * @typedef {import('web3-core/types/index.d.ts').Transaction & import('web3-core/types/index.d.ts').TransactionReceipt & {confirmations: number, timestamp: number}} Web3Tx
+ * @typedef {import('web3-core/types/index').Transaction & import('web3-core/types/index').TransactionReceipt & {confirmations: number, timestamp: number}} Web3Tx
  */
 
 /**
- * @typedef {Promise} PromiseWithEmitter
- * @property {function} on
- * @property {function} once
- * @property {function} unsubscribe
+ * @template {any} T
+ * @typedef {Promise<T>} PromiseWithEmitter
+ * @implements {Promise}
+ * @property {Function} on
+ * @property {Function} once
+ * @property {Function} unsubscribe
  */
 
 /**
@@ -135,9 +80,10 @@ export function subscribeTransaction(hash, {
     return txPromise;
 
     /**
-     *
+     * @template T
      * @param {Promise<T>} target
-     * @param {PromiseWithEmitter<T>} emitter
+     * @param {import('tiny-emitter').TinyEmitter} emitter
+     * @return {PromiseWithEmitter<T>}
      */
     function proxyEmitter(target, emitter) {
         target.on = function() {
@@ -152,6 +98,7 @@ export function subscribeTransaction(hash, {
         //     emitter.off(...arguments);
         //     return target;
         // }
+        return target;
     }
 }
 
@@ -259,59 +206,6 @@ function _subscribeTransaction(hash, {confirmationCount, ethProvider, emitter, n
     }
 }
 
-function wait(time) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, time);
-    });
-}
-
-
-let cachedBlock = {
-    isLoading: false,
-    timestamp: 0,
-    providerHost: '',
-    promise: null,
-};
-
-/**
- * @param {Eth} web3Eth
- * @return {Promise<number>}
- */
-export function getBlockNumber(web3Eth) {
-    const savedProviderHost = web3Eth.currentProvider.host;
-    const isSameProviderHost = savedProviderHost === cachedBlock.providerHost;
-    if (cachedBlock.isLoading && isSameProviderHost) {
-        return cachedBlock.promise;
-    }
-    if (Date.now() - cachedBlock.timestamp < 5000 && isSameProviderHost) {
-        return cachedBlock.promise;
-    }
-
-    const blockPromise = web3Eth.getBlockNumber();
-    cachedBlock.isLoading = true;
-    cachedBlock.providerHost = savedProviderHost;
-    cachedBlock.promise = blockPromise;
-
-    blockPromise
-        .then(() => {
-            // make sure response correspond to cache (in case of two parallel requests for different hosts)
-            if (savedProviderHost === cachedBlock.providerHost) {
-                cachedBlock.isLoading = false;
-                cachedBlock.timestamp = Date.now();
-            }
-        })
-        .catch((error) => {
-            if (savedProviderHost === cachedBlock.providerHost) {
-                cachedBlock.isLoading = false;
-            }
-            throw error;
-        });
-
-    return blockPromise;
-}
-
-// save promises forever if no error
-const decimalsPromiseCache = {};
 
 /**
  * @param {string} tokenContractAddress
@@ -320,157 +214,33 @@ const decimalsPromiseCache = {};
  * @return {Promise<number>}
  */
 export function getTokenDecimals(tokenContractAddress, chainId, hubCoinList = []) {
-    if (!chainId) {
-        return Promise.reject(new Error('chainId not specified'));
-    }
-    // search from cache
-    if (decimalsPromiseCache[chainId]?.[tokenContractAddress]) {
-        return decimalsPromiseCache[chainId][tokenContractAddress];
-    }
-
-    // search from hubCoinList
-    const coinItem = getExternalCoinList(hubCoinList, chainId)
-        .find((item) => item.externalTokenId === tokenContractAddress);
-    if (coinItem) {
-        return Promise.resolve(Number(coinItem.externalDecimals));
-    }
-
-    const currentEth = getProviderByChain(chainId);
-    const contract = new currentEth.Contract(erc20ABI, tokenContractAddress);
-    const decimalsPromise = contract.methods.decimals().call()
-        .then((decimals) => {
-            return Number(decimals);
-        })
-        .catch((error) => {
-            console.log(error);
-            delete decimalsPromiseCache[chainId][tokenContractAddress];
-            return WEI_DECIMALS;
-        });
-    if (!decimalsPromiseCache[chainId]) {
-        decimalsPromiseCache[chainId] = {};
-    }
-    decimalsPromiseCache[chainId][tokenContractAddress] = decimalsPromise;
-
-    return decimalsPromise;
-}
-
-/**
- * May be no transactions depending on the eth node settings
- * @param {string} address
- * @param {number} chainId
- * @return {Promise<Transaction[]>}
- */
-export function getAddressPendingTransactions(address, chainId) {
-    return getProviderByChain(chainId).getPendingTransactions()
-        .then((txList) => {
-            return txList.filter((tx) => tx.from === address);
-        })
-        .catch((error) => {
-            // The method eth_pendingTransactions may be not available
-            console.log(error);
-            return [];
-        });
-}
-
-/**
- * @TODO refactor to find by method id https://stackoverflow.com/a/55258775/4936667
- * @param {HubDeposit} tx
- * @param {number} chainId
- * @param {Array<HubCoinItem>} [hubCoinList]
- * @param {boolean} [skipAmount]
- * @return {Promise<HubDepositTxInfo>}
- */
-export async function getDepositTxInfo(tx, chainId, hubCoinList, skipAmount) {
-    chainId = Number(tx.chainId || chainId);
-    // remove 0x and function selector
-    const input = tx.input.slice(2 + 8);
-    const itemCount = input.length / 64;
-    const hubContractAddress = HUB_CHAIN_BY_ID[chainId]?.hubContractAddress;
-    const wrappedNativeContractAddress = HUB_CHAIN_BY_ID[chainId]?.wrappedNativeContractAddress;
-
-    let type;
-    // first item
-    let tokenContract;
-    // 2nd for `unlock`, 4th for `transferToChain`, 'tx.to' in `wrap` and `sendETHToChain`
-    let amount;
-    if (itemCount === 2) {
-        // unlock
-        const beneficiaryHex = '0x' + input.slice(0, 64);
-        const beneficiaryAddress = web3Abi.decodeParameter('address', beneficiaryHex);
-        const isUnlockedForBridge = beneficiaryAddress.toLowerCase() === hubContractAddress;
-        if (isUnlockedForBridge) {
-            type = HUB_DEPOSIT_TX_PURPOSE.UNLOCK;
-            tokenContract = tx.to;
-            amount = skipAmount ? 0 : await getAmountFromInputValue(input.slice((itemCount - 1) * 64), tokenContract, chainId, hubCoinList);
-        } else {
-            return {
-                type: HUB_DEPOSIT_TX_PURPOSE.OTHER,
-            };
+    function findFromHubCoinList(tokenContractAddress, chainId) {
+        const coinItem = getExternalCoinList(hubCoinList, chainId)
+            .find((item) => item.externalTokenId === tokenContractAddress);
+        if (coinItem) {
+            return Number(coinItem.externalDecimals);
         }
-    } else if (tx.to.toLowerCase() === hubContractAddress && itemCount === 5) {
-        // transferToChain
-        type = HUB_DEPOSIT_TX_PURPOSE.SEND;
-        const tokenContractHex = '0x' + input.slice(0, 64);
-        tokenContract = web3Abi.decodeParameter('address', tokenContractHex);
-        amount = skipAmount ? 0 : await getAmountFromInputValue(input.slice((itemCount - 2) * 64), tokenContract, chainId, hubCoinList);
-    } else if (tx.to.toLowerCase() === hubContractAddress && itemCount === 3) {
-        // transferETHToChain
-        type = HUB_DEPOSIT_TX_PURPOSE.SEND;
-        tokenContract = wrappedNativeContractAddress;
-        amount = Utils.fromWei(tx.value);
-    } else if (tx.to.toLowerCase() === wrappedNativeContractAddress && itemCount === 1) {
-        // unwrap
-        type = HUB_DEPOSIT_TX_PURPOSE.UNWRAP;
-        tokenContract = tx.to;
-        amount = skipAmount ? 0 : await getAmountFromInputValue(input, tokenContract, chainId, hubCoinList);
-    } else if (tx.to.toLowerCase() === wrappedNativeContractAddress && itemCount === 0) {
-        // wrap
-        type = HUB_DEPOSIT_TX_PURPOSE.WRAP;
-        tokenContract = tx.to;
-        amount = Utils.fromWei(tx.value);
-    } else {
-        return {
-            type: HUB_DEPOSIT_TX_PURPOSE.OTHER,
-        };
     }
 
-    tokenContract = tokenContract?.toLowerCase();
-    const coinItem = getExternalCoinList(hubCoinList, chainId)
-        .find((item) => item.externalTokenId === tokenContract);
-    const tokenName = coinItem?.denom.toUpperCase();
-
-    return {
-        type,
-        tokenContract,
-        tokenName,
-        amount,
-    };
+    return _getTokenDecimals(tokenContractAddress, chainId, findFromHubCoinList);
 }
 
 /**
- *
- * @param {strong} hex
- * @param {string} tokenContract
- * @param {number} chainId
- * @param {Array<HubCoinItem>} [hubCoinList]
- * @return {Promise<string>}
+ * @typedef {object} EvmTxParams
+ * @property {string} to
+ * @property {string|number} value
+ * @property {string} data
  */
-async function getAmountFromInputValue(hex, tokenContract, chainId, hubCoinList) {
-    const amountHex = '0x' + hex;
-    const decimals = await getTokenDecimals(tokenContract, chainId, hubCoinList);
-    const amount = fromErcDecimals(web3Abi.decodeParameter('uint256', amountHex), decimals);
 
-    return amount;
-}
 
 /**
  *
  * @param {Array<HubCoinItem>} hubCoinList
- * @param {number} chainId
+ * @param {ChainId} chainId
  * @return {Array<TokenInfo.AsObject>}
  */
 export function getExternalCoinList(hubCoinList, chainId) {
-    let externalNetworks = Object.values(HUB_CHAIN_ID);
+    let externalNetworks = Object.values(HUB_NETWORK_SLUG);
     if (chainId) {
         externalNetworks = externalNetworks.filter((network) => network === getHubNetworkByChain(chainId));
     }
@@ -486,29 +256,13 @@ export function getExternalCoinList(hubCoinList, chainId) {
 }
 
 /**
- * @param {number} chainId
- * @return {Eth}
- */
-export function getProviderByChain(chainId) {
-    validateChainId(chainId);
-    if (!chainId) {
-        return web3Eth;
-    }
-    if (chainId === ETHEREUM_CHAIN_ID) {
-        return web3EthEth;
-    }
-    if (chainId === BSC_CHAIN_ID) {
-        return web3EthBsc;
-    }
-}
-
-/**
- * @param {number} chainId
+ * @param {ChainId} chainId
  * @return {string}
  */
 function getProviderHostByChain(chainId) {
     validateChainId(chainId);
     if (!chainId) {
+        console.warn('Usage without chainId is deprecated');
         return web3Eth.currentProvider.host;
     }
 
@@ -516,45 +270,22 @@ function getProviderHostByChain(chainId) {
 }
 
 /**
- * @param {number} chainId
- * @return {HUB_CHAIN_ID}
+ * @param {ChainId} chainId
+ * @return {HUB_NETWORK_SLUG}
  */
 export function getHubNetworkByChain(chainId) {
     validateChainId(chainId);
-    return HUB_CHAIN_BY_ID[chainId]?.hubChainId;
+    return HUB_CHAIN_BY_ID[chainId]?.hubNetworkSlug;
 }
 
 /**
- * @param {HUB_CHAIN_ID} network
- * @return {number}
+ * @param {HUB_NETWORK_SLUG} network
+ * @return {ChainId}
  */
 export function getChainIdByHubNetwork(network) {
     return HUB_CHAIN_DATA[network].chainId;
 }
 
-/**
- * @param {number} chainId
- * @return {string}
- */
-export function getEvmNetworkName(chainId) {
-    chainId = Number(chainId);
-    switch (chainId) {
-        case 1:
-            return 'Ethereum';
-        case 3:
-            return 'Ropsten';
-        case 4:
-            return 'Rinkeby';
-        case 42:
-            return 'Kovan';
-        case 56:
-            return 'BSC';
-        case 97:
-            return 'BSC Testnet';
-        default:
-            return chainId.toString();
-    }
-}
 
 function validateChainId(chainId) {
     if (chainId && typeof chainId !== 'number') {

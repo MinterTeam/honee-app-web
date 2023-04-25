@@ -82,7 +82,7 @@ export default {
 
             <TelegramAuth @success="toggleNotification(); isModalVisible = false" :label="$td('Activate Honee Bot', 'portfolio.subscribe-notification-button')" reason="subscribe-portfolio"/>
 
-            <button type="button" class="button button--ghost button--full u-mt-10" @click="isModalVisible = false">Cancel</button>
+            <button type="button" class="button button--ghost button--full u-mt-10" @click="isModalVisible = false">{{ $td('Cancel', 'portfolio.subscribe-notification-сancel') }}</button>
         </Modal>
     </div>
 </template>

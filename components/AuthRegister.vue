@@ -20,7 +20,7 @@ export default {
     props: {
         onboardingUrl: {
             type: String,
-            default: '/onboarding/topup',
+            default: '/onboarding/topup/instant',
         },
     },
     data() {
@@ -47,7 +47,14 @@ export default {
             this.$store.commit('LOGOUT');
             this.$store.commit('ADD_AUTH_ADVANCED', this.mnemonic);
             // redirect
-            this.$router.push(this.$i18nGetPreferredPath({path: this.onboardingUrl}));
+            const authRedirectPath = this.$store.state.authRedirectPath;
+            if (authRedirectPath?.indexOf('/topup') === 0 || authRedirectPath?.indexOf('/topup') === 3) {
+                this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
+                this.$router.push(this.$i18nGetPreferredPath({path: authRedirectPath}));
+            } else {
+                this.$router.push(this.$i18nGetPreferredPath({path: this.onboardingUrl}));
+            }
+
         },
     },
 };

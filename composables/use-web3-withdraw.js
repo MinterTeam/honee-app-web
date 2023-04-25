@@ -1,7 +1,7 @@
-import {ref, reactive, computed, watch} from '@vue/composition-api';
+import {ref, reactive, computed, watch} from 'vue';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {convertToPip} from 'minterjs-util/src/converter.js';
-import Big from '~/assets/big.js';
+import Big, {BIG_ROUND_UP} from 'minterjs-util/src/big.js';
 import {HUB_CHAIN_DATA, HUB_MINTER_MULTISIG_ADDRESS, HUB_WITHDRAW_SPEED} from '~/assets/variables.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
@@ -11,19 +11,25 @@ import useHubToken from '~/composables/use-hub-token.js';
 export default function useWeb3Withdraw(destinationAddress) {
     const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
     const { hubDestinationFee, setHubOracleProps } = useHubOracle({subscribeDestinationFee: true});
-    const { hubCoin, tokenPrice, setHubTokenProps } = useHubToken();
+    const { hubCoin, tokenPrice, tokenDecimals, setHubTokenProps } = useHubToken();
 
     const props = reactive({
+        /** @type {HUB_NETWORK|''} */
         hubNetworkSlug: '',
+        /** @type {number|string} */
         amountToSend: 0,
         // amountToReceive: 0,
         tokenSymbol: '',
         accountAddress: '',
         destinationAddress: destinationAddress || '',
         speed: HUB_WITHDRAW_SPEED.FAST,
+        // hash of some data of smart wallet tx (hashed by relay service)
+        smartWalletTx: '',
     });
 
-
+    /**
+     * @param {Partial<props>} newProps
+     */
     function setProps(newProps) {
         Object.assign(props, newProps);
         setHubTokenProps({
@@ -46,7 +52,7 @@ export default function useWeb3Withdraw(destinationAddress) {
         }
         const selectedDestinationFee = hubDestinationFee.value[props.speed] || 0;
 
-        return new Big(selectedDestinationFee).div(tokenPrice.value).toString();
+        return new Big(selectedDestinationFee).div(tokenPrice.value).toString(tokenDecimals.value, BIG_ROUND_UP);
     });
     // base hub rate without discount
     const hubFeeBaseRate = computed(() => {
@@ -63,41 +69,60 @@ export default function useWeb3Withdraw(destinationAddress) {
     });
     // fee to Hub bridge calculated in COIN to withdraw
     const hubFee = computed(() => {
-        return getHubFeeFromSendAmount(hubFeeRate.value, props.amountToSend);
-        // return getHubFeeFromReceiveAmount(hubFeeRate.value, props.amountToReceive, destinationFeeInCoin.value);
+        return getHubFeeFromSendAmount(hubFeeRate.value, props.amountToSend, tokenDecimals.value);
+        // return getHubFeeFromReceiveAmount(hubFeeRate.value, props.amountToReceive, destinationFeeInCoin.value, tokenDecimals.value);
     });
     // (destinationNetworkFee + amountToReceive) * (hubFeeRate / (1 - hubFeeRate))
-    function getHubFeeFromReceiveAmount(hubFeeRate, amountToReceive, destinationFeeInCoin) {
+    function getHubFeeFromReceiveAmount(hubFeeRate, amountToReceive, destinationFeeInCoin, decimals) {
         const amount = new Big(destinationFeeInCoin).plus(amountToReceive || 0);
         // x / (1 - x)
         const inverseRate = new Big(hubFeeRate).div(new Big(1).minus(hubFeeRate));
-        return amount.times(inverseRate).toString();
+        return amount.times(inverseRate).toString(decimals, BIG_ROUND_UP);
     }
-    function getHubFeeFromSendAmount(hubFeeRate, amountToSend) {
-        return new Big(amountToSend || 0).times(hubFeeRate).toString();
+    function getHubFeeFromSendAmount(hubFeeRate, amountToSend, decimals) {
+        return new Big(amountToSend || 0).times(hubFeeRate).toString(decimals, BIG_ROUND_UP);
     }
     // amount to receive from Hub bridge
-    const amountToReceive = computed(() => {
-        const amount = new Big(props.amountToSend || 0).minus(destinationFeeInCoin.value).minus(hubFee.value).toString();
+    const amountToReceive = computed(() => calculateAmountToReceive(props.amountToSend));
+    /**
+     * @param {string|number} amountToSend
+     * @param {boolean} [recalculateFee]
+     * @returns {string|number}
+     */
+    function calculateAmountToReceive(amountToSend, recalculateFee) {
+        const hubFeeValue = recalculateFee
+            ? getHubFeeFromSendAmount(hubFeeRate.value, amountToSend, tokenDecimals.value)
+            : hubFee.value;
+        const amount = new Big(amountToSend || 0).minus(destinationFeeInCoin.value).minus(hubFeeValue).toString();
         if (amount < 0) {
             return 0;
         }
         return amount;
-    });
+    }
+    /**
+     * @param {string|number} amountToSend
+     * @returns {string|number}
+     */
+    function recalculateAmountToReceive(amountToSend) {
+        return calculateAmountToReceive(amountToSend, true);
+    }
     // amount to send to Hub bridge
     /*
     const amountToSend = computed(() => {
         return new Big(props.amountToReceive || 0).plus(destinationFeeInCoin.value).plus(hubFee.value).toString();
     });
     */
+    // Minter Hub not consider discount in amount validation, so we need compensate amount for discount difference
     const minAmountToSend = computed(() => {
         // Minter Hub not consider discount in amount validation, so use hubFeeBaseRate without discount
         const minTotalFee = new Big(destinationFeeInCoin.value).times(new Big(1).plus(hubFeeBaseRate.value)).toString();
         // add 1 pip because 0 will not pass validation too
-        return new Big(minTotalFee).plus(1e-18).toString();
+        const onePip = 10 ** (-1 * (tokenDecimals.value || 18));
+        return new Big(minTotalFee).plus(onePip).toString(tokenDecimals.value, BIG_ROUND_UP);
     });
+    // min amount user can specify to receive (if works in mode, where user selects, what he want to receive)
     const minAmountToReceive = computed(() => {
-        return getHubMinAmount(destinationFeeInCoin.value, hubFeeRate.value, hubFeeBaseRate.value);
+        return getHubMinAmountToReceive(destinationFeeInCoin.value, hubFeeRate.value, hubFeeBaseRate.value, tokenDecimals.value);
     });
 
     /**
@@ -105,9 +130,10 @@ export default function useWeb3Withdraw(destinationAddress) {
      * @param {number|string} destinationNetworkFee
      * @param {number|string} hubFeeRate
      * @param {number|string} hubFeeBaseRate - hub fee rate without discount (0.01)
+     * @param {number} decimals
      * @return {number|string}
      */
-    function getHubMinAmount(destinationNetworkFee, hubFeeRate, hubFeeBaseRate = 0.01) {
+    function getHubMinAmountToReceive(destinationNetworkFee, hubFeeRate, hubFeeBaseRate = 0.01, decimals= 18) {
         // minAmount = hubFeeBase - hubFee
         // But while amountToReceive increase hubFee increase too, so we need to find such amountToReceive which will be equal minAmount, it will be maximum minAmount
 
@@ -139,7 +165,8 @@ export default function useWeb3Withdraw(destinationAddress) {
         // const minAmount = destinationNetworkFee * factor / (1 - factor);
         const minAmount = new Big(destinationNetworkFee).times(factor).div(new Big(1).minus(factor)).toString();
         // add 1 pip because 0 will not pass validation too
-        return new Big(minAmount).plus(1e-18).toString();
+        const onePip = 10 ** (-1 * decimals);
+        return new Big(minAmount).plus(onePip).toString(decimals, BIG_ROUND_UP);
     }
 
     const txParams = computed(() => {
@@ -155,6 +182,7 @@ export default function useWeb3Withdraw(destinationAddress) {
                 type: 'send_to_' + props.hubNetworkSlug,
                 // fee for destination network
                 fee: convertToPip(destinationFeeInCoin.value),
+                ...(props.smartWalletTx ? {smartWalletTx: props.smartWalletTx} : {}),
             }),
         };
     });
@@ -174,10 +202,11 @@ export default function useWeb3Withdraw(destinationAddress) {
         hubFee,
         amountToReceive,
         minAmountToSend,
-        minAmountToReceive,
+        // minAmountToReceive,
         txParams,
         feeTxParams,
         // methods
         setWithdrawProps: setProps,
+        recalculateAmountToReceive,
     };
 }

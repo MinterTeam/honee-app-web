@@ -1,11 +1,15 @@
-import {ref, computed, reactive, set, watch} from '@vue/composition-api';
-import Big from '~/assets/big.js';
+import {ref, computed, reactive, set, watch} from 'vue';
+import isEqual from 'lodash-es/isEqual.js';
+import Big from 'minterjs-util/src/big.js';
 import {findNativeCoin, getOracleCoinList, getOracleFee, getOraclePriceList} from '~/api/hub.js';
 import {HUB_NETWORK, HUB_WITHDRAW_SPEED, MAINNET, NETWORK} from '~/assets/variables.js';
 import usePolling from '~/composables/use-polling.js';
 
 // workaround for `set` not trigger computed properly
 // @see https://github.com/vuejs/composition-api/issues/580
+/**
+ * @return {Record<HUB_NETWORK, DestinationFee>}
+ */
 function getInitialChainData() {
     return Object.fromEntries(Object.values(HUB_NETWORK).map((hubNetworkSlug) => [hubNetworkSlug, getEmptyItem()]));
 
@@ -25,14 +29,14 @@ const priceList = ref([]);
 
 /**
  * Withdraw tx fee for destination network in dollars (e.g. fee to send bsc tx from hub to recipient)
- * @type {UnwrapRef<Object.<HUB_NETWORK, DestinationFee>>}
+ * @type {UnwrapNestedRefs<Record<HUB_NETWORK, DestinationFee>>}
  */
 const destinationFeeMap = reactive(getInitialChainData());
 
 
 /**
  * Gas price in external network in gwei
- * @type {ComputedRef<Object.<HUB_NETWORK, (number|string)>>}
+ * @type {ComputedRef<Record<HUB_NETWORK, (number|string)>>}
  */
 const gasPriceMap = computed(() => {
     const entries = Object.values(HUB_NETWORK)
@@ -48,7 +52,10 @@ const gasPriceMap = computed(() => {
 function fetchTokenList() {
     return getOracleCoinList()
         .then((result) => {
-            tokenList.value = Object.freeze(result);
+            // check isEqual to not trigger computed recalculation
+            if (!isEqual(tokenList.value, result)) {
+                tokenList.value = Object.freeze(result);
+            }
             return tokenList.value;
         });
 }
@@ -56,14 +63,17 @@ function fetchTokenList() {
 function fetchPriceList() {
     return getOraclePriceList()
         .then((result) => {
-            priceList.value = Object.freeze(result);
+            // check isEqual to not trigger computed recalculation
+            if (!isEqual(priceList.value, result)) {
+                priceList.value = Object.freeze(result);
+            }
             return priceList.value;
         });
 }
 
 /**
  * @param {HUB_NETWORK} hubNetwork
- * @return {Promise<undefined>}
+ * @return {Promise<void>}
  */
 function fetchDestinationFee(hubNetwork) {
     if (!hubNetwork) {
@@ -73,7 +83,11 @@ function fetchDestinationFee(hubNetwork) {
         .then((result) => {
             const oldFee = destinationFeeMap[hubNetwork]?.[HUB_WITHDRAW_SPEED.FAST];
             const isIncreased = oldFee && Number(result[HUB_WITHDRAW_SPEED.FAST]) > Number(oldFee);
-            set(destinationFeeMap, hubNetwork, Object.freeze({...result, isIncreased}));
+            result = {...result, isIncreased};
+            // check isEqual to not trigger computed recalculation
+            if (!isEqual(destinationFeeMap[hubNetwork], result)) {
+                set(destinationFeeMap, hubNetwork, Object.freeze(result));
+            }
         });
 }
 
@@ -89,11 +103,13 @@ export default function useHubOracle({
 } = {}) {
 
     const props = reactive({
+        /** @type {HUB_NETWORK_SLUG|''} */
         hubNetworkSlug: '',
+        fixInvalidGasPriceWithDummy: true,
     });
 
     /**
-     * @param {{hubNetworkSlug?: HUB_NETWORK}} newProps
+     * @param {Partial<props>} newProps
      */
     function setProps(newProps) {
         Object.assign(props, newProps);
@@ -125,7 +141,7 @@ export default function useHubOracle({
     const networkGasPrice = computed(() => {
         let gasPriceGwei = gasPriceMap.value[props.hubNetworkSlug];
         if (!(gasPriceGwei > 0)) {
-            gasPriceGwei = 100;
+            gasPriceGwei = props.fixInvalidGasPriceWithDummy ? 100 : 0;
         }
 
         // return NETWORK === MAINNET ? gasPriceGwei : 5;

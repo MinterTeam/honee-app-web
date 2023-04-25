@@ -4,15 +4,16 @@ import {TinyEmitter as Emitter} from 'tiny-emitter';
 import stripZeros from 'pretty-num/src/strip-zeros.js';
 import {isValidAddress as isValidMinterAddress} from 'minterjs-util';
 import {isValidAddress as isValidEthAddress} from 'ethereumjs-util';
-import {getCoinList} from '~/api/explorer.js';
-import Big from '~/assets/big.js';
-import {HUB_API_URL, HUB_TRANSFER_STATUS, HUB_CHAIN_ID, HUB_NETWORK, NETWORK, MAINNET, BASE_COIN, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_COIN_DATA} from "~/assets/variables.js";
+import {getCoinList, getTransaction} from '~/api/explorer.js';
+import Big from 'minterjs-util/src/big.js';
+import {HUB_API_URL, HUB_TRANSFER_STATUS, HUB_CHAIN_ID, HUB_NETWORK, NETWORK, MAINNET, BASE_COIN, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_COIN_DATA, NATIVE_COIN_ADDRESS, HUB_BUY_STAGE as LOADING_STAGE} from "~/assets/variables.js";
+import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {isHubTransferFinished} from '~/assets/utils.js';
 
 const instance = axios.create({
     baseURL: HUB_API_URL,
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
+    adapter: cacheAdapterEnhancer(getDefaultAdapter(), { enabledByDefault: false}),
 });
 addToCamelInterceptor(instance);
 
@@ -147,6 +148,7 @@ export function getVerifiedMinterCoinList() {
 
 /**
  * Prices of tokens in $
+ * Or gasPrice in gwei
  * @return {Promise<Array<HubPriceItem>>}
  */
 export function getOraclePriceList() {
@@ -232,8 +234,8 @@ export function getTransferFee(inputTxHash) {
 /**
  *
  * @param {string} hash
- * @param [timestamp]
- * @return {Promise<HubTransferStatus>}
+ * @param {number|string} [timestamp]
+ * @return {Promise<HubTransferStatus> & {unsubscribe: function(): void, on: TinyEmitter.on, once: TinyEmitter.once}}
  */
 export function subscribeTransfer(hash, timestamp) {
     if (!hash) {
@@ -315,12 +317,68 @@ export function subscribeTransfer(hash, timestamp) {
 }
 
 /**
+ * @param {string} txHash
+ * @param {string} destinationMinterAddress
+ * @param {string} destinationTokenSymbol
+ * @return {Promise<{tx: Transaction, outputAmount: number|string}>}
+ */
+export function waitHubTransferToMinter(txHash, destinationMinterAddress, destinationTokenSymbol) {
+    return subscribeTransfer(txHash)
+        .then((transfer) => {
+            if (transfer.status !== HUB_TRANSFER_STATUS.batch_executed) {
+                throw new Error(`Unsuccessful bridge transfer: ${transfer.status}`);
+            }
+            console.log('transfer', transfer);
+            return getTransaction(transfer.outTxHash);
+        })
+        .then((minterTx) => {
+            console.log('minterTx', minterTx);
+
+            if (!minterTx.data.list) {
+                throw new Error('Minter tx transfer has invalid data');
+            }
+            const multisendItem = minterTx.data.list.find((item) => item.to === destinationMinterAddress && item.coin.symbol === destinationTokenSymbol);
+            if (!multisendItem) {
+                throw new Error(`Minter tx transfer does not include ${destinationTokenSymbol} deposit to the current user`);
+            }
+
+            return {
+                outputAmount: multisendItem.value,
+                tx: minterTx,
+            };
+        });
+}
+
+/**
  * @param {Array<HubCoinItem>} hubCoinList
  * @param {string} tokenSymbol
  * @return {HubCoinItem|undefined}
  */
 export function findHubCoinItem(hubCoinList, tokenSymbol) {
+    tokenSymbol = tokenSymbol?.toUpperCase();
     return hubCoinList.find((item) => item.symbol === tokenSymbol);
+}
+
+/**
+ * @param {Array<HubCoinItem>} hubCoinList
+ * @param {string} tokenContractAddress
+ * @param {ChainId} chainId
+ * @param {boolean} [isAcceptNative]
+ * @return {HubCoinItem|undefined}
+ */
+export function findHubCoinItemByTokenAddress(hubCoinList, tokenContractAddress, chainId, isAcceptNative) {
+    if (!tokenContractAddress || !HUB_CHAIN_BY_ID[chainId]) {
+        return undefined;
+    }
+
+    tokenContractAddress = tokenContractAddress?.toLowerCase();
+    if (isAcceptNative && tokenContractAddress === NATIVE_COIN_ADDRESS) {
+        // cast native address 'eeee..' to wrapped address
+        tokenContractAddress = HUB_CHAIN_BY_ID[chainId].wrappedNativeContractAddress;
+    }
+
+    const hubNetworkSlug = HUB_CHAIN_BY_ID[chainId].hubNetworkSlug;
+    return hubCoinList.find((item) => item[hubNetworkSlug]?.externalTokenId === tokenContractAddress);
 }
 
 /**

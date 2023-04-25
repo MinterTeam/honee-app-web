@@ -3,12 +3,18 @@ import {getConsumerPortfolioList, getCmcCoinList} from '~/api/portfolio.js';
 import NotFoundError from '~/assets/utils/error-404.js';
 import {arrayToMap} from '~/assets/utils/collection.js';
 
+/**
+ // * @typedef {import('~/api/portfolio-models').ConsumerPortfolio} ConsumerPortfolio
+ // * @typedef {import('~/api/portfolio-models').CoinItem} CoinItem
+ // * @typedef {import('~/api/portfolio-models').ConsumerPortfolioList} ConsumerPortfolioList
+ */
+
 export const state = () => ({
     /** @type Array<ConsumerPortfolio> */
     consumerPortfolioList: [],
     /** @type {Array<CoinItem>}*/
     coinList: [],
-    /** @type {Object.<string, CoinItem>} */
+    /** @type {Record.<string, CoinItem>} */
     coinMap: {},
 });
 
@@ -59,7 +65,7 @@ export const actions = {
             });
     },
     /**
-     * @param {import('vuex').ActionContext}
+     * @param {import('vuex').ActionContext} ctx
      * @param {number|string} id
      * @return {Promise<ConsumerPortfolio>}
      */

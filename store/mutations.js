@@ -1,4 +1,4 @@
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 
 export default {
     ADD_AUTH_ADVANCED: (state, mnemonic) => {
@@ -20,7 +20,7 @@ export default {
         state.transactionListInfo = txListInfo;
     },
     SET_BALANCE: (state, balanceList) => {
-        state.balance = balanceList || [];
+        state.balance = Object.freeze(balanceList) || [];
     },
     SET_BALANCE_TOTAL: (state, balanceData) => {
         state.totalBalanceSum = balanceData.totalBalanceSum;
@@ -91,5 +91,8 @@ export default {
      */
     SET_SNACKBAR_INACTIVE: (state) => {
         state.isSnackbarActive = false;
+    },
+    SET_METAGARDEN: (state, data = true) => {
+        state.isMetagarden = data;
     },
 };

@@ -1,6 +1,6 @@
 <script>
-import Big from '~/assets/big.js';
-import {web3Utils} from '~/api/web3.js';
+import Big from 'minterjs-util/src/big.js';
+import {web3Utils} from 'minter-js-web3-sdk/src/web3.js';
 import {pretty, getEvmTxUrl, shortHashFilter} from '~/assets/utils.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID} from '~/assets/variables.js';
 import useNow from '~/composables/use-now.js';

@@ -1,8 +1,12 @@
 <script>
+import {HUB_CHAIN_DATA} from '~/assets/variables.js';
 import HubWithdrawForm from '~/components/HubWithdrawForm.vue';
 import HubWithdrawTxList from '~/components/HubWithdrawTxList.vue';
 
 export default {
+    layout(context) {
+        return context.store.state.isMetagarden ? 'metagarden' : 'default';
+    },
     components: {
         HubWithdrawForm,
         HubWithdrawTxList,
@@ -12,6 +16,9 @@ export default {
         };
     },
     computed: {
+        networkName() {
+            return HUB_CHAIN_DATA[this.$route.query.network]?.name;
+        },
     },
 };
 </script>
@@ -22,7 +29,10 @@ export default {
             <div class="card__content card__content--medium">
                 <h1 class="card__action-title-value">{{ $td('Withdraw', 'hub.withdraw-title') }}</h1>
                 <p class="card__action-description u-mt-05">
-                    {{ $td('Send coins from Minter to another network', 'hub.withdraw-description') }}
+                    <template v-if="networkName">
+                        {{ $td(`Send coins to ${networkName}`, 'hub.withdraw-description-network', {network: networkName}) }}
+                    </template>
+                    <template v-else>{{ $td('Send coins to another network', 'hub.withdraw-description') }}</template>
                 </p>
             </div>
 

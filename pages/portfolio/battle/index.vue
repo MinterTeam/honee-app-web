@@ -13,6 +13,9 @@ export default {
     PORTFOLIO_PROFIT_PERIOD,
     BATTLE_TAB,
     BATTLE_CURRENT_WEEK_NUMBER,
+    layout(context) {
+        return context.store.getters.isAuthorized ? 'default' : 'splash-index';
+    },
     components: {
         BaseTabs,
         PortfolioBattleTable,
@@ -35,10 +38,17 @@ export default {
 
 <template>
     <div class="u-section u-container u-container--large">
-        <h2 class="u-h1 u-mb-15">
-            {{ $td('Portfolio battle', `portfolio.battle-title`) }}
+        <h2 class="u-h2 u-mb-15">
+            {{ $td('Portfolio Battle', `portfolio.battle-title`) }}
         </h2>
-
+        <div class="subtitle u-mb-15">
+            <template v-if="$i18n.locale === 'en'">
+                <p>Contest participants create their portfolios with 100 virtual dollars, choosing the coins they think are the most promising. Every week, the top 3 best portfolios receive fixed prizes. In addition, the Top 20 receive a guaranteed airdrop. <a href="https://honee.app/portfolio-battle" target="_blank" class="link--default">Learn more about the portfolio battle</a>.</p>
+            </template>
+            <template v-if="$i18n.locale === 'ru'">
+                <p>Участники конкурса на 100 виртуальных долларов создают свои портфели, выбрав наиболее перспективные на их взгляд монеты. Каждую неделю выбирается Топ-3 лучших портфеля, которые получают фиксированные призы. Кроме того, Топ-20 получают гарантированный аирдроп. <a href="https://honee.app/ru/portfolio-battle" target="_blank" class="link--default">Подробнее о битве портфелей</a>.</p>
+            </template>
+        </div>
         <div class="card card__content">
             <BaseTabs
                 v-if="$options.BATTLE_CURRENT_WEEK_NUMBER > 1"

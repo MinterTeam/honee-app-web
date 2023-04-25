@@ -24,6 +24,7 @@ export default {
         'clear-form',
         'validation-touch',
         'update:fee',
+        'update:is-sequence-processing',
     ],
     props: {
         /** @type {SendSequenceItem|Array<SendSequenceItem>} */
@@ -95,12 +96,19 @@ export default {
                 this.$emit('update:fee', newVal);
             },
         },
+        isFormSending: {
+            handler(newVal) {
+                this.$emit('update:is-sequence-processing', newVal);
+            },
+        },
     },
     created() {
         // feeBusParams
         this.$watch(
             () => {
+                /** @type {Array<SendSequenceItem>} */
                 const sequenceParamsArray = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
+                // check only nullish, because 'false' feeTxParams mean 'skip estimation'
                 const txParamsList = sequenceParamsArray.map((item) => item.feeTxParams ?? item.txParams);
 
                 return {
@@ -158,18 +166,24 @@ export default {
                         }
 
                         // fill txParams with gasCoin
-                        const prepareGasCoin = item.prepareGasCoinPosition === 'skip' && index === 0
-                            ? () => ({gasCoin: this.fee.resultList?.[0]?.coin})
-                            : () => this.refineByIndex(index).then((fee) => ({
-                                gasCoin: fee?.coin,
+                        const prepareGasCoin = (() => {
+                            const isGasCoinSet = !!item.txParams.gasCoin || item.txParams.gasCoin === 0;
+                            if (item.prepareGasCoinPosition === 'skip') {
+                                return isGasCoinSet ? undefined : () => ({gasCoin: this.fee.resultList?.[0]?.coin});
+                            }
+                            return () => this.refineByIndex(index).then((fee) => ({
+                                ...(isGasCoinSet || {gasCoin: fee?.coin}),
                                 // extra data to pass to next `prepare`
                                 extra: {fee},
                             }));
+                        })();
+
                         const itemPrepare = Array.isArray(item.prepare)
                             ? item.prepare
                             : (item.prepare ? [item.prepare] : []);
                         const prepareGasCoinPosition = item.prepareGasCoinPosition || 'start';
 
+                        //@TODO ensure correct prepare array is formed
                         return {
                             ...item,
                             prepare: arrayInsertAtPosition(itemPrepare, prepareGasCoin, prepareGasCoinPosition),
@@ -191,7 +205,7 @@ export default {
                     this.clearForm();
                 })
                 .catch((error) => {
-                    console.log(error);
+                    console.error(error);
                     this.isFormSending = false;
                     this.serverError = getErrorText(error);
                 });
@@ -209,12 +223,16 @@ export default {
 };
 
 /**
- * @param {Array<function>} target
- * @param {function} item
+ * @template T
+ * @param {Array<T>} target
+ * @param {T} item
  * @param {'start'|'end'} position
- * @return {Array<function>}
+ * @return {Array<T>}
  */
 function arrayInsertAtPosition(target, item, position) {
+    if (!item) {
+        return target;
+    }
     target = target.slice();
     if (position === 'start') {
         target.unshift(item);

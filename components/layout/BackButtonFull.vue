@@ -1,5 +1,5 @@
 <script>
-import {ref} from '@vue/composition-api';
+import {ref} from 'vue';
 import { useIntervalFn } from '@vueuse/core';
 import BackButton from '~/components/layout/BackButton.vue';
 
@@ -27,5 +27,5 @@ export default {
 </script>
 
 <template>
-    <BackButton class="u-section--top u-container" :class="pageContainerClass"/>
+    <BackButton class="u-section--top u-container u-fw-700 u-hidden-medium-down" :class="pageContainerClass"/>
 </template>

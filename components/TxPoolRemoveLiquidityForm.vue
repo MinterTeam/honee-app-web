@@ -1,5 +1,5 @@
 <script>
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {AsyncComputedMixin} from 'vue-async-computed/src/index.js';
 import debounce from 'debounce-promise';
 import {validationMixin} from 'vuelidate/src/index.js';

@@ -1,10 +1,12 @@
 <script>
+import {getCurrentInstance} from 'vue';
 import {getAddressLockList, getPremiumLevel} from '~/api/staking.js';
 import {fillCardWithCoin, flatCardList} from '~/data/cards.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {PREMIUM_STAKE_PROGRAM_ID} from '~/assets/variables.js';
 import {pretty} from '~/assets/utils.js';
 import {deepMerge} from '~/assets/utils/collection.js';
+import useStakeByLockList from '~/composables/use-stake-by-lock-list.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import BaseTabs from '~/components/base/BaseTabs.vue';
 import Card from '~/components/Card.vue';
@@ -25,48 +27,40 @@ export default {
         Card,
         PortfolioListItem,
     },
+    setup() {
+        const vm = getCurrentInstance()?.proxy;
+        const {
+            lockListPromise,
+            lockList,
+            coinLockList,
+            prepareStakeCardList,
+        } = useStakeByLockList({
+            initFetchAddress: vm.$store.getters.address,
+        });
+
+        return {
+            lockListPromise,
+            lockList,
+            coinLockList,
+            prepareStakeCardList,
+        };
+    },
     fetch() {
         const portfolioListPromise = this.$store.dispatch('portfolio/fetchConsumerPortfolioList')
             .then((portfolioInfo) => {
                 this.portfolioList = Object.freeze(portfolioInfo.list) || [];
             });
 
-        const lockListPromise =  getAddressLockList(this.$store.getters.address)
-            .then((lockList) => {
-                this.lockList = Object.freeze(lockList);
-            });
-
-        return Promise.all([portfolioListPromise, lockListPromise]);
+        return Promise.all([portfolioListPromise, this.lockListPromise]);
     },
     data() {
         return {
             selectedFilter: FILTERS.ALL,
             /** @type {Array<ConsumerPortfolio>} */
             portfolioList: [],
-            /** @type {Array<StakingProgramAddressLock>} */
-            lockList: [],
         };
     },
     computed: {
-        coinLockList() {
-            const result = {};
-            this.lockList.forEach((lockItem) => {
-                const isPremium = lockItem.program.id === PREMIUM_STAKE_PROGRAM_ID;
-                const coinSymbol = isPremium ? PREMIUM_STAKE_PROGRAM_ID : lockItem.program.lockCoin.symbol;
-                if (!result[coinSymbol]) {
-                    result[coinSymbol] = isPremium ? this.getEmptyPremiumCard(coinSymbol, lockItem) : this.getEmptyStakeCard(coinSymbol, lockItem);
-                }
-                result[coinSymbol].amount += Number(lockItem.amount);
-                if (isPremium) {
-                    result[coinSymbol].title = 'LEVEL ' + getPremiumLevel(result[coinSymbol].amount);
-                } else {
-                    // use latest program to ensure it is actual (it is fallback if nothing found in card-data)
-                    result[coinSymbol].programId = Math.max(lockItem.program.id, result[coinSymbol].programId);
-                    result[coinSymbol].action = `/stake/${result[coinSymbol].programId}`;
-                }
-            });
-            return Object.values(result);
-        },
         coinDelegationList() {
             const result = {};
             this.$store.state.stakeList.forEach((delegationItem) => {
@@ -79,20 +73,7 @@ export default {
             return Object.values(result);
         },
         stakeCardList() {
-            return [].concat(this.coinLockList, this.coinDelegationList)
-                .map((item) => {
-                    item = JSON.parse(JSON.stringify(item));
-                    item.stats.value = pretty(item.amount);
-                    // get latest actual staking program from card-data
-                    const cardData = flatCardList.find((data) => data.coin === item.coin && data.actionType === item.actionType);
-                    if (cardData) {
-                        // overwrite action to ensure latest actual
-                        item.action = cardData.action;
-                        item.description = cardData.description;
-                        item.ru = deepMerge(item.ru, cardData.ru);
-                    }
-                    return item;
-                });
+            return this.prepareStakeCardList([].concat(this.coinLockList, this.coinDelegationList));
         },
         filteredListLength() {
             if (this.selectedFilter === FILTERS.PORTFOLIO) {
@@ -116,46 +97,10 @@ export default {
     },
     methods: {
         getErrorText,
-        getEmptyStakeCard(coinSymbol, lockItem) {
-            return fillCardWithCoin({
-                amount: 0,
-                coin: coinSymbol,
-                // store previous item programId to compare it later
-                programId: lockItem.program.id,
-                // dummy action to fill correct actionType
-                action: `/stake/${lockItem.program.id}`,
-                caption: 'Stake & Earn',
-                stats: {
-                    caption: 'Total staked',
-                    value: 0,
-                },
-                ru: {
-                    caption: 'Стейкинг',
-                    stats: {
-                        caption: 'Общий стейк',
-                    },
-                },
-                buttonLabel: this.$td('Stake more', 'index.stake-more'),
-            });
-        },
-        getEmptyPremiumCard(coinSymbol, lockItem) {
-            return {
-                ...this.getEmptyStakeCard(coinSymbol, lockItem),
-                caption: 'Premium',
-                title: 'LEVEL 0',
-                description: 'Premium is extended account that allows you to get extra rewards without lifting a finger and enjoy additional features.',
-                icon: '/img/icon-premium.svg',
-                action: `/premium`,
-                ru: {
-                    description: 'Premium – это расширенный аккаунт, который позволит получать дополнительный доход, а также добавит новые функции.',
-                    caption: 'Premium',
-                    stats: {
-                        caption: 'Общий стейк',
-                    },
-                },
-                buttonLabel: this.$td('Upgrade your level', 'premium.card-update-button'),
-            };
-        },
+        /**
+         * @param {string} coinSymbol
+         * @return {CardListItem}
+         */
         getEmptyDelegationCard(coinSymbol) {
             return fillCardWithCoin({
                 amount: 0,
@@ -182,8 +127,8 @@ export default {
 
 <template>
     <div v-if="portfolioList.length > 0 || stakeCardList.length > 0">
-        <h2 class="u-h1 u-mb-15">
-            {{ $td('My investments', `index.investments-title`) }}
+        <h2 class="u-h2 u-mb-15">
+            {{ $td('My Investments', `index.investments-title`) }}
         </h2>
         <div v-if="$fetchState.pending" class="u-text-center">
             <BaseLoader class="" :is-loading="true"/>

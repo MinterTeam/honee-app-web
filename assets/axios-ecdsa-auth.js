@@ -7,7 +7,7 @@ const {ecdsaSign, publicKeyCreate} = secp256k1;
 const AUTH_HEADER_SCHEMA = 'secp256k1-signature';
 
 /**
- * @param {AxiosInstance} instance
+ * @param {import('axios').AxiosInstance} instance
  */
 export default function addEcdsaAuthInterceptor(instance) {
     instance.interceptors.request.use(function(request) {
@@ -96,3 +96,16 @@ export function bufferToString(buf) {
     return '0x' + toBuffer(buf).toString('hex');
 }
 
+/**
+ * Cache key generator for axios-extensions cacheAdapter to bust cache based on auth header
+ * @param {import('axios').AxiosRequestConfig} config
+ * @param {string} defaultKey
+ * @return {string}
+ */
+export function authHeaderKeyGenerator(config, defaultKey) {
+    const authHeader = config.headers.Authorization || config.headers.authorization;
+    const authSuffix = authHeader && typeof authHeader === 'string'
+        ? '#' + authHeader.replace(/\s/g, '')
+        : '';
+    return defaultKey + authSuffix;
+}

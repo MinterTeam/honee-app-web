@@ -20,7 +20,7 @@ export default {
 <template>
     <div class="splash-layout__wrap">
         <HeaderBanner/>
-        <TheHeader :simple="false"/>
+        <TheHeader :simple="false" :show-language="true"/>
 
         <slot></slot>
 

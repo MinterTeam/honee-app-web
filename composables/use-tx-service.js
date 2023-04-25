@@ -1,31 +1,31 @@
-import {reactive, computed, set} from '@vue/composition-api';
+import {reactive, computed, set} from 'vue';
 import {deepMerge} from '~/assets/utils/collection.js';
-import {getProviderByChain, web3Utils, subscribeTransaction, toErcDecimals} from '~/api/web3.js';
+import {getProviderByChain, web3Utils, toErcDecimals} from 'minter-js-web3-sdk/src/web3.js';
+import {subscribeTransaction} from '~/api/web3.js';
 import {postTx} from '~/api/gate.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, CHAIN_ID as MINTER_CHAIN_ID} from '~/assets/variables.js';
 import {clearEmptyFields} from '~/assets/utils/collection.js';
 import {ensurePromise} from '~/assets/utils.js';
 
 
-/**
- * @type {import('@vue/composition-api').UnwrapRef<{privateKey: string, accountAddress: string, chainId: number, form: Object}>}
- */
 const props = reactive({
     privateKey: '',
     accountAddress: '',
+    /** @type {ChainId} */
     chainId: 0,
+    /** @type {object} */
     form: {},
 });
 
 /**
- * @param {{privateKey?: string, accountAddress?: string, chainId?: number, form?: any}} newProps
+ * @param {Partial<props>} newProps
  */
 function setProps(newProps) {
     Object.assign(props, newProps);
 }
 
 const state = reactive({
-    /** @type {Object.<LOADING_STAGE, SequenceStepItem>}*/
+    /** @type {Record<LOADING_STAGE, SequenceStepItem>}*/
     steps: {},
 });
 
@@ -108,8 +108,8 @@ function sendMinterTx(txParams, options = {}) {
 /**
  * @param {object} txConfig
  * @param {string} txConfig.to
- * @param {number|string} txConfig.value
- * @param {string} txConfig.data
+ * @param {number|string} [txConfig.value]
+ * @param {string} [txConfig.data]
  * @param {number|string} txConfig.nonce
  * @param {number|string} txConfig.gasPrice
  * @param {number|string} [txConfig.gasLimit]
@@ -208,7 +208,7 @@ function estimateTxGas({to, value, data}) {
 }
 
 /**
- * @typedef {Partial<TxParams> & {extra: object}} PrepareTxParamsResult
+ * @typedef {Partial<TxParams> & {extra?: {fee?: FeeData} & object}} PrepareTxParamsResult
  */
 /**
  * @typedef {function(PostTxResponse?, PrepareTxParamsResult?): (Promise<PrepareTxParamsResult>|PrepareTxParamsResult)} PrepareTxParams
@@ -381,7 +381,7 @@ function addStepData(loadingStage, data = {}, finishPrev) {
 }
 
 /**
- * @param {Object.<LOADING_STAGE, SequenceStepItem>} steps
+ * @param {Record<LOADING_STAGE, SequenceStepItem>} steps
  */
 function setStepList(steps) {
     state.steps = steps;
@@ -389,9 +389,9 @@ function setStepList(steps) {
 
 /**
  *
- * @param {Array<function>|function} list
- * @param arg
- * @param options
+ * @param {Array<Function>|Function} list
+ * @param {any} arg
+ * @param {Parameters<ensurePromise>[2]} [options]
  * @return {Promise<Array<any>>}
  */
 async function awaitSeries(list, arg, options) {

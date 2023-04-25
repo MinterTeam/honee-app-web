@@ -1,48 +1,120 @@
 import {BASE_COIN} from '~/assets/variables.js';
 
 /**
+ * @type {{[key: string]: (...presetParams: Array) => CardListItemRaw}}
+ */
+export const cardPresetList = {
+    farm(coin0, coin1) {
+        return {
+            action: `/farm/${coin0}/${coin1}`,
+            tags: ['Farming'],
+            coin: [coin0, coin1],
+            caption: 'Yield farming',
+            description: `Put your ${coin0} and ${coin1} into a liquidity pool for getting daily rewards.`,
+            buttonLabel: 'Earn with farming',
+            ru: {
+                caption: 'Фарминг',
+                description: `Поместите свои ${coin0} и ${coin1} в пул ликвидности, чтобы получать ежедневные вознаграждения.`,
+                buttonLabel: 'Заработать на фарминге',
+            },
+        };
+    },
+    stake(id) {
+        return {
+            action: `/stake/${id}`,
+            tags: ['Staking'],
+            caption: 'Stake & Earn',
+            buttonLabel: 'Earn with staking',
+            ru: {
+                caption: 'Стейкинг',
+                buttonLabel: 'Заработать на стейкинге',
+            },
+        };
+    },
+    delegate(coin) {
+        return {
+            caption: 'Delegate',
+            coin,
+            description: `‘Tie’ your ${coin} to any validator of the Minter Network and start getting rewards every hour.`,
+            stats: {
+                apy: {
+                    percent: 10,
+                    rewardCoin: BASE_COIN,
+                },
+            },
+            tags: ['Staking'],
+            action: `/delegate/${coin}`,
+            ru: {
+                description: `«Привяжите» свои ${coin} к любому валидатору сети Minter и начните получать награды каждый час.`,
+                caption: 'Делегирование',
+            },
+        };
+    },
+    swap(coinToBuy) {
+        return {
+            caption: 'Buy',
+            coin: coinToBuy,
+            tags: ['Exchange'],
+            action: `/swap/${coinToBuy}`,
+            ru: {
+                caption: 'Купить',
+            },
+        };
+    },
+};
+const presets = cardPresetList;
+
+
+/**
  * @type {CardCategoryMap}
  */
 export default {
     earn: {
-        title: 'Earning options',
+        title: 'Earning Options',
         cards: [
             {
-                caption: 'Liquidity mining',
-                coin: ['BEE', 'MUSD'],
-                description: 'Put your BEE and MUSD into a liquidity pool. Then stake received LP-656 tokens for getting extra daily rewards.',
-                stats: {
-                    apy: {
-                        percent: '≈3',
-                    },
-                },
+                style: 'metagarden-buy-spot',
+                caption: 'Mining',
+                title: 'Miners',
+                coin: `METAGARDEN`,
+                description: 'Metagarden — a play-to-earn platform with mini games. Become the platform miner to earn crypto.',
+                buttonLabel: 'Buy miners',
                 tags: [],
-                action: '/add-liquidity/BEE/MUSD',
+                action: `/metagarden/buy-miner`,
                 ru: {
-                    caption: 'Майнинг ликвидностью',
-                    description: 'Поместите свои BEE и MUSD в пул ликвидности. Затем застейкуйте полученные LP-656 токены для получения дополнительных ежедневных наград.',
+                    caption: 'Майнинг',
+                    title: 'Майнеры',
+                    description: 'Metagarden — play-to-earn платформа с мини-играми. Станьте майнером платформы, чтобы зарабатывать криптовалюту.',
+                    buttonLabel: 'Купить майнеры',
+
                 },
             },
-            {
-                caption: 'Yield farming',
-                coin: ['BEE', 'MUSD'],
-                description: 'Stake your LP-656 tokens with a 1-year lock to start getting extra daily rewards.',
-                buttonLabel: 'Stake',
+            makeCard(presets.farm('WONDER', 'BNB'), {
                 stats: {
                     apr: {
-                        percent: '36.5',
+                        percent: '120',
                     },
                 },
-                tags: ['Farming'],
-                action: `/farm/378`,
+            }),
+            {
+                style: 'extended-card card--bee-buy',
+                caption: 'Buy',
+                coin: 'BEE',
+                description: 'BEE is a native Honee crypto wallet token. Provides users with many opportunities to earn crypto.',
+                stats: {
+                    price: true,
+                },
+                tags: ['Exchange'],
+                action: '/topup/card',
+                buttonLabel: 'Buy BEE with card',
                 ru: {
-                    description: 'Застейкуйте свои LP-656 токены с блокировкой на 1 год, чтобы получать дополнительные ежедневные награды.',
-                    caption: 'Фарминг',
-                    buttonLabel: 'Застейковать',
+                    description: 'BEE — токен крипто-кошелька Honee. Предоставляет пользователям множество возможностей для заработка.',
+                    caption: 'Купить',
+                    buttonLabel: 'Купить BEE картой',
                 },
             },
-            {
-                caption: 'Stake & Earn',
+            makeCard(presets.stake(19), {
+                style: 'extended-card card--bee-staking',
                 coin: `BEE`,
                 description: 'Stake BEE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
                 stats: {
@@ -50,15 +122,27 @@ export default {
                         percent: '5-20',
                     },
                 },
-                tags: ['Staking'],
-                action: `/stake/19`,
                 ru: {
                     description: 'Стейкуйте BEE на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
-                    caption: 'Стейкинг',
                 },
-            },
-            {
-                caption: 'Stake & Earn',
+            }),
+            makeCard(presets.farm('BEE', 'USDTE'), {
+                style: 'extended-card card--bee-farming',
+                stats: {
+                    apr: {
+                        percent: '73',
+                    },
+                },
+            }),
+            makeCard(presets.farm('BEE', 'USDTBSC'), {
+                style: 'extended-card card--bee-farming-2',
+                stats: {
+                    apr: {
+                        percent: '73',
+                    },
+                },
+            }),
+            makeCard(presets.stake(24), {
                 coin: `MUSD`,
                 description: 'Stake MUSD for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
                 stats: {
@@ -66,44 +150,44 @@ export default {
                         percent: '6-10',
                     },
                 },
-                tags: ['Staking'],
-                action: `/stake/24`,
                 ru: {
                     description: 'Стейкуйте MUSD на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
-                    caption: 'Стейкинг',
                 },
-            },
-            {
-                caption: 'Stake & Earn',
+            }),
+            makeCard(presets.stake(21), {
                 coin: `HUBSTAKE`,
-                description: 'Stake HUBSTAKE for 1, 2, 3, 4 or 5 years to get everyday rewards. The longer you stake, the more you earn!',
+                description: 'Stake HUBSTAKE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
                 stats: {
                     apr: {
                         percent: '1-5',
                     },
                 },
-                tags: ['Staking'],
-                action: `/stake/21`,
                 ru: {
-                    description: 'Стейкуйте HUBSTAKE на 1, 2, 3, 4 или 5 лет, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
-                    caption: 'Стейкинг',
+                    description: 'Стейкуйте HUBSTAKE на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
                 },
-            },
+            }),
+            makeCard(presets.delegate(BASE_COIN)),
+            makeCard(presets.swap('DETFAPY'), {
+                description: 'Decentralized Trading Fund based on top 10 expert portfolios.',
+                ru: {
+                    description: 'Децентрализованный торговый фонд на основе Топ-10 портфелей экспертов.',
+                },
+            }),
             {
-                caption: 'Delegate',
-                coin: BASE_COIN,
-                description: '‘Tie’ your BIP to any validator of the Minter Network and start getting rewards every hour.',
-                stats: {
-                    apy: {
-                        percent: 10,
-                        rewardCoin: BASE_COIN,
-                    },
-                },
-                tags: ['Staking'],
-                action: `/delegate/${BASE_COIN}`,
+                style: 'portfolio-battle',
+                caption: 'Contest',
+                title: 'PORTFOLIO BATTLE',
+                icon: '/img/icon-portfolio-battle.png',
+                description: 'Join the Portfolio Battle and win crypto prizes every week.',
+                buttonLabel: 'Learn More',
+                tags: [],
+                action: `/portfolio/battle`,
                 ru: {
-                    description: '«Привяжите» свои BIP к любому валидатору сети Minter и начните получать награды каждый час.',
-                    caption: 'Делегирование',
+                    caption: 'Конкурс',
+                    title: 'БИТВА ПОРТФЕЛЕЙ',
+                    description: 'Присоединяйтесь к битве портфелей и выигрывайте крипто-призы каждую неделю.',
+                    buttonLabel: 'Подробнее',
+
                 },
             },
         ],
@@ -111,19 +195,12 @@ export default {
     swap: {
         title: 'Buy',
         cards: [
-            {
-                caption: 'Buy',
-                coin: 'BTC',
+            makeCard(presets.swap('BTC'), {
                 description: 'Buy Bitcoin, the first cryptocurrency.',
-                stats: {
-                },
-                tags: ['Exchange'],
-                action: '/swap/BTC',
                 ru: {
                     description: 'Приобретите Bitcoin, первую криптовалюту.',
-                    caption: 'Купить',
                 },
-            },
+            }),
             /*
             {
                 caption: 'Buy',
@@ -237,20 +314,39 @@ export default {
     },
 };
 
+
 /**
- * @typedef {CardListItemRaw} CardListItem
+ * Merge preset card with custom card data
+ * @param {CardListItemRaw} presetCard
+ * @param {CardListItemRaw} [card]
+ * @return {CardListItemRaw}
+ */
+export function makeCard(presetCard, card) {
+    return {
+        ...presetCard,
+        ...card,
+        ru: {
+            ...presetCard.ru,
+            ...card?.ru,
+        },
+    };
+}
+
+/**
+ * @typedef {object & CardListItemRaw} CardListItem
  * @property {string} actionType
  * @property {string} category
  */
 
 
 /**
- * @typedef {CardDataText} CardListItemRaw
+ * @typedef {object & CardDataText} CardListItemRaw
  * @property {string} action - url to action
  * @property {string|Array<string>} [coin] - coin symbol or list of coin symbols (used for `title`, `icon`, and `tags`)
  * @property {string|Array<string>} [icon]
- * @property {CardDataStats} [stats]
+ * @property {CardDataStats & CardDataText.stats} [stats]
  * @property {string[]} [tags]
+ * @property {string} [style] - class to apply to card to style it
  * @property {CardDataText} [ru]
  */
 
@@ -266,9 +362,10 @@ export default {
  */
 
 /**
- * @typedef {CardDataText.stats} CardDataStats
- * @property {CardDataStatsApr} [apr]
- * @property {CardDataStatsApr} [apy]
+ * @typedef {{apr: CardDataStatsApr} | {apy: CardDataStatsApr} | {price: boolean}} CardDataStats - predefined stats presets
+ *# @property {CardDataStatsApr} [apr]
+ *# @property {CardDataStatsApr} [apy]
+ *# @property {boolean} [price]
  */
 
 /**

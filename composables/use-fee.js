@@ -1,5 +1,5 @@
-import { ref, reactive, computed, watch, set } from '@vue/composition-api';
-import Big from '~/assets/big.js';
+import { ref, reactive, computed, watch, set } from 'vue';
+import Big from 'minterjs-util/src/big.js';
 import {FeePrice} from 'minterjs-util/src/fee.js';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import decorateTxParams from 'minter-js-sdk/src/tx-decorator/index.js';
@@ -10,11 +10,11 @@ import {BASE_COIN, CHAIN_ID} from '~/assets/variables.js';
 import {estimateTxCommission, replaceCoinSymbol} from '~/api/gate.js';
 import {getCoinList} from '~/api/explorer.js';
 import {getErrorText} from '~/assets/server-error.js';
-import CancelError from '~/assets/utils/error-cancel.js';
+import CancelError from '@shrpne/utils/src/error-cancel.js';
 
 
 /**
- * @typedef {Object} FeeItemData
+ * @typedef {object} FeeItemData
  * @property {Coin} priceCoin
  * @property {boolean} isBaseCoin
  * @property {boolean} isBaseCoinEnough
@@ -33,7 +33,7 @@ import CancelError from '~/assets/utils/error-cancel.js';
  */
 
 /**
- * @return {{fee: ComputedRef<FeeData>, feeProps: feeProps, setFeeProps: setProps, refineByIndex: function(index: number): Promise<FeeItemData>}}
+ * @return {{fee: ComputedRef<FeeData>, feeProps: feeProps, setFeeProps: setProps, refineByIndex: (index: number) => Promise<FeeItemData>}}
  */
 export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinToSpend, isOffline}*/) {
     const idPrimary = Math.random().toString();
@@ -41,11 +41,11 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     const feeProps = reactive({
         /** @type {TxParams} */
         txParams: {},
-        /** @type {Array<TxParams>} */
+        /** @type {Array<TxParams|false>} */
         txParamsList: [],
         //@TODO invalid behavior with TxSequence with different privateKey
         baseCoinAmount: 0,
-        /** @type {Boolean} - by default fallback to baseCoin, additionally it can try to fallback to coinToSpend, if baseCoin is not enough */
+        /** @type {boolean} - by default fallback to baseCoin, additionally it can try to fallback to coinToSpend, if baseCoin is not enough */
         fallbackToCoinToSpend: false,
         isOffline: false,
         isLocked: false,
@@ -53,19 +53,26 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         precision: FEE_PRECISION_SETTING.PRECISE,
     });
 
+    /**
+     * @param {Partial<feeProps>} newProps
+     */
     function setProps(newProps) {
         Object.assign(feeProps, newProps);
     }
 
 
-    /** @type {Object.<number, string>}*/
+    /** @type {Ref<UnwrapRef<Record<number, string>>>}*/
     const coinMap = ref({});
     const state = reactive({
         resultListSource: [],
+        /** @type {string|number} */
         priceCoinCommission: 0,
+        /** @type {string|number} */
         baseCoinCommission: 0,
         isBaseCoinEnough: true,
+        /** @type {string|number} */
         gasCoin: BASE_COIN,
+        /** @type {string|number} */
         commission: '',
         feeError: '',
         /** @type CommissionPriceData|null */
@@ -367,15 +374,24 @@ async function estimateFee(txParams, precision, idDebounce) {
  */
 async function estimateFeeWithFallback(txParams, fallbackToCoinToSpend, baseCoinAmount, precision, idDebouncePrimary, idDebounceSecondary) {
     // console.debug('estimateFeeWithFallback', JSON.parse(JSON.stringify(txParams)), {fallbackToCoinToSpend, baseCoinAmount, precision});
-    const primaryCoinToCheck = getPrimaryCoinToCheck(txParams);
+    const isGasCoinDefined = isCoinDefined(txParams.gasCoin);
+    const primaryCoinToCheck = isGasCoinDefined ? txParams.gasCoin : BASE_COIN;
     const secondaryCoinToCheck = getSecondaryCoinToCheck(txParams, fallbackToCoinToSpend);
 
-    let feeData = await estimateFee({...txParams, gasCoin: primaryCoinToCheck}, precision, idDebouncePrimary);
+    const isFallbackMode = !isGasCoinDefined;
+    const hasBaseCoinAmount = Number(baseCoinAmount) > 0;
+    const skipFallbackToBaseCoin = isFallbackMode && !hasBaseCoinAmount && secondaryCoinToCheck;
 
-    const isBaseCoinEnough = new Big(baseCoinAmount || 0).gte(feeData.baseCoinCommission || 0);
+    let feeData;
+    if (!skipFallbackToBaseCoin) {
+        feeData = await estimateFee({...txParams, gasCoin: primaryCoinToCheck}, precision, idDebouncePrimary);
+    }
+
+    const isBaseCoinEnough = new Big(baseCoinAmount || 0).gte(feeData?.baseCoinCommission || 0);
     // select between primary fallback and secondary fallback
     // secondaryFeeData may be defined only if primary is fallback base coin
-    const isSecondarySelected = !isBaseCoinEnough && secondaryCoinToCheck && secondaryCoinToCheck !== primaryCoinToCheck;
+    const isSecondaryFallbackBetter = isFallbackMode && !isBaseCoinEnough && secondaryCoinToCheck && secondaryCoinToCheck !== primaryCoinToCheck;
+    const isSecondarySelected = skipFallbackToBaseCoin || isSecondaryFallbackBetter;
 
     if (isSecondarySelected) {
         feeData = await estimateFee({...txParams, gasCoin: secondaryCoinToCheck}, precision, idDebounceSecondary)
@@ -417,8 +433,8 @@ function isBaseCoin(coinIdOrSymbol) {
 /**
  * @pure
  * @nosideeffects
- * @param txType
- * @param txData
+ * @param {TX_TYPE} txType
+ * @param {TxData} txData
  * @return {boolean}
  */
 function isValidTxData(txType, txData) {

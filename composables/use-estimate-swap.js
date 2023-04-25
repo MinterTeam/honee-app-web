@@ -1,4 +1,4 @@
-import {reactive, computed, toRefs} from '@vue/composition-api';
+import {reactive, computed, toRefs} from 'vue';
 import {ESTIMATE_SWAP_TYPE} from 'minter-js-sdk/src/variables.js';
 import {estimateCoinBuy, estimateCoinSell} from '~/api/gate.js';
 import debounce from '~/assets/debounce-promise.js';
@@ -6,8 +6,8 @@ import {getErrorText} from '~/assets/server-error.js';
 import {decreasePrecisionSignificant} from '~/assets/utils.js';
 
 
-export default function useEstimateSwap({idPreventConcurrency, $td} = {}) {
-    $td = typeof $td === 'function' ? $td : (val) => val;
+export default function useEstimateSwap({idPreventConcurrency, vm} = {}) {
+    const $td = (val, ...otherArgs) => typeof vm?.$td === 'function' ? vm.$td(val, ...otherArgs) : val;
 
     const state = reactive({
         estimation: null,
@@ -95,6 +95,7 @@ export default function useEstimateSwap({idPreventConcurrency, $td} = {}) {
                 if (error.isCanceled) {
                     return;
                 }
+                state.estimation = null;
                 state.isEstimationLoading = false;
                 state.estimationError = getErrorText(error, $td('Estimation error', 'form.estimation-error') + ': ');
                 if (throwOnError) {
@@ -103,7 +104,7 @@ export default function useEstimateSwap({idPreventConcurrency, $td} = {}) {
             });
     }
 
-    const debouncedGetEstimation = debounce(getEstimation, 1000);
+    const debouncedGetEstimation = debounce(getEstimation, 1000, {throwOnCancel: false});
 
     function handleInputBlur() {
         // force estimation after blur if estimation was delayed

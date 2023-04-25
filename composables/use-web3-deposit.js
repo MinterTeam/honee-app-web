@@ -1,12 +1,9 @@
-import {ref, reactive, computed, watch} from '@vue/composition-api';
+import {ref, reactive, computed, watch} from 'vue';
 
-import {subscribeTransfer} from '~/api/hub.js';
-import {getProviderByChain, web3Utils, toErcDecimals} from '~/api/web3.js';
-import {getTransaction} from '~/api/explorer.js';
+import {waitHubTransferToMinter} from '~/api/hub.js';
+import {getProviderByChain, toErcDecimals, buildDepositTx, getFeeAmount as getFee, buildWethUnwrap} from 'minter-js-web3-sdk/src/web3.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_TRANSFER_STATUS, MAINNET, NETWORK} from '~/assets/variables.js';
-import Big from '~/assets/big.js';
-import wethAbi from '~/assets/abi-weth.js';
-import hubABI from '~/assets/abi-hub.js';
+import Big from 'minterjs-util/src/big.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
@@ -28,13 +25,12 @@ export default function useWeb3Deposit(destinationMinterAddress) {
     const { nativeBalance, setWeb3TokenProps } = useWeb3TokenBalance();
     const { txServiceState, sendEthTx, addStepData, waitPendingStep } = useTxService();
 
-    /**
-     * @type {import('@vue/composition-api').UnwrapRef<{amount: number, tokenSymbol: string, accountAddress: string, destinationMinterAddress: string, chainId: number, freezeGasPrice: boolean}>}
-     */
     const props = reactive({
         destinationMinterAddress: destinationMinterAddress || '',
         accountAddress: '',
+        /** @type {ChainId} */
         chainId: 0,
+        /** @type {number|string} */
         amount: 0,
         tokenSymbol: '',
         freezeGasPrice: false,
@@ -63,15 +59,8 @@ export default function useWeb3Deposit(destinationMinterAddress) {
 
     });
 
-    function getHubContractAddress() {
-        return HUB_CHAIN_BY_ID[props.chainId]?.hubContractAddress;
-    }
-    function getWrappedNativeContractAddress() {
-        return HUB_CHAIN_BY_ID[props.chainId]?.wrappedNativeContractAddress;
-    }
-
     /**
-     * @type {import('@vue/composition-api').ComputedRef<HubChainDataItem>}
+     * @type {ComputedRef<HubChainDataItem>}
      */
 // const hubChainData = computed(() => HUB_CHAIN_BY_ID[props.chainId]);
 
@@ -85,7 +74,7 @@ export default function useWeb3Deposit(destinationMinterAddress) {
     /**
      * Disabled sending wrapped ERC-20 WETH directly
      * it may save 5-10k of gas ($1-2), but not worth it, because of complicated codebase and need of native ETH predictions to pay fee
-     * @type {import('@vue/composition-api').ComputedRef<boolean>}
+     * @type {ComputedRef<boolean>}
      */
     const isUnwrapRequired = computed(() => {
         if (!isNativeToken.value) {
@@ -100,7 +89,6 @@ export default function useWeb3Deposit(destinationMinterAddress) {
     });
 
 // @TODO gasPrice not updated during isFormSending and may be too low/high after waiting pin gasPrice on submit
-// @TODO use *network*_fee instead of 'prices'
 // @TODO use web3.eth.getGasPrice for testnet @see https://web3js.readthedocs.io/en/v1.7.3/web3-eth.html#getgasprice
     const gasPriceGwei = ref(0);
     watch(networkGasPrice, () => {
@@ -115,11 +103,6 @@ export default function useWeb3Deposit(destinationMinterAddress) {
 
         return getFee(gasPriceGwei.value, totalGasLimit);
     });
-    function getFee(gasPriceGwei, gasLimit) {
-        // gwei to ether
-        const gasPrice = web3Utils.fromWei(web3Utils.toWei(gasPriceGwei.toString(), 'gwei'), 'ether');
-        return new Big(gasPrice).times(gasLimit).toString();
-    }
     const depositAmountAfterGas = computed(() => {
         let amount = new Big(props.amount || 0).minus(gasTotalFee.value);
         amount = amount.gt(0) ? amount.toString() : 0;
@@ -174,42 +157,19 @@ export default function useWeb3Deposit(destinationMinterAddress) {
         const depositReceipt = await waitPendingStep(LOADING_STAGE.SEND_BRIDGE);
 
         addStepData(LOADING_STAGE.WAIT_BRIDGE, {coin: props.tokenSymbol /* calculate receive amount? */}, true);
-        return subscribeTransfer(depositReceipt.transactionHash)
-            .then((transfer) => {
-                if (transfer.status !== HUB_TRANSFER_STATUS.batch_executed) {
-                    throw new Error(`Unsuccessful bridge transfer: ${transfer.status}`);
-                }
-                console.log('transfer', transfer);
-                return getTransaction(transfer.outTxHash);
-            })
-            .then((minterTx) => {
-                console.log('minterTx', minterTx);
-
-                if (!minterTx.data.list) {
-                    throw new Error('Minter tx transfer has invalid data');
-                }
-                const multisendItem = minterTx.data.list.find((item) => item.to === props.destinationMinterAddress && item.coin.symbol === props.tokenSymbol);
-                if (!multisendItem) {
-                    throw new Error(`Minter tx transfer does not include ${props.tokenSymbol} deposit to the current user`);
-                }
-
-                const outputAmount = multisendItem.value;
+        return waitHubTransferToMinter(depositReceipt.transactionHash, props.destinationMinterAddress, props.tokenSymbol)
+            .then(({ tx: minterTx, outputAmount}) => {
                 addStepData(LOADING_STAGE.WAIT_BRIDGE, {amount: outputAmount, tx: minterTx, finished: true});
-
                 return outputAmount;
             });
     }
 
     function unwrapToNativeCoin({nonce, gasPrice} = {}) {
-        const web3Eth = getProviderByChain(props.chainId);
         addStepData(LOADING_STAGE.UNWRAP_ETH, {amount: amountToUnwrap.value}, true);
 
         const amountToUnwrapWei = toErcDecimals(amountToUnwrap.value, tokenDecimals.value);
-        const wrappedNativeContract = new web3Eth.Contract(wethAbi, getWrappedNativeContractAddress());
-        const data = wrappedNativeContract.methods.withdraw(amountToUnwrapWei).encodeABI();
         return sendEthTx({
-            to: getWrappedNativeContractAddress(),
-            data,
+            ...buildWethUnwrap(props.chainId, amountToUnwrapWei),
             nonce,
             gasPrice,
             gasLimit: GAS_LIMIT_UNWRAP,
@@ -243,34 +203,9 @@ export default function useWeb3Deposit(destinationMinterAddress) {
 
 
     function sendCoinTx({nonce, gasPrice}) {
-        const web3Eth = getProviderByChain(props.chainId);
-        const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(props.destinationMinterAddress.replace("Mx", "0x")))]);
-        const destinationChain = Buffer.from('minter', 'utf-8');
-        const hubContract = new web3Eth.Contract(hubABI, getHubContractAddress());
-        let txParams;
-        if (isNativeToken.value) {
-            txParams = {
-                value: depositAmountAfterGas.value,
-                data: hubContract.methods.transferETHToChain(
-                    destinationChain,
-                    address,
-                    0,
-                ).encodeABI(),
-            };
-        } else {
-            txParams = {
-                data: hubContract.methods.transferToChain(
-                    tokenAddress.value,
-                    destinationChain,
-                    address,
-                    toErcDecimals(depositAmountAfterGas.value, tokenDecimals.value),
-                    0,
-                ).encodeABI(),
-            };
-        }
+        const txParams = buildDepositTx(props.chainId, isNativeToken.value ? undefined : tokenAddress.value, tokenDecimals.value, props.destinationMinterAddress, depositAmountAfterGas.value, {keepValueAsEther: true});
 
         return sendEthTx({
-            to: getHubContractAddress(),
             ...txParams,
             nonce,
             gasPrice,

@@ -1,5 +1,9 @@
 import {getAuth, getLegacyAuth, getUserPortfolioNotificationList, switchLegacyAuth} from '~/api/telegram.js';
 
+/**
+ // * @typedef {import('~/api/telegram.js').TelegramAuthResponse} TelegramAuthResponse
+ */
+
 const LEGACY_TELEGRAM_SECRET_ID_STORAGE_KEY = 'telegram-auth-id';
 
 export const state = () => ({

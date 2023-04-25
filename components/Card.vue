@@ -86,7 +86,11 @@ function poolHasCoin(pool, symbol) {
 </script>
 
 <template>
-    <div class="card card--action card--invert card__content--small" :style="`background-color: ${color};`">
+    <div
+        class="card card--action card--invert card__content--small"
+        :class="card.style ? `card--${card.style}` : ''"
+        :style="card.style ? '' : `background-color: ${color};`"
+    >
         <CardHead :card="card"/>
         <p class="card__action-description">{{ translate('description') }}</p>
 

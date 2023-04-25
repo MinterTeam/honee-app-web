@@ -1,4 +1,5 @@
 <script>
+import {getCurrentInstance} from 'vue';
 import QrcodeVue from 'qrcode.vue';
 import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required.js';
@@ -7,13 +8,13 @@ import minLength from 'vuelidate/src/validators/minLength.js';
 import withParams from 'vuelidate/src/withParams.js';
 import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
-import {web3Utils, AbiEncoder, toErcDecimals} from '~/api/web3.js';
-import Big from '~/assets/big.js';
+import {AbiMethodEncoder, toErcDecimals, getHubDestinationAddressBytes, getHubDestinationChainBytes, buildWethUnwrap} from 'minter-js-web3-sdk/src/web3.js';
+import {isValidAmount} from '~/assets/utils/validators.js';
+import Big from 'minterjs-util/src/big.js';
 import initRampPurchase, {fiatRampPurchaseNetwork} from '~/assets/fiat-ramp.js';
 import {pretty, prettyPrecise, prettyRound, prettyExact, decreasePrecisionSignificant, getExplorerTxUrl, getEvmTxUrl, shortHashFilter} from '~/assets/utils.js';
-import erc20ABI from '~/assets/abi-erc20.js';
-import hubABI from '~/assets/abi-hub.js';
-import wethAbi from '~/assets/abi-weth.js';
+import erc20ABI from 'minter-js-web3-sdk/src/abi/erc20.js';
+import hubABI from 'minter-js-web3-sdk/src/abi/hub.js';
 import {NETWORK, MAINNET, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID, HUB_COIN_DATA as DEPOSIT_COIN_DATA} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import checkEmpty from '~/assets/v-check-empty.js';
@@ -55,10 +56,6 @@ let waitingCancel;
 
 let timer;
 
-
-const isValidAmount = withParams({type: 'validAmount'}, (value) => {
-    return parseFloat(value) >= 0;
-});
 
 export default {
     FIAT_RAMP_NETWORK,
@@ -105,7 +102,8 @@ export default {
             default: () => ({}),
         },
     },
-    setup(props, context) {
+    setup() {
+        const vm = getCurrentInstance()?.proxy;
         // just `estimation` refers to minter swap estimation
         const {
             estimation,
@@ -116,7 +114,7 @@ export default {
             handleInputBlur,
             estimateSwap,
         } = useEstimateSwap({
-            $td: context.root.$td,
+            vm,
             idPreventConcurrency: 'hubBuy',
         });
         const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
@@ -237,9 +235,6 @@ export default {
         },
         hubAddress() {
             return this.hubChainData?.hubContractAddress;
-        },
-        wrappedNativeContractAddress() {
-            return this.hubChainData?.wrappedNativeContractAddress;
         },
         externalTokenMainnetSymbol() {
             return this.hubChainData?.coinSymbol;
@@ -472,12 +467,12 @@ export default {
                 this.addStepData(LOADING_STAGE.WAIT_ETH, {
                     coin: this.externalTokenSymbol,
                     amount: targetAmount,
-                    network: this.hubChainData.hubChainId,
+                    network: this.hubChainData.hubNetworkSlug,
                 });
 
-                const promise = this.waitEnoughTokenBalance(targetAmount);
+                const [promise, canceler] = this.waitEnoughTokenBalance(targetAmount);
                 waitingCancel = () => {
-                    promise.canceler();
+                    canceler();
                     waitingCancel = null;
                 };
                 return promise;
@@ -592,10 +587,8 @@ export default {
 */
         unwrapToNativeCoin({nonce, gasPrice} = {}) {
             const amountToUnwrap = toErcDecimals(this.amountToUnwrap, this.coinDecimals);
-            const data = AbiEncoder(wethAbi)('withdraw', amountToUnwrap);
             return this.sendEthTx({
-                to: this.wrappedNativeContractAddress,
-                data,
+                ...buildWethUnwrap(this.chainId, amountToUnwrap),
                 nonce,
                 gasPrice,
                 gasLimit: GAS_LIMIT_UNWRAP,
@@ -608,18 +601,18 @@ export default {
         },
         sendApproveTx({nonce, gasPrice} = {}) {
             let amountToUnlock = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-            let data = AbiEncoder(erc20ABI)('approve', this.hubAddress, amountToUnlock);
+            let data = AbiMethodEncoder(erc20ABI)('approve', this.hubAddress, amountToUnlock);
 
             return this.sendEthTx({to: this.coinContractAddress, data, nonce, gasPrice, gasLimit: GAS_LIMIT_UNLOCK}, LOADING_STAGE.APPROVE_BRIDGE);
         },
         sendCoinTx({nonce}) {
-            const address = Buffer.concat([Buffer.alloc(12), Buffer.from(web3Utils.hexToBytes(this.$store.getters.address.replace("Mx", "0x")))]);
-            const destinationChain = Buffer.from('minter', 'utf-8');
+            const address = getHubDestinationAddressBytes(this.$store.getters.address);
+            const destinationChain = getHubDestinationChainBytes();
             let txParams;
             if (this.isEthSelected) {
                 txParams = {
                     value: this.depositAmountAfterGas,
-                    data: AbiEncoder(hubABI)(
+                    data: AbiMethodEncoder(hubABI)(
                         'transferETHToChain',
                         destinationChain,
                         address,
@@ -628,7 +621,7 @@ export default {
                 };
             } else {
                 txParams = {
-                    data: AbiEncoder(hubABI)(
+                    data: AbiMethodEncoder(hubABI)(
                         'transferToChain',
                         destinationChain,
                         address,
@@ -757,7 +750,7 @@ export default {
                         :$amount="$v.form.amountEth"
                         :label="$td('You spend', 'form.you-spend')"
                         :max-value="maxAmount"
-                        @blur="handleInputBlur(); $v.form.buyAmount.$touch()"
+                        @blur="handleInputBlur(); $v.form.amountEth.$touch()"
                     />
                     <span class="form-field__error" v-if="$v.form.amountEth.$dirty && !$v.form.amountEth.required">{{ $td('Enter amount', 'form.enter-amount') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.amountEth.$dirty && (!$v.form.amountEth.validAmount || !$v.form.amountEth.minValue)">{{ $td('Invalid amount', 'form.invalid-amount') }}</span>
@@ -774,7 +767,7 @@ export default {
                         :fallback-to-full-list="false"
                         :is-estimation="true"
                         :isLoading="isEstimationWaiting"
-                        @blur="handleInputBlur(); $v.form.buyAmount.$touch()"
+                        @blur="handleInputBlur(); $v.form.amountEth.$touch()"
                     />
 
                     <span class="form-field__error" v-if="$v.form.coinToGet.$dirty && !$v.form.coinToGet.required">{{ $td('Enter coin symbol', 'form.enter-coin-symbol') }}</span>
@@ -805,7 +798,7 @@ export default {
                         </div>
                     </div>
 
-                    <HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
+                    <!--<HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>-->
                 </template>
 
                 <button
@@ -898,6 +891,8 @@ export default {
                     </div>
                     <div class="information__value">≈ ${{ pretty(currentPrice) }}</div>
                 </div>
+
+                <HubFeeImpact class="u-mt-05 u-text-right" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
             </div>
 
             <!--
@@ -908,8 +903,6 @@ export default {
                 </div>
             </div>
             -->
-
-            <HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>
 
             <div class="form-row">
                 <button

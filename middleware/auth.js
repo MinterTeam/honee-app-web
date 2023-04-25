@@ -8,14 +8,17 @@ export default function({app, store, route, redirect, error}) {
     console.log('-- route', route);
     console.log('-- path', route.path);
 
-    const urlEmbed = [
+    const urlPublic = [
         /^(\/ru)?\/embed(\/|$)/,
+        /^(\/ru)?\/go(\/)/,
     ].some((pathRegex) => {
         return pathRegex.test(route.path);
     });
     const urlHasPreview = [
         /^(\/ru)?\/portfolio\/?$/,
         /^(\/ru)?\/portfolio\/leaderboard\/?$/,
+        /^(\/ru)?\/portfolio\/battle\/?$/,
+        /^(\/ru)?\/portfolio\/battle\/\d+\/?$/,
         /^(\/ru)?\/portfolio\/\d+\/?$/,
     ].some((pathRegex) => {
         return pathRegex.test(route.path);
@@ -24,7 +27,7 @@ export default function({app, store, route, redirect, error}) {
     // const urlRequiresAuth = /^(\/ru)?\/dashboard(\/|$)/.test(route.path);
     const urlAuthBattle = /^(\/ru)?\/auth\/battle(\/|$)/.test(route.path);
 
-    if (urlEmbed) {
+    if (urlPublic) {
         console.log('-- allow: embed');
         return Promise.resolve();
     }

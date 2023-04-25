@@ -12,10 +12,8 @@ module.exports = {
       // nuxt 3 (webpack5)
       'less-loader',
       // es modules
-      'beeper',
-      'camelcase-keys',
-      'del',
-      'gulp-imagemin',
-      'imagemin-mozjpeg',
+      // 'beeper',
+      // 'camelcase-keys',
+      // 'del',
   ],
 };

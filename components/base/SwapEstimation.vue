@@ -1,15 +1,16 @@
 <script>
+import {getCurrentInstance, defineComponent} from 'vue';
 import {validationMixin} from 'vuelidate/src/index.js';
 import required from 'vuelidate/src/validators/required.js';
 import minLength from 'vuelidate/src/validators/minLength.js';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import useEstimateSwap from '~/composables/use-estimate-swap.js';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {pretty, decreasePrecisionSignificant} from '~/assets/utils.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 
 //@TODO refactor HubBuyForm
-export default {
+export default defineComponent({
     mixins: [validationMixin],
     emits: [
         'update:v$estimation',
@@ -58,7 +59,8 @@ export default {
             type: String,
         },
     },
-    setup(props, context) {
+    setup(props) {
+        const vm = getCurrentInstance()?.proxy;
         const {
             estimation,
             isEstimationTypePool,
@@ -68,7 +70,7 @@ export default {
             handleInputBlur,
             estimateSwap,
         } = useEstimateSwap({
-            $td: context.root.$td,
+            vm,
             idPreventConcurrency: props.idPreventConcurrency,
         });
 
@@ -209,9 +211,12 @@ export default {
             // estimation is not ready until swap props are valid
             return this.isEstimationWaiting || this.$v.propsGroup.$invalid;
         },
+        /** @type {SwapEstimationFetchState} */
         fetchState() {
             return {
+                /** @type {SwapEstimationFetchState['loading']} */
                 loading: this.isEstimationWaiting,
+                /** @type {SwapEstimationFetchState['error']} */
                 error: this.estimationError,
             };
         },
@@ -224,7 +229,20 @@ export default {
             this.watchForm();
         },
         valueToSell: function(newVal, oldVal) {
-            this.watchForm();
+            // wait computed to recalculate
+            setTimeout(() => {
+                if (this.isTypeSell) {
+                    this.watchForm();
+                }
+            }, 0);
+        },
+        valueToBuy: function(newVal, oldVal) {
+            // wait computed to recalculate
+            setTimeout(() => {
+                if (this.isTypeBuy) {
+                    this.watchForm();
+                }
+            }, 0);
         },
         $v: {
             handler(newVal) {
@@ -259,7 +277,7 @@ export default {
         },
         getEstimation(force, throwOnError, overrideParams = {}) {
             if (this.$v.propsGroup.$invalid) {
-                return Promise.reject('get swap estimation: Invalid props passed');
+                return Promise.reject(new Error('get swap estimation: Invalid props passed'));
             }
 
             return this.estimateSwap({
@@ -278,12 +296,13 @@ export default {
             return getTxType({isSelling: this.isTypeSell, isPool: this.isEstimationTypePool, isSellAll: this.isSellAll});
         },
     },
-};
+});
 
 /**
- * @param {boolean} isSelling
- * @param {boolean} isPool
- * @param {boolean} [isSellAll]
+ * @param {object} options
+ * @param {boolean} options.isSelling
+ * @param {boolean} options.isPool
+ * @param {boolean} [options.isSellAll]
  * @return {TX_TYPE}
  */
 export function getTxType({isPool, isSelling, isSellAll}) {
@@ -309,6 +328,12 @@ export function getTxType({isPool, isSelling, isSellAll}) {
     }
     return TX_TYPE.SELL_ALL;
 }
+
+/**
+ * @typedef {object} SwapEstimationFetchState
+ * @property {boolean} loading
+ * @property {string} error
+ */
 </script>
 
 <template>

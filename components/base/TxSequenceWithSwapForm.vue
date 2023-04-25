@@ -20,6 +20,7 @@ export default {
         'update:estimation',
         'update:v$estimation',
         'validation-touch',
+        'update:fetch-state',
     ],
     props: {
         coinToSell: {
@@ -32,7 +33,9 @@ export default {
         },
         valueToSell: {
             type: [Number, String],
-            required: true,
+        },
+        valueToBuy: {
+            type: [Number, String],
         },
         isUseMax: {
             type: Boolean,
@@ -84,6 +87,14 @@ export default {
         };
     },
     computed: {
+        // typeBuy if valueToBuy specified
+        isTypeBuy() {
+            return !!this.valueToBuy;
+        },
+        // otherwise typeSell (by default)
+        isTypeSell() {
+            return !this.isTypeBuy;
+        },
         needSwap() {
             return this.coinToSell !== this.coinToBuy;
         },
@@ -106,7 +117,9 @@ export default {
                      * @param {PostTxResponse} tx - successful swap tx
                      */
                     finalize: (tx) => {
-                        const returnAmount = convertFromPip(tx.tags['tx.return']);
+                        const isTypeBuy = !!tx.data.value_to_buy;
+                        const getAmount = convertFromPip(isTypeBuy ? tx.data.value_to_buy : tx.tags['tx.return']);
+                        const spendAmount = isTypeBuy ? convertFromPip(tx.tags['tx.return']) : this.valueToSell;
 
                         if (new Date(tx.timestamp) > new Date(this.$store.state.balanceTimestamp)) {
                             const deductBalanceList = [
@@ -116,13 +129,13 @@ export default {
                                 },
                                 {
                                     coin: this.$store.state.explorer.coinMap[this.coinToSell],
-                                    amount: this.valueToSell,
+                                    amount: spendAmount,
                                 },
                             ];
                             const addBalanceList = [
                                 {
                                     coin: this.$store.state.explorer.coinMap[this.coinToBuy],
-                                    amount: returnAmount,
+                                    amount: getAmount,
                                 },
                             ];
                             this.$store.commit('UPDATE_BALANCE', {
@@ -134,7 +147,7 @@ export default {
 
                         return {
                             ...tx,
-                            returnAmount,
+                            returnAmount: getAmount,
                         };
                     },
                 },
@@ -142,6 +155,7 @@ export default {
             ];
         },
     },
+    /* update with same estimation will not fire, and not update parent values set to 0 after invalid props
     watch: {
         estimation: {
             handler(newVal) {
@@ -149,6 +163,7 @@ export default {
             },
         },
     },
+    */
     methods: {
         pretty,
         clearForm() {
@@ -183,11 +198,13 @@ export default {
                 :coin-to-sell="coinToSell"
                 :coin-to-buy="needSwap ? coinToBuy : ''"
                 :value-to-sell="valueToSell"
+                :value-to-buy="valueToBuy"
                 :is-use-max="isUseMax"
                 :fee="swapFee"
-                @update:estimation="estimation = $event"
+                @update:estimation="estimation = $event; $emit('update:estimation', $event);"
                 @update:tx-data="txData = $event"
                 @update:v$estimation="v$estimation = $event; $emit('update:v$estimation', $event)"
+                @update:fetch-state="$emit('update:fetch-state', $event)"
             />
         </template>
 

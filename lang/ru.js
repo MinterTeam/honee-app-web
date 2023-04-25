@@ -1,3 +1,31 @@
+/**
+ * choicesLength should be 3, e.g. машина | машины | машин
+ * @param {number} num
+ * @param {number} choicesLength
+ * @return {number}
+ */
+export function pluralizationRule(num, choicesLength) {
+    // 0 машин - third options
+    if (num === 0) {
+        return 2;
+    }
+
+    const teen = num > 10 && num < 20;
+    const endsWithOne = num % 10 === 1;
+    // 1 машина, 101 машина
+    if (!teen && endsWithOne) {
+        return 0;
+    }
+    // 2-4 машины, 22-24 машины, 132-134 машины
+    if (!teen && num % 10 >= 2 && num % 10 <= 4) {
+        return 1;
+    }
+
+    // 5-10 машин, 11-20 машин, 135-140 машин
+    return 2;
+}
+
+
 export default {
     common: {
         'logout': 'Выйти',
@@ -17,6 +45,9 @@ export default {
         'or': 'или',
         'terms': 'Условия',
         'learn-more': 'Подробнее',
+        'buy': 'Купить',
+        'token': 'Токен',
+        'token-price': 'Цена токена',
     },
     error: {
         'title-error': 'Ошибка',
@@ -88,11 +119,12 @@ export default {
         'footer-link-box-earn-bitcoin': 'Заработать Биткоин',
         'footer-link-box-wallet-bitcoin': 'Биткоин кошелек',
 
-        'total-balance': 'Общий баланс',
+        'total-balance': 'Мой баланс',
         'balance': 'Баланс',
         'wallet-balance-links': 'Купить BIP, HUB & BEE',
-        'topup': 'Пополнить',
-        'withdraw': 'Вывести',
+        'topup': '&#43; Пополнить',
+        'topup-instant': '&#43; Мгновенно пополнить',
+        'withdraw': '&#8599; Вывести',
         'swap': 'Купить',
         'swap-wallet-button': 'Обменять',
         'send': 'Отправить',
@@ -103,7 +135,6 @@ export default {
         'assets-coins-view-all': 'Показать все монеты',
         'assets-coins-view-less': 'Показать меньше монет',
         'assets-stakes': 'Стейки',
-        'assets-stakes-table-token': 'Токен',
         'assets-stakes-table-unlock': 'Разблокировка',
         'assets-stakes-table-unlock-on': 'Разблокировка',
         'assets-stakes-table-amount': 'Количество',
@@ -119,7 +150,7 @@ export default {
         'delegate': 'Делегировать',
         'participate': 'Участвовать',
         'withdraw-unbond': 'Отозвать',
-        'stake': 'Застейковать',
+        'stake': 'Застейкать',
         'portfolio-list-empty': 'Портфелей еще нет',
 
         'investments-title': 'Мои инвестиции',
@@ -127,7 +158,6 @@ export default {
         'investments-tabs-label-portfolio': 'Портфели',
         'investments-tabs-label-stake': 'Стейки',
         'investments-list-empty': 'У вас еще нет инвестиций',
-        'stake-more': 'Застейковать еще',
         'total-delegated': 'Делегировано',
         'delegate-more': 'Делегировать',
 
@@ -172,6 +202,10 @@ export default {
         'giveaway-programs': 'Лотереи',
 
         'cam-allow': 'Разрешите доступ к камере',
+
+        'confirm-logout-title': 'Вы действительно хотите выйти?',
+
+        'show-all-earn-options-link': 'Показать другие варианты',
     },
     topup: {
         'title': 'Пополнить баланс',
@@ -182,8 +216,25 @@ export default {
         'cancel': 'Отмена',
         'back': 'Назад',
         'confirm-deposit-title': 'Депозит',
-        'deposit-evm-balance-description': 'На вашем {network}-адресе {amount} {coin}. Хотите зачислить?',
-        'deposit-evm-balance-button': 'Зачислить {amount} {coin}',
+        'deposit-sw-balance-description': 'На вашем смарт-кошельке есть доступные средства. Хотите зачислить?',
+        'deposit-evm-balance-description': 'На вашем {network} адресе доступные средства. Хотите зачислить?',
+        'deposit-evm-balance-button': 'Зачислить',
+    },
+    deposit: {
+        'title': 'Мгновенное пополнение',
+        'description': 'Пополните баланс любым из способов.',
+        'title-evm': 'Ethereum & BNB Smart Chain',
+        'description-evm': 'Переведите любой токен (ERC20 или BEP20) из сети Ethereum или BNB Smart Chain на этот адрес.',
+        'smart-wallet-address': 'Адрес смарт-кошелька',
+        'title-card': 'Банковские карты',
+        'description-card': 'Пополнить с помощью банковской карты.',
+        'button-card': 'Пополнить с карты',
+        'title-minter': 'Minter Network',
+        'description-minter': 'Переведите любой токен из Minter на этот адрес.',
+        'minter-address': 'Адрес Minter кошелька',
+        'title-cards': 'Пополнить картой',
+        'title-crypto': 'Пополнить криптой',
+        'title-buy-more': 'Купить токены',
     },
     'topup-network': {
         'title': 'Пополнить через',
@@ -195,7 +246,8 @@ export default {
         'hide-qr': 'Скрыть QR',
     },
     referral: {
-        'invite-friend': 'Реферальная ссылка',
+        'header-button': 'Реф. ссылка',
+        'invite-friend': 'Реф. ссылка',
         'title': 'Зарабатывай с Honee',
         'activate-button': 'Активировать реферальную ссылку',
         'deactivate-button': 'Деактивировать реферальную ссылку',
@@ -217,7 +269,7 @@ export default {
         'error-program-not-found': 'Не удаётся загрузить программу стейкинга',
         'error-program-disabled': 'Текущая программа стейкинга отключена',
         'error-program-timeout': 'Истекло время действия программы стейкинга',
-        'submit-button': 'Застейковать',
+        'submit-button': 'Застейкать',
     },
     onboarding: {
         'skip': 'Пропустить',
@@ -228,9 +280,11 @@ export default {
     },
     premium: {
         'activate-title': 'Стань премиум пользователем',
+        'activate-title-short': 'Премиум',
         'activate-description': 'Для активации премиум аккаунта отправьте в блокировку от 1000 BEE. Срок блокировки 5 лет. После окончания этого срока ваши монеты будут снова доступны для использования.',
-        'card-update-button': 'Повысить уровень',
         'levels-title': 'Уровни премиума',
+        'levels-more': 'подробнее',
+        'levels-more-url': 'https://honee.app/ru/bee',
     },
     portfolio: {
         'manage-create-title': 'Создание портфеля',
@@ -241,9 +295,9 @@ export default {
         'manage-coin-add': 'Добавить другой токен',
         'manage-tokens-error-min': 'Минимум {count} монет',
         'manage-tokens-error-max': 'Максимум {count} монет',
-        'warning-price-impact': 'Высокое влияние на цену!',
+        'warning-price-impact': 'Высокое влияние на цену',
         'warning-price-impact-description': 'Вы потеряете ≈{impact}% монет из-за комиссий или низколиквидных пулов, участвующих в обменах. Попробуйте изменить сумму.',
-        'warning-price-impact-unavailable-description': 'Пожалуйста перепроверьте количество получаемых монет. Возможна потеря значительной части монет из за комиссий или низколиквидных пулов участвующих в обменах.',
+        'warning-price-impact-unavailable': 'Проверьте рассчитанные суммы до подтверждения',
         'allocation-sum': 'Текущая суммарная доля',
         'allocation-sum-error': 'Сумма долей активов должна быть равна 100%. Внесите дополнительные токены или измените соотношение.',
         'manage-title-label': 'Название',
@@ -288,6 +342,11 @@ export default {
         'tabs-label-weekly': 'Последняя неделя',
         'tabs-label-live': 'Лайв',
 
+        'subscribe-notification-title': 'Не пропускайте сигналы',
+        'subscribe-notification-description': 'Получайте мгновенные уведомления через Telegram-бота каждый раз, когда этот портфель обновляется.',
+        'subscribe-notification-button': 'Активировать Honee Bot',
+        'subscribe-notification-сancel': 'Отменить',
+
         'legend-title': 'Описание метрик',
         'legend-apy': 'APY - прогнозируемая годовая доходность на основе последних 10 обновлений',
         'legend-awp': 'AWP - средненедельная доходность за последние 5 календарных недель',
@@ -316,6 +375,7 @@ export default {
     },
     action: {
         'title-buy': 'Купите BIP, HUB и BEE',
+        'title-buy-coin': 'Купить {coin}',
         'title-swap': 'Обменяйте монеты',
         'title-swap-combined': '@:action.title-swap {coin0} {conjunction} {coin1}',
         'title-swap-coin0-empty': '',
@@ -325,6 +385,7 @@ export default {
         'title-win': 'Выигрывайте',
         'title-farm': 'Участвуйте в фарминге',
         'title-add-liquidity': 'Предоставьте ликвидность в пул',
+        'title-add-liquidity-zap': 'Предоставьте ликвидность в пул',
         'title-remove-liquidity': 'Отзыв ликвидности из пула',
         'title-delegate': 'Делегируйте',
         'title-unbond': 'Отзыв монет из делегирования',
@@ -338,6 +399,7 @@ export default {
         'category-swap': 'Обмен',
         'category-earn': 'Заработок',
         'category-win': 'Розыгрыш',
+        'category-bee': 'Зарабатывай с BEE',
     },
     form: {
         'toggle-simple-mode': 'Убрать сообщение',
@@ -364,6 +426,7 @@ export default {
         'coin-error-name': 'Некорректный символ монеты',
         'amount': 'Количество',
         'amount-error-required': 'Укажите количество',
+        'amount-error-min': 'Минимум',
         'number-invalid': 'Укажите положительное целое число',
         'fee': 'Монета для оплаты комиссии',
         'fee-help': 'В эквиваленте {coin} {value}',
@@ -455,6 +518,7 @@ export default {
         'stage-approve': 'Одобрение',
         'stage-send': 'Отправка',
         'stage-for': 'на',
+        'stage-to-relay': 'из смарт-кошелька',
         'stage-to-bridge': 'мосту',
         'stage-from-bridge': 'из моста',
         'stage-waiting': 'Ожидание',
@@ -592,10 +656,14 @@ export default {
         'hub-reduce-fee': 'Как уменьшить комиссию до',
         'hub-reduce-fee-url': 'https://www.minter.network/ru/howto/cross-chain-discounts',
         'amount-error-not-enough': 'Недостаточно',
+
+        'swap-error': 'Невозможно обменять',
+        'spots-error-balance': 'Недостаточно монет на балансе для покупки майнеров',
     },
     hub: {
         'withdraw-title': 'Вывод',
-        'withdraw-description': 'Отправка монет из Minter в другую сеть',
+        'withdraw-description': 'Отправка монет в другую сеть',
+        'withdraw-description-network': 'Отправка монет в {network}',
         'withdraw-address': 'Вывод на адрес',
         'withdraw-address-required': 'Укажите',
         'withdraw-address-title': 'адрес',
@@ -633,5 +701,58 @@ export default {
         'airdrop-telegram-button': 'Зарегистрироваться',
         'airdrop-registered-title': 'Вы зарегистрированы на раздачу токенов GARDEN',
         'airdrop-registered-description': 'Проверьте, чтобы на вашем адресе были монеты BIP. Аирдроп состоится 12 декабря 2022 года.',
+    },
+    metagarden: {
+        'title': 'Майнеры Metagarden',
+        'description': 'Вы можете купить от 0.1 майнера. Стоимость 0.1 майнера составляет $8.',
+        'spot-amount-label': 'Количество майнеров',
+        'confirm-title': 'Подтвердите покупку',
+        'mining-spots': 'Майнеры',
+        'you-own': 'Количество',
+        'available-to-claim': 'Доступно для сбора',
+        'claim-rewards-button': 'Собрать награды',
+        'start-mining-button': 'Начать майнинг',
+        'buy-more-button': 'Купить майнеры',
+        'daily-yield': 'Ежедневные награды:',
+        'back-to-honee': 'Перейти в Honee',
+        'smart-hold-title': 'Хранилище',
+        'smart-hold-description': 'Храни токены {coin} на своем смарт-кошельке и получай доход 0.1% в день (36% годовых).',
+        'transfer-smart-wallet': 'Перевести на Smart-кошелек',
+        'available-for-transfer': 'Доступно для перевода',
+        'balance-smart-wallet': '{coin} на Smart-кошельке',
+        'back-mg': 'Назад',
+        'your-account': 'Ваш аккаунт',
+        'buy-button-card': 'Картой',
+        'buy-button-crypto': 'Криптой',
+    },
+    'mg-lootbox': {
+        'title-inactive': 'Лутбокс еще не готов',
+        'title-ready': 'Вы выиграли лутбокс!',
+        'button-ready': 'Открыть',
+        'title-opened': 'Вы получили',
+        'error-opened': 'Ошибка!',
+        'description-redeem-failed': 'Не получилось открыть лутбокс, обратитесь в поддержку для получения вознаграждения',
+        'terms-title': 'Что такое лутбокс?',
+        'terms-description': 'Лутбокс — это виртуальный призовой сундук, в котором находится случайная награда. Монеты, NFT или прочие игровые элементы.',
+        'new-lootbox-button': 'У вас',
+        'new-lootbox-button-plural': 'новый лутбокс | {n} лутбокса | {n} лутбоксов',
+    },
+    'mg-games': {
+        'title-recent': 'Недавние игры',
+        'title-all': 'Все игры',
+        'title-coming': 'Скоро',
+        'label-coming': 'Скоро',
+        'button-learn': 'Подробнее',
+        'button-play': 'Играть',
+        'game-token': 'Игровой токен',
+        'balance': 'Ваш баланс',
+        'find-more': 'Больше игр',
+        'join-channel': 'Подписаться на канал',
+        'join-conversation': 'Вступить в группу',
+        'game-community': 'Сообщество игры',
+    },
+    'deposit-p2p': {
+        'title': 'Пополнение с карты',
+        'description': 'Выберите токен, который хотите купить',
     },
 };

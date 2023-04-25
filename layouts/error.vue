@@ -3,7 +3,11 @@ import {getErrorText} from '~/assets/server-error.js';
 
 export default {
     layout({store}) {
-        return store.getters.isAuthorized ? 'default' : 'splash';
+        if (store.getters.isAuthorized) {
+            return store.state.isMetagarden ? 'metagarden' : 'default';
+        } else {
+            return 'splash';
+        }
     },
     props: {
         error: {

@@ -103,12 +103,19 @@ export default {
                 <span class="form-field__error" v-if="$v.form.amount.$dirty && !$v.form.amount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
             </div>
 
-            <div class="form-row">
+            <div class="form-row" v-if="!params.address">
                 <FieldAddress
                     v-model.trim="form.address"
                     :$value="$v.form.address"
                     :label="$td('To the address', 'form.wallet-send-address')"
                 />
+            </div>
+
+            <div class="information form-row" v-else>
+                <h3 class="information__title">{{ $td('To the address', 'form.wallet-send-confirm-address') }}</h3>
+                <div class="information__item information__item--content u-text-wrap">
+                    {{ form.address }}
+                </div>
             </div>
         </template>
 

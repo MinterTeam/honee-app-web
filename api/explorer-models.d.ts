@@ -12,16 +12,14 @@
 export interface SwapPoolRouteResponse {
   /**
    * Input coin amount
-   * @example 1.000000000000000000
+   * @example "1.000000000000000000"
    */
   amountIn: string;
-
   /**
    * Iutput coin amount
-   * @example 1.000000000000000000
+   * @example "1.000000000000000000"
    */
   amountOut: string;
-
   /** Coins route */
   coins: CoinIdResource[];
 }
@@ -34,25 +32,22 @@ export interface PoolStatsCollectionResponse {
 export interface PoolStatsResponse {
   /**
    * Date
-   * @example 2021-10-12T00:00:00Z
+   * @example "2021-10-12T00:00:00Z"
    */
   date?: string;
-
   /**
    * Volume in first pool coin
-   * @example 10000.000000000000000000
+   * @example "10000.000000000000000000"
    */
   firstCoinVolume?: string;
-
   /**
    * Volume in second pool coin
-   * @example 10000.000000000000000000
+   * @example "10000.000000000000000000"
    */
   secondCoinVolume?: string;
-
   /**
    * Volume in bip
-   * @example 10000.000000000000000000
+   * @example "10000.000000000000000000"
    */
   bipVolume?: string;
 }
@@ -74,46 +69,38 @@ export interface PoolProvidersPaginatedCollectionResponse {
 export interface PoolProviderResponse {
   /**
    * Provider Minter address
-   * @example Mxe449e9fd85fd553fa45d245b62e30253bce29cc7
+   * @example "Mxe449e9fd85fd553fa45d245b62e30253bce29cc7"
    */
   address: string;
-
   /** Pool coin0 */
   coin0: CoinIdResource;
-
   /** Pool coin1 */
   coin1: CoinIdResource;
-
   /** Pool token */
   token: CoinIdResource;
-
   /**
    * Provider coin0 amount
-   * @example 1.000000000000000000
+   * @example "1.000000000000000000"
    */
   amount0: string;
-
   /**
    * Provider coin1 amount
-   * @example 1.000000000000000000
+   * @example "1.000000000000000000"
    */
   amount1: string;
-
   /**
    * Provider liquidity amount
-   * @example 1.000000000000000000
+   * @example "1.000000000000000000"
    */
   liquidity: string;
-
   /**
    * Provider liquidity amount in bip
-   * @example 1.000000000000000000
+   * @example "1.000000000000000000"
    */
   liquidityBip: string;
-
   /**
    * Provider share
-   * @example 12.35
+   * @example "12.35"
    */
   liquidityShare: string;
 }
@@ -121,34 +108,28 @@ export interface PoolProviderResponse {
 export interface PoolResponse {
   /** Pool coin0 */
   coin0: CoinIdResource;
-
   /** Pool coin1 */
   coin1: CoinIdResource;
-
   /** Pool token */
   token: CoinIdResource;
-
   /**
    * Coin0 amount
-   * @example 1.000000000000000000
+   * @example "1.000000000000000000"
    */
   amount0: string;
-
   /**
    * Coin1 amount
-   * @example 1.000000000000000000
+   * @example "1.000000000000000000"
    */
   amount1: string;
-
   /**
    * Liquidity amount
-   * @example 1.000000000000000000
+   * @example "1.000000000000000000"
    */
   liquidity: string;
-
   /**
    * Liquidity amount in bip
-   * @example 1.000000000000000000
+   * @example "1.000000000000000000"
    */
   liquidityBip: string;
 }
@@ -156,43 +137,36 @@ export interface PoolResponse {
 export interface CheckResponse {
   /**
    * Check issuer
-   * @example Mxa55b52bc4a5a90f84ebc7832a8b359c2ae3c0f41
+   * @example "Mxa55b52bc4a5a90f84ebc7832a8b359c2ae3c0f41"
    */
   addressFrom: string;
-
   /**
    * Check redeemer
-   * @example Mxc64064647a20f918c4dc3a946903d476d0b5543b
+   * @example "Mxc64064647a20f918c4dc3a946903d476d0b5543b"
    */
   addressTo: string;
-
   /** Check coin */
   coin: CoinIdResource;
-
   /** Check gas coin */
   gasCoin: CoinIdResource;
-
   /**
    * Check nonce in base64
-   * @example OGNhMDdkYWY3MDA3YzBjNw==
+   * @example "OGNhMDdkYWY3MDA3YzBjNw=="
    */
   nonce: string;
-
   /**
    * Check value
-   * @example 1.000000000000000000
+   * @example "1.000000000000000000"
    */
   value: string;
-
   /**
    * Check due block
    * @example 99999999
    */
   dueBlock: number;
-
   /**
    * Raw check
-   * @example Mxf8a89038636130376461663730303763306337018405f5e0ff80880de0b6b3a764000080b841869dea308adb182224d9e93a88365c25d744381c5ec8f3b0ec8fa2b9953300c26de7367fc6733cb2e81a4eda0d9f55f02d7c2812949d78bc6f5ee058932333ed001ba07f150d18c95a2cbaa9a84058124a2ee3fedbc8725a47bc85ebe95f21267cfa71a036f2c5b4b515268ac6135f00dcb24181bf33a67043405922119d9155ca0e943f
+   * @example "Mxf8a89038636130376461663730303763306337018405f5e0ff80880de0b6b3a764000080b841869dea308adb182224d9e93a88365c25d744381c5ec8f3b0ec8fa2b9953300c26de7367fc6733cb2e81a4eda0d9f55f02d7c2812949d78bc6f5ee058932333ed001ba07f150d18c95a2cbaa9a84058124a2ee3fedbc8725a47bc85ebe95f21267cfa71a036f2c5b4b515268ac6135f00dcb24181bf33a67043405922119d9155ca0e943f"
    */
   rawCheck: string;
 }
@@ -210,43 +184,36 @@ export interface BlockResponse {
    * @example 34863
    */
   height: number;
-
   /**
    * Block size
    * @example 253
    */
   size: number;
-
   /**
    * Transaction count
    * @example 125
    */
   transactionCount: number;
-
   /**
    * Block time
    * @example 4.23123
    */
   blockTime: number;
-
   /**
    * Block timestamp
-   * @example 2019-02-19T00:00:00+03:00
+   * @example "2019-02-19T00:00:00+03:00"
    */
   timestamp: string;
-
   /**
    * Block reward
-   * @example 333
+   * @example "333"
    */
   reward: string;
-
   /**
    * Block hash
-   * @example ITHA0XQPS5XTOY6NTTOOJX5VAVZQHTRIZJDHQKKUPUQDNX7JYVDE4UO5LFFCWSVA
+   * @example "ITHA0XQPS5XTOY6NTTOOJX5VAVZQHTRIZJDHQKKUPUQDNX7JYVDE4UO5LFFCWSVA"
    */
   hash: string;
-
   /**
    * Block validators count
    * @example 5
@@ -260,43 +227,36 @@ export interface BlockDetailedResponse {
    * @example 34863
    */
   height: number;
-
   /**
    * Block size
    * @example 253
    */
   size: number;
-
   /**
    * Transaction count
    * @example 125
    */
   transactionCount: number;
-
   /**
    * Block time
    * @example 4.23123
    */
   blockTime: number;
-
   /**
    * Block timestamp
-   * @example 2019-02-19T00:00:00+03:00
+   * @example "2019-02-19T00:00:00+03:00"
    */
   timestamp: string;
-
   /**
    * Block reward
-   * @example 333
+   * @example "333"
    */
   reward: string;
-
   /**
    * Block hash
-   * @example ITHA0XQPS5XTOY6NTTOOJX5VAVZQHTRIZJDHQKKUPUQDNX7JYVDE4UO5LFFCWSVA
+   * @example "ITHA0XQPS5XTOY6NTTOOJX5VAVZQHTRIZJDHQKKUPUQDNX7JYVDE4UO5LFFCWSVA"
    */
   hash: string;
-
   /** Block validators */
   validators: BlockValidatorResponse[];
 }
@@ -318,64 +278,54 @@ export interface CoinResponse {
    * @example 1
    */
   id: number;
-
   /**
    * Coin crr
    * @example 10
    */
   crr: number;
-
   /**
    * Coin volume
-   * @example 45656534.3546
+   * @example "45656534.3546"
    */
   volume: string;
-
   /**
    * Coin reserve balance
-   * @example 10.356
+   * @example "10.356"
    */
   reserveBalance: string;
-
   /**
    * Coin max supply
-   * @example 100.000000000000000000
+   * @example "100.000000000000000000"
    */
   maxSupply: string;
-
   /**
    * Coin name
-   * @example My super coin
+   * @example "My super coin"
    */
   name: string;
-
   /**
    * Coin symbol
-   * @example MNT
+   * @example "MNT"
    */
   symbol: string;
-
   /**
    * Coin owner address
-   * @example Mxd82558ea00eb81d35f2654953598f5d51737d31d
+   * @example "Mxd82558ea00eb81d35f2654953598f5d51737d31d"
    */
   ownerAddress: string;
-
   /**
    * Is coin burnable
    * @example true
    */
   burnable: boolean;
-
   /**
    * Is coin mintable
    * @example false
    */
   mintable: boolean;
-
   /**
    * Coin type
-   * @example token
+   * @example "token"
    */
   type: string;
 }
@@ -383,25 +333,22 @@ export interface CoinResponse {
 export interface PaginationLinksResponse {
   /**
    * First page
-   * @example https://testnet.explorer.minter.network/blocks?page=1
+   * @example "https://testnet.explorer.minter.network/blocks?page=1"
    */
   first: string;
-
   /**
    * Last page
-   * @example https://testnet.explorer.minter.network/blocks?page=10
+   * @example "https://testnet.explorer.minter.network/blocks?page=10"
    */
   last: string;
-
   /**
    * Previous page
-   * @example https://testnet.explorer.minter.network/blocks?page=1
+   * @example "https://testnet.explorer.minter.network/blocks?page=1"
    */
   prev: string | null;
-
   /**
    * Next page
-   * @example https://testnet.explorer.minter.network/blocks?page=2
+   * @example "https://testnet.explorer.minter.network/blocks?page=2"
    */
   next: string | null;
 }
@@ -412,25 +359,21 @@ export interface PaginationMetaResponse {
    * @example 2
    */
   currentPage: number;
-
   /**
    * Last page number
    * @example 10
    */
   lastPage: number;
-
   /**
    * Request path
-   * @example https://testnet.explorer.minter.network
+   * @example "https://testnet.explorer.minter.network"
    */
   path: string;
-
   /**
    * Elements per page
    * @example 50
    */
   perPage: number;
-
   /**
    * Total number of elements
    * @example 16434
@@ -445,10 +388,9 @@ export interface AddressCollectionResponse {
 export interface AddressResponse {
   /**
    * Minter address
-   * @example Mxe449e9fd85fd553fa45d245b62e30253bce29cc7
+   * @example "Mxe449e9fd85fd553fa45d245b62e30253bce29cc7"
    */
   address: string;
-
   /** Address balances */
   balances: AddressBalanceResponse[];
 }
@@ -456,38 +398,33 @@ export interface AddressResponse {
 export interface AddressWithSumResponse {
   /**
    * Minter address
-   * @example Mxe449e9fd85fd553fa45d245b62e30253bce29cc7
+   * @example "Mxe449e9fd85fd553fa45d245b62e30253bce29cc7"
    */
   address: string;
-
   /**
    * Address balance sum in base
-   * @example 100.000000000000000000
+   * @example "100.000000000000000000"
    */
   balanceSumInBaseCoin: string;
-
   /**
    * Address balance sum in USD by bip.dev price
-   * @example 5.000000000000000000
+   * @example "5.000000000000000000"
    */
   balanceSumInUsd: number;
-
   /** Address balances */
   balances: AddressBalanceResponse[];
 }
 
 export interface AddressBalanceResponse {
   coin: CoinIdTypeResource;
-
   /**
    * Amount of coin
-   * @example 1257.4657
+   * @example "1257.4657"
    */
   amount: string;
-
   /**
    * Amount of coin in basecoin
-   * @example 1257.4657
+   * @example "1257.4657"
    */
   bipAmount?: string;
 }
@@ -498,90 +435,76 @@ export interface TransactionResponse {
    * @example 17653
    */
   txn: number;
-
   /**
    * Transaction hash
-   * @example Mtc923c18c1d842dcba262c63df22003d5ee4e683dc2927acf9580f083ad9e193e
+   * @example "Mtc923c18c1d842dcba262c63df22003d5ee4e683dc2927acf9580f083ad9e193e"
    */
   hash: string;
-
   /**
    * Transaction nonce
    * @example 113
    */
   nonce: number;
-
   /**
    * Block height
    * @example 119
    */
   height: number;
-
   /**
    * Transaction timestamp
-   * @example 2019-02-19T00:00:00+03:00
+   * @example "2019-02-19T00:00:00+03:00"
    */
   timestamp: string;
-
   /**
    * Gas
-   * @example 100
+   * @example "100"
    */
   gas: string;
   gasCoin: CoinIdResource;
-
   /**
    * Gas price
    * @example 1
    */
   gasPrice: number;
-
   /**
    * Transaction fee
-   * @example 10.000000000000000000
+   * @example "10.000000000000000000"
    */
   fee: string;
-
   /**
    * Transaction type
    * @example 1
    */
   type: number;
-
   /**
    * Transaction payload
-   * @example Super tx from developers
+   * @example "Super tx from developers"
    */
   payload: string;
-
   /**
    * Transaction sender address
-   * @example Mx184ac726059e43643e67290666f7b3195093f870
+   * @example "Mx184ac726059e43643e67290666f7b3195093f870"
    */
   from: string;
   data: TxSendCoinData;
-
   /**
    * Transaction raw
-   * @example f86a820f690201800198d78094a1f103c242237370d409ff5ff9f1817d42f94dda80808001b845f8431ca0e28faabf44e82e013210bc3cc50a29db6fb9794605e1f5e6efdeaa6ac55ea5b5a02808f13510775dd3e89271662b78fa2295169060ac0fb0469d01ae4731e93fad
+   * @example "f86a820f690201800198d78094a1f103c242237370d409ff5ff9f1817d42f94dda80808001b845f8431ca0e28faabf44e82e013210bc3cc50a29db6fb9794605e1f5e6efdeaa6ac55ea5b5a02808f13510775dd3e89271662b78fa2295169060ac0fb0469d01ae4731e93fad"
    */
   rawTx: string;
-
   /**
    * Commission in base coin
-   * @example 2.250000000000000000
+   * @example "2.250000000000000000"
    */
   commissionInBaseCoin: string;
-
   /**
    * Commission in gas coin
-   * @example 2.250000000000000000
+   * @example "2.250000000000000000"
    */
   commissionInGasCoin: string;
-
   /**
    * Commission price
-   * @example 2.250000000000000000
+   * @example "2.250000000000000000"
    */
   commissionPrice: string;
   commissionPriceCoin: CoinIdResource;
@@ -593,10 +516,9 @@ export interface CoinIdResource {
    * @example 10
    */
   id: number;
-
   /**
    * Coin symbol
-   * @example TESTCOIN
+   * @example "TESTCOIN"
    */
   symbol: string;
 }
@@ -607,16 +529,14 @@ export interface CoinIdTypeResource {
    * @example 10
    */
   id: number;
-
   /**
    * Coin symbol
-   * @example TESTCOIN
+   * @example "TESTCOIN"
    */
   symbol: string;
-
   /**
    * Coin type. Variants: coin, token, pool_token
-   * @example coin
+   * @example "coin"
    */
   type: string;
 }
@@ -624,31 +544,27 @@ export interface CoinIdTypeResource {
 export interface InvalidTransactionResponse {
   /**
    * Transaction hash
-   * @example Mtc923c18c1d842dcba262c63df22003d5ee4e683dc2927acf9580f083ad9e193e
+   * @example "Mtc923c18c1d842dcba262c63df22003d5ee4e683dc2927acf9580f083ad9e193e"
    */
   hash: string;
-
   /**
    * Block height
    * @example 119
    */
   height: number;
-
   /**
    * Transaction timestamp
-   * @example 2019-02-19T00:00:00+03:00
+   * @example "2019-02-19T00:00:00+03:00"
    */
   timestamp: string;
-
   /**
    * Transaction type
-   * @example send
+   * @example "send"
    */
   type: string;
-
   /**
    * Transaction sender address
-   * @example Mx184ac726059e43643e67290666f7b3195093f870
+   * @example "Mx184ac726059e43643e67290666f7b3195093f870"
    */
   from: string;
 }
@@ -682,10 +598,9 @@ export interface ValidatorBanResponse {
    * @example 215
    */
   height: number;
-
   /**
    * Timestamp
-   * @example 2019-02-19T00:00:00+03:00
+   * @example "2019-02-19T00:00:00+03:00"
    */
   timestamp: string;
 }
@@ -704,10 +619,9 @@ export interface AddressBanResponse {
    */
   height: number;
   validator: Validator;
-
   /**
    * Timestamp
-   * @example 2019-02-19T00:00:00+03:00
+   * @example "2019-02-19T00:00:00+03:00"
    */
   timestamp: string;
 }
@@ -726,23 +640,20 @@ export interface SlashResponse {
    */
   height: number;
   coin: CoinIdResource;
-
   /**
    * Slash amount
-   * @example 0.000000000000000001
+   * @example "0.000000000000000001"
    */
   amount: string;
-
   /**
    * Minter address
-   * @example Mxee81347211c72524338f9680072af90744333146
+   * @example "Mxee81347211c72524338f9680072af90744333146"
    */
   address: string;
   validator: Validator;
-
   /**
    * Timestamp
-   * @example 2019-02-19T00:00:00+03:00
+   * @example "2019-02-19T00:00:00+03:00"
    */
   timestamp: string;
 }
@@ -754,20 +665,17 @@ export interface UnbondCollectionResponse {
 
 export interface UnbondResponse {
   coin: CoinIdResource;
-
   /**
    * Minter address
-   * @example Mxee81347211c72524338f9680072af90744333146
+   * @example "Mxee81347211c72524338f9680072af90744333146"
    */
   address: string;
-
   /**
    * Unbond value
-   * @example 0.000000000000000001
+   * @example "0.000000000000000001"
    */
   value: string;
   validator: Validator;
-
   /**
    * Block height
    * @example 215
@@ -786,31 +694,27 @@ export interface AggregatedRewardResponse {
   /**
    * Time id
    * @deprecated
-   * @example 2019-11-19T00:00:00Z
+   * @example "2019-11-19T00:00:00Z"
    */
   timeId?: string;
-
   /**
    * Timestamp
-   * @example 2019-11-19T00:00:00Z
+   * @example "2019-11-19T00:00:00Z"
    */
   timestamp: string;
-
   /**
    * Role
-   * @example Developers
+   * @example "Developers"
    */
   role: string;
-
   /**
    * Reward amount
-   * @example 155.764917315250067002
+   * @example "155.764917315250067002"
    */
   amount: string;
-
   /**
    * Minter address
-   * @example Mxee81347211c72524338f9680072af90744333146
+   * @example "Mxee81347211c72524338f9680072af90744333146"
    */
   address: string;
   validator: Validator;
@@ -824,13 +728,12 @@ export interface RewardStatisticCollectionResponse {
 export interface RewardStatisticResponse {
   /**
    * Timestamp
-   * @example 2019-02-18 00:00:00+03
+   * @example "2019-02-18 00:00:00+03"
    */
   time: string;
-
   /**
    * Sum of reward amount
-   * @example 38602.071957527232491487
+   * @example "38602.071957527232491487"
    */
   amount: string;
 }
@@ -841,54 +744,46 @@ export interface OrderResponse {
    * @example 215
    */
   id?: number;
-
   /**
    * Limit order placer address
-   * @example Mxe449e9fd85fd553fa45d245b62e30253bce29cc7
+   * @example "Mxe449e9fd85fd553fa45d245b62e30253bce29cc7"
    */
   address?: string;
-
   /**
    * Limit order pool id
    * @example 1
    */
   poolId?: number;
-
   /**
    * Limit order initial coin volume to buy
-   * @example 10000.000000000000000000
+   * @example "10000.000000000000000000"
    */
   initialCoinToBuyVolume?: string;
-
   /**
    * Limit ordercoin volume to buy
-   * @example 10000.000000000000000000
+   * @example "10000.000000000000000000"
    */
   coinToBuyVolume?: string;
-
   /**
    * Limit order initial coin volume to sell
-   * @example 10000.000000000000000000
+   * @example "10000.000000000000000000"
    */
   initialCoinToSellVolume?: string;
-
   /**
    * Limit order coin volume to sell
-   * @example 10000.000000000000000000
+   * @example "10000.000000000000000000"
    */
   coinToSellVolume?: string;
   coinToBuy?: CoinIdResource;
   coinToSell?: CoinIdResource;
-
   /**
    * Limit order height
    * @example 1000
    */
   height?: number;
-
   /**
    * Limit order current status. Possible values: active, partially_filled, filled, canceled, expired.
-   * @example active
+   * @example "active"
    */
   status?: string;
 }
@@ -910,31 +805,54 @@ export interface DelegationPaginatedCollectionResponse {
   data: DelegationResponse[];
   links: PaginationLinksResponse;
   meta: {
+    /**
+     * Current page number
+     * @example 2
+     */
     current_page: number;
+    /**
+     * Last page number
+     * @example 10
+     */
     last_page: number;
+    /**
+     * Request path
+     * @example "https://testnet.explorer.minter.network"
+     */
     path: string;
+    /**
+     * Elements per page
+     * @example 50
+     */
     per_page: number;
+    /**
+     * Total number of elements
+     * @example 16434
+     */
     total: number;
-    additional: { total_delegated_bip_value?: string };
+    additional: {
+      /**
+       * Address delegated bip value sum
+       * @example "30000000.000000000000000000"
+       */
+      total_delegated_bip_value?: string;
+    };
   };
 }
 
 export interface DelegationResponse {
   coin: CoinIdResource;
-
   /**
    * Amount
-   * @example 38602.071957527232491487
+   * @example "38602.071957527232491487"
    */
   value: string;
-
   /**
    * Amount in base coin (BIP)
-   * @example 10000.071957527232491487
+   * @example "10000.071957527232491487"
    */
   bipValue: string;
   validator: Validator;
-
   /**
    * Is stake in waitlist
    * @example false
@@ -945,34 +863,29 @@ export interface DelegationResponse {
 export interface Validator {
   /**
    * Validator public key
-   * @example Mp8f053f3802d33f5e7092bb01ca99ae77606f4faf759c72560d5ee69b8e191a56
+   * @example "Mp8f053f3802d33f5e7092bb01ca99ae77606f4faf759c72560d5ee69b8e191a56"
    */
   publicKey: string;
-
   /**
    * Validator name
-   * @example Super validator
+   * @example "Super validator"
    */
   name: string;
-
   /**
    * Validator description
-   * @example My description
+   * @example "My description"
    */
   description: string;
-
   /**
    * Validator icon url
-   * @example https://explorer-static.minter.network/validators/icon.png
+   * @example "https://explorer-static.minter.network/validators/icon.png"
    */
   iconUrl: string;
-
   /**
    * Validator site url
-   * @example https://minter.network
+   * @example "https://minter.network"
    */
   siteUrl: string;
-
   /**
    * Validator status. 1 - not ready, 2 - ready
    * @example 2
@@ -985,70 +898,58 @@ export interface ValidatorCollectionResponse {
   data: ValidatorResponse[];
 }
 
-/**
- * Validator data
- */
+/** Validator data */
 export interface ValidatorResponse {
   /**
    * Validator public_key
-   * @example Mp65758496f8a5d626cac77f5a38894beae0050fdef862da201964cd2fd8111111
+   * @example "Mp65758496f8a5d626cac77f5a38894beae0050fdef862da201964cd2fd8111111"
    */
   publicKey: string;
-
   /**
    * Validator status. 1 - not ready, 2 - ready
    * @example 2
    */
   status: number;
-
   /**
    * Validator stake
-   * @example 2456.78543535
+   * @example "2456.78543535"
    */
   stake: string;
-
   /**
    * Validator name
-   * @example Super validator
+   * @example "Super validator"
    */
   name: string;
-
   /**
    * Validator description
-   * @example My description
+   * @example "My description"
    */
   description: string;
-
   /**
    * Validator icon url
-   * @example https://explorer-static.minter.network/validators/icon.png
+   * @example "https://explorer-static.minter.network/validators/icon.png"
    */
   iconUrl: string;
-
   /**
    * Validator site url
-   * @example https://minter.network
+   * @example "https://minter.network"
    */
   siteUrl: string;
-
   /**
    * Validator commission
    * @example 10
    */
   commission?: number;
-
   /**
    * Validator stake part of total stake
-   * @example 0.33
+   * @example "0.33"
    */
   part: string;
-
   /**
    * Validator min stake value
-   * @example 100.000000000000000000
+   * @example "100.000000000000000000"
    */
   minStake?: string;
-
   /**
    * Delegators count
    * @example 12
@@ -1063,25 +964,21 @@ export interface StakeCollectionResponse {
 
 export interface StakeResponse {
   coin: CoinIdResource;
-
   /**
    * Minter address
-   * @example Mxe449e9fd85fd553fa45d245b62e30253bce29cc7
+   * @example "Mxe449e9fd85fd553fa45d245b62e30253bce29cc7"
    */
   address: string;
-
   /**
    * Amount
-   * @example 38602.071957527232491487
+   * @example "38602.071957527232491487"
    */
   value: string;
-
   /**
    * Amount in base coin (BIP)
-   * @example 10000.071957527232491487
+   * @example "10000.071957527232491487"
    */
   bipValue: string;
-
   /**
    * Is stake in waitlist
    * @example false
@@ -1097,10 +994,9 @@ export interface StatisticCollectionResponse {
 export interface StatisticResponse {
   /**
    * Timestamp
-   * @example 2019-02-19T00:00:00+03:00
+   * @example "2019-02-19T00:00:00+03:00"
    */
   date: string;
-
   /**
    * Transaction count
    * @example 356
@@ -1110,50 +1006,144 @@ export interface StatisticResponse {
 
 export interface StatusResponse {
   data: {
+    /**
+     * Average block time in seconds.
+     * @example 5.1676245210727965
+     */
     avg_block_time: number;
+    /**
+     * Bip price change
+     * @example 10
+     */
     bip_price_change: number;
+    /**
+     * Bip price in USD
+     * @example 0.07
+     */
     bip_price_usd: number;
+    /**
+     * Latest block height
+     * @example 1245
+     */
     latest_block_height: number;
+    /**
+     * Latest block time
+     * @example "2019-02-19T00:00:00+03:00"
+     */
     latest_block_time: string;
+    /**
+     * Market cap
+     * @example 24335.640000000003
+     */
     market_cap: number;
+    /**
+     * Total transaction count
+     * @example 120546
+     */
     total_transactions: number;
+    /**
+     * Transactions per second by last 24 hours
+     * @example 2.5678
+     */
     transactions_per_second: number;
   };
 }
 
 export interface StatusPageResponse {
   data: {
+    /**
+     * Active candidates.
+     * @example 10
+     */
     active_candidates: number;
+    /**
+     * Active validators.
+     * @example 16
+     */
     active_validators: number;
+    /**
+     * Average transaction commission.
+     * @example 24.5
+     */
     avg_transaction_commission: number;
+    /**
+     * Emission of basecoin.
+     * @example 786952800
+     */
     bip_emission: number;
+    /**
+     * Average block time in seconds by last 24 hours.
+     * @example 5.1676245210727965
+     */
     block_speed_24h: number;
+    /**
+     * The number of custom coins.
+     * @example 100
+     */
     custom_coins_count: number;
+    /**
+     * Sum of custom coins.
+     * @example "200320979.992105033830437239"
+     */
     custom_coins_sum: string;
+    /**
+     * Free float of base coin.
+     * @example 126652410.55061746
+     */
     free_float_bip: number;
+    /**
+     * Blocks count.
+     * @example 1044
+     */
     blocks_count: number;
+    /**
+     * Explorer status. Can be: down | active
+     * @example "active"
+     */
     status: string;
+    /**
+     * Total transaction commission
+     * @example 10
+     */
     total_commission: number;
+    /**
+     * Total delegated in base coin.
+     * @example "10000"
+     */
     total_delegated_bip: string;
+    /**
+     * Transaction count by last 24 hours.
+     * @example 1246
+     */
     transaction_count_24h: number;
+    /**
+     * Transaction speed per second by last 24 hours
+     * @example 2.5
+     */
     transactions_per_second: number;
+    /**
+     * Total transaction count
+     * @example 20435
+     */
     transactions_total: number;
+    /**
+     * Network uptime
+     * @example 99
+     */
     uptime: number;
   };
 }
 
 export interface TxSendCoinData {
   coin?: CoinIdResource;
-
   /**
    * Receiver address
-   * @example Mxd82558ea00eb81d35f2654953598f5d51737d31d
+   * @example "Mxd82558ea00eb81d35f2654953598f5d51737d31d"
    */
   to?: string;
-
   /**
    * Send coin amount
-   * @example 12.357
+   * @example "12.357"
    */
   value?: string;
 }
@@ -1161,22 +1151,19 @@ export interface TxSendCoinData {
 export interface TxBuyCoinData {
   coinToBuy?: CoinIdResource;
   coinToSell?: CoinIdResource;
-
   /**
    * Buy coin amount
-   * @example 12.357
+   * @example "12.357"
    */
   valueToBuy?: string;
-
   /**
    * Sell coin amount
-   * @example 12.257
+   * @example "12.257"
    */
   valueToSell?: string;
-
   /**
    * Maximum amount to sell
-   * @example 1.000000000000000000
+   * @example "1.000000000000000000"
    */
   maximumValueToSell?: string;
 }
@@ -1184,22 +1171,19 @@ export interface TxBuyCoinData {
 export interface TxSellCoinData {
   coinToBuy?: CoinIdResource;
   coinToSell?: CoinIdResource;
-
   /**
    * Buy coin amount
-   * @example 12.357
+   * @example "12.357"
    */
   valueToBuy?: string;
-
   /**
    * Sell coin amount
-   * @example 12.257
+   * @example "12.257"
    */
   valueToSell?: string;
-
   /**
    * Maximum amount to buy
-   * @example 1.000000000000000000
+   * @example "1.000000000000000000"
    */
   maximumValueToBuy?: string;
 }
@@ -1207,22 +1191,19 @@ export interface TxSellCoinData {
 export interface TxSellAllCoinData {
   coinToBuy?: CoinIdResource;
   coinToSell?: CoinIdResource;
-
   /**
    * Buy coin amount
-   * @example 12.357
+   * @example "12.357"
    */
   valueToBuy?: string;
-
   /**
    * Sell coin amount
-   * @example 12.257
+   * @example "12.257"
    */
   valueToSell?: string;
-
   /**
    * Maximum amount to buy
-   * @example 1.000000000000000000
+   * @example "1.000000000000000000"
    */
   maximumValueToBuy?: string;
 }
@@ -1230,31 +1211,27 @@ export interface TxSellAllCoinData {
 export interface TxCreateCoinData {
   /**
    * Coin name
-   * @example Minter
+   * @example "Minter"
    */
   name?: string;
-
   /**
    * Coin symbol
-   * @example MNT
+   * @example "MNT"
    */
   symbol?: string;
-
   /**
    * Initial amount of coin
-   * @example 1200
+   * @example "1200"
    */
   initialAmount?: string;
-
   /**
    * Initial reserve of coin
-   * @example 12
+   * @example "12"
    */
   initialReserve?: string;
-
   /**
    * Constant reserve ratio
-   * @example 50
+   * @example "50"
    */
   constantReserveRatio?: string;
 }
@@ -1262,7 +1239,7 @@ export interface TxCreateCoinData {
 export interface TxSetCandidateData {
   /**
    * Candidate public key
-   * @example Mpc8c6834da8ba2b0b24f7e5ab67049509278e709cde925f14184586f74dcc9d0b
+   * @example "Mpc8c6834da8ba2b0b24f7e5ab67049509278e709cde925f14184586f74dcc9d0b"
    */
   pubKey?: string;
 }
@@ -1270,14 +1247,13 @@ export interface TxSetCandidateData {
 export interface TxUnbondData {
   /**
    * Validator public key
-   * @example Mpc8c6834da8ba2b0b24f7e5ab67049509278e709cde925f14184586f74dcc9d0b
+   * @example "Mpc8c6834da8ba2b0b24f7e5ab67049509278e709cde925f14184586f74dcc9d0b"
    */
   pubKey?: string;
   coin?: CoinIdResource;
-
   /**
    * Unbond coin amount
-   * @example 12.357
+   * @example "12.357"
    */
   value?: string;
 }
@@ -1285,28 +1261,35 @@ export interface TxUnbondData {
 export interface TxRedeemCheckData {
   /** Check */
   rawCheck?: string;
-
   /** Check proof */
   proof?: string;
-  check?: { coin?: CoinIdResource; nonce?: string; value?: string; sender?: string; due_block?: number };
+  check?: {
+    coin?: CoinIdResource;
+    /** @example "BfC=" */
+    nonce?: string;
+    /** @example "1.0000" */
+    value?: string;
+    /** @example "Mxb1ffcc545ba552875c04c18af7095bfa7f3156ee" */
+    sender?: string;
+    /** @example 999999 */
+    due_block?: number;
+  };
 }
 
 export interface TxEditCandidateData {
   /**
    * Validator public key
-   * @example Mpc8c6834da8ba2b0b24f7e5ab67049509278e709cde925f14184586f74dcc9d0b
+   * @example "Mpc8c6834da8ba2b0b24f7e5ab67049509278e709cde925f14184586f74dcc9d0b"
    */
   pubKey?: string;
-
   /**
    * Reward address
-   * @example Mx184ac726059e43643e67290666f7b3195093f870
+   * @example "Mx184ac726059e43643e67290666f7b3195093f870"
    */
   rewardAddress?: string;
-
   /**
    * Owner address
-   * @example Mx184ac726059e43643e67290666f7b3195093f870
+   * @example "Mx184ac726059e43643e67290666f7b3195093f870"
    */
   ownerAddress?: string;
 }
@@ -1314,14 +1297,13 @@ export interface TxEditCandidateData {
 export interface TxDelegateCoinData {
   /**
    * Validator public key
-   * @example Mpc8c6834da8ba2b0b24f7e5ab67049509278e709cde925f14184586f74dcc9d0b
+   * @example "Mpc8c6834da8ba2b0b24f7e5ab67049509278e709cde925f14184586f74dcc9d0b"
    */
   pubKey?: string;
   coin?: CoinIdResource;
-
   /**
    * Coin amount
-   * @example 12.357
+   * @example "12.357"
    */
   stake?: string;
 }
@@ -1329,26 +1311,23 @@ export interface TxDelegateCoinData {
 export interface TxDeclareCandidacyData {
   /**
    * Address
-   * @example Mx184ac726059e43643e67290666f7b3195093f870
+   * @example "Mx184ac726059e43643e67290666f7b3195093f870"
    */
   address?: string;
-
   /**
    * Validator public key
-   * @example Mpc8c6834da8ba2b0b24f7e5ab67049509278e709cde925f14184586f74dcc9d0b
+   * @example "Mpc8c6834da8ba2b0b24f7e5ab67049509278e709cde925f14184586f74dcc9d0b"
    */
   pubKey?: string;
-
   /**
    * Validator commission
-   * @example 10
+   * @example "10"
    */
   commission?: string;
   coin?: CoinIdResource;
-
   /**
    * Coin amount
-   * @example 12.357
+   * @example "12.357"
    */
   stake?: string;
 }
@@ -1356,13 +1335,11 @@ export interface TxDeclareCandidacyData {
 export interface TxCreateMultisigData {
   /**
    * Address
-   * @example 10
+   * @example "10"
    */
   threshold?: string;
-
   /** Addresses weights */
   weights?: number[];
-
   /** Addresses */
   addresses?: string[];
 }
@@ -1373,9 +1350,20 @@ export interface TxMultisendData {
 }
 
 export interface ErrorResponse {
-  error: { code: number; message: string };
+  error: {
+    /** @example -1 */
+    code: number;
+    /** @example "Some error message" */
+    message: string;
+  };
 }
 
 export interface ValidationErrorResponse {
-  error: { code: number; message: string; fields: object };
+  error: {
+    /** @example -1 */
+    code: number;
+    /** @example "Some error message" */
+    message: string;
+    fields: object;
+  };
 }

@@ -1,0 +1,64 @@
+{
+  // from @https://typescript.nuxtjs.org/guide/setup/#configuration
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "skipLibCheck": true,
+    "lib": [
+      "ESNext",
+      "ESNext.AsyncIterable",
+      "DOM"
+    ],
+    "esModuleInterop": true,
+    "allowJs": true,
+    "checkJs": true,
+    "strict": false,
+    "noImplicitThis": true,
+    //    "noEmit": true,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "outFile": "types/types.d.ts",
+    "allowImportingTsExtensions": true,
+//    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "./*"
+      ],
+      "@/*": [
+        "./*"
+      ]
+    },
+//    "typeRoots": [
+//      "./node_modules/@types",
+//      "./tmp/@types"
+//    ],
+//    "types": [
+//      "@types/node",
+//      "@nuxt/types"
+//
+//    ]
+  },
+  "include": [
+    "api/**/*",
+    "assets/**/*",
+    "components/**/*",
+    "composables/**/*",
+    "data/**/*",
+    "lang/**/*",
+    "layouts/**/*",
+    "middleware/**/*",
+    "pages/**/*",
+    "plugins/**/*",
+//    "scripts/**/*",
+    "store/**/*",
+
+    "tmp/@types/nuxt.d.ts",
+    "tmp/@types/types.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

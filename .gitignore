@@ -1,6 +1,7 @@
 /assets/css/onsen.css
 /static/css/
 /static/img/
+/types
 /tmp/
 /.env
 sw.*

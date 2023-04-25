@@ -13,13 +13,15 @@ import postcssPresetEnv from 'postcss-preset-env';
 import postcss100vhFix from 'postcss-100vh-fix';
 import cleanCss from 'gulp-clean-css';
 // images
-import del from 'del';
+import {deleteAsync, deleteSync} from 'del';
 import path from 'path';
 import cache from 'gulp-cache';
 import imagemin from 'gulp-imagemin';
-import mozjpeg from 'imagemin-mozjpeg';
-import jpegtran from 'imagemin-jpegtran';
-//const pngquant = require('imagemin-pngquant');
+import imageminMozjpeg from 'imagemin-mozjpeg';
+import imageminJpegtran from 'imagemin-jpegtran';
+import imageminPngquant from 'imagemin-pngquant';
+import imageminOptipng from 'imagemin-optipng';
+import imageminSvgo from 'imagemin-svgo';
 
 
 let paths = {
@@ -89,12 +91,15 @@ gulp.task('imagemin', function() {
         .pipe(plumber({errorHandler: onError}))
         .pipe(cache(
             imagemin([
-                imagemin.gifsicle({interlaced: true}),
-                mozjpeg({quality: 90}),
-                jpegtran({progressive: true}),
-                //pngquant(),
-                imagemin.optipng({optimizationLevel: 5}),
-                imagemin.svgo({plugins: [{removeViewBox: false}]}),
+                // imagemin.gifsicle({interlaced: true}),
+                imageminMozjpeg({quality: 90}),
+                imageminJpegtran({progressive: true}),
+                imageminPngquant(),
+                imageminOptipng({optimizationLevel: 5}),
+                imageminSvgo({plugins: [{
+                        name: 'removeViewBox',
+                        active: false,
+                    }]}),
             ], {
                 verbose: true,
             }), {
@@ -104,11 +109,11 @@ gulp.task('imagemin', function() {
         .pipe(gulp.dest(paths.dest.img));
 });
 gulp.task('imagemin:clean-dest', function(cb) {
-    del.sync(paths.dest.img);
+    deleteSync(paths.dest.img);
     cb();
 });
 gulp.task('imagemin:clean-cache', function(cb) {
-    del.sync([
+    deleteSync([
         paths.cache.tmpDir + '/' + paths.cache.cacheDirName + '/default',
     ]);
     cb();
@@ -126,10 +131,10 @@ gulp.task('default', gulp.series(
         gulp.watch(paths.watch.less, gulp.task('less'));
         gulp.watch(paths.src.img, gulp.task('imagemin'))
             .on('unlink', function(filePath) {
-                del(paths.dest.img + path.basename(filePath));
+                deleteAsync(paths.dest.img + path.basename(filePath));
             })
             .on('unlinkDir', function(dirPath) {
-                del(paths.dest.img + path.basename(dirPath));
+                deleteAsync(paths.dest.img + path.basename(dirPath));
             });
     },
 ));

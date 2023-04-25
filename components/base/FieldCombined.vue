@@ -1,9 +1,10 @@
 <script>
+import _get from 'lodash-es/get.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import {COIN_TYPE} from '~/assets/variables.js';
 import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';
 import FieldCombinedBaseAmount from '~/components/base/FieldCombinedBaseAmount.vue';
-import FieldCombinedCoinDropdown from '~/components/base/FieldCombinedCoinDropdown.vue';
+import FieldCombinedCoinDropdown, {getValueAttribute} from '~/components/base/FieldCombinedCoinDropdown.vue';
 
 export default {
     components: {
@@ -38,8 +39,8 @@ export default {
         },
         /**
          * Flat array or array of balance items
-         * @type Array<string>|Array<BalanceItem>|Array<Coin>
-         * */
+         * @type Array<string>|Array<BalanceItem>|Array<TokenBalanceItem>
+         */
         coinList: {
             type: Array,
             default: () => [],
@@ -51,6 +52,10 @@ export default {
         maxValue: {
             type: [String, Number],
             default: undefined,
+        },
+        disableMaxValueWatch: {
+            type: Boolean,
+            default: false,
         },
         fallbackToFullList: {
             type: Boolean,
@@ -83,10 +88,12 @@ export default {
         'update:is-use-max',
         'use-max',
         'input-native',
+        'select-suggestion',
     ],
     data() {
         return {
             isSelectVisible: false,
+            selectedSuggestion: undefined,
         };
     },
     computed: {
@@ -114,16 +121,30 @@ export default {
             // 0 and >1 are OK (enabled)
             return this.coinList.length === 1;
         },
+        displayValue() {
+            if (this.selectedSuggestion) {
+                return this.$refs.coinDropdown?.getSuggestionCoin(this.selectedSuggestion);
+            }
+            return this.coin;
+        },
+        iconUrl() {
+            if (this.selectedSuggestion) {
+                return this.$refs.coinDropdown?.getSuggestionIconUrl(this.selectedSuggestion);
+            }
+            return this.$store.getters['explorer/getCoinIcon'](this.coin);
+        },
     },
     mounted() {
-        if (this.isSelectDisabled && this.coinList[0]) {
-            this.handleSelect(this.coinList[0]);
+        if (this.isSelectDisabled && this.coinList[0] && !this.coin) {
+            this.handleSelect(getSuggestionValue(this.coinList[0]));
+        }
+
+        function getSuggestionValue(item) {
+            const valueAttribute = getValueAttribute(item);
+            return valueAttribute ? _get(item, valueAttribute) : item;
         }
     },
     methods: {
-        getIconUrl(coin) {
-            return this.$store.getters['explorer/getCoinIcon'](coin);
-        },
         openDropdown() {
             if (this.isSelectDisabled) {
                 return;
@@ -131,7 +152,7 @@ export default {
             this.isSelectVisible = true;
         },
         handleSelect(coin) {
-            this.$emit('update:coin', coin.coin?.symbol || coin);
+            this.$emit('update:coin', coin);
         },
         handleUseMax(value) {
             this.$emit('update:is-use-max', value);
@@ -149,8 +170,8 @@ export default {
         <div class="h-field__content">
             <div class="h-field__title">{{ label }}</div>
             <button class="h-field__select-button u-semantic-button" type="button" @click="openDropdown()" :disabled="isSelectDisabled">
-                <img class="h-field__select-icon" :src="getIconUrl(coin)" width="24" height="24" alt="" role="presentation" v-if="coin">
-                <BaseCoinSymbol class="h-field__select-value">{{ coin || $td('Select coin', 'form.select-coin') }}</BaseCoinSymbol>
+                <img class="h-field__select-icon" :src="iconUrl" width="24" height="24" alt="" role="presentation" v-if="coin">
+                <BaseCoinSymbol class="h-field__select-value" :network="selectedSuggestion?.hubNetworkSlug?.toUpperCase()">{{ displayValue || $td('Select coin', 'form.select-coin') }}</BaseCoinSymbol>
                 <img class="h-field__select-icon-arrow" src="/img/icon-dropdown.svg" alt="" role="presentation" width="24" height="24" v-if="!isSelectDisabled">
             </button>
         </div>
@@ -163,6 +184,7 @@ export default {
             :selected-coin-symbol="coin"
             :fee="fee"
             :max-value="maxValue"
+            :disable-max-value-watch="disableMaxValueWatch"
             :is-estimation="isEstimation"
             :is-loading="isLoading"
             @input="$emit('update:amount', $event)"
@@ -175,11 +197,14 @@ export default {
         </FieldCombinedBaseAmount>
 
         <FieldCombinedCoinDropdown
+            ref="coinDropdown"
             :is-open.sync="isSelectVisible"
+            :selected-value="coin"
             :coin-list="coinList"
             :coin-type="coinType"
             :fallback-to-full-list="fallbackToFullList"
             @select="handleSelect($event)"
+            @select-suggestion="selectedSuggestion = $event; $emit('select-suggestion', $event)"
         />
     </div>
 </template>

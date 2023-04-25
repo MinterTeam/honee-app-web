@@ -63,20 +63,35 @@ test('message hash', () => {
 });
 
 describe('test case from api', () => {
-    const validAddress = 'b03f7e18212bcaffb5e0633db79cd8e60e4d8a7a';
-    const dataHexString = '7b226964223a39372c2269736f6c6174656441646472657373223a224d7833326166663263316637313466636261653537343135663231663435633430666238366139613163222c2274696d657374616d70223a22323032322d31312d30395430373a31343a35392e3535315a227d';
-    const headerAuthResult = '0xabd822e06eb4e870d7f2a672318971b937c758c3b4fbb9b235adfabe4e6158cc39a5f1ca996ae9dd27687cc0bd8ea28c5c22c5e3e792381867e88433c6722f3300030005f3ffb1ea4ddd4c077b1922e87c9617a98bbe2c599fd7df4690c1fe3f5124';
+    test('1', () => {
+        const validAddress = 'b03f7e18212bcaffb5e0633db79cd8e60e4d8a7a';
+        const dataHexString = '7b226964223a39372c2269736f6c6174656441646472657373223a224d7833326166663263316637313466636261653537343135663231663435633430666238366139613163222c2274696d657374616d70223a22323032322d31312d30395430373a31343a35392e3535315a227d';
+        const headerAuthResult = '0xabd822e06eb4e870d7f2a672318971b937c758c3b4fbb9b235adfabe4e6158cc39a5f1ca996ae9dd27687cc0bd8ea28c5c22c5e3e792381867e88433c6722f3300030005f3ffb1ea4ddd4c077b1922e87c9617a98bbe2c599fd7df4690c1fe3f5124';
 
-    const dataString = Buffer.from(dataHexString, 'hex').toString('utf8');
-    const data = JSON.parse(dataString);
-    expect(keccakFromString(dataString)).toEqual(hashObject(data));
+        const dataString = Buffer.from(dataHexString, 'hex').toString('utf8');
+        const data = JSON.parse(dataString);
+        expect(keccakFromString(dataString)).toEqual(hashObject(data));
 
-    const {signature, recid, publicKey: publicKeyValid} = parseHeaderAuth(headerAuthResult);
-    const dataHash = hashObject(data);
-    const publicKeyReceived = ecdsaRecover(signature, recid, dataHash, true);
+        const {signature, recid, publicKey: publicKeyValid} = parseHeaderAuth(headerAuthResult);
+        const dataHash = hashObject(data);
+        const publicKeyReceived = ecdsaRecover(signature, recid, dataHash, true);
 
-    expect(Buffer.from(publicKeyReceived).toString('hex')).toEqual(publicKeyValid.toString('hex'));
-    expect(publicToAddress(Buffer.from(publicKeyReceived), true).toString('hex')).toEqual(validAddress);
+        expect(Buffer.from(publicKeyReceived).toString('hex')).toEqual(publicKeyValid.toString('hex'));
+        expect(publicToAddress(Buffer.from(publicKeyReceived), true).toString('hex')).toEqual(validAddress);
+    });
+
+    test('2 timestamp', () => {
+        const headerAuthResult = '0x2a59be8dce2411752ee851087e2c47cdd7d119a61577fb78a6a99465136713f26d7a4b0a3bcbaf27a3723b96e9517ac2d3e82490c4a385af07340d477fa608cd0103ffe1204b947d6c4995820e88f28409a15c5e5519c8bdc4e5813323e765c54025';
+        const timestamp = '2023-03-02T08:23:32.296Z';
+        const {signature, recid, publicKey: publicKeyValid} = parseHeaderAuth(headerAuthResult);
+        console.log({signature, recid, publicKeyValid});
+        const dataHash = keccakFromString(timestamp);
+        const publicKeyReceived = ecdsaRecover(signature, recid, dataHash, true);
+        const addressReceived = publicToAddress(Buffer.from(publicKeyReceived), true).toString('hex');
+        const addressValid = publicToAddress(Buffer.from(publicKeyValid), true).toString('hex');
+        console.log({addressReceived, addressValid});
+        expect(addressReceived).toEqual(addressValid);
+    });
 });
 
 describe('timestamp', () => {

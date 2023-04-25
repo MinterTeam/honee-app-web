@@ -1,13 +1,14 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
-import Big from '~/assets/big.js';
+import Big from 'minterjs-util/src/big.js';
 import {STAKING_API_URL, PREMIUM_STAKE_PROGRAM_ID} from "~/assets/variables.js";
 import NotFoundError from '~/assets/utils/error-404.js';
+import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 
 const instance = axios.create({
     baseURL: STAKING_API_URL,
-    adapter: cacheAdapterEnhancer(axios.defaults.adapter, { enabledByDefault: false}),
+    adapter: cacheAdapterEnhancer(getDefaultAdapter(), { enabledByDefault: false}),
 });
 addToCamelInterceptor(instance);
 
@@ -100,6 +101,7 @@ export function getAddressPremiumLevel(address) {
  * @return {number}
  */
 export function getPremiumLevel(amount) {
+    amount = +amount;
     if (amount >= 1000000) {
         return 4;
     }

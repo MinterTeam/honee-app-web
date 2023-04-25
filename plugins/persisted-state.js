@@ -5,6 +5,7 @@ export default ({store}) => {
         paths: [
             'auth',
             'balanceDisplayType',
+            'isMetagarden',
         ],
     })(store);
 };

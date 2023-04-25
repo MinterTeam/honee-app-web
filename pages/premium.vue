@@ -34,18 +34,16 @@ export default {
 
 
                 <div class="card__content card__content--medium u-text-medium">
-                    <h3 class="u-h5 u-mb-05">{{ $td('Premium levels', 'premium.levels-title') }}</h3>
-                    <ul v-if="$i18n.locale === 'en'" class="list-simple list-simple--small">
-                        <li>LEVEL 1 - from 1000 BEE</li>
+                    <h3 class="u-h5 u-mb-05">{{ $td('Premium levels', 'premium.levels-title') }} (<a :href="$td('https://honee.app/bee', 'premium.levels-more-url')" class="link--hover link--main" target="_blank">{{ $td('learn more', 'premium.levels-more') }}</a>)</h3>
+                    <ul v-if="$i18n.locale === 'en'" class="list-simple">
+                        <li>LEVEL 1 - from 1 000 BEE</li>
                         <li>LEVEL 2 - from 10 000 BEE</li>
                         <li>LEVEL 3 - from 100 000 BEE</li>
-                        <li>LEVEL 4 - from 1 000 000 BEE</li>
                     </ul>
-                    <ul v-if="$i18n.locale === 'ru'" class="list-simple list-simple--small">
-                        <li>LEVEL 1 - от 1000 BEE</li>
+                    <ul v-if="$i18n.locale === 'ru'" class="list-simple">
+                        <li>LEVEL 1 - от 1 000 BEE</li>
                         <li>LEVEL 2 - от 10 000 BEE</li>
                         <li>LEVEL 3 - от 100 000 BEE</li>
-                        <li>LEVEL 4 - от 1 000 000 BEE</li>
                     </ul>
                 </div>
             </div>

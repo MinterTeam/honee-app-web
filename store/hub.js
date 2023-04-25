@@ -11,7 +11,7 @@ const DEPOSIT_LIST_LENGTH = 5;
 export const state = () => ({
     /* Withdraw list */
     // minterList fetched on every load
-    /** @type {Object.<string, HubWithdraw>} */
+    /** @type {Record.<string, HubWithdraw>} */
     minterList: {},
 
     /* Deposit state */
@@ -184,8 +184,8 @@ export function pruneTxFields(tx) {
 }
 
 /**
- * @typedef {Object} HubWithdraw
- * @property {Object} tx - minter tx data
+ * @typedef {object} HubWithdraw
+ * @property {object} tx - minter tx data
  * @property {string} status - withdraw status
  * @property {string} outTxHash
  * @property {number|string} amount
@@ -199,4 +199,8 @@ export function pruneTxFields(tx) {
 
 /**
  * @typedef {{amount: string, tokenContract: string, tokenName: string, type: HUB_DEPOSIT_TX_PURPOSE}|{type: HUB_DEPOSIT_TX_PURPOSE}} HubDepositTxInfo
+ */
+
+/**
+ // * @typedef {import('~/api/web3.js').Web3Tx} Web3Tx
  */

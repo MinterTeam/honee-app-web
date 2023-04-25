@@ -1,17 +1,21 @@
 import Vue from 'vue';
-import {BASE_URL_PREFIX, DASHBOARD_URL} from '~/assets/variables.js';
+import {BASE_URL_PREFIX, DASHBOARD_URL, DASHBOARD_URL_METAGARDEN} from '~/assets/variables.js';
 
 Vue.mixin({
     computed: {
         BASE_URL_PREFIX: () => BASE_URL_PREFIX,
         DASHBOARD_URL: () => DASHBOARD_URL,
+        DASHBOARD_URL_METAGARDEN: () => DASHBOARD_URL_METAGARDEN,
     },
     methods: {
         $i18nGetPreferredPath(route, locale) {
             const path = this.localePath(route, locale);
             return path.length > 1 ? path.replace(/\/$/, '') : path;
         },
-        $getDashboardUrl(page = '/', baseUrl = DASHBOARD_URL) {
+        $getDashboardUrl(page = '/', baseUrl) {
+            if (!baseUrl) {
+                baseUrl = this.$store.state.isMetagarden ? DASHBOARD_URL_METAGARDEN : DASHBOARD_URL;
+            }
             return this.$i18nGetPreferredPath((baseUrl + page).replace('//', '/'));
         },
         /** @deprecated */

@@ -1,8 +1,3 @@
-/**
- * @author Kuitos
- * @homepage https://github.com/kuitos/
- * @since 2017-10-12
- */
 import { AxiosInstance } from 'axios';
 declare module 'axios' {
     interface AxiosRequestConfig {
@@ -12,5 +7,6 @@ declare module 'axios' {
 export declare type EcdsaAuthOptions = {
     privateKey?: string;
     includePublicKey?: boolean;
+    timestampThrottle?: number,
 };
 export default function addEcdsaAuthInterceptor(instance: AxiosInstance): void;
