@@ -1,6 +1,5 @@
 <script>
 import * as clipboard from 'clipbrd';
-import useWeb3SmartWallet from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet.js';
 import QrcodeVue from 'qrcode.vue';
 import BaseButtonCopyIcon from '~/components/base/BaseButtonCopyIcon.vue';
 
@@ -9,36 +8,18 @@ export default {
         QrcodeVue,
         BaseButtonCopyIcon,
     },
-    setup() {
-        const {
-            smartWalletAddress,
-            setSmartWalletProps,
-        } = useWeb3SmartWallet();
-
-        return {
-            smartWalletAddress,
-            setSmartWalletProps,
-        };
-    },
     data() {
         return {
             isQrVisible: false,
         };
     },
     computed: {
+        smartWalletAddress() {
+            return this.$store.getters.smartWalletAddress;
+        },
         isClipboardSupported() {
             return clipboard.isSupported();
         },
-    },
-    created() {
-        this.$watch(
-            () => ({
-                evmAccountAddress: this.$store.getters.evmAddress,
-                skipCheckExistence: true,
-            }),
-            (newVal) => this.setSmartWalletProps(newVal),
-            {deep: true, immediate: true},
-        );
     },
     methods: {
         copy(str) {

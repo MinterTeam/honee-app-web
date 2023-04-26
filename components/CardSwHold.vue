@@ -5,7 +5,6 @@ import {pretty} from '~/assets/utils.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {BSC_CHAIN_ID, HUB_NETWORK_SLUG} from '~/assets/variables.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
-import useWeb3SmartWallet from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet.js';
 import InlineSvg from 'vue-inline-svg';
 import CardHead from '~/components/CardHead.vue';
 
@@ -32,25 +31,15 @@ export default {
     setup(props) {
         const vm = getCurrentInstance()?.proxy;
 
-        const {smartWalletAddress, setSmartWalletProps} = useWeb3SmartWallet();
-        setSmartWalletProps({
-            evmAccountAddress: vm.$store.getters.evmAddress,
-            skipCheckExistence: true,
-        });
-
         const {balance, setWeb3TokenProps} = useWeb3TokenBalance();
-
-        watch(smartWalletAddress, () => {
-            setWeb3TokenProps({
-                tokenSymbol: props.coin,
-                chainId: BSC_CHAIN_ID,
-                accountAddress: smartWalletAddress.value,
-            });
-        }, {immediate: true});
+        setWeb3TokenProps({
+            tokenSymbol: props.coin,
+            chainId: BSC_CHAIN_ID,
+            accountAddress: vm.$store.getters.smartWalletAddress,
+        });
 
         return {
             evmBalance: balance,
-            smartWalletAddress,
         };
     },
     data() {
@@ -60,6 +49,9 @@ export default {
     computed: {
         minterBalance() {
             return this.$store.getters.getBalanceAmount(this.coin);
+        },
+        smartWalletAddress() {
+            return this.$store.getters.smartWalletAddress;
         },
         apr() {
             // 3% monthly
