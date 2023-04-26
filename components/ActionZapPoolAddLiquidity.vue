@@ -217,7 +217,7 @@ export default {
                     async () => {
                         await this.fetchPoolData();
 
-                        console.log('finalState', finalState);
+                        console.log('finalState', {...finalState}, {...this.poolData});
                         let isCoin1Bigger = getIsCoin1Bigger(finalState, this.poolData);
                         const {commission} = await estimateTxCommissionGasCoinOnly({
                             ...this.sequenceParams[2].txParams,
@@ -232,7 +232,7 @@ export default {
                         }
 
 
-                        console.log('finalState', finalState);
+                        console.log('finalState', {...finalState}, {...this.poolData});
                         isCoin1Bigger = getIsCoin1Bigger(finalState, this.poolData);
 
                         return {
