@@ -278,7 +278,7 @@ export default defineComponent({
                     depositDestinationAddress: this.$store.getters.evmAddress,
                     chainId: this.hubChainData.chainId,
                     isLegacy: this.isLegacy,
-                    gasPrice: this.networkGasPrice,
+                    gasPriceGwei: this.networkGasPrice,
                     valueToSell: this.selectedAmount,
                     tokenToSellContractAddress: this.selectedBalanceItem?.tokenContractAddress,
                     tokenToSellDecimals: this.selectedBalanceItem?.decimals,
