@@ -14,6 +14,7 @@ export default {
         'MUSD',
         'METAGARDEN',
         'WONDER',
+        'SNATCH',
     ],
     layout(context) {
         return context.store.state.isMetagarden ? 'metagarden' : 'default';
