@@ -142,6 +142,20 @@ export default {
                     },
                 },
             }),
+            makeCard(presets.farm('METAGARDEN', 'USDTE'), {
+                stats: {
+                    apr: {
+                        percent: '73',
+                    },
+                },
+            }),
+            makeCard(presets.farm('METAGARDEN', 'USDTBSC'), {
+                stats: {
+                    apr: {
+                        percent: '73',
+                    },
+                },
+            }),
             makeCard(presets.stake(24), {
                 coin: `MUSD`,
                 description: 'Stake MUSD for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
