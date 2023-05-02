@@ -57,6 +57,17 @@ export default {
             type: Function,
             required: true,
         },
+        v$extra: {
+            type: Object,
+            validator(value) {
+                // it should be vuelidate object
+                return typeof value.$error === 'boolean' &&
+                    typeof value.$dirty === 'boolean' &&
+                    typeof value.$invalid === 'boolean' &&
+                    typeof value.$model === 'object' &&
+                    typeof value.$params === 'object';
+            },
+        },
     },
     setup() {
         // const {networkGasPrice, setHubOracleProps} = useHubOracle({
@@ -145,6 +156,9 @@ export default {
             withdrawAmountToReceive: {
                 required,
                 minValue: (val) => minValue(this.smartWalletRelayReward)(val),
+            },
+            parent: {
+                valid: () => !this.v$extra?.$invalid,
             },
         };
     },

@@ -103,6 +103,7 @@ export default {
         :coin="$options.COLLATERAL_COIN"
         :complexity="0"
         :build-tx-list="buildTxList"
+        :v$extra="$v"
         @update:web3-data="innerData = $event"
         @success="$emit('success')"
         @success-modal-close="$emit('success-modal-close')"
