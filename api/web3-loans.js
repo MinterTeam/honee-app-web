@@ -61,6 +61,7 @@ export function getLend(id) {
             lend.next = Number(lend.next);
             lend.initialAmount = fromErcDecimals(lend.initialAmount);
             lend.leftAmount = fromErcDecimals(lend.leftAmount);
+            console.log('lend', lend);
             return lend;
         });
 }

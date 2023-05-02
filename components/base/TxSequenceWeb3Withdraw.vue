@@ -10,7 +10,9 @@ import Big from 'minterjs-util/src/big.js';
 import useWeb3SmartWalletWithRelayReward from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet-relay-reward.js';
 import {pretty} from '~/assets/utils.js';
 import {isValidAmount} from '~/assets/utils/validators.js';
-import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
+import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA, NATIVE_COIN_ADDRESS, HUB_BUY_STAGE as LOADING_STAGE} from '~/assets/variables.js';
+import useTxService from '~/composables/use-tx-service.js';
+import {addStepDataBridgeWithdraw, addStepDataBridgeDeposit, addStepDataRelay} from '~/composables/use-tx-minter-presets.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3Withdraw from '~/composables/use-web3-withdraw.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
@@ -49,6 +51,12 @@ export default {
             type: [Number, String],
             default: undefined,
         },
+        coinToDeposit: {
+            type: String,
+        },
+        amountToDeposit: {
+            type: [Number, String],
+        },
         complexity: {
             type: Number,
             default: 1,
@@ -70,6 +78,8 @@ export default {
         },
     },
     setup() {
+        const {addStepData} = useTxService();
+
         // const {networkGasPrice, setHubOracleProps} = useHubOracle({
         //     subscribePriceList: true,
         // });
@@ -99,6 +109,8 @@ export default {
         } = useWeb3Withdraw();
 
         return {
+            addStepData,
+
             // networkGasPrice,
             // setHubOracleProps,
             //
@@ -179,7 +191,14 @@ export default {
         amountToSendForRelayReward() {
             return this.calculateAmountToSend(this.smartWalletRelayReward, true);
         },
+        withdrawValue() {
+            return this.form.amount;
+            // return this.isSelectedWithdrawCoin ? this.form.amount : this.estimation;
+        },
         sequenceParams() {
+            let withdrawValue = this.withdrawValue;
+            let smartWalletTx;
+
             const isWithdrawMaxWithoutSwap = this.isUseMax; // this.isSelectedWithdrawCoin && this.isUseMax;
             const isWithdrawAfterSwap = false; //!this.isSelectedWithdrawCoin;
             const prepareWithdrawTxParams = !isWithdrawMaxWithoutSwap && !isWithdrawAfterSwap ? undefined : (swapTx, prevPrepareGasCoin) => {
@@ -198,7 +217,7 @@ export default {
                 const value = getAvailableSelectedBalance(balanceItem, prevPrepareGasCoin.extra.fee);
                 console.debug('getAvailableSelectedBalance', JSON.parse(JSON.stringify(balanceItem)), JSON.parse(JSON.stringify(prevPrepareGasCoin.extra.fee)));
                 console.debug('value: prev, new', this.withdrawTxParams.data.value, value);
-                console.debug('withdrawValue, withdrawAmountToReceive', this.form.amount, this.withdrawAmountToReceive);
+                console.debug('withdrawValue, withdrawAmountToReceive', this.withdrawValue, this.withdrawAmountToReceive);
 
                 // update withdrawValue
                 if (isWithdrawMaxWithoutSwap) {
@@ -206,6 +225,7 @@ export default {
                 } else if (isWithdrawAfterSwap) {
                     this.estimation = value;
                 }
+                withdrawValue = value;
 
                 return {
                     data: {
@@ -219,6 +239,8 @@ export default {
                 return wait(50)
                     .then(() => this.buildTxListAndCallSmartWallet())
                     .then((result) => {
+                        smartWalletTx = result.hash;
+
                         const newPayload = JSON.parse(this.withdrawTxParams.payload);
                         newPayload.smartWalletTx = result.hash;
 
@@ -228,11 +250,35 @@ export default {
                     });
             };
 
+            const withdrawAmountToReceive = this.withdrawAmountToReceive;
+            const finalizeWithdraw = ({hash}) => {
+                addStepDataBridgeWithdraw(this.hubChainData.chainId, hash, this.coin, withdrawValue, 1)
+                    .then(() => {
+                        this.addStepData(LOADING_STAGE.SEND_TO_RELAY, {
+                            coin: this.coin,
+                            amount: withdrawAmountToReceive,
+                            relayParams: {
+                                hubNetworkSlug: this.hubChainData.hubNetworkSlug,
+                            },
+                        }, true);
+
+                        const [relayPromise] = addStepDataRelay(this.hubChainData.chainId, smartWalletTx);
+                        return relayPromise;
+                    })
+                    .then((result) => {
+                        if (this.coinToDeposit) {
+                            addStepDataBridgeDeposit(this.hubChainData.chainId, result.txHash, this.coinToDeposit, this.amountToDeposit, this.$store.getters.address, 2);
+                        }
+                    });
+            };
+
             return [
+                /** @type {SendSequenceItem} */
                 {
                     // refineFee is not needed if no 'prepare'
                     prepareGasCoinPosition: prepareWithdrawTxParams ? 'start' : 'skip',
                     prepare: [prepareWithdrawTxParams, prepareSmartWalletTx],
+                    finalize: finalizeWithdraw,
                     txParams: this.withdrawTxParams,
                     feeTxParams: this.withdrawFeeTxParams,
                 },

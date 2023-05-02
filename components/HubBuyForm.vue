@@ -31,7 +31,7 @@ import Modal from '~/components/base/Modal.vue';
 import ButtonCopyIcon from '~/components/base/BaseButtonCopyIcon.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import FieldSelect from '~/components/base/FieldSelect.vue';
-import HubBuyTxListItem from '~/components/HubBuyTxListItem.vue';
+import HubBuyTxListItem from '~/components/base/StepListItem.vue';
 import HubBuySpeedup from '~/components/HubBuySpeedup.vue';
 import HubFeeImpact from '~/components/HubFeeImpact.vue';
 

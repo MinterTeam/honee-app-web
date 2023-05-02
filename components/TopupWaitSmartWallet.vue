@@ -13,9 +13,10 @@ import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3AddressBalance from '~/composables/use-web3-address-balance';
 import useWeb3SmartWalletSwap from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet-swap.js';
 import useTxService from '~/composables/use-tx-service.js';
+import {addStepDataRelay, addStepDataBridgeDeposit} from '~/composables/use-tx-minter-presets.js';
 import {TOP_UP_NETWORK} from '~/components/Topup.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
-import HubBuyTxListItem from '~/components/HubBuyTxListItem.vue';
+import HubBuyTxListItem from '~/components/base/StepListItem.vue';
 
 /**
  * @enum {string}
@@ -384,40 +385,12 @@ export default defineComponent({
 
             return this.buildTxListAndCallSmartWallet()
                 .then((result) => {
-                    // window.alert(`https://explorer.minter.network/smart-wallet-relay/${this.hubChainData.hubNetworkSlug}/${result.hash}`);
-                    this.addStepData(LOADING_STAGE.SEND_TO_RELAY, {
-                        tx: {
-                            hash: result.hash,
-                            timestamp: (new Date()).toISOString(),
-                        },
-                    });
-                    const [promise, canceler] = waitRelayTxSuccess(this.hubChainData.chainId, result.hash);
+                    const [promise, canceler] = addStepDataRelay(this.hubChainData.chainId, result.hash);
                     this.relayWaitCanceler = canceler;
                     return promise;
                 })
                 .then((result) => {
-                    this.addStepData(LOADING_STAGE.SEND_TO_RELAY, {finished: true});
-                    this.addStepData(LOADING_STAGE.SEND_BRIDGE, {
-                        coin: this.depositHubCoin.symbol,
-                        // it is approximate amount based on estimation, maybe extract actual amount from tx
-                        amount: this.amountToDeposit,
-                        tx: {
-                            hash: result.txHash,
-                            params: {
-                                chainId: this.hubChainData.chainId,
-                            },
-                            timestamp: (new Date()).toISOString(),
-                        },
-                        finished: true, // is really finished here?
-                    });
-
-                    this.addStepData(LOADING_STAGE.WAIT_BRIDGE, {coin: this.depositHubCoin.symbol /* calculate receive amount? */}, true);
-                    return waitHubTransferToMinter(result.txHash, this.$store.getters.address, this.depositHubCoin.symbol);
-                })
-                .then(({ tx: minterTx, outputAmount}) => {
-                    this.addStepData(LOADING_STAGE.WAIT_BRIDGE, {amount: outputAmount, tx: minterTx, finished: true});
-
-                    return outputAmount;
+                    return addStepDataBridgeDeposit(this.hubChainData.chainId, result.txHash, this.depositHubCoin.symbol, this.amountToDeposit, this.$store.getters.address);
                 })
                 .catch((error) => {
                     this.addStepData(this.currentLoadingStage, {error});

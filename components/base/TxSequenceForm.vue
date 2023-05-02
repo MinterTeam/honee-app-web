@@ -7,7 +7,7 @@ import useFee from '~/composables/use-fee.js';
 import useTxService from '~/composables/use-tx-service.js';
 import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
-import HubBuyTxListItem from '~/components/HubBuyTxListItem.vue';
+import HubBuyTxListItem from '~/components/base/StepListItem.vue';
 
 export default {
     LOADING_STAGE,

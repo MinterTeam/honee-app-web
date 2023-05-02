@@ -233,6 +233,7 @@ export const HUB_BUY_STAGE = {
     // common
     WAIT_BRIDGE: 'wait_bridge',
     SWAP_MINTER: 'swap_minter',
+    MINTER: 'minter',
     FINISH: 'finish',
 };
 

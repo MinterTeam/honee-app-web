@@ -131,6 +131,8 @@ export default {
     <TxSequenceWeb3Withdraw
         :hub-network-slug="hubChainData.hubNetworkSlug"
         :coin="$options.COLLATERAL_COIN"
+        :coin-to-deposit="$options.LEND_COIN"
+        :amount-to-deposit="amountToBorrow"
         :complexity="0"
         :build-tx-list="buildTxList"
         :v$extra="$v"

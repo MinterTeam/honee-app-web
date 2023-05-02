@@ -193,6 +193,8 @@ export default {
             :coin="$options.LEND_COIN"
             :coin-label="$td('Fee', 'todo')"
             :amount="amountToSend"
+            :coin-to-deposit="$options.COLLATERAL_COIN"
+            :amount-to-deposit="loan.collateralAmount"
             :complexity="0"
             :build-tx-list="buildTxList"
             :v$extra="$v"

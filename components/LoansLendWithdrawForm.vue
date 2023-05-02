@@ -157,6 +157,8 @@ export default {
             :coin="$options.LEND_COIN"
             :coin-label="$td('Fee', 'todo')"
             :amount="innerData?.amountToSendForRelayReward"
+            :coin-to-deposit="$options.LEND_COIN"
+            :amount-to-deposit="lend.leftAmount"
             :complexity="0"
             :build-tx-list="buildTxList"
             :v$extra="$v"
