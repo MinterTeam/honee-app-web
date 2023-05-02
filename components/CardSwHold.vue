@@ -101,7 +101,7 @@ export default {
             }"
         />
 
-        <p :class="isSmall ? 'card__action-description' : 'u-h4'">{{ $td(`Hold ${coin} tokens in your smart wallet and earn 0.1% revenue per day (36% APR).`, 'metagarden.smart-hold-description', {coin}) }}</p>
+        <p :class="isSmall ? 'card__action-description' : 'card__action-description'">{{ $td(`Hold ${coin} tokens in your smart wallet and earn 0.1% revenue per day (36% APR).`, 'metagarden.smart-hold-description', {coin}) }}</p>
 
         <div class="u-flex u-flex--align-center u-mt-10">
             <nuxt-link v-if="minterBalance > 0" class="button button--full" :to="$i18nGetPreferredPath(`/withdraw?coin=${coin}&network=${$options.HUB_NETWORK_SLUG.BSC}&address=${smartWalletAddress}`)">
