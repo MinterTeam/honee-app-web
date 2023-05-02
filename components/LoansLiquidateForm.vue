@@ -11,6 +11,7 @@ import {LOAN_MIN_AMOUNT, LEND_COIN, COLLATERAL_COIN, LOANS_CONTRACT_ADDRESS, get
 import {pretty} from '~/assets/utils.js';
 import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
 import loansABI from '~/assets/abi/loans.json';
+import useHubToken from '~/composables/use-hub-token.js';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import TxSequenceWeb3Withdraw from '~/components/base/TxSequenceWeb3Withdraw.vue';
 
@@ -33,6 +34,24 @@ export default {
             type: [Number, String],
             required: true,
         },
+    },
+    setup() {
+        const {
+            tokenContractAddressFixNative: collateralTokenContractAddress,
+            tokenDecimals: collateralTokenDecimals,
+            isNativeToken: collateralIsNativeToken,
+            isWrappedNativeToken: collateralIsWrappedNativeToken,
+            /*hubCoin, tokenData,*/
+            setHubTokenProps,
+        } = useHubToken();
+
+        return {
+            collateralTokenContractAddress,
+            collateralTokenDecimals,
+            collateralIsNativeToken,
+            collateralIsWrappedNativeToken,
+            setHubTokenProps,
+        };
     },
     fetch() {
         if (!this.id && this.id !== 0) {
@@ -110,6 +129,17 @@ export default {
             return HUB_CHAIN_DATA[HUB_NETWORK_SLUG.BSC];
         },
     },
+    created() {
+        // hubTokenProps
+        this.$watch(
+            () => ({
+                chainId: this.hubChainData.chainId,
+                tokenSymbol: COLLATERAL_COIN,
+            }),
+            (newVal) => this.setHubTokenProps(newVal),
+            {deep: true, immediate: true},
+        );
+    },
     methods: {
         pretty,
         fetchLoan() {
@@ -132,8 +162,8 @@ export default {
             };
             const depositTxList = await buildDepositWithApproveTxList(
                 this.hubChainData.chainId,
-                this.innerData.isNativeToken ? undefined : this.innerData.tokenContractAddress,
-                this.innerData.tokenDecimals,
+                this.collateralTokenContractAddress,
+                this.collateralTokenDecimals,
                 this.$store.getters.address,
                 this.loan.collateralAmount,
                 this.innerData.smartWalletAddress,

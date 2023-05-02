@@ -11,6 +11,7 @@ import {LOAN_MIN_AMOUNT, LEND_COIN, COLLATERAL_COIN, LOANS_CONTRACT_ADDRESS, get
 import {pretty} from '~/assets/utils.js';
 import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
 import loansABI from '~/assets/abi/loans.json';
+import useHubToken from '~/composables/use-hub-token.js';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import TxSequenceWeb3Withdraw from '~/components/base/TxSequenceWeb3Withdraw.vue';
 
@@ -28,6 +29,24 @@ export default {
         'success-modal-close',
         // 'override-stats-value',
     ],
+    setup() {
+        const {
+            tokenContractAddressFixNative: lendTokenContractAddress,
+            tokenDecimals: lendTokenDecimals,
+            isNativeToken: lendIsNativeToken,
+            isWrappedNativeToken: lendIsWrappedNativeToken,
+            /*hubCoin, tokenData,*/
+            setHubTokenProps,
+        } = useHubToken();
+
+        return {
+            lendTokenContractAddress,
+            lendTokenDecimals,
+            lendIsNativeToken,
+            lendIsWrappedNativeToken,
+            setHubTokenProps,
+        };
+    },
     fetch() {
         return this.fetchCollateralPrice();
     },
@@ -62,6 +81,17 @@ export default {
             return new Big(this.amountToPledge).times(this.collateralPrice).div(COLLATERAL_RATE).toString();
         },
     },
+    created() {
+        // hubTokenProps
+        this.$watch(
+            () => ({
+                chainId: this.hubChainData.chainId,
+                tokenSymbol: LEND_COIN,
+            }),
+            (newVal) => this.setHubTokenProps(newVal),
+            {deep: true, immediate: true},
+        );
+    },
     methods: {
         pretty,
         fetchCollateralPrice() {
@@ -84,8 +114,8 @@ export default {
             const borrowTxList = await addApproveTx(this.innerData.tokenContractAddress, amountToPledgeWei, tx);
             const depositTxList = await buildDepositWithApproveTxList(
                 this.hubChainData.chainId,
-                this.innerData.isNativeToken ? undefined : this.innerData.tokenContractAddress,
-                this.innerData.tokenDecimals,
+                this.lendIsNativeToken ? undefined : this.lendTokenContractAddress,
+                this.lendTokenDecimals,
                 this.$store.getters.address,
                 this.amountToBorrow,
                 this.innerData.smartWalletAddress,
