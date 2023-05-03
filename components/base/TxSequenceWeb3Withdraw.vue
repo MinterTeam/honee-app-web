@@ -234,6 +234,10 @@ export default {
                 };
             };
 
+            const prepareWithdrawStepData = () => {
+                addStepDataBridgeWithdraw(this.hubChainData.chainId, undefined, this.coin, withdrawValue, 1);
+            };
+
             const prepareSmartWalletTx = () => {
                 // wait for computed depended on withdrawValue to recalculate
                 return wait(50)
@@ -251,8 +255,10 @@ export default {
             };
 
             const withdrawAmountToReceive = this.withdrawAmountToReceive;
-            const finalizeWithdraw = ({hash}) => {
-                addStepDataBridgeWithdraw(this.hubChainData.chainId, hash, this.coin, withdrawValue, 1)
+            const amountToDeposit = this.amountToDeposit;
+            /** @type {SendSequenceItem['finalize']}*/
+            const finalizeWithdraw = (minterTx) => {
+                addStepDataBridgeWithdraw(this.hubChainData.chainId, minterTx.hash, this.coin, withdrawValue, 1)
                     .then(() => {
                         this.addStepData(LOADING_STAGE.SEND_TO_RELAY, {
                             coin: this.coin,
@@ -267,9 +273,11 @@ export default {
                     })
                     .then((result) => {
                         if (this.coinToDeposit) {
-                            addStepDataBridgeDeposit(this.hubChainData.chainId, result.txHash, this.coinToDeposit, this.amountToDeposit, this.$store.getters.address, 2);
+                            addStepDataBridgeDeposit(this.hubChainData.chainId, result.txHash, this.coinToDeposit, amountToDeposit, this.$store.getters.address, 2);
                         }
                     });
+
+                return minterTx;
             };
 
             return [
@@ -277,10 +285,11 @@ export default {
                 {
                     // refineFee is not needed if no 'prepare'
                     prepareGasCoinPosition: prepareWithdrawTxParams ? 'start' : 'skip',
-                    prepare: [prepareWithdrawTxParams, prepareSmartWalletTx],
+                    prepare: [prepareWithdrawTxParams, prepareWithdrawStepData, prepareSmartWalletTx],
                     finalize: finalizeWithdraw,
                     txParams: this.withdrawTxParams,
                     feeTxParams: this.withdrawFeeTxParams,
+                    skipAddStepData: true,
                 },
             ];
         },

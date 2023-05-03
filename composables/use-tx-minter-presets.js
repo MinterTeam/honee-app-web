@@ -23,6 +23,7 @@ async function sendMinterSwapTx({initialTxParams, prepare} = {}) {
             coin0: txParams.data.coinToSell || txParams.data.coins?.[0],
             amount0: txParams.data.valueToSell,
             coin1: txParams.data.coinToBuy ||  txParams.data.coins?.slice(-1),
+            required: true,
         }, true);
     }
 

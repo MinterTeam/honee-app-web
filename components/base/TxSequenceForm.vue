@@ -59,7 +59,7 @@ export default {
     },
     setup() {
         const {fee, setFeeProps, refineByIndex} = useFee();
-        const { txServiceState, currentLoadingStage, setStepList, sendTxSequence} = useTxService();
+        const { txServiceState, currentStep, currentLoadingStage, setStepList, sendTxSequence} = useTxService();
 
         return {
             fee,
@@ -67,6 +67,7 @@ export default {
             refineByIndex,
 
             txServiceState,
+            currentStep,
             currentLoadingStage,
             setStepList,
             sendTxSequence,
@@ -352,7 +353,7 @@ function arrayInsertAtPosition(target, item, position) {
                     </div>
                 </div>
             </div>
-            <div class="form-row u-text-medium u-fw-500" v-if="currentLoadingStage !== $options.LOADING_STAGE.FINISH">
+            <div class="form-row u-text-medium u-fw-500" v-if="currentLoadingStage !== $options.LOADING_STAGE.FINISH && currentStep?.required">
                 <span class="u-emoji">⚠️</span> {{ $td('Please keep this page active, otherwise progress may&nbsp;be&nbsp;lost.', 'index.keep-page-active') }}
             </div>
             <div class="form-row" v-if="currentLoadingStage === $options.LOADING_STAGE.FINISH">
