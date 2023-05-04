@@ -117,6 +117,7 @@ export default {
                 style: 'extended-card card--bee-staking',
                 coin: `BEE`,
                 description: 'Stake BEE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
+                tooltip: '',
                 stats: {
                     apr: {
                         percent: '5-20',
@@ -124,6 +125,7 @@ export default {
                 },
                 ru: {
                     description: 'Стейкуйте BEE на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
+                    tooltip: '',
                 },
             }),
             makeCard(presets.farm('BEE', 'USDTE'), {
@@ -369,6 +371,7 @@ export function makeCard(presetCard, card) {
  * @property {string} [caption]
  * @property {string} [title]
  * @property {string} [description]
+ * @property {string} [tooltip]
  * @property {string} [buttonLabel]
  * @property {object} [stats]
  * @property {string} [stats.caption]

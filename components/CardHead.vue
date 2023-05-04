@@ -2,8 +2,12 @@
 import {defineComponent} from 'vue';
 import get from 'lodash-es/get.js';
 import {pretty} from '~/assets/utils.js';
+import BaseTooltip from '~/components/base/BaseTooltip.vue';
 
 export default defineComponent({
+    components: {
+        BaseTooltip,
+    },
     props: {
         card: {
             /** @type {PropType<CardListItem>} */
@@ -25,6 +29,19 @@ export default defineComponent({
             }
 
             return icon;
+        },
+        caption() {
+            return this.translate('caption');
+        },
+        title() {
+            return this.card ? this.translate('title') : this.fallbackTitle;
+        },
+        // swap title and caption for metagarden
+        finalCaption() {
+            return this.$store.state.isMetagarden ? this.title : this.caption;
+        },
+        finalTitle() {
+            return this.$store.state.isMetagarden ? this.caption : this.title;
         },
         statsCaption() {
             const stats = this.card?.stats;
@@ -94,12 +111,18 @@ export default defineComponent({
             :src="getIconUrl(icon)"
         >
         <div class="card__action-title">
-            <div class="card__action-title-type" v-if="card && card.caption">{{ translate('caption') }}</div>
-            <div class="card__action-title-value">{{ card ? translate('title') : fallbackTitle }}</div>
+            <div class="card__action-title-type" v-if="finalCaption">{{ finalCaption }}</div>
+            <div class="card__action-title-value">{{ finalTitle }}</div>
         </div>
-        <div class="card__action-stats" v-if="card">
+        <div class="card__action-stats" v-if="card?.stats">
             <div class="card__action-stats-caption">{{ statsCaption }}</div>
             <div class="card__action-stats-value">{{ statsValue }}</div>
         </div>
+
+        <BaseTooltip
+            v-if="card?.tooltip && !card.stats"
+            class="card__action-tooltip"
+            :content="translate('tooltip')"
+        />
     </div>
 </template>
