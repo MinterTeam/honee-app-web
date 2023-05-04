@@ -7,6 +7,7 @@ import minValue from 'vuelidate/src/validators/minValue.js';
 import maxValue from 'vuelidate/src/validators/maxValue.js';
 import {wait} from '@shrpne/utils/src/wait.js';
 import Big from 'minterjs-util/src/big.js';
+import { createReusableTemplate } from '@vueuse/core';
 import useWeb3SmartWalletWithRelayReward from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet-relay-reward.js';
 import {pretty} from '~/assets/utils.js';
 import {isValidAmount} from '~/assets/utils/validators.js';
@@ -20,9 +21,12 @@ import FieldCombined from '~/components/base/FieldCombined.vue';
 import TxSequenceForm from '~/components/base/TxSequenceForm.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 
+const [DefineTemplate, ReuseTemplate] = createReusableTemplate();
+
 
 export default {
     components: {
+        DefineTemplate, ReuseTemplate,
         BaseAmountEstimation,
         FieldCombined,
         TxSequenceForm,
@@ -403,52 +407,72 @@ export default {
 </script>
 
 <template>
-    <TxSequenceForm
-        :sequence-params="sequenceParams"
-        :v$sequence-params="$v"
-        @update:fee="fee = $event"
-        @clear-form="clearForm()"
-        @success="$emit('success')"
-        @success-modal-close="$emit('success-modal-close')"
-    >
-        <div class="form-row">
-            <FieldCombined
-                :coin="coin"
-                :fallback-to-full-list="false"
-                :amount.sync="form.amount"
-                :$amount="$v.form.amount"
-                :useBalanceForMaxValue="true"
-                :fee="fee"
-                :isUseMax.sync="isUseMax"
-                :is-estimation="isStaticAmount"
-                :label="coinLabel || $td('Amount to spend', 'form.amount')"
-                @blur="/*handleInputBlur(); */$v.form.amount.$touch()"
-            />
-            <!--<span class="form-field__error" v-if="$v.form.amount.$dirty && !$v.form.amount.required">{{ $td('Enter amount', 'form.enter-amount') }}</span>-->
-            <!--<span class="form-field__error" v-else-if="$v.form.amount.$dirty && (!$v.form.amount.validAmount || !$v.form.amount.minValue)">{{ $td('Invalid amount', 'form.invalid-amount') }}</span>-->
-            <!--<span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.enoughToPayFee">{{ $td('Not enough to pay fee', 'form.not-enough-to-pay-fee') }}</span>-->
-            <!--                        <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.maxValue">{{ $td('Not enough', 'form.not-enough') }} {{ form.coinToGet }} ({{ $td('max.', 'form.max') }} {{ pretty(maxAmount) }})</span>-->
-        </div>
+    <div>
+        <TxSequenceForm
+            :sequence-params="sequenceParams"
+            :v$sequence-params="$v"
+            @update:fee="fee = $event"
+            @clear-form="clearForm()"
+            @success="$emit('success')"
+            @success-modal-close="$emit('success-modal-close')"
+        >
+            <div class="form-row">
+                <FieldCombined
+                    :coin="coin"
+                    :fallback-to-full-list="false"
+                    :amount.sync="form.amount"
+                    :$amount="$v.form.amount"
+                    :useBalanceForMaxValue="true"
+                    :fee="fee"
+                    :isUseMax.sync="isUseMax"
+                    :is-estimation="isStaticAmount"
+                    :label="coinLabel || $td('Amount to spend', 'form.amount')"
+                    @blur="/*handleInputBlur(); */$v.form.amount.$touch()"
+                />
+                <!--<span class="form-field__error" v-if="$v.form.amount.$dirty && !$v.form.amount.required">{{ $td('Enter amount', 'form.enter-amount') }}</span>-->
+                <!--<span class="form-field__error" v-else-if="$v.form.amount.$dirty && (!$v.form.amount.validAmount || !$v.form.amount.minValue)">{{ $td('Invalid amount', 'form.invalid-amount') }}</span>-->
+                <!--<span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.enoughToPayFee">{{ $td('Not enough to pay fee', 'form.not-enough-to-pay-fee') }}</span>-->
+                <!--                        <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.maxValue">{{ $td('Not enough', 'form.not-enough') }} {{ form.coinToGet }} ({{ $td('max.', 'form.max') }} {{ pretty(maxAmount) }})</span>-->
+            </div>
 
-        <div class="information form-row" v-if="form.amount">
-            <h3 class="information__title">Amount after withdrawal to BSC</h3>
-            <BaseAmountEstimation
-                :coin="coin"
-                :amount="withdrawAmountToReceive"
-                :hide-usd="true"
-                format="pretty"
-            />
+            <DefineTemplate>
+                <div class="information form-row" v-show="form.amount">
+                    <h3 class="information__title">Amount after withdrawal to BSC</h3>
+                    <BaseAmountEstimation
+                        :coin="coin"
+                        :amount="withdrawAmountToReceive"
+                        :hide-usd="true"
+                        format="pretty"
+                    />
 
-            <h3 class="information__title">Smart-wallet fee</h3>
-            <BaseAmountEstimation
-                :coin="coin"
-                :amount="smartWalletRelayReward"
-                :hide-usd="true"
-                :is-loading="isEstimationLimitForRelayRewardsLoading"
-                format="pretty"
-            />
+                    <h3 class="information__title">Smart-wallet fee</h3>
+                    <BaseAmountEstimation
+                        :coin="coin"
+                        :amount="smartWalletRelayReward"
+                        :hide-usd="true"
+                        :is-loading="isEstimationLimitForRelayRewardsLoading"
+                        format="pretty"
+                    />
 
-            <slot name="information"/>
-        </div>
-    </TxSequenceForm>
+                    <slot name="information"/>
+                </div>
+            </DefineTemplate>
+
+            <ReuseTemplate/>
+
+            <slot name="form-end"/>
+
+            <template v-slot:submit-title>
+                {{ $td('Continue', 'common.continue') }}
+            </template>
+
+            <template v-slot:confirm-modal-body>
+                <ReuseTemplate/>
+            </template>
+
+            <template v-slot:panel-footer>
+                <slot name="panel-footer"/>
+            </template>
+        </TxSequenceForm>
+    </div>
 </template>

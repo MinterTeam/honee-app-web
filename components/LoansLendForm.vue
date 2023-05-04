@@ -86,7 +86,7 @@ export default {
     <TxSequenceWeb3Withdraw
         :hub-network-slug="hubChainData.hubNetworkSlug"
         :coin="$options.LEND_COIN"
-        :coin-label="$td('Amount to lend', 'form.amount')"
+        :coin-label="$td('You lend', 'todo')"
         :complexity="0"
         :build-tx-list="buildTxList"
         :v$extra="$v"
@@ -103,6 +103,25 @@ export default {
                 :is-loading="innerData.isEstimationLimitForRelayRewardsLoading"
                 format="pretty"
             />
+        </template>
+
+        <template v-slot:form-end>
+            <div class="form-row u-text-medium u-text-muted">
+                <ul class="list-simple">
+                    <template v-if="$i18n.locale === 'en'">
+                        <li>You can send BNB and wait for someone to&nbsp;borrow it.</li>
+                        <li>Unused BNB can be withdrawn at any time.</li>
+                        <li>The interest is 12% per annum. 1% is charged once the borrower receives BNB and then continues to charge every 30th day.</li>
+                        <li>Please read the <a class="link--underline" href="https://honee.app/lending-and-borrowing-crypto" target="_blank">full terms</a></li>
+                    </template>
+                    <template v-if="$i18n.locale === 'ru'">
+                        <li>Вы можете отправить BNB и дождаться, пока кто-нибудь возьмет их взаймы.</li>
+                        <li>Неиспользованные BNB можно вывести в любое время.</li>
+                        <li>Процентная ставка составляет 12% годовых. 1% взимается, как только заемщик получает BNB, а затем продолжает взиматься каждый 30-й день.</li>
+                        <li>Please read the <a class="link--underline" href="https://honee.app/ru/lending-and-borrowing-crypto" target="_blank">full terms</a></li>
+                    </template>
+                </ul>
+            </div>
         </template>
     </TxSequenceWeb3Withdraw>
 </template>

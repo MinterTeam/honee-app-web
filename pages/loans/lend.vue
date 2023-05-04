@@ -21,7 +21,11 @@ export default {
     <div class="u-section u-container u-container--small">
         <div class="card card--invert">
             <div class="card__content card__content--medium">
-                <h1 class="card__action-title-value">{{ $td('Lend BNB', 'todo') }}</h1>
+                <h1 class="card__action-title-value">{{ $td('Provide BNB', 'todo') }}</h1>
+                <p class="card__action-description u-mt-05">
+                    {{ $td('This service lets you lend your BNB and earn&nbsp;interest.', 'todo') }}
+                    <!-- Please read the full terms before you continue. -->
+                </p>
             </div>
 
             <div class="card card--pop card--light-grey">

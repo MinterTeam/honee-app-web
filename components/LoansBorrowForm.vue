@@ -131,6 +131,7 @@ export default {
     <TxSequenceWeb3Withdraw
         :hub-network-slug="hubChainData.hubNetworkSlug"
         :coin="$options.COLLATERAL_COIN"
+        :coin-label="$td('You pledge', 'todo')"
         :coin-to-deposit="$options.LEND_COIN"
         :amount-to-deposit="amountToBorrow"
         :complexity="0"
@@ -158,6 +159,17 @@ export default {
                 :is-loading="innerData.isEstimationLimitForRelayRewardsLoading"
                 format="pretty"
             />
+        </template>
+
+        <template v-slot:form-end>
+            <div class="form-row u-text-medium u-text-muted">
+                <template v-if="$i18n.locale === 'en'">
+                    Please read the <a class="link--underline" href="https://honee.app/lending-and-borrowing-crypto" target="_blank">full terms</a>
+                </template>
+                <template v-if="$i18n.locale === 'ru'">
+                    Please read the <a class="link--underline" href="https://honee.app/ru/lending-and-borrowing-crypto" target="_blank">full terms</a>
+                </template>
+            </div>
         </template>
     </TxSequenceWeb3Withdraw>
 </template>
