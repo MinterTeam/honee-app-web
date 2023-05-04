@@ -76,14 +76,14 @@ export default {
                 stats: isSmall ? {
                     apr: {percent: 36},
                 } : undefined,
-                tooltip: isSmall ? undefined : tooltipContent ,
+                tooltip: isSmall ? undefined : tooltipContent,
             }"
         />
 
         <img v-if="!isSmall" class="u-image u-image-center u-mt-15 u-mb-10" src="/img/metagarden-sw-hold.png" srcset="/img/metagarden-sw-hold@2x.png 2x" alt="" role="presentation" width="165" height="128">
 
 
-        <p :class="isSmall ? 'card__action-description' : 'card__action-description'">{{ $td(`Hold ${coin} tokens in your smart wallet and earn 0.1% revenue per day${isSmall ? '' : ' (36% APR)'}.`, 'metagarden.smart-hold-description', {coin}) }}</p>
+        <p class="card__action-description">{{ $td(`Hold ${coin} tokens in your smart wallet and earn 0.1% revenue per day${isSmall ? '' : ' (36% APR)'}.`, 'metagarden.smart-hold-description', {coin}) }}</p>
 
         <div class="u-flex u-flex--align-center u-mt-10">
             <nuxt-link v-if="minterBalance > 0" class="button button--full" :to="$i18nGetPreferredPath(`/withdraw?coin=${coin}&network=${$options.HUB_NETWORK_SLUG.BSC}&address=${smartWalletAddress}`)">

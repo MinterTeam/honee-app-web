@@ -3,6 +3,7 @@ import cardList from '~/data/cards.js';
 import Card from '~/components/Card.vue';
 import CardPremium from '~/components/CardPremium.vue';
 import CardSwHold from '~/components/CardSwHold.vue';
+import CardLoans from '~/components/CardLoans.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
 import InvestmentList from '~/components/InvestmentList.vue';
 import PortfolioLeaderboard from '~/components/PortfolioLeaderboard.vue';
@@ -44,8 +45,9 @@ export default {
     cardList,
     components: {
         Card,
-        CardPremium,
+        // CardPremium,
         CardSwHold,
+        // CardLoans,
         AddressAssets,
         InvestmentList,
         PortfolioLeaderboard,
@@ -153,6 +155,11 @@ export default {
                     <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
                         <CardSwHold coin="METAGARDEN" :is-small="true"/>
                     </div>
+                    <!--
+                    <div class="u-cell u-cell&#45;&#45;medium&#45;&#45;1-2 u-cell&#45;&#45;large&#45;&#45;1-3 card-wrap-cell">
+                        <CardLoans coin="METAGARDEN" :is-small="true"/>
+                    </div>
+                    -->
                     <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnOtherList" :key="card.action">
                         <Card :card="card"/>
                     </div>
