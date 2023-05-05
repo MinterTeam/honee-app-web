@@ -162,12 +162,11 @@ export default {
         'delegate-more': 'Делегировать',
 
         'sign-up-subtitle': 'Крипто-кошелек для заработка',
-        'sign-up': 'Регистрация',
+        'sign-up': 'Создать новый кошелёк',
         'or': 'или',
         'sign-in': 'Вход',
         'already-have-wallet': 'У меня уже есть кошелёк',
 
-        'sign-up-2': 'Регистрация',
         'save-phrase-warning': 'Сохраните эту сид-фразу, чтобы получать доступ к своим средствам в будущем.',
         'save-phrase-checkbox': 'Я сохранил(-а) фразу!',
         'launch-honee': 'Запустить Honee',

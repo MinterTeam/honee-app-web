@@ -31,12 +31,12 @@ export default {
         <img class="battle__splash-title" :src="`/img/battle-title-${$i18n.locale}.svg`" :alt="$td('Portfolio battle', 'portfolio.battle-title')" height="106">
 
         <nuxt-link class="button button--white button--full button--large" :to="$i18nGetPreferredPath('/auth/sign-up?battle=true')">
-            {{ $td('Sign up', 'index.sign-up') }}
+            {{ $td('Create a new wallet', 'index.sign-up') }}
         </nuxt-link>
 
         <div class="u-text-center u-mt-15">
             <nuxt-link class="link link--underline u-fw-700" :to="$i18nGetPreferredPath('/auth/sign-in?battle=true')">
-                {{ $td('Sign in', 'index.sign-in') }}
+                {{ $td('I already have a wallet', 'index.already-have-wallet') }}
             </nuxt-link>
         </div>
 

@@ -1,12 +1,10 @@
 <script>
 import getTitle from '~/assets/get-title.js';
-import FormAddAdvancedAddress from '~/components/AuthLogin.vue';
 
 export default {
     PAGE_TITLE: 'Auth',
     layout: 'splash-index',
     components: {
-        FormAddAdvancedAddress,
     },
     head() {
         return {
@@ -24,13 +22,15 @@ export default {
 
 <template>
     <div class="u-container u-container--mini">
-        <nuxt-link class="button button--main button--full button--large" :to="$i18nGetPreferredPath('/auth/sign-up')">{{ $td('Sign up', 'index.sign-up') }}</nuxt-link>
+        <nuxt-link class="button button--main button--full button--large" :to="$i18nGetPreferredPath('/auth/sign-up')">
+            {{ $td('Create a new wallet', 'index.sign-up') }}
+        </nuxt-link>
 
-        <div class="u-section-divider-text">
-            <div class="u-section-divider-text__inner">{{ $td('or', 'index.or') }}</div>
+        <div class="u-text-center u-mt-15">
+            <nuxt-link class="link link--underline u-fw-700" :to="$i18nGetPreferredPath('/auth/sign-in')">
+                {{ $td('I already have a wallet', 'index.already-have-wallet') }}
+            </nuxt-link>
         </div>
-
-        <FormAddAdvancedAddress/>
     </div>
 </template>
 
