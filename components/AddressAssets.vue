@@ -56,7 +56,7 @@ export default {
                         <nuxt-link class="button button--small button--main" :to="$i18nGetPreferredPath('/topup/instant')">
                             {{ $td('&#43; Instant deposit', 'index.topup-instant') }}
                         </nuxt-link>
-                        <nuxt-link class="button button--small button--light-gray" :to="$i18nGetPreferredPath('/withdraw')">
+                        <nuxt-link class="button button--small button--light-main" :to="$i18nGetPreferredPath('/withdraw')">
                             {{ $td('&#8599; Withdraw', 'index.withdraw') }}
                         </nuxt-link>
                     </div>

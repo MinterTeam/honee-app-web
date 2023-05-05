@@ -792,7 +792,7 @@ export default {
             approve: "Одобрить операцию",
             repay: "Вернуть {coin1name}",
             sell_and_repay: "Продать {coin0name} & закрыть",
-            closed: "Выплачен",
+            closed: "Закрыт",
         },
     },
     lend: {
@@ -834,7 +834,7 @@ export default {
             pledged: "Залог",
             to_repay: "К возврату",
             liquidate: "Получить залог",
-            closed: "Выплачено",
+            closed: "Закрыт",
         },
     },
 };

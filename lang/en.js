@@ -77,7 +77,7 @@ export default {
             approve: "Approve",
             repay: "Repay with {coin1name}",
             sell_and_repay: "Sell {coin0name} & Repay",
-            closed: "CLOSED",
+            closed: "Closed",
         },
     },
     lend: {
@@ -119,7 +119,7 @@ export default {
             pledged: "Pledged",
             to_repay: "To repay",
             liquidate: "Liquidate",
-            closed: "CLOSED",
+            closed: "Closed",
         },
     },
 };

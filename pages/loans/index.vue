@@ -9,8 +9,5 @@ export default {
 </script>
 
 <template>
-    <div>
-        <LoansLendList/>
-
-    </div>
+    <LoansLendList class="u-container--large"/>
 </template>
