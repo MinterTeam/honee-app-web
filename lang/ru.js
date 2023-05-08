@@ -166,7 +166,8 @@ export default {
         'sign-up-2': 'Создание кошелька',
         'or': 'или',
         'sign-in': 'Вход',
-        'already-have-wallet': 'Вход в кошелёк',
+        'already-have-wallet': 'У меня уже есть кошелёк',
+        'already-have-wallet-2': 'Вход в кошелёк',
 
         'save-phrase-warning': 'Сохраните эту сид-фразу, чтобы получать доступ к своим средствам в будущем.',
         'save-phrase-checkbox': 'Я сохранил(-а) фразу!',

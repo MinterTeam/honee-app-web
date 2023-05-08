@@ -36,7 +36,7 @@ export default {
 
         <div class="u-text-center u-mt-15">
             <nuxt-link class="link link--underline u-fw-700" :to="$i18nGetPreferredPath('/auth/sign-in?battle=true')">
-                {{ $td('Sign in to your wallet', 'index.already-have-wallet') }}
+                {{ $td('I already have a wallet', 'index.already-have-wallet') }}
             </nuxt-link>
         </div>
 
