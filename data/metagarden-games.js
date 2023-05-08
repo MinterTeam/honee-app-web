@@ -40,7 +40,6 @@ export default [
         category: 'Lottery',
         coin: 'SNATCH',
         slug: 'snatch',
-        isComingSoon: true,
         ru: {
             description: 'Многопользовательская игра, в которой необходимо открывать банковские ячейки, чтобы забирать призы.',
             category: 'Лотерея',

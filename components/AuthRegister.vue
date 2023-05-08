@@ -63,7 +63,7 @@ export default {
 <template>
     <form class="card card__content" @submit.prevent="authorize()">
         <div class="form-row u-text-center">
-            <h1 class="u-h3 u-mb-05">{{ $td('Create a new wallet', 'index.sign-up-2') }}</h1>
+            <h1 class="u-h3 u-mb-05">{{ $td('Create a new wallet1', 'index.sign-up-2') }}</h1>
             <p class="u-text-medium">{{ $td('Save this seed phrase to access your funds in&nbsp;the&nbsp;future.', 'index.save-phrase-warning') }}</p>
         </div>
         <div class="h-field h-field--is-readonly form-row">

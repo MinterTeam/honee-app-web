@@ -55,12 +55,12 @@ export default {
         <ul class="form-row u-text-muted u-text-small">
             <template v-if="$i18n.locale === 'en'">
                 <li>Only BEP20 or ERC20 tokens</li>
-                <li>For BNB Smart Chain the smart-wallet activation ≈$3, following deposits ≈ $1.5. For Ethereum, activation ≈$50, following deposits ≈$25</li>
+                <li>Smart-wallet activation for BNB Smart Chain is ≈ $3, following deposits ≈ $1.5. Activation for Ethereum ≈ $50, then deposits ≈ $25</li>
                 <li>Any amount</li>
             </template>
             <template v-if="$i18n.locale === 'ru'">
                 <li>Только BEP20 или ERC20 токены</li>
-                <li>Для BNB Smart Chain активация смарт-кошелька ≈3$, последующие депозиты ≈1,5$. Для Ethereum активация ≈50$, последующие депозиты ≈25$</li>
+                <li>Для BNB Smart Chain активация смарт-кошелька ≈ 3$, последующие депозиты ≈ 1,5$. Для Ethereum активация ≈ 50$, последующие депозиты ≈ 25$</li>
                 <li>Любое количество</li>
             </template>
         </ul>

@@ -142,18 +142,18 @@ export default {
             <BaseLoader class="button__loader" :isLoading="true"/>
         </button>
 
-        <div class="u-h--uppercase u-mb-05 u-mt-15">{{ $td('Buy miners', 'metagarden.buy-more-button') }}</div>
+        <div class="u-h--uppercase u-mb-05 u-mt-15">{{ $td('Buy miners with', 'metagarden.buy-more-button') }}</div>
         <div class="u-grid u-grid--smaller-mobile">
             <div class="u-cell u-cell--1-2">
                 <a :href="card2MinterUrl" class="button button--full button--very-narrow">
                     <img class="button__icon" src="/img/icon-topup-card.svg" alt="" role="presentation"/>
-                    {{ $td('With card', 'metagarden.buy-button-card') }}
+                    {{ $td('Card', 'metagarden.buy-button-card') }}
                 </a>
             </div>
             <div class="u-cell u-cell--1-2">
                 <nuxt-link :to="$i18nGetPreferredPath('/metagarden/buy-spot')" class="button button--full button--narrow">
                     <img class="button__icon" src="/img/icon-blockchain.svg" alt="" role="presentation"/>
-                    {{ $td('With crypto', 'metagarden.buy-button-crypto') }}
+                    {{ $td('Crypto', 'metagarden.buy-button-crypto') }}
                 </nuxt-link>
             </div>
         </div>
