@@ -4,10 +4,8 @@
 // button
 .button {
     display: inline-flex; align-items: center; justify-content: center; padding: 8px 18px; font-size: 16px; line-height: 20px; font-weight: 700; font-family: @heading-font-family; background: #fff; color: @c-black; border-radius: 12px; text-align: center; border: 2px solid transparent; text-decoration: none; transition: 0.1s; position: relative; overflow: hidden; vertical-align: top;
-    &:not(.is-inactive) {
-        &:hover, &:focus {background: #e4e4e4;}
-        &:active {background: #ddd;}
-    }
+    &:hover, &:focus {background: #e4e4e4;}
+    &:active {background: #ddd;}
     &[disabled], &.is-disabled {
         cursor: default;
         &:not(.is-loading) {background: rgba(0,0,0, 0.45); color: var(--color-text-disabled-button);}
@@ -116,10 +114,9 @@
 }
 .button--light {
     background: var(--color-light-gray);
-    &:not(.is-inactive) {
-        &:hover, &:focus {background: rgba(var(--color-main-rgb), 0.2);}
-        &:active {background: rgba(var(--color-main-rgb), 0.4);}
-    }
+    &:hover, &:focus {background: rgba(var(--color-main-rgb), 0.2);}
+    &:active {background: rgba(var(--color-main-rgb), 0.4);}
+    &.is-inactive {background: var(--color-light-gray);}
 }
 //.button--ghost-white {
 //    color: #fff; background: transparent; border-color: #fff;
