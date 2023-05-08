@@ -11,7 +11,6 @@ export default {
         'BEE',
         'BIP',
         'HUB',
-        'MUSD',
         'METAGARDEN',
         'WONDER',
         'SNATCH',
