@@ -29,7 +29,7 @@ export default {
 
         <MetagardenSpotCard class="u-mt-10" :hide-head="false"/>
 
-        <MetagardenMeganetCard/>
+        <MetagardenMeganetCard class="u-mt-10"/>
 
         <MetagardenSwHoldCard class="u-mt-10" coin="METAGARDEN" :is-small="false"/>
     </MetagardenGame>
