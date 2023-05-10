@@ -323,6 +323,13 @@ export default {
             <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the disclaimer in the footer.', 'form.read-understood') }}</p>
         </form>
 
+        <hr class="card__fake-divider">
+
+        <nuxt-link class="button button--full button--ghost-main" :to="$i18nGetPreferredPath('/topup/instant')">
+            {{ $td('+ Instant deposit', 'index.topup-instant') }}
+        </nuxt-link>
+
+
         <!-- Confirm Modal -->
         <Modal :isOpen.sync="isConfirmModalVisible">
             <h2 class="u-h3 u-mb-10">
@@ -410,10 +417,5 @@ export default {
                 {{ $td('Close', 'form.success-close-button') }}
             </button>
         </Modal>
-        <div class="card__content--instant-block">
-            <nuxt-link class="button button--full button--ghost-main" :to="$i18nGetPreferredPath('/topup/instant')">
-                {{ $td('+ Instant deposit', 'index.topup-instant') }}
-            </nuxt-link>
-        </div>
     </div>
 </template>

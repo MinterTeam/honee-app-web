@@ -48,7 +48,7 @@
     background: @c-night-dark; color: #fff;
     .wallet__action-button .color-main-light {display: none;}
     .card--light-grey {.card--metagarden();}
-    .card--invert {background: transparent;}
+    .card--invert {background: transparent !important; /* important to override inline styles from custom color */}
     .card--invert .card.card__content {border-top: none;}
     .card__action-title-type, .card__action-stats-caption {color: @c-metagarden-text-muted; opacity: 1;}
     .information {background: transparent; color: #fff; border-color: @c-metagarden-highlight;}
@@ -286,7 +286,6 @@
 //}
 .card__content--small {padding: 16px;}
 .card__content--mini {padding-block: 10px;}
-.card__content--instant-block {margin: 16px 0 0 0; padding: 16px 0 0 0;border-top: 1px solid var(--color-divider);}
 
 
 .card__head-row {

@@ -36,12 +36,16 @@ export default defineComponent({
         title() {
             return this.card ? this.translate('title') : this.fallbackTitle;
         },
+        isMgSwapTitles() {
+            const MG_COINS = ['METAGARDEN', 'MEGANET'];
+            return this.$store.state.isMetagarden && MG_COINS.includes(this.title) && this.caption;
+        },
         // swap title and caption for metagarden
         finalCaption() {
-            return this.$store.state.isMetagarden ? this.title : this.caption;
+            return this.isMgSwapTitles ? this.title : this.caption;
         },
         finalTitle() {
-            return this.$store.state.isMetagarden ? this.caption : this.title;
+            return this.isMgSwapTitles ? this.caption : this.title;
         },
         statsCaption() {
             const stats = this.card?.stats;

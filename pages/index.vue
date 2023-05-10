@@ -8,6 +8,7 @@ import AddressAssets from '~/components/AddressAssets.vue';
 import InvestmentList from '~/components/InvestmentList.vue';
 import PortfolioLeaderboard from '~/components/PortfolioLeaderboard.vue';
 import PortfolioList from '~/components/PortfolioList.vue';
+import MetagardenLootboxCard from '~/components/MetagardenLootboxCard.vue';
 
 const BASE_CARD = {
     DELEGATION: 'delegation',
@@ -44,6 +45,7 @@ export default {
     TWITTER_CARD_HEAD,
     cardList,
     components: {
+        MetagardenLootboxCard,
         Card,
         // CardPremium,
         CardSwHold,
@@ -110,6 +112,8 @@ export default {
 <template>
     <div class="u-container--large">
         <AddressAssets/>
+
+        <MetagardenLootboxCard class="u-mt-25"/>
 
         <!-- BEE earning options -->
         <div class="u-mt-25">
