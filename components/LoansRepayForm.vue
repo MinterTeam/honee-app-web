@@ -7,9 +7,9 @@ import minValue from 'vuelidate/src/validators/minValue.js';
 import maxValue from 'vuelidate/src/validators/maxValue.js';
 import Big from 'minterjs-util/src/big.js';
 import {toErcDecimals, AbiMethodEncoder, addApproveTx, buildDepositWithApproveTxList} from 'minter-js-web3-sdk/src/web3.js';
-import {LOAN_MIN_AMOUNT, LEND_COIN, COLLATERAL_COIN, LOANS_CONTRACT_ADDRESS, getLoan, COLLATERAL_RATE} from '~/api/web3-loans.js';
+import {LEND_COIN, getLoan} from '~/api/web3-loans.js';
 import {pretty} from '~/assets/utils.js';
-import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
+import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA, NATIVE_COIN_ADDRESS, LOANS_BSC_CONTRACT_ADDRESS_LIST} from '~/assets/variables.js';
 import loansABI from '~/assets/abi/loans.json';
 import useHubToken from '~/composables/use-hub-token.js';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
@@ -17,7 +17,6 @@ import TxSequenceWeb3Withdraw from '~/components/base/TxSequenceWeb3Withdraw.vue
 
 
 export default {
-    COLLATERAL_COIN,
     LEND_COIN,
     components: {
         BaseAmountEstimation,
@@ -32,6 +31,10 @@ export default {
     props: {
         id: {
             type: [Number, String],
+            required: true,
+        },
+        collateralCoin: {
+            type: String,
             required: true,
         },
     },
@@ -55,9 +58,16 @@ export default {
     },
     fetch() {
         if (!this.id && this.id !== 0) {
-            this.$nuxt.error({
+            return this.$nuxt.error({
                 status: 404,
                 message: this.$td('Loan ID is required', 'todo'),
+                useMessage: true,
+            });
+        }
+        if (!this.loansContractAddress) {
+            return this.$nuxt.error({
+                status: 404,
+                message: this.$td('Invalid collateral coin', 'todo'),
                 useMessage: true,
             });
         }
@@ -117,6 +127,9 @@ export default {
         hubChainData() {
             return HUB_CHAIN_DATA[HUB_NETWORK_SLUG.BSC];
         },
+        loansContractAddress() {
+            return LOANS_BSC_CONTRACT_ADDRESS_LIST[this.collateralCoin];
+        },
         amountToSend() {
             const amountToReceive = new Big(this.loan.amountToRepay).plus(this.innerData?.smartWalletRelayReward || 0);
             return this.$refs.txSequenceWeb3Withdraw?.calculateAmountToSend(amountToReceive, true);
@@ -127,7 +140,7 @@ export default {
         this.$watch(
             () => ({
                 chainId: this.hubChainData.chainId,
-                tokenSymbol: COLLATERAL_COIN,
+                tokenSymbol: this.collateralCoin,
             }),
             (newVal) => this.setHubTokenProps(newVal),
             {deep: true, immediate: true},
@@ -136,7 +149,7 @@ export default {
     methods: {
         pretty,
         fetchLoan() {
-            return getLoan(this.id)
+            return getLoan(this.collateralCoin, this.id)
                 .then((loan) => {
                     this.loan = Object.freeze(loan);
                 });
@@ -153,14 +166,14 @@ export default {
             let txList;
             if (this.innerData.isWrappedNativeToken) {
                 const tx = {
-                    to: LOANS_CONTRACT_ADDRESS,
+                    to: this.loansContractAddress,
                     data: AbiMethodEncoder(loansABI)('repay', this.id),
                     value: '0x00',
                 };
                 txList = await addApproveTx(this.innerData.tokenContractAddress, amountToRepayWei, tx);
             } else if (this.innerData.isNativeToken) {
                 const tx = {
-                    to: LOANS_CONTRACT_ADDRESS,
+                    to: this.loansContractAddress,
                     data: AbiMethodEncoder(loansABI)('repayBNB', this.id),
                     value: amountToRepayWei,
                 };
@@ -193,7 +206,7 @@ export default {
             :coin="$options.LEND_COIN"
             :coin-label="$td('Fee', 'todo')"
             :amount="amountToSend"
-            :coin-to-deposit="$options.COLLATERAL_COIN"
+            :coin-to-deposit="collateralCoin"
             :amount-to-deposit="loan.collateralAmount"
             :complexity="0"
             :build-tx-list="buildTxList"
@@ -212,7 +225,7 @@ export default {
 
                 <h3 class="information__title">Collateral to receive</h3>
                 <BaseAmountEstimation
-                    :coin="$options.COLLATERAL_COIN"
+                    :coin="collateralCoin"
                     :amount="loan.collateralAmount"
                     format="pretty"
                 />

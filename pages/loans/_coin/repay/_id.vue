@@ -27,6 +27,7 @@ export default {
             <div class="card card--pop card--light-grey">
                 <LoansRepayForm
                     :id="$route.params.id"
+                    :collateral-coin="$route.params.coin"
                     class="card__content card__content--medium"
                     @success-modal-close="$router.push($i18nGetPreferredPath('/loans'))"
                 />

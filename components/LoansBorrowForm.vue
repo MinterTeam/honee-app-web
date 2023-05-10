@@ -7,9 +7,9 @@ import minValue from 'vuelidate/src/validators/minValue.js';
 import maxValue from 'vuelidate/src/validators/maxValue.js';
 import Big from 'minterjs-util/src/big.js';
 import {toErcDecimals, AbiMethodEncoder, addApproveTx, buildDepositWithApproveTxList} from 'minter-js-web3-sdk/src/web3.js';
-import {LOAN_MIN_AMOUNT, LEND_COIN, COLLATERAL_COIN, LOANS_CONTRACT_ADDRESS, getCollateralPrice, COLLATERAL_RATE} from '~/api/web3-loans.js';
+import {LOAN_MIN_AMOUNT, LEND_COIN, getCollateralPrice, COLLATERAL_RATE} from '~/api/web3-loans.js';
 import {pretty} from '~/assets/utils.js';
-import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
+import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA, NATIVE_COIN_ADDRESS, LOANS_BSC_CONTRACT_ADDRESS_LIST} from '~/assets/variables.js';
 import loansABI from '~/assets/abi/loans.json';
 import useHubToken from '~/composables/use-hub-token.js';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
@@ -17,7 +17,6 @@ import TxSequenceWeb3Withdraw from '~/components/base/TxSequenceWeb3Withdraw.vue
 
 
 export default {
-    COLLATERAL_COIN,
     LEND_COIN,
     components: {
         BaseAmountEstimation,
@@ -29,6 +28,12 @@ export default {
         'success-modal-close',
         // 'override-stats-value',
     ],
+    props: {
+        collateralCoin: {
+            type: String,
+            required: true,
+        },
+    },
     setup() {
         const {
             tokenContractAddressFixNative: lendTokenContractAddress,
@@ -48,6 +53,13 @@ export default {
         };
     },
     fetch() {
+        if (!this.loansContractAddress) {
+            return this.$nuxt.error({
+                status: 404,
+                message: this.$td('Invalid collateral coin', 'todo'),
+                useMessage: true,
+            });
+        }
         return this.fetchCollateralPrice();
     },
     data() {
@@ -69,6 +81,9 @@ export default {
         /** @type {HubChainDataItem} */
         hubChainData() {
             return HUB_CHAIN_DATA[HUB_NETWORK_SLUG.BSC];
+        },
+        loansContractAddress() {
+            return LOANS_BSC_CONTRACT_ADDRESS_LIST[this.collateralCoin];
         },
         amountToPledge() {
             // invalid reward so can't calculate part to use for swapToHub
@@ -95,7 +110,7 @@ export default {
     methods: {
         pretty,
         fetchCollateralPrice() {
-            return getCollateralPrice()
+            return getCollateralPrice(this.collateralCoin)
                 .then((price) => {
                     this.collateralPrice = price;
                 });
@@ -107,7 +122,7 @@ export default {
             const amountToPledgeWei = toErcDecimals(this.amountToPledge, this.innerData.tokenDecimals);
 
             const tx = {
-                to: LOANS_CONTRACT_ADDRESS,
+                to: this.loansContractAddress,
                 data: AbiMethodEncoder(loansABI)('borrow', amountToPledgeWei),
                 value: '0x00',
             };
@@ -130,7 +145,7 @@ export default {
 <template>
     <TxSequenceWeb3Withdraw
         :hub-network-slug="hubChainData.hubNetworkSlug"
-        :coin="$options.COLLATERAL_COIN"
+        :coin="collateralCoin"
         :coin-label="$td('You pledge', 'todo')"
         :coin-to-deposit="$options.LEND_COIN"
         :amount-to-deposit="amountToBorrow"
@@ -144,7 +159,7 @@ export default {
         <template v-slot:information>
             <h3 class="information__title">Amount to pledge</h3>
             <BaseAmountEstimation
-                :coin="$options.COLLATERAL_COIN"
+                :coin="collateralCoin"
                 :amount="amountToPledge"
                 :hide-usd="true"
                 :is-loading="innerData.isEstimationLimitForRelayRewardsLoading"

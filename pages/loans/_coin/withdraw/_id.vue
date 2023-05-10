@@ -1,12 +1,12 @@
 <script>
-import LoansBorrowForm from '~/components/LoansBorrowForm.vue';
+import LoansLendWithdrawForm from '~/components/LoansLendWithdrawForm.vue';
 
 export default {
     layout(context) {
         return context.store.state.isMetagarden ? 'metagarden' : 'default';
     },
     components: {
-        LoansBorrowForm,
+        LoansLendWithdrawForm,
     },
     data() {
         return {
@@ -21,16 +21,15 @@ export default {
     <div class="u-section u-container u-container--small">
         <div class="card card--invert">
             <div class="card__content card__content--medium">
-                <h1 class="card__action-title-value">{{ $td('Receive a loan', 'todo') }}</h1>
-                <p class="card__action-description u-mt-05">
-                    {{ $td('This service lets you quickly get BNB by putting up your METAGARDEN tokens as collateral.', 'todo') }}
-                </p>
+                <h1 class="card__action-title-value">{{ $td('Withdraw BNB', 'todo') }}</h1>
             </div>
 
             <div class="card card--pop card--light-grey">
-                <LoansBorrowForm
+                <LoansLendWithdrawForm
+                    :id="$route.params.id"
+                    :collateral-coin="$route.params.coin"
                     class="card__content card__content--medium"
-                    @success-modal-close="$router.push($getDashboardUrl())"
+                    @success-modal-close="$router.push($i18nGetPreferredPath('/loans'))"
                 />
 
 

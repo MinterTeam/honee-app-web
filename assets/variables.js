@@ -95,6 +95,13 @@ export const COIN_TYPE = {
     POOL_TOKEN: 'pool_token',
 };
 
+/**
+ * @typedef {'METAGARDEN' | 'BEE'} LoansCollateralCoin
+ */
+
+/**
+ * @type {Record<LoansCollateralCoin, string>}
+ */
 export const LOANS_BSC_CONTRACT_ADDRESS_LIST = {
     METAGARDEN: LOANS_METAGARDEN_BSC_CONTRACT_ADDRESS,
     BEE: LOANS_BEE_BSC_CONTRACT_ADDRESS,

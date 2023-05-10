@@ -8,9 +8,9 @@ import maxValue from 'vuelidate/src/validators/maxValue.js';
 import Big from 'minterjs-util/src/big.js';
 import {toErcDecimals, AbiMethodEncoder, addApproveTx} from 'minter-js-web3-sdk/src/web3.js';
 import {pretty} from '~/assets/utils.js';
-import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA} from '~/assets/variables.js';
+import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA, LOANS_BSC_CONTRACT_ADDRESS_LIST} from '~/assets/variables.js';
 import loansABI from '~/assets/abi/loans.json';
-import {LOAN_MIN_AMOUNT, LEND_COIN, COLLATERAL_COIN, LOANS_CONTRACT_ADDRESS} from '~/api/web3-loans.js';
+import {LOAN_MIN_AMOUNT, LEND_COIN} from '~/api/web3-loans.js';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import TxSequenceWeb3Withdraw from '~/components/base/TxSequenceWeb3Withdraw.vue';
 
@@ -27,6 +27,21 @@ export default {
         'success-modal-close',
         // 'override-stats-value',
     ],
+    props: {
+        collateralCoin: {
+            type: String,
+            required: true,
+        },
+    },
+    fetch() {
+        if (!this.loansContractAddress) {
+            return this.$nuxt.error({
+                status: 404,
+                message: this.$td('Invalid collateral coin', 'todo'),
+                useMessage: true,
+            });
+        }
+    },
     data() {
         return {
             innerData: {},
@@ -46,6 +61,9 @@ export default {
         hubChainData() {
             return HUB_CHAIN_DATA[HUB_NETWORK_SLUG.BSC];
         },
+        loansContractAddress() {
+            return LOANS_BSC_CONTRACT_ADDRESS_LIST[this.collateralCoin];
+        },
         amountToLend() {
             // invalid reward so can't calculate part to use for swapToHub
             if (!this.innerData.smartWalletRelayReward || this.innerData.smartWalletRelayReward <= 0) {
@@ -62,14 +80,14 @@ export default {
             let lendTxList;
             if (this.innerData.isNativeToken && !this.innerData.isWrappedNativeToken) {
                 const tx = {
-                    to: LOANS_CONTRACT_ADDRESS,
+                    to: this.loansContractAddress,
                     data: AbiMethodEncoder(loansABI)('lendBNB'),
                     value: amountToLendWei,
                 };
                 lendTxList = [tx];
             } else {
                 const tx = {
-                    to: LOANS_CONTRACT_ADDRESS,
+                    to: this.loansContractAddress,
                     data: AbiMethodEncoder(loansABI)('lend', amountToLendWei),
                     value: '0x00',
                 };

@@ -1,13 +1,13 @@
 <script>
-import LoansLendList from '~/components/LoansLendList.vue';
+import LoansManage from '~/components/LoansManage.vue';
 
 export default {
     components: {
-        LoansLendList,
+        LoansManage,
     },
 };
 </script>
 
 <template>
-    <LoansLendList class="u-container--large"/>
+    <LoansManage class="u-container--large"/>
 </template>

@@ -99,7 +99,7 @@ export default {
         <p class="card__action-description">{{ $td(`Получи токены BNB под залог токенов ${coin}. Перед оформлением прочитай условия программы!`, 'loans.card-description', {coin}) }}</p>
 
         <div class="u-flex u-flex--align-center u-mt-10">
-            <nuxt-link v-if="minterBalance > 0" class="button button--full" :to="$i18nGetPreferredPath(`/loans/borrow/${coin}`)">
+            <nuxt-link v-if="minterBalance > 0" class="button button--full" :to="$i18nGetPreferredPath(`/loans/${coin}/borrow`)">
                 {{ $td('Перейти к получению займа', 'loans.card-button') }}
             </nuxt-link>
             <nuxt-link v-else class="button button--full" :class="{'button--main': !isSmall}" :to="$i18nGetPreferredPath(`/swap/${coin}`)">
@@ -111,7 +111,7 @@ export default {
 
         <p class="u-mt-10 u-text-medium u-text-center">
             Желаете зарабатывать на кредитовании других?
-            <nuxt-link class="link--underline u-fw-600" :to="$i18nGetPreferredPath(`/loans/lend/${coin}`)">Вам сюда</nuxt-link>
+            <nuxt-link class="link--underline u-fw-600" :to="$i18nGetPreferredPath(`/loans/${coin}/lend`)">Вам сюда</nuxt-link>
         </p>
     </div>
 </template>
