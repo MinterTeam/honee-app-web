@@ -1,13 +1,11 @@
 <script>
-import AddressAssets from '~/components/AddressAssets.vue';
-import {getCard2MinterUrl, pretty} from '~/assets/utils.js';
+import {getCard2MinterUrl} from '~/assets/utils.js';
 import BaseTooltip from '~/components/base/BaseTooltip.vue';
 
 
 export default {
     components: {
         BaseTooltip,
-        AddressAssets,
     },
     computed: {
         tooltipContent() {
