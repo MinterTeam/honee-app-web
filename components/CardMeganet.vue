@@ -27,7 +27,7 @@ export default {
 <template>
     <div class="card card__content--small card--metagarden card--meganet u-text-center u-mb-10">
         <div class="card__action-head" v-if="!hideHead">
-            <img class="card__action-logo" alt="" src="/img/mg-chain-logo.svg">
+            <img class="card__action-logo" alt="" src="/img/mgchain-logo.svg">
             <div class="card__action-title">
                 <div class="card__action-title-type">MEGANET</div>
                 <div class="card__action-title-value">{{ $td('Early Access', 'meganet.card-title') }}</div>
