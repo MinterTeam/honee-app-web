@@ -726,6 +726,11 @@ export default {
         'buy-button-card': 'Картой',
         'buy-button-crypto': 'Криптой',
     },
+    meganet: {
+        'card-title': 'Ранний доступ',
+        'description': 'Присоединяйтесь к чейну Metagarden, самому совершенному EVM-блокчейну, предназначенному для игр. Купите токены MEGANET, чтобы получить 100% бонус, когда запустится мейннет. Не упустите шанс стать частью истории!',
+        'buy-more-button': 'Купить MEGANET',
+    },
     'mg-lootbox': {
         'title-inactive': 'Лутбокс еще не готов',
         'title-ready': 'Вы выиграли лутбокс!',
