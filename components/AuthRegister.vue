@@ -4,7 +4,7 @@ import withParams from 'vuelidate/src/withParams';
 import {req} from 'vuelidate/src/validators/common';
 import {generateMnemonic} from 'minterjs-wallet';
 import getTitle from '~/assets/get-title.js';
-import {DASHBOARD_URL} from '~/assets/variables.js';
+import {DASHBOARD_URL, IS_ONBOARDING_DISABLED} from '~/assets/variables.js';
 import BaseButtonCopyIcon from '~/components/base/BaseButtonCopyIcon.vue';
 
 // checkbox validator
@@ -48,9 +48,10 @@ export default {
             this.$store.commit('ADD_AUTH_ADVANCED', this.mnemonic);
             // redirect
             const authRedirectPath = this.$store.state.authRedirectPath;
-            if (authRedirectPath?.indexOf('/topup') === 0 || authRedirectPath?.indexOf('/topup') === 3) {
+            const isTopup = authRedirectPath?.indexOf('/topup') === 0 || authRedirectPath?.indexOf('/topup') === 3;
+            if (isTopup || IS_ONBOARDING_DISABLED) {
                 this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
-                this.$router.push(this.$i18nGetPreferredPath({path: authRedirectPath}));
+                this.$router.push(this.$i18nGetPreferredPath({path: authRedirectPath || this.DASHBOARD_URL}));
             } else {
                 this.$router.push(this.$i18nGetPreferredPath({path: this.onboardingUrl}));
             }

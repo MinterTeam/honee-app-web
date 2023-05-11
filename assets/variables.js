@@ -77,6 +77,7 @@ export const SUCCESS_FEE_FUND_ADDRESS = 'Mx2d347ede679b8c6b91d272c9aade5a716bda4
 export const STAKE_RECALCULATE_BLOCK_COUNT = 720;
 export const DASHBOARD_URL = '/';
 export const DASHBOARD_URL_METAGARDEN = '/metagarden';
+export const IS_ONBOARDING_DISABLED = true;
 
 export const REF_ID_QUERY = 'r';
 
