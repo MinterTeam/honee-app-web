@@ -30,7 +30,7 @@ export default {
     <button
         v-if="content"
         type="button"
-        class="u-semantic-button u-flex-item--no-shrink u-ml-10"
+        class="u-semantic-button"
         aria-label="More info"
         v-tooltip="tooltipOptions"
     >

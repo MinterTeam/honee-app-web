@@ -3,7 +3,7 @@ import get from 'lodash-es/get.js';
 import hashColor from '~/assets/hash-color.js';
 import {clearActionQuery} from '~/components/Action.vue';
 import CardHead from '~/components/CardHead.vue';
-import BaseTooltip from '~/components/base/BaseTooltip.vue';
+import CardTooltip from '~/components/CardTooltip.vue';
 
 const ACTION_TYPE = {
     DEPOSIT: 'buy',
@@ -20,8 +20,8 @@ const ACTION_TYPE = {
 export default {
     ACTION_TYPE,
     components: {
-        BaseTooltip,
         CardHead,
+        CardTooltip,
     },
     props: {
         /** @type {PropOptions<CardListItem>} */
@@ -121,7 +121,8 @@ function poolHasCoin(pool, symbol) {
                 </div>
             </div>
 
-            <BaseTooltip class="u-flex-item--no-shrink u-ml-10" v-if="card?.tooltip && card.stats" :content="translate('tooltip')"/>
+            <!-- show if tooltip was not shown in head (stats shown there) -->
+            <CardTooltip v-if="card?.stats" :card="card" class="u-flex-item--no-shrink u-ml-10"/>
         </div>
     </div>
 </template>

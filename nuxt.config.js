@@ -44,8 +44,9 @@ const CSP_SCRIPT = [].concat(NUXT_LOADING_INLINE_SCRIPT_SHA, [
  * prepare CSP string from env config
  * @param {object} env - env config
  * @param {Function} keyFilter
+ * @param {Array<string>} [extraItems]
  */
-function prepareCSP(env, keyFilter) {
+function prepareCSP(env, keyFilter, extraItems) {
     // make array of filtered URLs
     const filteredKeys = Object.keys(env).filter(keyFilter);
     const filtered = filteredKeys.map((key) => env[key]).filter((item) => typeof item === 'string');
@@ -67,15 +68,23 @@ function prepareCSP(env, keyFilter) {
         return parsed.indexOf(item) === pos && parsed.indexOf('*.' + item) === -1;
     });
 
-    return parsedUnique.join(' ');
+    return parsedUnique.concat(extraItems).join(' ');
 }
 
 const connectCSP = prepareCSP(varsConfig, (item) => {
     return item.indexOf('API_URL') >= 0 || item.indexOf('RTM_URL') >= 0 || item.indexOf('API_HOST') >= 0;
-});
+}, [
+    // lite-youtube-embed
+    'www.youtube-nocookie.com',
+    'https://www.youtube.com',
+]);
 const imageCSP = prepareCSP(varsConfig, (item) => {
     return item === 'APP_ACCOUNTS_API_URL';
-});
+}, [
+    // lite-youtube-embed
+    'https://i.ytimg.com',
+    '*.minter.network',
+]);
 const scriptCSP = CSP_SCRIPT.map((item) => {
     // wrap sha-strings with quotes
     return item.indexOf('sha') === 0 ? `'${item}'` : item;
@@ -100,7 +109,7 @@ module.exports = {
                     default-src 'self' ${connectCSP};
                     script-src 'self' ${scriptCSP} 'unsafe-eval';
                     style-src 'self' 'unsafe-inline';
-                    img-src 'self' ${imageCSP} *.minter.network data:;
+                    img-src 'self' ${imageCSP} data:;
                     font-src 'self' data:;
                     base-uri 'none';
                     form-action 'none';

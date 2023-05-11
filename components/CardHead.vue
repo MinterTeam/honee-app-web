@@ -2,12 +2,13 @@
 import {defineComponent} from 'vue';
 import get from 'lodash-es/get.js';
 import {pretty} from '~/assets/utils.js';
-import BaseTooltip from '~/components/base/BaseTooltip.vue';
 import {getCoinBySymbol} from '~/api/explorer.js';
+import CardTooltip from '~/components/CardTooltip.vue';
+
 
 export default defineComponent({
     components: {
-        BaseTooltip,
+        CardTooltip,
     },
     props: {
         card: {
@@ -140,10 +141,6 @@ export default defineComponent({
             <div class="card__action-stats-value">{{ statsValue }}</div>
         </div>
 
-        <BaseTooltip
-            v-if="card?.tooltip && !card.stats"
-            class="card__action-tooltip"
-            :content="translate('tooltip')"
-        />
+        <CardTooltip v-if="card && !card.stats" :card="card" class="card__action-tooltip"/>
     </div>
 </template>
