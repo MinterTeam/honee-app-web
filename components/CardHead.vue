@@ -3,6 +3,7 @@ import {defineComponent} from 'vue';
 import get from 'lodash-es/get.js';
 import {pretty} from '~/assets/utils.js';
 import BaseTooltip from '~/components/base/BaseTooltip.vue';
+import {getCoinBySymbol} from '~/api/explorer.js';
 
 export default defineComponent({
     components: {
@@ -19,6 +20,19 @@ export default defineComponent({
         overrideValue: {
             type: [String, Number],
         },
+    },
+    fetch() {
+        if (this.isShowStatsPrice) {
+            return getCoinBySymbol(this.card.coin)
+                .then((coinInfo) => {
+                    this.price = coinInfo.priceUsd;
+                });
+        }
+    },
+    data() {
+        return {
+            price: 0,
+        };
     },
     computed: {
         iconList() {
@@ -47,6 +61,9 @@ export default defineComponent({
         finalTitle() {
             return this.isMgSwapTitles ? this.caption : this.title;
         },
+        isShowStatsPrice() {
+            return this.card?.stats?.price && this.card.coin;
+        },
         statsCaption() {
             const stats = this.card?.stats;
 
@@ -65,7 +82,7 @@ export default defineComponent({
 
                 return result;
             }
-            if (stats?.price && this.card.coin) {
+            if (this.isShowStatsPrice) {
                 return this.$td('Token price', 'common.token-price');
             }
 
@@ -87,8 +104,8 @@ export default defineComponent({
                     return percent + '%';
                 }
             }
-            if (stats?.price && typeof this.card.coin === 'string') {
-                const price = this.$store.getters['portfolio/getCoinPrice'](this.card.coin);
+            if (this.isShowStatsPrice) {
+                const price = this.price || this.$store.getters['portfolio/getCoinPrice'](this.card.coin);
                 return '$' + pretty(price);
             }
 

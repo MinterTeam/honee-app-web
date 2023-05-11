@@ -473,6 +473,19 @@ export function getProviderPoolList(address, params) {
 
 
 /**
+ * @param {string} symbol
+ * @return {Promise<CoinInfo>}
+ */
+export function getCoinBySymbol(symbol) {
+    symbol = symbol.toUpperCase();
+    return explorer.get(`coins/symbol/${symbol}`)
+        .then((response) => {
+            return response.data.data;
+        });
+}
+
+
+/**
  * @param {string} coin0
  * @param {string} coin1
  * @param {object} amountOptions
@@ -701,6 +714,9 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
  * @property {string|null} ownerAddress
  * @property {boolean} [verified] - filled from hub api
  * @property {boolean} [icon] - filled from chainik app
+ * @property {number|string} priceUsd
+ * @property {number|string} tradingVolume24H
+ * @property {number|string} tradingVolume1Mo
  */
 
 /**
