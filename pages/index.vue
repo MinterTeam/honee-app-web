@@ -18,7 +18,7 @@ const BASE_CARD = {
 };
 
 const BEE_CARD_LIST = [
-    '/topup/card',
+    '/topup/coin/BEE',
     '/stake/19',
     '/farm/BEE/USDTE',
     '/farm/BEE/USDTBSC',

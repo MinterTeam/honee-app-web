@@ -105,12 +105,12 @@ export default {
                     price: true,
                 },
                 tags: ['Exchange'],
-                action: '/topup/card',
-                buttonLabel: 'Buy BEE with card',
+                action: '/topup/coin/BEE',
+                buttonLabel: 'Buy BEE',
                 ru: {
                     description: 'BEE — токен крипто-кошелька Honee. Предоставляет пользователям множество возможностей для заработка.',
                     caption: 'Купить',
-                    buttonLabel: 'Купить BEE картой',
+                    buttonLabel: 'Купить BEE',
                 },
             },
             makeCard(presets.stake(19), {
