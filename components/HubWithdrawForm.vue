@@ -91,7 +91,7 @@ export default {
             form: {
                 coin: this.$route.query.coin || '',
                 amount: this.$route.query.amount || '',
-                address: this.$route.query.address || this.$store.getters.evmAddress,
+                address: this.$route.query.address || '',
                 speed: HUB_WITHDRAW_SPEED.FAST,
                 networkTo: this.$route.query.network || HUB_NETWORK_SLUG.BSC,
             },
