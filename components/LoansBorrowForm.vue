@@ -7,7 +7,7 @@ import minValue from 'vuelidate/src/validators/minValue.js';
 import maxValue from 'vuelidate/src/validators/maxValue.js';
 import Big from 'minterjs-util/src/big.js';
 import {toErcDecimals, AbiMethodEncoder, addApproveTx, buildDepositWithApproveTxList} from 'minter-js-web3-sdk/src/web3.js';
-import {LOAN_MIN_AMOUNT, LEND_COIN, getCollateralPrice, COLLATERAL_RATE} from '~/api/web3-loans.js';
+import {LOAN_MIN_AMOUNT, LOAN_MAX_AMOUNT, LEND_COIN, getCollateralPrice, getAvailableAmountToBorrow, COLLATERAL_RATE} from '~/api/web3-loans.js';
 import {pretty} from '~/assets/utils.js';
 import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA, NATIVE_COIN_ADDRESS, LOANS_BSC_CONTRACT_ADDRESS_LIST} from '~/assets/variables.js';
 import loansABI from '~/assets/abi/loans.json';
@@ -18,6 +18,8 @@ import TxSequenceWeb3Withdraw from '~/components/base/TxSequenceWeb3Withdraw.vue
 
 export default {
     LEND_COIN,
+    LOAN_MIN_AMOUNT,
+    LOAN_MAX_AMOUNT,
     components: {
         BaseAmountEstimation,
         TxSequenceWeb3Withdraw,
@@ -60,20 +62,25 @@ export default {
                 useMessage: true,
             });
         }
-        return this.fetchCollateralPrice();
+        return Promise.all([
+            this.fetchCollateralPrice(),
+            this.fetchAvailableAmountToBorrow(),
+        ]);
     },
     data() {
         return {
             collateralPrice: 0,
+            maxAmountToBorrow: 0,
             innerData: {},
         };
     },
     validations() {
         return {
-            //@TODO show this error
             amountToBorrow: {
                 required,
                 minValue: minValue(LOAN_MIN_AMOUNT),
+                maxValue: maxValue(LOAN_MAX_AMOUNT),
+                available: maxValue(this.maxAmountToBorrow),
             },
         };
     },
@@ -115,9 +122,21 @@ export default {
                     this.collateralPrice = price;
                 });
         },
+        fetchAvailableAmountToBorrow() {
+            return getAvailableAmountToBorrow(this.collateralCoin)
+                .then((maxAmount) => {
+                    this.maxAmountToBorrow = maxAmount;
+                });
+        },
         async buildTxList() {
             await this.fetchCollateralPrice();
+            await this.fetchAvailableAmountToBorrow();
             await this.$nextTick();
+
+            if (this.$v.$invalid) {
+                this.$v.touch();
+                throw new Error('Network state was changed and not pass validation');
+            }
 
             const amountToPledgeWei = toErcDecimals(this.amountToPledge, this.innerData.tokenDecimals);
 
@@ -174,6 +193,19 @@ export default {
                 :is-loading="innerData.isEstimationLimitForRelayRewardsLoading"
                 format="pretty"
             />
+
+            <div class="u-mt-05 u-text-right u-text-small form__error" v-if="$v.$error">
+                <template v-if="!$v.amountToBorrow.minValue">
+                    {{ $td('Minimum', 'form.amount-error-min') }} {{ $options.LOAN_MIN_AMOUNT }} {{ $options.LEND_COIN }}
+                </template>
+                <template v-else-if="!$v.amountToBorrow.maxValue">
+                    {{ $td('Maximum', 'form.amount-error-max') }} {{ $options.LOAN_MAX_AMOUNT }} {{ $options.LEND_COIN }}
+                </template>
+                <template v-else-if="!$v.amountToBorrow.available">
+                    {{ $td('Loans contract doesn\'t have enough funds to borrow.', 'todo') }}
+                    {{ $td('Maximum', 'form.amount-error-max') }} {{ maxAmountToBorrow }} {{ $options.LEND_COIN }}
+                </template>
+            </div>
         </template>
 
         <template v-slot:form-end>

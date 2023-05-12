@@ -36,6 +36,7 @@ export default {
         'update:web3-data',
         'success',
         'success-modal-close',
+        'validation-touch',
         // 'override-stats-value',
     ],
     props: {
@@ -413,6 +414,7 @@ export default {
             :v$sequence-params="$v"
             @update:fee="fee = $event"
             @clear-form="clearForm()"
+            @validation-touch="v$extra.$touch(); $emit('validation-touch')"
             @success="$emit('success')"
             @success-modal-close="$emit('success-modal-close')"
         >

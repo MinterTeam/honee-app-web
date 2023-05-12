@@ -327,7 +327,7 @@ export default {
                     <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && !v$estimation.valueToSell.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
                     <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && v$estimation.maxAmount.$invalid">{{ $td('Not enough coins', 'form.not-enough-coins') }}</span>
                     <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && v$estimation.maxAmountAfterFee.$invalid">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol }}</span>
-                    <span class="form-field__error" v-else-if="$v.withdrawValue.$dirty && !$v.withdrawValue.minValue">{{ $td(`Minimum ${minAmountToWithdraw}`, 'form.amount-error-min', {min: minAmountToWithdraw}) }}</span>
+                    <span class="form-field__error" v-else-if="$v.withdrawValue.$dirty && !$v.withdrawValue.minValue">{{ $td('Minimum', 'form.amount-error-min') }} {{ minAmountToWithdraw }}</span>
                 </div>
 
                 <div class="form-row">

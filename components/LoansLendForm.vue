@@ -17,6 +17,7 @@ import TxSequenceWeb3Withdraw from '~/components/base/TxSequenceWeb3Withdraw.vue
 
 export default {
     LEND_COIN,
+    LOAN_MIN_AMOUNT,
     components: {
         BaseAmountEstimation,
         TxSequenceWeb3Withdraw,
@@ -49,7 +50,6 @@ export default {
     },
     validations() {
         return {
-            //@TODO display error
             amountToLend: {
                 required,
                 minValue: minValue(LOAN_MIN_AMOUNT),
@@ -121,6 +121,12 @@ export default {
                 :is-loading="innerData.isEstimationLimitForRelayRewardsLoading"
                 format="pretty"
             />
+
+            <div class="u-mt-05 u-text-right u-text-small form__error" v-if="$v.$error">
+                <template v-if="!$v.amountToLend.minValue">
+                    {{ $td('Minimum', 'form.amount-error-min') }} {{ $options.LOAN_MIN_AMOUNT }} {{ $options.LEND_COIN }}
+                </template>
+            </div>
         </template>
 
         <template v-slot:form-end>

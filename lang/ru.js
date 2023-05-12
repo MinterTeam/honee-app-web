@@ -428,6 +428,7 @@ export default {
         'amount': 'Количество',
         'amount-error-required': 'Укажите количество',
         'amount-error-min': 'Минимум',
+        'amount-error-max': 'Минимум',
         'number-invalid': 'Укажите положительное целое число',
         'fee': 'Монета для оплаты комиссии',
         'fee-help': 'В эквиваленте {coin} {value}',

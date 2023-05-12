@@ -8,6 +8,8 @@ import loansABI from '~/assets/abi/loans.json';
 export const LEND_COIN = 'BNB';
 // minimalLoanableAmount
 export const LOAN_MIN_AMOUNT = 0.001;
+// maximalLoanableAmount
+export const LOAN_MAX_AMOUNT = 100;
 // same as 1 / LTV
 // baseCollateralRate / rateDenom
 export const COLLATERAL_RATE = 2;
@@ -27,13 +29,27 @@ function getLoansContract(collateralCoin) {
     return new web3Eth.Contract(loansABI, contractAddress);
 }
 
-
+/**
+ * @param {LoansCollateralCoin} collateralCoin
+ * @return {Promise<string|number>}
+ */
 export function getCollateralPrice(collateralCoin) {
     return getLoansContract(collateralCoin).methods.price().call()
         .then((price) => {
             // const priceDenom = await contract.methods.priceDenom().call();
             const priceDenom = 1e8;
             return new Big(price).div(priceDenom).toString();
+        });
+}
+
+/**
+ * @param {LoansCollateralCoin} collateralCoin
+ * @return {Promise<string|number>}
+ */
+export function getAvailableAmountToBorrow(collateralCoin) {
+    return getLoansContract(collateralCoin).methods.lendsTotalAmountLeft().call()
+        .then((amount) => {
+            return fromErcDecimals(amount);
         });
 }
 

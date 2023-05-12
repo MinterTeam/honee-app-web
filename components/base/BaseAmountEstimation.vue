@@ -37,6 +37,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        keepNegative: {
+            type: Boolean,
+            default: false,
+        },
         // amount unit, e.g. '%'
         unit: {
             type: String,
@@ -60,21 +64,25 @@ export default {
     },
     computed: {
         amountIsNotNumber() {
-            return typeof this.amount === 'string' && this.amount.length && !/^\d+\.?\d*$/.test(this.amount);
+            return typeof this.amount === 'string' && this.amount.length && !/^-?\d+\.?\d*$/.test(this.amount);
+        },
+        amountFinal() {
+            const fixNegative = !this.keepNegative && this.amount < 0;
+            return fixNegative ? 0 : this.amount;
         },
         amountUsd() {
             // don't calculate usd price for units other than coin itself
             if (this.hideUsd || this.unit) {
                 return 0;
             }
-            if (!this.amount || this.amountIsNotNumber) {
+            if (!this.amountFinal || this.amountIsNotNumber) {
                 return 0;
             }
-            return this.amount * this.$store.getters['portfolio/getCoinPrice'](this.coin);
+            return this.amountFinal * this.$store.getters['portfolio/getCoinPrice'](this.coin);
             /*
             let baseCoinAmount;
             if (this.coin === this.$store.getters.BASE_COIN && this.amount > 0) {
-                baseCoinAmount = this.amount;
+                baseCoinAmount = this.amountFinal;
             } else if (this.baseCoinAmount) {
                 baseCoinAmount = this.baseCoinAmount;
             }
@@ -105,10 +113,10 @@ export default {
             <template v-if="!isLoading">
                 <span class="u-text-muted" v-if="amountUsd">(${{ pretty(amountUsd) }})</span>
                 <span v-if="amountIsNotNumber">{{ amount }}</span>
-                <span v-else :title="prettyExact(amount)">
+                <span v-else :title="prettyExact(amountFinal)">
                     <template v-if="format === $options.FORMAT_TYPE.APPROX">≈</template>
-                    <template v-if="format === $options.FORMAT_TYPE.EXACT">{{ prettyPrecise(amount) }}</template>
-                    <template v-else>{{ pretty(amount) }}</template>
+                    <template v-if="format === $options.FORMAT_TYPE.EXACT">{{ prettyPrecise(amountFinal) }}</template>
+                    <template v-else>{{ pretty(amountFinal) }}</template>
                 </span><!--
              -->{{ unit }}
                 <!--

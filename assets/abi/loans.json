@@ -12,6 +12,11 @@
         "type": "address"
       },
       {
+        "internalType": "uint256",
+        "name": "_price",
+        "type": "uint256"
+      },
+      {
         "internalType": "address",
         "name": "_pancakeAddress",
         "type": "address"
@@ -576,6 +581,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "lendsTotalAmountLeft",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -757,6 +775,47 @@
       }
     ],
     "name": "setFund",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_fundAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_fundFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_fundFeeDenom",
+        "type": "uint256"
+      }
+    ],
+    "name": "setFundParams",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_price",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_priceDenom",
+        "type": "uint256"
+      }
+    ],
+    "name": "setPrice",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
