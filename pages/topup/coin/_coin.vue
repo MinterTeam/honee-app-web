@@ -65,11 +65,11 @@ export default {
 
             <a class="button button--full u-mt-10" :href="card2MinterUrl" v-if="isMainnet">
                 <InlineSvg class="button__icon" src="/img/icon-topup-card.svg" width="24" height="24" alt="" role="presentation"/>
-                {{ $td('Card to card', 'topup.top-up-with-card2card') }}
+                {{ $td('Card', 'topup.top-up-with-card2card') }}
             </a>
             <nuxt-link class="button button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/crypto')">
                 <InlineSvg class="button__icon" src="/img/icon-blockchain.svg" width="24" height="24" alt="" role="presentation"/>
-                {{ $td('With crypto', 'topup.buy-with-crypto') }}
+                {{ $td('Crypto', 'topup.buy-with-crypto') }}
             </nuxt-link>
             <a class="button button--full u-mt-10" :href="$options.TELEGRAM_BUY_LINKS[$route.params.coin]" target="_blank" v-if="$options.TELEGRAM_BUY_LINKS[$route.params.coin]">
                 <InlineSvg class="button__icon" src="/img/icon-social-telegram.svg" width="24" height="24" alt="" role="presentation"/>

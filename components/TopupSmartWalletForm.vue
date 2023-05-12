@@ -39,12 +39,12 @@ export default {
         <h2 class="u-h--uppercase-solid u-mb-025 u-flex u-flex--align-center">
             <img class="u-mr-minus-025" src="https://explorer-static.minter.network/coins/2065.png" alt="" role="presentation" width="24" height="24">
             <img class="u-mr-05" src="https://explorer-static.minter.network/coins/2107.png" alt="" role="presentation" width="24" height="24">
-            {{ $td('Ethereum & BNB Smart Chain', 'deposit.title-evm') }}
+            {{ $td('From Ethereum & BNB Smart Chain', 'deposit.title-evm') }}
         </h2>
 
         <div class="h-field u-mt-10 u-mb-05">
             <div class="h-field__content" @click="copy(smartWalletAddress)">
-                <div class="h-field__title">{{ $td('Smart wallet address', 'deposit.smart-wallet-address') }}</div>
+                <div class="h-field__title">{{ $td('Your smart wallet address', 'deposit.smart-wallet-address') }}</div>
                 <div class="h-field__input h-field__input--medium is-not-empty">{{ smartWalletAddress }}</div>
             </div>
             <div class="h-field__aside h-field__aside--with-icon" v-if="isClipboardSupported">
@@ -54,14 +54,12 @@ export default {
 
         <ul class="form-row u-text-muted u-text-small">
             <template v-if="$i18n.locale === 'en'">
-                <li>Only BEP20 or ERC20 tokens</li>
-                <li>Smart-wallet activation for BNB Smart Chain is ≈ $3, following deposits ≈ $1.5. Activation for Ethereum ≈ $50, then deposits ≈ $25</li>
-                <li>Any amount</li>
+                <li>To deposit crypto, transfer only BEP20 or ERC20 tokens to the specified address, any amount;</li>
+                <li>The first deposit for BNB Smart Chain ≈ $3, following ≈ $1.5. For Ethereum ≈ $50, following ≈ $25.</li>
             </template>
             <template v-if="$i18n.locale === 'ru'">
-                <li>Только BEP20 или ERC20 токены</li>
-                <li>Для BNB Smart Chain активация смарт-кошелька ≈ 3$, последующие депозиты ≈ 1,5$. Для Ethereum активация ≈ 50$, последующие депозиты ≈ 25$</li>
-                <li>Любое количество</li>
+                <li>Для пополнения переводите на указанный адрес только BEP20 или ERC20 токены, любое количество;</li>
+                <li>Первое пополнение для BNB Smart Chain ≈ 3$, последующие ≈ 1,5$. Для Ethereum ≈ 50$, последующие ≈ 25$.</li>
             </template>
         </ul>
 

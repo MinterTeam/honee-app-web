@@ -212,7 +212,10 @@ export default {
         'title': 'Пополнить баланс',
         'description': 'Выберите способ ниже',
         'top-up-with-network': 'Через {network}',
-        'top-up-with-card2card': 'С карты на карту',
+        'top-up-with-card2card': 'Картой',
+        'buy-with-crypto': 'Криптой',
+        'buy-via-telegram': 'Через Телеграм бот',
+        'buy-in-honee': 'Обмен в Honee',
         'waiting-topup': 'Ожидаем транзакцию пополнения',
         'cancel': 'Отмена',
         'back': 'Назад',
@@ -224,9 +227,9 @@ export default {
     deposit: {
         'title': 'Мгновенное пополнение',
         'description': 'Пополните баланс любым из способов.',
-        'title-evm': 'Ethereum & BNB Smart Chain',
+        'title-evm': 'Из Ethereum или BNB Smart Chain',
         'description-evm': 'Переведите любой токен (ERC20 или BEP20) из сети Ethereum или BNB Smart Chain на этот адрес.',
-        'smart-wallet-address': 'Адрес смарт-кошелька',
+        'smart-wallet-address': 'Адрес вашего смарт-кошелька',
         'title-card': 'Банковские карты',
         'description-card': 'Пополнить с помощью банковской карты.',
         'button-card': 'Пополнить с карты',
@@ -240,7 +243,7 @@ export default {
     'topup-network': {
         'title': 'Пополнить через',
         'description': 'Отправьте любое кол-во {coin} на адрес ниже',
-        'description-minter': 'Отправьте любое количество {coin}, BEE или другого Minter-токена на адрес ниже',
+        'description-minter': 'Отправьте любое количество токенов Minter Network на адрес ниже',
         'copy': 'Копировать',
         'share': 'Поделиться',
         'show-qr': 'Показать QR',
@@ -729,7 +732,7 @@ export default {
     },
     meganet: {
         'card-title': 'Ранний доступ',
-        'description': 'Присоединяйтесь к чейну Metagarden, самому совершенному EVM-блокчейну, предназначенному для игр. Купите токены MEGANET, чтобы получить 100% бонус, когда запустится мейннет. Не упустите шанс стать частью истории!',
+        'description': 'Присоединяйтесь к чейну Metagarden, передовому EVM-блокчейну, предназначенному для игр. Купите токены MEGANET, чтобы получить 100% бонус, когда запустится мейннет. Не упустите шанс стать частью истории!',
         'buy-button': 'Купить токены MEGANET',
     },
     'mg-lootbox': {
