@@ -36,20 +36,9 @@ export default {
         </div>
         <img v-if="!isSmall" class="u-image u-image-center u-mt-15 u-mb-10" src="/img/mg-chain.svg" alt="" role="presentation" width="165" height="136">
         <p class="card__action-description">{{ $td(`Join the Metagarden chain, the ultimate EVM blockchain designed for gaming. Buy MEGANET tokens to get a 100% bonus when the main network goes live. Don't miss the chance to be part of history!`, 'meganet.description') }}</p>
-        <div class="u-h--uppercase u-mb-05 u-mt-15">{{ $td('Buy MEGANET with', 'meganet.buy-more-button') }}</div>
-        <div class="u-grid u-grid--smaller-mobile">
-            <div class="u-cell u-cell--1-2">
-                <a :href="card2MinterUrl" class="button button--full button--very-narrow">
-                    <img class="button__icon" src="/img/icon-topup-card.svg" alt="" role="presentation"/>
-                    {{ $td('Card', 'metagarden.buy-button-card') }}
-                </a>
-            </div>
-            <div class="u-cell u-cell--1-2">
-                <nuxt-link :to="$i18nGetPreferredPath('/swap/MEGANET')" class="button button--full button--narrow">
-                    <img class="button__icon" src="/img/icon-blockchain.svg" alt="" role="presentation"/>
-                    {{ $td('Crypto', 'metagarden.buy-button-crypto') }}
-                </nuxt-link>
-            </div>
-        </div>
+
+        <nuxt-link :to="$i18nGetPreferredPath('/topup/coin/MEGANET')" class="button button--full u-mt-15">
+            {{ $td('Buy MEGANET tokens', 'meganet.buy-button') }}
+        </nuxt-link>
     </div>
 </template>

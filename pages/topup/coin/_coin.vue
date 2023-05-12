@@ -5,8 +5,8 @@ import InlineSvg from 'vue-inline-svg';
 import {getCard2MinterUrl} from '~/assets/utils.js';
 
 const TELEGRAM_BUY_LINKS = {
-    BEE: 'https://t.me/HoneePremiumBot?start=buy',
-    MEGANET: 'http://t.me/metagardenbot?start=buy',
+    BEE: 'https://t.me/honeepremiumbot?start=buy-bee',
+    MEGANET: 'https://t.me/metagardenbot?start=meganet',
 };
 
 export default {
