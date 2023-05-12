@@ -760,6 +760,7 @@ export default {
         'join-channel': 'Подписаться на канал',
         'join-conversation': 'Вступить в группу',
         'game-community': 'Сообщество игры',
+        'button-send-snatch': 'Отправить токены SNATCH в игру',
     },
     'deposit-p2p': {
         'title': 'Пополнение с карты',

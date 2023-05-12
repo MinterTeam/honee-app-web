@@ -80,9 +80,9 @@ export default {
                 {{ $td('Swap in Honee', 'topup.buy-in-honee') }}
             </nuxt-link>
 
-            <nuxt-link class="button button--ghost button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/coin/' + $route.params.coin)">
+            <!--<nuxt-link class="button button--ghost button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/coin/' + $route.params.coin)">
                 {{ $td('Cancel', 'topup.cancel') }}
-            </nuxt-link>
+            </nuxt-link>-->
         </div>
 
         <nuxt-link class="link--default-black u-mt-15" v-if="$options.isOnboarding" :to="$i18nGetPreferredPath($store.state.authRedirectPath || DASHBOARD_URL)" @click.native="$nextTick(() => $store.commit('SET_AUTH_REDIRECT_PATH', ''))">
