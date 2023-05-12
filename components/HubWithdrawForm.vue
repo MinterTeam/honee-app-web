@@ -43,6 +43,12 @@ export default {
     emits: [
         'success-modal-close',
     ],
+    props: {
+        isLabelTransfer: {
+            type: Boolean,
+            default: false,
+        },
+    },
     setup() {
         const {fee, setFeeProps} = useFee();
         const {
@@ -429,7 +435,9 @@ export default {
                     :class="{'is-disabled': $v.$invalid, 'is-loading': isFormSending}"
                     type="submit"
                 >
-                    <span class="button__content">{{ $td('Withdraw', 'hub.withdraw-button-title') }}</span>
+                    <span class="button__content">
+                        {{ !isLabelTransfer ? $td('Withdraw', 'hub.withdraw-button-title') : $td('Transfer', 'hub.transfer-button-title') }}
+                    </span>
                     <Loader class="button__loader" :isLoading="true"/>
                 </button>
                 <div class="form-field__error" v-if="serverError">{{ serverError }}</div>

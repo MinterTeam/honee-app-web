@@ -19,6 +19,9 @@ export default {
         networkName() {
             return HUB_CHAIN_DATA[this.$route.query.network]?.name;
         },
+        isLabelTransfer() {
+            return this.$route.query.address === this.$store.getters.smartWalletAddress;
+        },
     },
 };
 </script>
@@ -27,7 +30,9 @@ export default {
     <div class="u-section u-container u-container--small">
         <div class="card card--invert">
             <div class="card__content card__content--medium">
-                <h1 class="card__action-title-value">{{ $td('Withdraw', 'hub.withdraw-title') }}</h1>
+                <h1 class="card__action-title-value">
+                    {{ !isLabelTransfer ? $td('Withdraw', 'hub.withdraw-title') : $td('Transfer to Smart-Wallet', 'metagarden.transfer-smart-wallet') }}
+                </h1>
                 <p class="card__action-description u-mt-05">
                     <template v-if="networkName">
                         {{ $td(`Send coins to ${networkName}`, 'hub.withdraw-description-network', {network: networkName}) }}
@@ -39,6 +44,7 @@ export default {
             <div class="card card--pop card--light-grey">
                 <HubWithdrawForm
                     class="card__content card__content--medium"
+                    :is-label-transfer="isLabelTransfer"
                     @success-modal-close="$router.push(getDashboardUrl())"
                 />
                 <HubWithdrawTxList class="card__content card__content--medium"/>
