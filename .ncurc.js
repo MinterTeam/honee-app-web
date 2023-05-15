@@ -15,5 +15,7 @@ module.exports = {
       // 'beeper',
       // 'camelcase-keys',
       // 'del',
+      // broken
+      'nuxt-i18n-default',
   ],
 };
