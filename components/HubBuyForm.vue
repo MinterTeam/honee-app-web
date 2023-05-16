@@ -18,7 +18,6 @@ import hubABI from 'minter-js-web3-sdk/src/abi/hub.js';
 import {NETWORK, MAINNET, SWAP_TYPE, HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_DATA, HUB_CHAIN_ID, HUB_CHAIN_BY_ID, HUB_COIN_DATA as DEPOSIT_COIN_DATA} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import checkEmpty from '~/assets/v-check-empty.js';
-import useEstimateSwap from '~/composables/use-estimate-swap.js';
 import useHubDiscount from '~/composables/use-hub-discount.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3TokenBalance from '~/composables/use-web3-token-balance.js';
@@ -31,6 +30,7 @@ import Modal from '~/components/base/Modal.vue';
 import ButtonCopyIcon from '~/components/base/BaseButtonCopyIcon.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import FieldSelect from '~/components/base/FieldSelect.vue';
+import SwapEstimationWithFee from '~/components/base/SwapEstimationWithFee.vue';
 import HubBuyTxListItem from '~/components/base/StepListItem.vue';
 import HubBuySpeedup from '~/components/HubBuySpeedup.vue';
 import HubFeeImpact from '~/components/HubFeeImpact.vue';
@@ -73,6 +73,7 @@ export default {
         ButtonCopyIcon,
         FieldCombined,
         FieldSelect,
+        SwapEstimationWithFee,
         HubBuyTxListItem,
         HubBuySpeedup,
         HubFeeImpact,
@@ -103,20 +104,6 @@ export default {
         },
     },
     setup() {
-        const vm = getCurrentInstance()?.proxy;
-        // just `estimation` refers to minter swap estimation
-        const {
-            estimation,
-            estimationRoute,
-            estimationTxDataCoinsRoute,
-            estimationError,
-            isEstimationWaiting,
-            handleInputBlur,
-            estimateSwap,
-        } = useEstimateSwap({
-            vm,
-            idPreventConcurrency: 'hubBuy',
-        });
         const { discount, discountUpsidePercent, setDiscountProps } = useHubDiscount();
 
         const {
@@ -150,14 +137,6 @@ export default {
         const {sendMinterSwapTx} = useTxMinterPresets();
 
         return {
-            estimation,
-            estimationRoute,
-            estimationTxDataCoinsRoute,
-            estimationError,
-            isEstimationWaiting,
-            handleInputBlur,
-            estimateSwap,
-
             discount,
             discountUpsidePercent,
             setDiscountProps,
@@ -189,6 +168,15 @@ export default {
             serverError: '',
             isConfirmModalVisible: false,
             recovery: null,
+
+            /** @type {FeeData} */
+            fee: undefined,
+
+            // just `estimation` refers to minter swap estimation
+            estimation: 0,
+            estimationFetchState: null,
+            v$estimation: {},
+            txData: {},
         };
     },
     validations() {
@@ -299,10 +287,10 @@ export default {
             return this.externalTokenSymbol;
         },
         isEstimationErrorVisible() {
-            return this.estimationError && !this.isEstimationWaiting;
+            return this.estimationFetchState?.error && !this.estimationFetchState?.loading;
         },
         currentPrice() {
-            if (this.$v.form.$invalid || !this.estimation || this.isEstimationWaiting || this.estimationError) {
+            if (this.$v.form.$invalid || !this.estimation || this.estimationFetchState?.loading || this.estimationFetchState?.error) {
                 return 0;
             }
             const externalTokenPrice = this.tokenPrice > 0 ? this.tokenPrice : 0;
@@ -334,16 +322,6 @@ export default {
                     this.form.amountEth = '0.002';
                     this.form.coinToGet = this.$store.getters.BASE_COIN;
                 }
-            },
-        },
-        'form.coinToGet': {
-            handler() {
-                this.watchEstimation();
-            },
-        },
-        coinAmountAfterBridge: {
-            handler() {
-                this.watchEstimation();
             },
         },
     },
@@ -647,48 +625,24 @@ export default {
             // sell all externalTokenSymbol if user has no or very small amount of it
             const isSellAll = balanceAmount - amount < smallAmount;
 
-            return this.forceEstimation({sellAll: isSellAll})
+            // @TODO deduct fee?
+            return this.$refs.estimation.getEstimation(true, true, {
+                valueToSell: amount,
+                swapFrom: SWAP_TYPE.POOL,
+                gasCoin: this.minterGasCoin,
+                sellAll: isSellAll,
+            })
                 .then(() => {
                     return {
                         type: isSellAll ? TX_TYPE.SELL_ALL_SWAP_POOL : TX_TYPE.SELL_SWAP_POOL,
                         data: {
-                            coins: this.estimationTxDataCoinsRoute,
+                            coins: this.txData.coins,
                             valueToSell: amount,
                             minimumValueToBuy: 0,
                         },
                         gasCoin: this.minterGasCoin,
                     };
                 });
-        },
-        watchEstimation() {
-            if (!this.$store.state.onLine) {
-                return;
-            }
-            if (this.$v.form.$invalid) {
-                return;
-            }
-            this.getEstimation();
-        },
-        getEstimation(params) {
-            if (!this.$store.state.onLine) {
-                return;
-            }
-            if (this.$v.form.$invalid) {
-                return;
-            }
-
-            return this.estimateSwap({
-                coinToSell: this.externalTokenSymbol,
-                valueToSell: this.coinAmountAfterBridge,
-                coinToBuy: this.form.coinToGet,
-                swapFrom: SWAP_TYPE.POOL,
-                gasCoin: this.minterGasCoin,
-                isSelling: true,
-                ...params,
-            });
-        },
-        forceEstimation({sellAll} = {}) {
-            return this.getEstimation({sellAll, force: true});
         },
         cancelRecovery() {
             this.recovery = null;
@@ -766,7 +720,7 @@ export default {
                         :coin-list="suggestionList"
                         :fallback-to-full-list="false"
                         :is-estimation="true"
-                        :isLoading="isEstimationWaiting"
+                        :isLoading="estimationFetchState?.loading"
                         @blur="handleInputBlur(); $v.form.amountEth.$touch()"
                     />
 
@@ -777,7 +731,7 @@ export default {
                     <div class="u-text-center u-text-small u-fw-400 u-text-muted u-mt-10" v-if="!isEstimationErrorVisible">
                         {{ $td('The final amount depends on the exchange rate at the moment of transaction.', 'form.swap-confirm-note') }}
                     </div>
-                    <span class="form-field__error u-text-center u-mt-10" v-else>{{ estimationError }}</span>
+                    <span class="form-field__error u-text-center u-mt-10" v-else>{{ estimationFetchState?.error }}</span>
                 </div>
 
                 <div class="information form-row form__error" v-if="serverError">
@@ -800,6 +754,22 @@ export default {
 
                     <!--<HubFeeImpact class="form-row" :coin="externalTokenSymbol" :fee-impact="totalFeeImpact" :network="hubChainData.shortName"/>-->
                 </template>
+
+                <SwapEstimationWithFee
+                    class="u-text-medium form-row u-hidden"
+                    ref="estimation"
+                    idPreventConcurrency="swapAfterDeposit"
+                    :coin-to-sell="externalTokenSymbol"
+                    :coin-to-buy="form.coinToGet"
+                    :value-to-sell="coinAmountAfterBridge"
+                    :force-sell-all="false"
+                    :is-use-max="false"
+                    @update:estimation="estimation = $event"
+                    @update:tx-data="txData = $event"
+                    @update:v$estimation="v$estimation = $event"
+                    @update:fetch-state="estimationFetchState = $event"
+                    @update:fee="fee = $event"
+                />
 
                 <button
                     type="submit"
