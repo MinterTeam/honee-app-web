@@ -8,6 +8,7 @@ import AddressAssets from '~/components/AddressAssets.vue';
 import InvestmentList from '~/components/InvestmentList.vue';
 import PortfolioLeaderboard from '~/components/PortfolioLeaderboard.vue';
 import PortfolioList from '~/components/PortfolioList.vue';
+import MetagardenMeganetCard from '~/components/CardMeganet.vue';
 import MetagardenLootboxCard from '~/components/MetagardenLootboxCard.vue';
 
 const BASE_CARD = {
@@ -46,6 +47,7 @@ export default {
     cardList,
     components: {
         MetagardenLootboxCard,
+        MetagardenMeganetCard,
         Card,
         // CardPremium,
         CardSwHold,
@@ -114,6 +116,8 @@ export default {
         <AddressAssets/>
 
         <MetagardenLootboxCard class="u-mt-25"/>
+
+        <MetagardenMeganetCard class="u-mt-25"/>
 
         <!-- BEE earning options -->
         <div class="u-mt-25">
