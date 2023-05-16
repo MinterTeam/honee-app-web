@@ -21,6 +21,6 @@ export default {
         <nuxt-link class="button button--ghost-main button--full u-mb-10" :to="$i18nGetPreferredPath('/swap/' + game.coin)">
             {{ $t('action.title-buy-coin', {coin: game.coin}) }}
         </nuxt-link>
-        <a class="button button--ghost-main button--full" href="/send/-/SNATCH">{{ $td('Send SNATCH tokens to the Game', 'mg-games.button-send-snatch') }}</a>
+        <a class="button button--ghost-main button--full" :href="$i18nGetPreferredPath('/send/-/' + game.coin)">{{ $td('Send tokens to the Game', 'mg-games.button-send-tokens') }}</a>
     </MetagardenGame>
 </template>
