@@ -329,12 +329,20 @@ export default {
 function isPoolAffected(tx, lpTokenSymbol) {
     const tagsPoolId = Number(lpTokenSymbol.replace('LP-', ''));
 
-    const swapPools = tx.tags['tx.pools'] && JSON.parse(tx.tags['tx.pools']);
-    const feePool = tx.tags['tx.commission_details'] && JSON.parse(tx.tags['tx.commission_details']);
+    const swapPools = jsonParse(tx.tags['tx.pools']);
+    const feePool = jsonParse(tx.tags['tx.commission_details']);
     const pools = [].concat(swapPools, feePool);
     const idList = pools.map((pool) => pool?.['pool_id']);
 
     return idList.includes(tagsPoolId);
+}
+
+function jsonParse(value) {
+    try {
+        return JSON.parse(value);
+    } catch (e) {
+        return undefined;
+    }
 }
 </script>
 
