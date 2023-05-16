@@ -13,6 +13,7 @@ defineProps(SwapEstimation.props);
 import {defineComponent} from 'vue';
 import useFee from '~/composables/use-fee.js';
 import SwapEstimation from '~/components/base/SwapEstimation.vue';
+import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 
 // wrap with useFee if used without TxSequence (which handles fee itself)
 export default defineComponent({
@@ -33,13 +34,18 @@ export default defineComponent({
             type: String,
             required: true,
         },
+        isWorstRoute: {
+            type: Boolean,
+            default: false,
+        },
     },
     setup() {
-        const {fee, setFeeProps} = useFee();
+        const {fee, setFeeProps, refineFee} = useFee();
 
         return {
             fee,
             setFeeProps,
+            refineFee,
         };
     },
     data() {
@@ -50,6 +56,9 @@ export default defineComponent({
     computed: {
         listenersPatched() {
             return patchListeners(this.$listeners, 'update:tx-data', this.handleTxData);
+        },
+        worstRoute() {
+            return [this.coinToSell, 1, 2, 3, 4];
         },
     },
     watch: {
@@ -63,17 +72,19 @@ export default defineComponent({
         // feeBusParams
         this.$watch(
             () => {
-                if (!this.txData || !this.$refs.estimation?.getTxType) {
+                // don't use `this.txType`, it may lead to infinite loop
+                const type = this.isWorstRoute ? TX_TYPE.SELL_SWAP_POOL : this.$refs.estimation?.getTxType?.(true);
+                const coins = this.isWorstRoute ? this.worstRoute : this.txData?.coins;
+                if (!coins || !type) {
                     return;
                 }
                 return {
                     txParams: {
-                        // don't use `this.txType`, it may lead to infinite loop
-                        type: this.$refs.estimation.getTxType(true),
+                        type,
                         data: {
                             // pass only fields that affect fee
                             coinToSell: this.coinToSell,
-                            coins: this.txData.coins,
+                            coins,
                         },
                     },
                     baseCoinAmount: this.$store.getters.baseCoinAmount,

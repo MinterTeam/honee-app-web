@@ -12,9 +12,10 @@ const { sendMinterTx, addStepData } = useTxService();
  * @param {object} [options]
  * @param {TxParams} [options.initialTxParams]
  * @param {function(): TxParams} [options.prepare]
+ * @param {PostTxOptions} [options.options]
  * @return {Promise<PostTxResponse&{result: {returnAmount: string}}>}
  */
-async function sendMinterSwapTx({initialTxParams, prepare} = {}) {
+async function sendMinterSwapTx({initialTxParams, prepare, options} = {}) {
     initStepFromParams(initialTxParams);
 
     function initStepFromParams(txParams) {
@@ -32,7 +33,7 @@ async function sendMinterSwapTx({initialTxParams, prepare} = {}) {
         ...(await prepare?.()),
     };
 
-    return sendMinterTx(txParams)
+    return sendMinterTx(txParams, options)
         .then((tx) => {
             const returnAmount = convertFromPip(tx.tags['tx.return']);
             // @TODO prevent if component destroyed

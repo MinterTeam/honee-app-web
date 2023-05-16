@@ -33,6 +33,9 @@ export default defineComponent({
             type: Boolean,
             default: false,
         },
+        coinSwapAfterDeposit: {
+            type: String,
+        },
     },
     emits: [
         'update:processing',
@@ -316,6 +319,7 @@ function getComponentPropsItem(networkSlug, isLegacy) {
             :networkSlug="componentProps.networkSlug"
             :is-legacy="componentProps.isLegacy"
             :form="componentProps.id === currentComponentId ? form : undefined"
+            :coinSwapAfterDeposit="coinSwapAfterDeposit"
             @update:processing="handleProcessing($event, componentProps.id)"
             @topup="$emit('topup', $event);"
             @update:data="handleInnerData($event, componentProps.networkSlug, componentProps.isLegacy, )"
@@ -332,7 +336,11 @@ function getComponentPropsItem(networkSlug, isLegacy) {
                 <BaseAmountEstimation :coin="tokenSymbol" :amount="form.amount" format="exact"/>
 
                 <h3 class="information__title">{{ $td('You will get approximately', 'form.swap-confirm-receive-estimation') }}</h3>
-                <BaseAmountEstimation :coin="tokenSymbol" :amount="currentData?.amountAfterDeposit" format="approx"/>
+                <BaseAmountEstimation
+                    :coin="currentData?.minterCoinToGet || tokenSymbol"
+                    :amount="currentData?.minterCoinToGet ? currentData?.minterEstimation : currentData?.amountAfterDeposit"
+                    format="approx"
+                />
 
                 <HubFeeImpact class="u-mt-05 u-text-right" :coin="tokenSymbol" :fee-impact="currentData?.totalFeeImpact" :network="selectedHubChainData?.shortName"/>
             </div>

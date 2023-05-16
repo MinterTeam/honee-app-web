@@ -84,6 +84,7 @@ export default {
                 <TopupWaitSmartWalletWrap
                     class="u-text-center u-text-medium"
                     :showWaitIndicator="false"
+                    coin-swap-after-deposit="MEGANET"
                     @update:processing="isDepositProcessing = $event"
                     @topup="successDeposit = $event;"
                     @is-show="isShowWaitSmartWallet = $event;"
