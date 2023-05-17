@@ -729,6 +729,11 @@ export default {
         'your-account': 'Ваш аккаунт',
         'buy-button-card': 'Картой',
         'buy-button-crypto': 'Криптой',
+        'staking-card-title': 'Стейкинг',
+        'staking-card-description': 'Стейкуйте METAGARDEN на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
+        'staking-card-apr-title': 'Годовых',
+        'staking-card-apr-value': 'до 20%',
+        'staking-card-button': 'Застейкать METAGARDEN',
     },
     meganet: {
         'card-title': 'Ранний доступ',

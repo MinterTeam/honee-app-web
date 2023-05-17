@@ -2,6 +2,7 @@
 import AddressAssets from '~/components/AddressAssets.vue';
 import MetagardenSpotCard from '~/components/MetagardenSpotCard.vue';
 import MetagardenMeganetCard from '~/components/CardMeganet.vue';
+import MetagardenStakingCard from '~/components/CardMetagardenStaking.vue';
 import MetagardenSwHoldCard from '~/components/CardSwHold.vue';
 
 export default {
@@ -9,6 +10,7 @@ export default {
     components: {
         AddressAssets,
         MetagardenMeganetCard,
+        MetagardenStakingCard,
         MetagardenSpotCard,
         MetagardenSwHoldCard,
     },
@@ -42,6 +44,8 @@ export default {
         <MetagardenMeganetCard/>
 
         <MetagardenSpotCard/>
+
+        <MetagardenStakingCard/>
 
         <MetagardenSwHoldCard class="u-mt-10" coin="METAGARDEN" :is-small="false"/>
 
