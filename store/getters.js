@@ -73,6 +73,12 @@ export default {
     baseCoinAmount(state, getters) {
         return getters.getBalanceAmount(COIN_NAME);
     },
+    isHonee(state, getters) {
+        return !getters.isMetagarden;
+    },
+    isMetagarden(state) {
+        return state.isMetagarden;
+    },
     /**
      * @return {string}
      */
