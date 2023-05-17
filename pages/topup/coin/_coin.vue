@@ -13,7 +13,7 @@ export default {
     CARD_TO_MINTER_HOST,
     TELEGRAM_BUY_LINKS,
     layout(context) {
-        return context.store.state.isMetagarden ? 'metagarden' : 'default';
+        return context.store.getters.isMetagarden ? 'metagarden' : 'default';
     },
     components: {
         InlineSvg,

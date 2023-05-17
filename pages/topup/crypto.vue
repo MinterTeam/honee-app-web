@@ -5,7 +5,7 @@ import TopupWaitSmartWalletWrap from '~/components/TopupWaitSmartWalletWrap.vue'
 
 export default {
     layout(context) {
-        return context.store.state.isMetagarden ? 'metagarden' : 'default';
+        return context.store.getters.isMetagarden ? 'metagarden' : 'default';
     },
     components: {
         TopupSmartWalletForm,

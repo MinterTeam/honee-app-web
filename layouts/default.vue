@@ -31,13 +31,13 @@ export default {
         };
     },
     fetch() {
-        // if (this.$store.state.isMetagarden) {
+        // if (this.$store.getters.isMetagarden) {
         //     return this.$router.replace(this.$i18nGetPreferredPath(DASHBOARD_URL_METAGARDEN));
         // }
     },
     computed: {
         isMetagarden() {
-            return this.$options.subapp === 'metagarden' || this.$store.state.isMetagarden;
+            return this.$options.subapp === 'metagarden' || this.$store.getters.isMetagarden;
         },
         isHonee() {
             return !this.isMetagarden;

@@ -4,7 +4,7 @@ import {getErrorText} from '~/assets/server-error.js';
 export default {
     layout({store}) {
         if (store.getters.isAuthorized) {
-            return store.state.isMetagarden ? 'metagarden' : 'default';
+            return store.getters.isMetagarden ? 'metagarden' : 'default';
         } else {
             return 'splash';
         }

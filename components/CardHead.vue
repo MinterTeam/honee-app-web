@@ -53,7 +53,7 @@ export default defineComponent({
         },
         isMgSwapTitles() {
             const MG_COINS = ['METAGARDEN', 'MEGANET'];
-            return this.$store.state.isMetagarden && MG_COINS.includes(this.title) && this.caption;
+            return this.$store.getters.isMetagarden && MG_COINS.includes(this.title) && this.caption;
         },
         // swap title and caption for metagarden
         finalCaption() {
