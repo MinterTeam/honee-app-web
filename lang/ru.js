@@ -734,6 +734,7 @@ export default {
         'staking-card-apr-title': 'Годовых',
         'staking-card-apr-value': 'до 20%',
         'staking-card-button': 'Застейкать METAGARDEN',
+        'staking-card-available': 'Доступно для стейкинга',
     },
     meganet: {
         'card-title': 'Ранний доступ',

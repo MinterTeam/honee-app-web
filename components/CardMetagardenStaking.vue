@@ -1,3 +1,12 @@
+<script>
+import {pretty} from '~/assets/utils.js';
+
+export default {
+    methods: {
+        pretty,
+    },
+};
+</script>
 <template>
     <div class="card card__content--small card--metagarden-staking u-text-center u-mt-10">
         <div class="card__action-head">
@@ -17,5 +26,12 @@
         <nuxt-link :to="$i18nGetPreferredPath('/stake/32')" class="button button--full button--main u-mt-15">
             {{ $td('Stake METAGARDEN', 'metagarden.staking-card-button') }}
         </nuxt-link>
+        <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
+            <div class="u-flex u-flex--align-center">
+                <img class="u-image u-image--round u-mr-05" alt="" src="/img/logo-metagarden.svg" width="24" height="24">
+                <div class="u-h--uppercase u-text-sw-hold">{{ $td('Available for staking', 'metagarden.staking-card-available') }}</div>
+            </div>
+            <div class="u-h u-h3">{{ pretty($store.getters.getBalanceAmount('METAGARDEN')) }}</div>
+        </div>
     </div>
 </template>
