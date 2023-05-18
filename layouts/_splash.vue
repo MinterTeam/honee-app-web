@@ -9,9 +9,22 @@ export default {
         TheHeader,
         Snackbar,
     },
-    head: {
-        htmlAttrs: {
-            class: 'splash-layout',
+    head() {
+        return {
+            htmlAttrs: {
+                class: 'splash-layout' + ' ' + this.htmlClass,
+            },
+        };
+    },
+    computed: {
+        htmlClass() {
+            if (this.$store.getters.isMetagarden) {
+                return 'theme--metagarden';
+            }
+            if (this.$store.getters.isMegachain) {
+                return 'theme--megachain';
+            }
+            return '';
         },
     },
 };

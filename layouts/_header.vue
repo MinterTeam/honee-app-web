@@ -90,6 +90,7 @@ export default {
             <div class="header__logo">
                 <nuxt-link class="header__logo-link" :to="$i18nGetPreferredPath(indexUrl)">
                     <img v-if="isMetagarden" class="u-image" src="/img/logo-metagarden-green.svg" alt="Metagarden" width="32" height="32">
+                    <img v-else-if="$store.getters.isMegachain" class="u-image" src="/img/logo-megachain.svg" alt="Metagarden Chain" width="32" height="32">
                     <InlineSvg v-else class="u-image" src="/img/logo-honee.svg" alt="Honee" width="122" height="24" fill="currentColor"/>
                 </nuxt-link>
             </div>

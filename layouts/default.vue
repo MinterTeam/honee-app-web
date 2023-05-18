@@ -3,6 +3,7 @@ import {DASHBOARD_URL_METAGARDEN} from '~/assets/variables.js';
 import HeaderBanner from '~/layouts/_header-banner.vue';
 import TheHeader from '~/layouts/_header.vue';
 import TheHeaderMetagarden from '~/layouts/_header-metagarden.vue';
+import TheHeaderMegachain from '~/layouts/_header-megachain.vue';
 import TheFooter from '~/layouts/_footer.vue';
 import FooterGarden from '~/components/layout/FooterGarden.vue';
 import BackButtonFull from '~/components/layout/BackButtonFull.vue';
@@ -14,6 +15,7 @@ export default {
         HeaderBanner,
         TheHeader,
         TheHeaderMetagarden,
+        TheHeaderMegachain,
         TheFooter,
         FooterGarden,
         BackButtonFull,
@@ -39,17 +41,23 @@ export default {
         isMetagarden() {
             return this.$options.subapp === 'metagarden' || this.$store.getters.isMetagarden;
         },
+        isMegachain() {
+            return this.$store.getters.isMegachain;
+        },
         isHonee() {
-            return !this.isMetagarden;
+            return !this.isMetagarden && !this.isMegachain;
         },
         htmlClass() {
             if (this.isMetagarden) {
                 return 'metagarden-layout theme--metagarden';
             }
+            if (this.isMegachain) {
+                return 'megachain-layout theme--megachain';
+            }
             return '';
         },
         bodyClass() {
-            if (this.isMetagarden) {
+            if (this.isMetagarden || this.isMegachain) {
                 return '';
             }
             return 'default-layout';
@@ -62,6 +70,7 @@ export default {
     <div>
         <HeaderBanner/>
         <TheHeaderMetagarden v-if="isMetagarden"/>
+        <TheHeaderMegachain v-else-if="isMegachain"/>
         <TheHeader v-else :show-language="false"/>
 
         <BackButtonFull v-if="isHonee"/>

@@ -55,6 +55,34 @@
     .information {background: transparent; color: #fff; border-color: @c-metagarden-highlight;}
 }
 
+.theme--megachain {
+    --color-bg: @c-mega-bg;
+    //--color-bg-tint: @c-night-dark;
+    --color-divider: @c-mega-border;
+    --color-light-gray: rgba(255,255,255, 0.05);
+    --color-text: #fff;
+    --color-text-rgb: 255, 255, 255;
+    --color-text-muted: @c-white-half-transparent;
+    --color-text-muted2: @c-white-half-transparent;
+    --color-text-muted-hard: @c-white-hard-transparent;
+    //--color-text-disabled-button: @c-night;
+    --color-main: @c-mega;
+    --color-main-rgb: @c-mega-rgb;
+    --color-main-invert: #fff;
+
+
+    background: @c-mega-bg; color: #fff;
+    .wallet__action-button .color-main-light {display: none;}
+    .card, .card--light-grey {.card--megachain(); /*box-shadow: 0 4px 4px rgba(0,0,0,.05);*/ /* reset box-shadow */}
+    .card:has(.card--light-grey) {/*box-shadow: 0 4px 4px rgba(0,0,0,.05);*/ /* reset box-shadow */}
+    .card--invert {background: transparent !important; /* important to override inline styles from custom color */}
+    //.card--invert .card.card__content {border-top: none;}
+    //.card__action-title-type, .card__action-stats-caption {color: @c-metagarden-text-muted; opacity: 1;}
+    .information {background: transparent; color: #fff; border-color: @c-mega-highlight;}
+
+    .header__controls-mg-user-name {color: @c-mega;}
+}
+
 
 // vendor
 // mdc
@@ -166,8 +194,8 @@
 .auth__body {}
 //.auth__bg {position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin-top: 40px; margin-left: -3px; z-index: -1;}
 .auth__bee {position: absolute; bottom: 100%; right: 10px; margin-bottom: 8px;}
-.auth__logo {display: block; margin-inline: auto; margin-bottom: 24px;}
-.auth__subtitle {text-align: center; margin-bottom: 40px; font-size: 16px;}
+.auth__logo {display: block; margin-inline: auto;}
+.auth__subtitle {text-align: center; font-size: 16px;}
 /*@media (min-width: @breakpoint-medium-up) {
     .auth__body {background-image: url(../img/auth-bg.svg); background-position: 50% 10%; background-repeat: no-repeat;}
 }*/
@@ -230,6 +258,7 @@
     linear-gradient(100.01deg, #42DF81 -5.26%, #1E8045 43.33%, #1A6D3B 119.14%);
     background-size: auto 200%, auto;
     color: #fff;}
+.card--megachain {background: @c-mega-bg; color: #fff; box-shadow: none; border: 1px solid @c-mega-border;}
 .card--extended-card {
     .card__action-head {
         margin: 0 0 152px 0 !important;

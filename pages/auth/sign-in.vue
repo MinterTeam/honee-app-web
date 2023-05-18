@@ -15,7 +15,7 @@ export default {
                 { hid: 'og-title', name: 'og:title', content: title },
             ],
             htmlAttrs: {
-                class: this.$route.query.battle ? 'splash-layout splash-layout--battle' : '',
+                class: this.$route.query.battle ? 'splash-layout splash-layout--battle' : undefined,
             },
         };
     },

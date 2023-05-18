@@ -1,3 +1,5 @@
+export const SUBAPP = process.env.APP_SUBAPP;
+export const IS_SUBAPP_MEGACHAIN = SUBAPP === 'megachain';
 export const MAINNET = 'mainnet';
 export const TESTNET = 'testnet';
 export const NETWORK = process.env.APP_ENV === MAINNET ? MAINNET : TESTNET;
