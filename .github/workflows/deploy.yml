@@ -26,7 +26,10 @@ jobs:
         run: echo "BUILD_BRANCH_ENV_PREFIX=$(echo .$BUILD_BRANCH)" >> $GITHUB_ENV
 
       - name: set env PROJECT_NAME
-        run: echo "PROJECT_NAME=$(echo $GITHUB_REPOSITORY | sed "s:MinterTeam/::")" >> $GITHUB_ENV
+        run: echo "PROJECT_NAME=$(echo $GITHUB_REPOSITORY | sed 's:MinterTeam/::')" >> $GITHUB_ENV
+
+      - name: set env RELEASE_NAME
+        run: echo "RELEASE_NAME=$PROJECT_NAME-$BUILD_BRANCH" >> $GITHUB_ENV
 
       - name: set env INGRESS_DOMAIN
         env:
@@ -66,7 +69,7 @@ jobs:
       #        if: env.BUILD_BRANCH == env.PRODUCTION_BRANCH
       #        env:
       #          TAG_NAME: ${{ github.sha }}
-      #        run: ./linux-amd64/helm upgrade -n ${{ env.KUBE_NAMESPACE }} -i $PROJECT_NAME chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN
+      #        run: ./linux-amd64/helm upgrade -n ${{ env.KUBE_NAMESPACE }} -i $RELEASE_NAME chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN
 
       - name: deploy to production cluster
         if: contains(env.PRODUCTION_BRANCH, env.BUILD_BRANCH)
@@ -75,7 +78,7 @@ jobs:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_PROD_CONFIG_DATA }}
           TAG_NAME: ${{ github.sha }}
         with:
-          args: helm upgrade -n $KUBE_NAMESPACE -i $PROJECT_NAME chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN
+          args: helm upgrade -n $KUBE_NAMESPACE -i $RELEASE_NAME chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN
 
       - name: deploy to staging cluster
         if: "!contains(env.PRODUCTION_BRANCH, env.BUILD_BRANCH)"
@@ -84,7 +87,7 @@ jobs:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_STAGE_CONFIG_DATA }}
           TAG_NAME: ${{ github.sha }}
         with:
-          args: helm upgrade -n $KUBE_NAMESPACE -i "${{ env.PROJECT_NAME }}-${{env.BUILD_BRANCH}}" chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN --set ingress.issuer=letsencrypt-http --set ingress.clusterissuer=""
+          args: helm upgrade -n $KUBE_NAMESPACE -i $RELEASE_NAME chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN --set ingress.issuer=letsencrypt-http --set ingress.clusterissuer=""
 
       - name: notification
         if: cancelled() == false

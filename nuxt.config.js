@@ -6,7 +6,7 @@ import webpack from 'webpack';
 const envConfig = dotenv.config();
 const envConfigParsed = envConfig.error ? {} : envConfig.parsed;
 
-import {BASE_TITLE, BASE_DESCRIPTION, I18N_ROUTE_NAME_SEPARATOR, ROUTE_NAME_SPLITTER, LANGUAGE_COOKIE_KEY, GOATCOUNTER_HOST, GOATCOUNTER_SCRIPT_HASH, TWA_SCRIPT_HASH, TWA_SCRIPT_URL} from "./assets/variables.js";
+import {SUBAPP, BASE_TITLE, BASE_DESCRIPTION, I18N_ROUTE_NAME_SEPARATOR, ROUTE_NAME_SPLITTER, LANGUAGE_COOKIE_KEY, GOATCOUNTER_HOST, GOATCOUNTER_SCRIPT_HASH, TWA_SCRIPT_HASH, TWA_SCRIPT_URL} from "./assets/variables.js";
 import * as varsLocalConfig from "./assets/variables.js";
 import * as varsSdkConfig from "minter-js-web3-sdk/src/config.js";
 const varsConfig = {...varsLocalConfig, ...varsSdkConfig};
@@ -90,6 +90,8 @@ const scriptCSP = CSP_SCRIPT.map((item) => {
     return item.indexOf('sha') === 0 ? `'${item}'` : item;
 }).join(' ');
 
+const subappPrefix = SUBAPP ? '/' + SUBAPP : '';
+
 
 module.exports = {
     ssr: false,
@@ -122,11 +124,11 @@ module.exports = {
             { hid: 'description', name: 'description', content: BASE_DESCRIPTION },
             { hid: 'og-title', name: 'og:title', content: BASE_TITLE },
             { hid: 'og-description', name: 'og:description', content: BASE_DESCRIPTION },
-            { hid: 'og-image', name: 'og:image', content: '/social-share.png' },
+            { hid: 'og-image', name: 'og:image', content: subappPrefix + '/social-share.png' },
         ],
         link: [
-            { rel: 'icon', href: '/favicon.png' },
-            { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+            { rel: 'icon', href: subappPrefix + '/favicon.png' },
+            { rel: 'apple-touch-icon', href: subappPrefix + '/apple-touch-icon.png' },
         ],
     },
     css: [
