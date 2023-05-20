@@ -5,6 +5,11 @@ export default {
     components: {
         TopupCoinOptions,
     },
+    head: {
+        bodyAttrs: {
+            class: 'megachain__body',
+        },
+    },
     fetch() {
         // this.$store.commit('SET_METAGARDEN');
     },

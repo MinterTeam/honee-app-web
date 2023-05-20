@@ -1,12 +1,14 @@
 <script>
 import HeaderBanner from '~/layouts/_header-banner.vue';
 import TheHeader from '~/layouts/_header.vue';
+import FooterSupport from '~/layouts/_footer-support.vue';
 import Snackbar from '~/components/layout/Snackbar.vue';
 
 export default {
     components: {
         HeaderBanner,
         TheHeader,
+        FooterSupport,
         Snackbar,
     },
     head() {
@@ -32,11 +34,12 @@ export default {
 
 <template>
     <div class="splash-layout__wrap">
-        <HeaderBanner/>
+        <HeaderBanner v-if="!$store.getters.isMegachain"/>
         <TheHeader :simple="false" :show-language="true"/>
 
         <slot></slot>
 
+        <FooterSupport/>
         <Snackbar/>
     </div>
 </template>

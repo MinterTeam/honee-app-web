@@ -1,6 +1,7 @@
 <script>
 import InlineSvg from 'vue-inline-svg';
 import {HUB_NETWORK_SLUG, DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR} from '~/assets/variables.js';
+import {shortHashFilter} from '~/assets/utils.js';
 import Language from '~/components/layout/Language.vue';
 import Modal from '~/components/base/Modal.vue';
 import Topup from '~/components/Topup.vue';
@@ -58,6 +59,9 @@ export default {
                 return undefined;
             }
         },
+        isHonee() {
+            return !this.isMetagarden && !this.$store.getters.isMetagarden && !this.$store.getters.isMegachain;
+        },
         isAuthPage() {
             // match ^auth/.* or ^auth___(en|ru)
             return this.$route.name.indexOf('auth' + ROUTE_NAME_SPLITTER) === 0 || this.$route.name.indexOf('auth' + I18N_ROUTE_NAME_SEPARATOR) === 0;
@@ -73,6 +77,7 @@ export default {
         },
     },
     methods: {
+        shortHashFilter,
         goBack() {
             this.$router.go(-1);
         },
@@ -96,7 +101,7 @@ export default {
             </div>
 
             <!--<div class="header__controls">-->
-            <template v-if="!isPremiumPage && isAuthorized && !simple && !isMetagarden">
+            <template v-if="!isPremiumPage && isAuthorized && !simple && isHonee">
                 <hr class="header__horizontal-divider header__premium-item u-hidden-large-up metagarden-layout__hide"/>
                 <nuxt-link class="header__controls-link u-flex u-flex--align-center header__premium-item metagarden-layout__hide" :to="$i18nGetPreferredPath('/premium')">
                     <img class="u-mr-05 u-hidden-large-down" src="/img/icon-premium-fancy.svg" alt="" role="presentation" width="64" height="42">
@@ -109,10 +114,19 @@ export default {
             </template>
 
             <button v-if="isAuthorized && !simple" type="button" class="header__controls-link header__controls-user u-semantic-button" @click="isTopupModalOpen = true">
-                <img class="header__controls-user-avatar u-mr-05 u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation" width="24" height="24"/>
-                <span class="header__controls-user-name">{{ $store.getters.username }}</span>
+                <template v-if="isHonee">
+                    <img class="header__controls-user-avatar u-mr-05 u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation" width="24" height="24"/>
+                    <span class="">{{ $store.getters.username }}</span>
+                </template>
+                <template v-else>
+                    <div class="u-mr-10 u-text-right">
+                        <div class="u-fw-700 header__controls-user-name">{{ $td('Your address', 'index.your-address') }}</div>
+                        <div class="u-fw-600 header__controls-user-balance">{{ shortHashFilter($store.getters.address) }}</div>
+                    </div>
+                    <img class="header__controls-user-avatar u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation" width="32" height="32"/>
+                </template>
             </button>
-            <button v-if="isAuthorized && !simple && !isMetagarden" type="button" class="header__controls-link link u-semantic-button metagarden-layout__hide" @click="isLogoutModalOpen = true">
+            <button v-if="isAuthorized && !simple && isHonee" type="button" class="header__controls-link link u-semantic-button metagarden-layout__hide" @click="isLogoutModalOpen = true">
                 <img src="/img/icon-logout.svg" width="24" height="24" alt="Logout">
             </button>
             <nuxt-link v-if="!isAuthorized && !simple && !isAuthPage" :to="$i18nGetPreferredPath('/auth')" type="button" class="header__controls-link">

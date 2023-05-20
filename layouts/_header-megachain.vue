@@ -56,8 +56,8 @@ export default {
 
             <nuxt-link v-if="isAuthorized && !isAccountPage" :to="$i18nGetPreferredPath('/')" class="header__controls-link header__controls-user u-semantic-button">
                 <div class="u-mr-10 u-text-right">
-                    <div class="u-fw-700 header__controls-mg-user-name">{{ $td('Metagarden wallet', 'megachain.header-account') }}</div>
-                    <div class="u-fw-600 header__controls-mg-user-balance">
+                    <div class="u-fw-700 header__controls-user-name">{{ $td('Metagarden wallet', 'megachain.header-account') }}</div>
+                    <div class="u-fw-600 header__controls-user-balance">
                         {{ pretty($store.getters.getBalanceAmount('MEGANET')) }} MEGANET
                     </div>
                 </div>

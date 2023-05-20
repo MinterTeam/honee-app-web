@@ -12,6 +12,9 @@ export default {
             meta: [
                 { hid: 'og-title', name: 'og:title', content: getTitle(this.$options.PAGE_TITLE) },
             ],
+            bodyAttrs: {
+                class: this.$store.getters.isMegachain ? 'megachain__auth-body layout--hide-header-logo layout--transparent-header' : undefined,
+            },
         };
     },
     methods: {

@@ -80,7 +80,7 @@
     //.card__action-title-type, .card__action-stats-caption {color: @c-metagarden-text-muted; opacity: 1;}
     .information {background: transparent; color: #fff; border-color: @c-mega-highlight;}
 
-    .header__controls-mg-user-name {color: @c-mega;}
+    .header__controls-user-name {color: @c-mega;}
 }
 
 
@@ -404,8 +404,8 @@
 .header__controls-user {display: flex; align-items: center; /*max-width: calc(100vw - 220px);*/ /*margin-right: 16px;*/}
 .header__controls-user-avatar {border-radius: 50%; background: @c-black-light; object-fit: cover;
     flex-shrink: 0;}
-.header__controls-mg-user-name {.u-text-small(); color: @c-metagarden-text-muted;}
-.header__controls-mg-user-balance {.u-text-medium(); /*.u-text-small(); color: @c-metagarden-highlight;*/}
+.header__controls-user-name {.u-text-small(); color: @c-metagarden-text-muted;}
+.header__controls-user-balance {.u-text-medium(); /*.u-text-small(); color: @c-metagarden-highlight;*/}
 .header__controls-language {display: flex; align-items: center; /*margin-left: 16px;*/}
 .header__language-container {padding-top: 16px; padding-bottom: 16px; display: flex; justify-content: flex-end;}
 .header__language-button {line-height: 0; display: block;}
@@ -680,6 +680,14 @@
 }
 
 
+.megachain__body {background: url(../img/meganet-bg.svg) no-repeat 50% 0;}
+.megachain__auth-body {
+    background: url(../img/megachain-auth-bg.png) no-repeat 50% 0;
+    background-image: image-set(
+        url(../img/megachain-auth-bg.png) 1x,
+        url(../img/megachain-auth-bg@2x.png) 2x
+    );
+}
 
 .mg-cards {display: flex; margin-inline: -@container-padding-small; padding-inline: @container-padding-small; overflow-y: auto;}
 @media (min-width: @breakpoint-small-up) {

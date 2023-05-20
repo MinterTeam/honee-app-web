@@ -6,6 +6,7 @@ import TheHeaderMetagarden from '~/layouts/_header-metagarden.vue';
 import TheHeaderMegachain from '~/layouts/_header-megachain.vue';
 import TheFooter from '~/layouts/_footer.vue';
 import FooterGarden from '~/components/layout/FooterGarden.vue';
+import FooterSupport from '~/layouts/_footer-support.vue';
 import BackButtonFull from '~/components/layout/BackButtonFull.vue';
 import ConnectionNotice from '~/components/layout/ConnectionNotice.vue';
 import Snackbar from '~/components/layout/Snackbar.vue';
@@ -15,9 +16,10 @@ export default {
         HeaderBanner,
         TheHeader,
         TheHeaderMetagarden,
-        TheHeaderMegachain,
+        // TheHeaderMegachain,
         TheFooter,
         FooterGarden,
+        FooterSupport,
         BackButtonFull,
         ConnectionNotice,
         Snackbar,
@@ -68,9 +70,9 @@ export default {
 
 <template>
     <div>
-        <HeaderBanner/>
+        <HeaderBanner v-if="!isMegachain"/>
         <TheHeaderMetagarden v-if="isMetagarden"/>
-        <TheHeaderMegachain v-else-if="isMegachain"/>
+        <!--<TheHeaderMegachain v-else-if="isMegachain"/>-->
         <TheHeader v-else :show-language="false"/>
 
         <BackButtonFull v-if="isHonee"/>
@@ -79,6 +81,7 @@ export default {
 
         <TheFooter/>
         <FooterGarden v-if="isHonee"/>
+        <FooterSupport/>
 
         <ConnectionNotice/>
         <Snackbar/>
