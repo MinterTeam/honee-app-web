@@ -34,6 +34,10 @@ export default {
             type: Object,
             default: () => ({}),
         },
+        showDeposit: {
+            type: Boolean,
+            default: true,
+        },
     },
     setup() {
         const {fee, setFeeProps} = useFee();
@@ -270,7 +274,7 @@ export default {
                 @update:v$estimation="v$estimation = $event"
             />
 
-            <div class="information form-row" v-if="!v$estimation.$invalid && (params.coinToSell || params.coinToBuy)">
+            <div class="information form-row" v-if="(params.coinToSell || params.coinToBuy)">
                 <template v-if="params.coinToSell">
                     <h3 class="information__title">{{ $td('You spend approximately', 'form.swap-confirm-spend-estimation') }}</h3>
                     <div class="information__item">
@@ -323,9 +327,9 @@ export default {
             <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the disclaimer in the footer.', 'form.read-understood') }}</p>
         </form>
 
-        <hr class="card__fake-divider">
+        <hr class="card__fake-divider" v-if="showDeposit">
 
-        <nuxt-link class="button button--full button--ghost-main" :to="$i18nGetPreferredPath('/topup/instant')">
+        <nuxt-link v-if="showDeposit" class="button button--full button--ghost-main" :to="$i18nGetPreferredPath('/topup/instant')">
             {{ $td('+ Instant deposit', 'index.topup-instant') }}
         </nuxt-link>
 

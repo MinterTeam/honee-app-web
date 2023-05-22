@@ -73,9 +73,9 @@
 
     background: @c-mega-bg; color: #fff;
     .wallet__action-button .color-main-light {display: none;}
-    .card, .card--light-grey {.card--megachain(); /*box-shadow: 0 4px 4px rgba(0,0,0,.05);*/ /* reset box-shadow */}
-    .card:has(.card--light-grey) {/*box-shadow: 0 4px 4px rgba(0,0,0,.05);*/ /* reset box-shadow */}
-    .card--invert {background: transparent !important; /* important to override inline styles from custom color */}
+    .card, .card--light-grey {.card--megachain();}
+    .card:has(.card--light-grey) {}
+    .card--invert {border: none; background: transparent !important; /* important to override inline styles from custom color */}
     //.card--invert .card.card__content {border-top: none;}
     //.card__action-title-type, .card__action-stats-caption {color: @c-metagarden-text-muted; opacity: 1;}
     .information {background: transparent; color: #fff; border-color: @c-mega-highlight;}

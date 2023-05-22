@@ -1,35 +1,20 @@
 <script>
-import * as clipboard from 'clipbrd';
-import QrcodeVue from 'qrcode.vue';
-import BaseButtonCopyIcon from '~/components/base/BaseButtonCopyIcon.vue';
+import FieldAddressDisplay from '~/components/base/FieldAddressDisplay.vue';
 
 export default {
     components: {
-        QrcodeVue,
-        BaseButtonCopyIcon,
+        FieldAddressDisplay,
     },
     data() {
         return {
-            isQrVisible: false,
         };
     },
     computed: {
         smartWalletAddress() {
             return this.$store.getters.smartWalletAddress;
         },
-        isClipboardSupported() {
-            return clipboard.isSupported();
-        },
     },
     methods: {
-        copy(str) {
-            const isCopied = clipboard.copy(str);
-            if (isCopied) {
-                // show snackbar
-                this.$store.commit('SET_SNACKBAR_ACTIVE');
-                // this.isToastVisible = true;
-            }
-        },
     },
 };
 </script>
@@ -42,17 +27,9 @@ export default {
             {{ $td('From Ethereum & BNB Smart Chain', 'deposit.title-evm') }}
         </h2>
 
-        <div class="h-field u-mt-10 u-mb-05">
-            <div class="h-field__content" @click="copy(smartWalletAddress)">
-                <div class="h-field__title">{{ $td('Your smart wallet address', 'deposit.smart-wallet-address') }}</div>
-                <div class="h-field__input h-field__input--medium is-not-empty">{{ smartWalletAddress }}</div>
-            </div>
-            <div class="h-field__aside h-field__aside--with-icon" v-if="isClipboardSupported">
-                <BaseButtonCopyIcon class="" :copy-text="smartWalletAddress"/>
-            </div>
-        </div>
+        <FieldAddressDisplay class="u-mt-10 u-mb-05" :value="smartWalletAddress" :label="$td('Your smart wallet address', 'deposit.smart-wallet-address')"/>
 
-        <ul class="form-row u-text-muted u-text-small">
+        <ul class="form-row u-text-muted u-text-small u-text-left">
             <template v-if="$i18n.locale === 'en'">
                 <li>To deposit crypto, transfer only BEP20 or ERC20 tokens to the specified address, any amount;</li>
                 <li>The first deposit for BNB Smart Chain ≈ $3, following ≈ $1.5. For Ethereum ≈ $50, following ≈ $25.</li>
@@ -64,30 +41,5 @@ export default {
         </ul>
 
 
-        <!--<div class="u-grid u-grid&#45;&#45;vertical-margin&#45;&#45;small">-->
-        <!--    <div class="u-cell u-cell&#45;&#45;auto-grow">-->
-        <!--        <button-->
-        <!--            class="button button&#45;&#45;ghost-main button&#45;&#45;full button&#45;&#45;narrow"-->
-        <!--            type="button"-->
-        <!--            @click="isQrVisible = !isQrVisible"-->
-        <!--        >-->
-        <!--            <template v-if="!isQrVisible">-->
-        <!--                {{ $td('Show QR', 'topup-network.show-qr') }}-->
-        <!--            </template>-->
-        <!--            <template v-else>-->
-        <!--                {{ $td('Hide QR', 'topup-network.hide-qr') }}-->
-        <!--            </template>-->
-        <!--        </button>-->
-        <!--    </div>-->
-        <!--</div>-->
-
-        <qrcode-vue
-            v-show="isQrVisible"
-            class="u-mt-15 u-text-center"
-            :value="smartWalletAddress"
-            :size="160"
-            level="L"
-            background="transparent"
-        />
     </div>
 </template>

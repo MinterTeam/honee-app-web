@@ -3,7 +3,7 @@ import {NETWORK, MAINNET} from '~/assets/variables.js';
 import InlineSvg from 'vue-inline-svg';
 import {getCard2MinterUrl} from '~/assets/utils.js';
 
-const TELEGRAM_BUY_LINKS = {
+export const TELEGRAM_BUY_LINKS = {
     BEE: 'https://t.me/honeepremiumbot?start=buy-bee',
     MEGANET: 'https://t.me/metagardenbot?start=meganet',
 };
