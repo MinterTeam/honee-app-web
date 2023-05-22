@@ -207,6 +207,10 @@ export default {
         'confirm-logout-title': 'Вы действительно хотите выйти?',
 
         'show-all-earn-options-link': 'Показать другие варианты',
+
+        'support-button': 'Поддержка',
+        'megachain-sign-up-subtitle': 'Игровой EVM-блокчейн',
+        'megachain-sign-up-p': 'Лаунчпад Metagarden Chain',
     },
     topup: {
         'title': 'Пополнить баланс',
@@ -740,6 +744,7 @@ export default {
         'card-title': 'Ранний доступ',
         'description': 'Присоединяйтесь к Metagarden Chain, передовому EVM-блокчейну, предназначенному для игр. Купите токены MEGANET, чтобы получить 100% бонус, когда запустится мейннет. Не упустите шанс стать частью истории!',
         'buy-button': 'Купить токены MEGANET',
+        'buy-text': 'Купите токены MEGANET, чтобы присоединиться к Metagarden Chain с бонусом 100%.',
     },
     'mg-lootbox': {
         'title-inactive': 'Лутбокс еще не готов',

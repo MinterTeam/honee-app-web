@@ -30,7 +30,8 @@ export default {
                 </template>
                 <template v-if="$store.getters.isMegachain">
                     <img class="auth__logo u-mb-20" src="/img/logo-megachain-center.svg" alt="Metagarden Chain" width="193" height="180">
-                    <h3 class="auth__subtitle u-mb-25">{{ $td('Advanced EVM-blockchain for&nbsp;gaming', 'index.megachain-sign-up-subtitle') }}</h3>
+                    <h3 class="auth__subtitle-2">{{ $td('The Ultimate Gaming EVM', 'index.megachain-sign-up-subtitle') }}</h3>
+                    <p class="auth__p u-mb-15">{{ $td('Metagarden Chain Launchpad', 'index.megachain-sign-up-p') }}</p>
                 </template>
             </div>
 
