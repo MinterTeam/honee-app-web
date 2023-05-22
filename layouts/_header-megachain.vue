@@ -1,10 +1,15 @@
 <script>
 import InlineSvg from 'vue-inline-svg';
-import {DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR} from '~/assets/variables.js';
+import {DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, HUB_NETWORK_SLUG, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR} from '~/assets/variables.js';
 import {pretty} from '~/assets/utils.js';
+import Topup from '~/components/Topup.vue';
+import Modal from '~/components/base/Modal.vue';
 
 export default {
+    HUB_NETWORK_SLUG,
     components: {
+        Modal,
+        Topup,
         InlineSvg,
     },
     props: {
@@ -12,6 +17,7 @@ export default {
     },
     data() {
         return {
+            isTopupModalOpen: false,
         };
     },
     computed: {
@@ -37,6 +43,9 @@ export default {
     },
     methods: {
         pretty,
+        shortHashFilter(hash) {
+            return hash.substr(0, 4) + '…' + hash.substr(-4);
+        },
     },
 };
 </script>
@@ -54,19 +63,34 @@ export default {
 
             <!--<div class="header__controls">-->
 
-            <nuxt-link v-if="isAuthorized && !isAccountPage" :to="$i18nGetPreferredPath('/')" class="header__controls-link header__controls-user u-semantic-button">
+            <button v-if="isAuthorized && !isAccountPage" type="button" class="header__controls-link header__controls-user u-semantic-button" @click="isTopupModalOpen = true">
                 <div class="u-mr-10 u-text-right">
-                    <div class="u-fw-700 header__controls-user-name">{{ $td('Metagarden wallet', 'megachain.header-account') }}</div>
+                    <div class="u-fw-700 header__controls-user-name">{{ $td('Your address', 'index.your-address') }} {{ shortHashFilter($store.getters.address) }}</div>
                     <div class="u-fw-600 header__controls-user-balance">
                         {{ pretty($store.getters.getBalanceAmount('MEGANET')) }} MEGANET
                     </div>
                 </div>
                 <img class="header__controls-user-avatar u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation" width="32" height="32"/>
-            </nuxt-link>
+            </button>
             <nuxt-link v-if="!isAuthorized && !isAuthPage" :to="$i18nGetPreferredPath('/auth')" type="button" class="header__controls-link">
                 {{ $td('Sign in', 'index.sign-in') }}
             </nuxt-link>
             <!--</div>-->
         </div>
+
+        <Modal
+            modalContainerClass="card card__content u-text-center"
+            :isOpen.sync="isTopupModalOpen"
+            :hideCloseButton="false"
+            :disableOutsideClick="false"
+        >
+            <Topup
+                :network-slug="$options.HUB_NETWORK_SLUG.MINTER"
+                :title="$td('Your wallet address', 'receive.title')"
+                :description="false"
+                :back-url="false"
+                @click-back="isTopupModalOpen = false"
+            />
+        </Modal>
     </header>
 </template>

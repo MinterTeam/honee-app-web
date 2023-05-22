@@ -16,7 +16,7 @@ export default {
         HeaderBanner,
         TheHeader,
         TheHeaderMetagarden,
-        // TheHeaderMegachain,
+        TheHeaderMegachain,
         TheFooter,
         FooterGarden,
         FooterSupport,
@@ -72,7 +72,7 @@ export default {
     <div>
         <HeaderBanner v-if="!isMegachain"/>
         <TheHeaderMetagarden v-if="isMetagarden"/>
-        <!--<TheHeaderMegachain v-else-if="isMegachain"/>-->
+        <TheHeaderMegachain v-else-if="isMegachain"/>
         <TheHeader v-else :show-language="false"/>
 
         <BackButtonFull v-if="isHonee"/>
