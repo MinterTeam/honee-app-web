@@ -33,6 +33,7 @@ export default defineComponent({
             type: [Number, String],
         },
         fee: {
+            /** @type {PropType<FeeData>} */
             type: Object,
             default: null,
         },
@@ -170,7 +171,7 @@ export default defineComponent({
                 // `coins` or `coinToSell` + `coinToBuy`
                 ...this.estimationTxDataPartial,
                 // sell
-                valueToSell: this.valueToSell,
+                valueToSell: this.maxAmountAfterFee,
                 minimumValueToBuy: this.minimumValueToBuy,
                 // buy
                 valueToBuy: this.valueToBuy,
@@ -199,12 +200,15 @@ export default defineComponent({
             if (this.isSellAll) {
                 return this.maxAmount;
             }
-            const selectedCoin = this.$store.getters.getBalanceItem(this.coinToSell);
+            const selectedCoin = this.$store.state.explorer.coinMap[this.coinToSell];
             // coin not selected
             if (!selectedCoin) {
-                return 0;
+                return this.maxAmount;
             }
-            return getAvailableSelectedBalance(selectedCoin, this.fee);
+            return getAvailableSelectedBalance({
+                coin: selectedCoin,
+                amount: this.maxAmount,
+            }, this.fee);
         },
         isEstimationErrorHidden() {
             // estimation is not ready until swap props are valid
@@ -287,6 +291,7 @@ export default defineComponent({
 
             return this.estimateSwap({
                 coinToSell: this.coinToSell,
+                // don't use maxAmountAfterFee here to not fall in estimation loop (afterFee -> estimation -> txData -> fee -> afterFee -> estimation -> ...)
                 valueToSell: this.valueToSell,
                 coinToBuy: this.coinToBuy,
                 valueToBuy: this.valueToBuy,

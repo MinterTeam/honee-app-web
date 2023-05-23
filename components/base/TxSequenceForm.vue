@@ -109,8 +109,12 @@ export default {
             () => {
                 /** @type {Array<SendSequenceItem>} */
                 const sequenceParamsArray = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
-                // check only nullish, because 'false' feeTxParams mean 'skip estimation'
-                const txParamsList = sequenceParamsArray.map((item) => item.feeTxParams ?? item.txParams);
+                const txParamsList = sequenceParamsArray.map((item) => {
+                    return item.skip
+                        ? false
+                        // check only nullish, because 'false' feeTxParams mean 'skip estimation'
+                        : item.feeTxParams ?? item.txParams;
+                });
 
                 return {
                     txParamsList,
