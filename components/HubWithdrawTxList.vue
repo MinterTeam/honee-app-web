@@ -53,7 +53,9 @@ export default {
                         return;
                     }
 
-                    this.txPollList[hash] = subscribeTransfer(hash, withdraw.timestamp)
+                    const [promiseWithEmitter, unsubscribe] = subscribeTransfer(hash, withdraw.timestamp);
+                    this.txPollList[hash] = unsubscribe;
+                    promiseWithEmitter
                         .on('update', (transfer) => {
                             this.$store.commit('hub/updateWithdraw', transfer);
                         })
@@ -84,9 +86,9 @@ export default {
         },
     },
     destroyed() {
-        Object.values(this.txPollList).forEach((watcher) => {
-            if (typeof watcher.unsubscribe === 'function') {
-                watcher.unsubscribe();
+        Object.values(this.txPollList).forEach((unsubscribe) => {
+            if (typeof unsubscribe === 'function') {
+                unsubscribe();
             }
         });
     },
