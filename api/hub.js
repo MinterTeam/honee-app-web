@@ -10,6 +10,7 @@ import {HUB_API_URL, HUB_TRANSFER_STATUS, HUB_CHAIN_ID, HUB_NETWORK, NETWORK, MA
 import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 import {isHubTransferFinished} from '~/assets/utils.js';
+import {createCancelableSignal} from '@shrpne/utils/src/cancelable-signal.js';
 
 const instance = axios.create({
     baseURL: HUB_API_URL,
@@ -235,13 +236,13 @@ export function getTransferFee(inputTxHash) {
  *
  * @param {string} hash
  * @param {number|string} [timestamp]
- * @return {Promise<HubTransferStatus> & {unsubscribe: function(): void, on: TinyEmitter.on, once: TinyEmitter.once}}
+ * @return {[promiseWithEmitter: Promise<HubTransferStatus> & {on: TinyEmitter.on, once: TinyEmitter.once}, unsubscribe: function(): void, ]}
  */
 export function subscribeTransfer(hash, timestamp) {
     if (!hash) {
         throw new Error('Tx hash not specified');
     }
-    let isUnsubscribed = false;
+    const signal = createCancelableSignal();
     let lastStatus;
     const emitter = new Emitter();
 
@@ -254,14 +255,15 @@ export function subscribeTransfer(hash, timestamp) {
     // proxy `.on` and `.once`
     proxyEmitter(statusPromise, emitter);
 
-    // unsubscribe from all events and disable polling
-    statusPromise.unsubscribe = function() {
-        isUnsubscribed = true;
-        emitter.off('update');
-        emitter.off('finished');
-    };
-
-    return statusPromise;
+    return [
+        statusPromise,
+        function() {
+            // unsubscribe from all events and disable polling
+            emitter.off('update');
+            emitter.off('finished');
+            signal.cancel();
+        },
+    ];
 
 
     function proxyEmitter(target, emitter) {
@@ -280,13 +282,17 @@ export function subscribeTransfer(hash, timestamp) {
     }
 
     function pollMinterTxStatus(hash) {
+        // reject
+        if (signal.isCanceled) {
+            throw new Error('unsubscribed');
+        }
         return getTransferStatus(hash)
             .catch((error) => {
                 console.log(error);
             })
             .then((transfer) => {
                 // reject
-                if (isUnsubscribed) {
+                if (signal.isCanceled) {
                     throw new Error('unsubscribed');
                 }
 
@@ -320,10 +326,11 @@ export function subscribeTransfer(hash, timestamp) {
  * @param {string} txHash
  * @param {string} destinationMinterAddress
  * @param {string} destinationTokenSymbol
- * @return {Promise<{tx: Transaction, outputAmount: number|string}>}
+ * @return {[promise: Promise<{tx: Transaction, outputAmount: number|string}>, canceler: function(): void]}
  */
 export function waitHubTransferToMinter(txHash, destinationMinterAddress, destinationTokenSymbol) {
-    return subscribeTransfer(txHash)
+    const [promiseWithEmitter, canceler] = subscribeTransfer(txHash);
+    const promise = promiseWithEmitter
         .then((transfer) => {
             if (transfer.status !== HUB_TRANSFER_STATUS.batch_executed) {
                 throw new Error(`Unsuccessful bridge transfer: ${transfer.status}`);
@@ -347,6 +354,8 @@ export function waitHubTransferToMinter(txHash, destinationMinterAddress, destin
                 tx: minterTx,
             };
         });
+
+    return [promise, canceler];
 }
 
 /**

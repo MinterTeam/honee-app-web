@@ -23,7 +23,7 @@ export default {
             <div class="card__content card__content--medium">
                 <h1 class="card__action-title-value">{{ $td('Receive a loan', 'todo') }}</h1>
                 <p class="card__action-description u-mt-05">
-                    {{ $td('This service lets you quickly get BNB by putting up your METAGARDEN tokens as collateral.', 'todo') }}
+                    {{ $td(`This service lets you quickly get BNB by putting up your ${$route.params.coin} tokens as collateral.`, 'todo', {coin: $route.params.coin}) }}
                 </p>
             </div>
 

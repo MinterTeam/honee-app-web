@@ -156,7 +156,6 @@ export default {
             },
             isUseMax: false,
             fee: {},
-            collateralPrice: 0,
         };
     },
     validations() {
@@ -263,7 +262,17 @@ export default {
             const amountToDeposit = this.amountToDeposit;
             /** @type {SendSequenceItem['finalize']}*/
             const finalizeWithdraw = (minterTx) => {
-                addStepDataBridgeWithdraw(this.hubChainData.chainId, minterTx.hash, this.coin, withdrawValue, 1)
+                // @TODO properly cancel waiting, otherwise it may leak to smart-wallet topup (stepList is shared)
+                // extend frozen obj
+                minterTx = Object.freeze({
+                    ...minterTx,
+                    extra: minterTx.extra || {},
+                });
+
+                let [promise, withdrawCanceler] = addStepDataBridgeWithdraw(this.hubChainData.chainId, minterTx.hash, this.coin, withdrawValue, 1);
+                let relayCanceler;
+                let depositCanceler;
+                promise = promise
                     .then(() => {
                         this.addStepData(LOADING_STAGE.SEND_TO_RELAY, {
                             coin: this.coin,
@@ -273,14 +282,24 @@ export default {
                             },
                         }, true);
 
-                        const [relayPromise] = addStepDataRelay(this.hubChainData.chainId, smartWalletTx);
+                        const [relayPromise, _relayCanceler] = addStepDataRelay(this.hubChainData.chainId, smartWalletTx);
+                        relayCanceler = _relayCanceler;
                         return relayPromise;
                     })
                     .then((result) => {
                         if (this.coinToDeposit) {
-                            addStepDataBridgeDeposit(this.hubChainData.chainId, result.txHash, this.coinToDeposit, amountToDeposit, this.$store.getters.address, 2);
+                            const [depositPromise, _depositCanceler] = addStepDataBridgeDeposit(this.hubChainData.chainId, result.txHash, this.coinToDeposit, amountToDeposit, this.$store.getters.address, 2);
+                            depositCanceler = _depositCanceler;
+                            return depositPromise;
                         }
                     });
+
+                minterTx.extra.waitBridgePromise = promise;
+                minterTx.extra.waitBridgeCancel = function() {
+                    withdrawCanceler();
+                    relayCanceler?.();
+                    depositCanceler?.();
+                };
 
                 return minterTx;
             };
