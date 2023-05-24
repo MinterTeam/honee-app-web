@@ -90,7 +90,8 @@ export function addStepDataBridgeDeposit(chainId, txHash, coinSymbol, amount, de
 
     addStepData(LOADING_STAGE.WAIT_BRIDGE + index, {coin: coinSymbol /* calculate receive amount? */}, true);
 
-    return waitHubTransferToMinter(txHash, destinationAddress, coinSymbol)
+    const [promiseWithTx, canceler] = waitHubTransferToMinter(txHash, destinationAddress, coinSymbol);
+    const promise = promiseWithTx
         .then(({ tx: minterTx, outputAmount}) => {
             // @TODO prevent if component destroyed
             addStepData(LOADING_STAGE.WAIT_BRIDGE + index, {amount: outputAmount, tx: minterTx, finished: true});
@@ -98,6 +99,7 @@ export function addStepDataBridgeDeposit(chainId, txHash, coinSymbol, amount, de
             return outputAmount;
         });
 
+    return [promise, canceler];
 }
 
 export function addStepDataBridgeWithdraw(chainId, txHash, coinSymbol, amount, index) {
@@ -113,12 +115,17 @@ export function addStepDataBridgeWithdraw(chainId, txHash, coinSymbol, amount, i
             },
             timestamp: (new Date()).toISOString(),
         },
-        finished: true, // is really finished here?
+        finished: !!txHash,
     });
+
+    if (!txHash) {
+        return;
+    }
 
     addStepData(LOADING_STAGE.WAIT_BRIDGE + index, {coin: coinSymbol /* calculate receive amount? */}, true);
 
-    return subscribeTransfer(txHash)
+    const [promiseWithEmitter, canceler] = subscribeTransfer(txHash);
+    const promise = promiseWithEmitter
         .then((result) => {
             // @TODO prevent if component destroyed
             addStepData(LOADING_STAGE.WAIT_BRIDGE + index, {/*amount: outputAmount, */tx: result.outTxHash, finished: true});
@@ -126,6 +133,7 @@ export function addStepDataBridgeWithdraw(chainId, txHash, coinSymbol, amount, i
             return result;
         });
 
+    return [promise, canceler];
 }
 
 export default function useTxMinterPresets() {

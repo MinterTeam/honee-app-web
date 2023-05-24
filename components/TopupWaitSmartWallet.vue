@@ -172,6 +172,7 @@ export default defineComponent({
             updatedBalanceItem: null,
             evmWaitCanceler: () => {},
             relayWaitCanceler: () => {},
+            depositWaitCanceler: () => {},
             serverError: '',
             // isConfirmModalVisible: false,
 
@@ -360,6 +361,7 @@ export default defineComponent({
     destroyed() {
         this.evmWaitCanceler();
         this.relayWaitCanceler();
+        this.depositWaitCanceler();
     },
     methods: {
         pretty,
@@ -415,7 +417,9 @@ export default defineComponent({
                     return promise;
                 })
                 .then((result) => {
-                    return addStepDataBridgeDeposit(this.hubChainData.chainId, result.txHash, this.depositHubCoin.symbol, this.amountToDeposit, this.$store.getters.address);
+                    const [promise, canceler] = addStepDataBridgeDeposit(this.hubChainData.chainId, result.txHash, this.depositHubCoin.symbol, this.amountToDeposit, this.$store.getters.address);
+                    this.depositWaitCanceler = canceler;
+                    return promise;
                 })
                 .catch((error) => {
                     this.addStepData(this.currentLoadingStage, {error});
