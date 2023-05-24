@@ -105,18 +105,20 @@ export default {
                     price: true,
                 },
                 tags: ['Exchange'],
-                action: '/topup/card',
-                buttonLabel: 'Buy BEE with card',
+                action: '/topup/coin/BEE',
+                buttonLabel: 'Buy BEE',
                 ru: {
                     description: 'BEE — токен крипто-кошелька Honee. Предоставляет пользователям множество возможностей для заработка.',
                     caption: 'Купить',
-                    buttonLabel: 'Купить BEE картой',
+                    buttonLabel: 'Купить BEE',
                 },
             },
             makeCard(presets.stake(19), {
                 style: 'extended-card card--bee-staking',
                 coin: `BEE`,
                 description: 'Stake BEE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
+                tooltip: '',
+                video: '',
                 stats: {
                     apr: {
                         percent: '5-20',
@@ -124,6 +126,8 @@ export default {
                 },
                 ru: {
                     description: 'Стейкуйте BEE на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
+                    tooltip: '',
+                    video: '',
                 },
             }),
             makeCard(presets.farm('BEE', 'USDTE'), {
@@ -140,6 +144,32 @@ export default {
                     apr: {
                         percent: '73',
                     },
+                },
+            }),
+            makeCard(presets.farm('METAGARDEN', 'USDTE'), {
+                stats: {
+                    apr: {
+                        percent: '73',
+                    },
+                },
+            }),
+            makeCard(presets.farm('METAGARDEN', 'USDTBSC'), {
+                stats: {
+                    apr: {
+                        percent: '73',
+                    },
+                },
+            }),
+            makeCard(presets.stake(32), {
+                coin: `METAGARDEN`,
+                description: 'Stake METAGARDEN for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
+                stats: {
+                    apr: {
+                        percent: '5-20',
+                    },
+                },
+                ru: {
+                    description: 'Стейкуйте METAGARDEN на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
                 },
             }),
             makeCard(presets.stake(24), {
@@ -355,6 +385,8 @@ export function makeCard(presetCard, card) {
  * @property {string} [caption]
  * @property {string} [title]
  * @property {string} [description]
+ * @property {string} [tooltip]
+ * @property {string} [video]
  * @property {string} [buttonLabel]
  * @property {object} [stats]
  * @property {string} [stats.caption]

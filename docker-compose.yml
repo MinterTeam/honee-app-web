@@ -5,7 +5,6 @@ services:
     build:
       context: ./
       dockerfile: .docker/Dockerfile
-      args:
-      
+
     ports:
-      -  ${WEB_PORT_FOR_DOCKER_COMPOSE}:80
+      - ${WEB_PORT_FOR_DOCKER_COMPOSE}:80

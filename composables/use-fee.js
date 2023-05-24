@@ -33,7 +33,7 @@ import CancelError from '@shrpne/utils/src/error-cancel.js';
  */
 
 /**
- * @return {{fee: ComputedRef<FeeData>, feeProps: feeProps, setFeeProps: setProps, refineByIndex: (index: number) => Promise<FeeItemData>}}
+ * @return {{fee: ComputedRef<FeeData>, feeProps: feeProps, setFeeProps: setProps, refineFee: function(): Promise<void>, refineByIndex: (index: number) => Promise<FeeItemData>}}
  */
 export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinToSpend, isOffline}*/) {
     const idPrimary = Math.random().toString();
@@ -218,7 +218,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
     /**
      * Fetch new fee item in fee.resultList. Useful to update required fee before new tx in sequence
      * @param {number} index
-     * @return {Promise<{FeeDataItem}|null>}
+     * @return {Promise<FeeDataItem|null>}
      */
     async function refineByIndex(index) {
         const txParams = feeProps.txParamsList?.[index];
@@ -272,6 +272,7 @@ export default function useFee(/*{txParams, baseCoinAmount = 0, fallbackToCoinTo
         fee,
 
         setFeeProps: setProps,
+        refineFee: () => handleChangedProps(feeProps),
         refineByIndex,
     };
 }

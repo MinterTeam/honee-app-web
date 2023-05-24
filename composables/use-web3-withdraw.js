@@ -73,17 +73,19 @@ export default function useWeb3Withdraw(destinationAddress) {
         // return getHubFeeFromReceiveAmount(hubFeeRate.value, props.amountToReceive, destinationFeeInCoin.value, tokenDecimals.value);
     });
     // (destinationNetworkFee + amountToReceive) * (hubFeeRate / (1 - hubFeeRate))
+    /*@__PURE__*/
     function getHubFeeFromReceiveAmount(hubFeeRate, amountToReceive, destinationFeeInCoin, decimals) {
         const amount = new Big(destinationFeeInCoin).plus(amountToReceive || 0);
         // x / (1 - x)
         const inverseRate = new Big(hubFeeRate).div(new Big(1).minus(hubFeeRate));
         return amount.times(inverseRate).toString(decimals, BIG_ROUND_UP);
     }
+    /*@__PURE__*/
     function getHubFeeFromSendAmount(hubFeeRate, amountToSend, decimals) {
         return new Big(amountToSend || 0).times(hubFeeRate).toString(decimals, BIG_ROUND_UP);
     }
     // amount to receive from Hub bridge
-    const amountToReceive = computed(() => calculateAmountToReceive(props.amountToSend));
+    const amountToReceive = computed(() => calculateAmountToReceive(props.amountToSend, false));
     /**
      * @param {string|number} amountToSend
      * @param {boolean} [recalculateFee]
@@ -112,6 +114,13 @@ export default function useWeb3Withdraw(destinationAddress) {
         return new Big(props.amountToReceive || 0).plus(destinationFeeInCoin.value).plus(hubFee.value).toString();
     });
     */
+    function calculateAmountToSend(amountToReceive, recalculateFee) {
+        const hubFeeValue = recalculateFee
+            ? getHubFeeFromReceiveAmount(hubFeeRate.value, amountToReceive, destinationFeeInCoin.value, tokenDecimals.value)
+            : hubFee.value;
+        return new Big(amountToReceive || 0).plus(destinationFeeInCoin.value).plus(hubFeeValue).toString();
+    }
+
     // Minter Hub not consider discount in amount validation, so we need compensate amount for discount difference
     const minAmountToSend = computed(() => {
         // Minter Hub not consider discount in amount validation, so use hubFeeBaseRate without discount
@@ -208,5 +217,6 @@ export default function useWeb3Withdraw(destinationAddress) {
         // methods
         setWithdrawProps: setProps,
         recalculateAmountToReceive,
+        calculateAmountToSend,
     };
 }

@@ -19,7 +19,7 @@ import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
 import Modal from '~/components/base/Modal.vue';
-import HubBuyTxListItem from '~/components/HubBuyTxListItem.vue';
+import HubBuyTxListItem from '~/components/base/StepListItem.vue';
 import HubFeeImpact from '~/components/HubFeeImpact.vue';
 
 

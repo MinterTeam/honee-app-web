@@ -2,8 +2,14 @@
 import {defineComponent} from 'vue';
 import get from 'lodash-es/get.js';
 import {pretty} from '~/assets/utils.js';
+import {getCoinBySymbol} from '~/api/explorer.js';
+import CardTooltip from '~/components/CardTooltip.vue';
+
 
 export default defineComponent({
+    components: {
+        CardTooltip,
+    },
     props: {
         card: {
             /** @type {PropType<CardListItem>} */
@@ -16,6 +22,19 @@ export default defineComponent({
             type: [String, Number],
         },
     },
+    fetch() {
+        if (this.isShowStatsPrice) {
+            return getCoinBySymbol(this.card.coin)
+                .then((coinInfo) => {
+                    this.price = coinInfo.priceUsd;
+                });
+        }
+    },
+    data() {
+        return {
+            price: 0,
+        };
+    },
     computed: {
         iconList() {
             const icon = this.card?.icon;
@@ -25,6 +44,26 @@ export default defineComponent({
             }
 
             return icon;
+        },
+        caption() {
+            return this.translate('caption');
+        },
+        title() {
+            return this.card ? this.translate('title') : this.fallbackTitle;
+        },
+        isMgSwapTitles() {
+            const MG_COINS = ['METAGARDEN', 'MEGANET'];
+            return this.$store.getters.isMetagarden && MG_COINS.includes(this.title) && this.caption;
+        },
+        // swap title and caption for metagarden
+        finalCaption() {
+            return this.isMgSwapTitles ? this.title : this.caption;
+        },
+        finalTitle() {
+            return this.isMgSwapTitles ? this.caption : this.title;
+        },
+        isShowStatsPrice() {
+            return this.card?.stats?.price && this.card.coin;
         },
         statsCaption() {
             const stats = this.card?.stats;
@@ -44,7 +83,7 @@ export default defineComponent({
 
                 return result;
             }
-            if (stats?.price && this.card.coin) {
+            if (this.isShowStatsPrice) {
                 return this.$td('Token price', 'common.token-price');
             }
 
@@ -66,8 +105,8 @@ export default defineComponent({
                     return percent + '%';
                 }
             }
-            if (stats?.price && typeof this.card.coin === 'string') {
-                const price = this.$store.getters['portfolio/getCoinPrice'](this.card.coin);
+            if (this.isShowStatsPrice) {
+                const price = this.price || this.$store.getters['portfolio/getCoinPrice'](this.card.coin);
                 return '$' + pretty(price);
             }
 
@@ -94,12 +133,14 @@ export default defineComponent({
             :src="getIconUrl(icon)"
         >
         <div class="card__action-title">
-            <div class="card__action-title-type" v-if="card && card.caption">{{ translate('caption') }}</div>
-            <div class="card__action-title-value">{{ card ? translate('title') : fallbackTitle }}</div>
+            <div class="card__action-title-type" v-if="finalCaption">{{ finalCaption }}</div>
+            <div class="card__action-title-value">{{ finalTitle }}</div>
         </div>
-        <div class="card__action-stats" v-if="card">
+        <div class="card__action-stats" v-if="card?.stats">
             <div class="card__action-stats-caption">{{ statsCaption }}</div>
             <div class="card__action-stats-value">{{ statsValue }}</div>
         </div>
+
+        <CardTooltip v-if="card && !card.stats" :card="card" class="card__action-tooltip"/>
     </div>
 </template>

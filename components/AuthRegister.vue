@@ -4,7 +4,7 @@ import withParams from 'vuelidate/src/withParams';
 import {req} from 'vuelidate/src/validators/common';
 import {generateMnemonic} from 'minterjs-wallet';
 import getTitle from '~/assets/get-title.js';
-import {DASHBOARD_URL} from '~/assets/variables.js';
+import {DASHBOARD_URL, IS_ONBOARDING_DISABLED} from '~/assets/variables.js';
 import BaseButtonCopyIcon from '~/components/base/BaseButtonCopyIcon.vue';
 
 // checkbox validator
@@ -48,9 +48,10 @@ export default {
             this.$store.commit('ADD_AUTH_ADVANCED', this.mnemonic);
             // redirect
             const authRedirectPath = this.$store.state.authRedirectPath;
-            if (authRedirectPath?.indexOf('/topup') === 0 || authRedirectPath?.indexOf('/topup') === 3) {
+            const isTopup = authRedirectPath?.indexOf('/topup') === 0 || authRedirectPath?.indexOf('/topup') === 3;
+            if (isTopup || IS_ONBOARDING_DISABLED) {
                 this.$store.commit('SET_AUTH_REDIRECT_PATH', '');
-                this.$router.push(this.$i18nGetPreferredPath({path: authRedirectPath}));
+                this.$router.push(this.$i18nGetPreferredPath({path: authRedirectPath || this.DASHBOARD_URL}));
             } else {
                 this.$router.push(this.$i18nGetPreferredPath({path: this.onboardingUrl}));
             }
@@ -63,7 +64,7 @@ export default {
 <template>
     <form class="card card__content" @submit.prevent="authorize()">
         <div class="form-row u-text-center">
-            <h1 class="u-h3 u-mb-05">{{ $td('Sign up', 'index.sign-up-2') }}</h1>
+            <h1 class="u-h3 u-mb-05">{{ $td('Create a new wallet', 'index.sign-up-2') }}</h1>
             <p class="u-text-medium">{{ $td('Save this seed phrase to access your funds in&nbsp;the&nbsp;future.', 'index.save-phrase-warning') }}</p>
         </div>
         <div class="h-field h-field--is-readonly form-row">

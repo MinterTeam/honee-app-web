@@ -1,4 +1,4 @@
-import {DASHBOARD_URL} from '~/assets/variables.js';
+import {DASHBOARD_URL, DASHBOARD_URL_METAGARDEN} from '~/assets/variables.js';
 
 export default function({app, store, route, redirect, error}) {
     if (process.server) {
@@ -8,6 +8,12 @@ export default function({app, store, route, redirect, error}) {
     console.log('-- route', route);
     console.log('-- path', route.path);
 
+    const urlHoneeSpecific = [
+        /^(\/ru)?\/?$/,
+        /^(\/ru)?\/portfolio/,
+    ].some((pathRegex) => {
+        return pathRegex.test(route.path);
+    });
     const urlPublic = [
         /^(\/ru)?\/embed(\/|$)/,
         /^(\/ru)?\/go(\/)/,
@@ -27,6 +33,12 @@ export default function({app, store, route, redirect, error}) {
     // const urlRequiresAuth = /^(\/ru)?\/dashboard(\/|$)/.test(route.path);
     const urlAuthBattle = /^(\/ru)?\/auth\/battle(\/|$)/.test(route.path);
 
+    if (!store.getters.isHonee && urlHoneeSpecific) {
+        console.log('-- honee specific');
+        if (store.getters.isMetagarden) {
+            return redirect(app.i18nGetPreferredPath({path: DASHBOARD_URL_METAGARDEN}));
+        }
+    }
     if (urlPublic) {
         console.log('-- allow: embed');
         return Promise.resolve();

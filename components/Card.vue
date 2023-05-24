@@ -3,6 +3,7 @@ import get from 'lodash-es/get.js';
 import hashColor from '~/assets/hash-color.js';
 import {clearActionQuery} from '~/components/Action.vue';
 import CardHead from '~/components/CardHead.vue';
+import CardTooltip from '~/components/CardTooltip.vue';
 
 const ACTION_TYPE = {
     DEPOSIT: 'buy',
@@ -20,6 +21,7 @@ export default {
     ACTION_TYPE,
     components: {
         CardHead,
+        CardTooltip,
     },
     props: {
         /** @type {PropOptions<CardListItem>} */
@@ -98,8 +100,8 @@ function poolHasCoin(pool, symbol) {
             <div class="card__action-tag" v-for="tag in card.tags" :key="tag">{{ $td(tag, `action.tag-${tag.toLowerCase()}`) }}</div>
         </div>-->
 
-        <div class="u-mt-10">
-            <div class="u-grid">
+        <div class="u-flex u-flex--align-center u-mt-10">
+            <div class="u-grid u-flex-item--grow">
                 <div class="u-cell" :class="isUndoAvailable ? 'u-cell--6-10': ''">
                     <nuxt-link class="button button--full " :to="getDashboardUrl(card.action, actionBaseUrl)">
                         <template v-if="card.buttonLabel">{{ translate('buttonLabel') }}</template>
@@ -118,6 +120,9 @@ function poolHasCoin(pool, symbol) {
                     </nuxt-link>
                 </div>
             </div>
+
+            <!-- show if tooltip was not shown in head (stats shown there) -->
+            <CardTooltip v-if="card?.stats" :card="card" class="u-flex-item--no-shrink u-ml-10"/>
         </div>
     </div>
 </template>

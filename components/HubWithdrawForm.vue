@@ -43,6 +43,12 @@ export default {
     emits: [
         'success-modal-close',
     ],
+    props: {
+        isLabelTransfer: {
+            type: Boolean,
+            default: false,
+        },
+    },
     setup() {
         const {fee, setFeeProps} = useFee();
         const {
@@ -85,7 +91,7 @@ export default {
             form: {
                 coin: this.$route.query.coin || '',
                 amount: this.$route.query.amount || '',
-                address: this.$route.query.address || this.$store.getters.evmAddress,
+                address: this.$route.query.address || '',
                 speed: HUB_WITHDRAW_SPEED.FAST,
                 networkTo: this.$route.query.network || HUB_NETWORK_SLUG.BSC,
             },
@@ -366,7 +372,7 @@ export default {
                     {{ $options.HUB_CHAIN_DATA[form.networkTo].shortName }}
                 </span>
                 <span class="form-field__error" v-if="$v.form.amount.$dirty && !$v.form.amount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
-                <span class="form-field__error" v-else-if="$v.form.amount.$dirty && (!$v.form.amount.minValue)">{{ $td(`Minimum ${minAmount}`, 'form.amount-error-min', {min: minAmount}) }}</span>
+                <span class="form-field__error" v-else-if="$v.form.amount.$dirty && (!$v.form.amount.minValue)">{{ $td('Minimum', 'form.amount-error-min') }} {{ minAmount }}</span>
                 <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.maxValue">{{ $td('Not enough', 'form.amount-error-not-enough') }} {{ form.coin }} ({{ $td('max.', 'hub.max') }} {{ pretty(maxAmount) }})</span>
             </div>
             <div class="form-row" v-if="!$route.query.address">
@@ -429,7 +435,9 @@ export default {
                     :class="{'is-disabled': $v.$invalid, 'is-loading': isFormSending}"
                     type="submit"
                 >
-                    <span class="button__content">{{ $td('Withdraw', 'hub.withdraw-button-title') }}</span>
+                    <span class="button__content">
+                        {{ !isLabelTransfer ? $td('Withdraw', 'hub.withdraw-button-title') : $td('Transfer', 'hub.transfer-button-title') }}
+                    </span>
                     <Loader class="button__loader" :isLoading="true"/>
                 </button>
                 <div class="form-field__error" v-if="serverError">{{ serverError }}</div>

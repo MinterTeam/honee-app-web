@@ -6,7 +6,7 @@ import webpack from 'webpack';
 const envConfig = dotenv.config();
 const envConfigParsed = envConfig.error ? {} : envConfig.parsed;
 
-import {BASE_TITLE, BASE_DESCRIPTION, I18N_ROUTE_NAME_SEPARATOR, ROUTE_NAME_SPLITTER, LANGUAGE_COOKIE_KEY, GOATCOUNTER_HOST, GOATCOUNTER_SCRIPT_HASH, TWA_SCRIPT_HASH, TWA_SCRIPT_URL} from "./assets/variables.js";
+import {SUBAPP, BASE_TITLE, BASE_DESCRIPTION, I18N_ROUTE_NAME_SEPARATOR, ROUTE_NAME_SPLITTER, LANGUAGE_COOKIE_KEY, GOATCOUNTER_HOST, GOATCOUNTER_SCRIPT_HASH, TWA_SCRIPT_HASH, TWA_SCRIPT_URL} from "./assets/variables.js";
 import * as varsLocalConfig from "./assets/variables.js";
 import * as varsSdkConfig from "minter-js-web3-sdk/src/config.js";
 const varsConfig = {...varsLocalConfig, ...varsSdkConfig};
@@ -44,8 +44,9 @@ const CSP_SCRIPT = [].concat(NUXT_LOADING_INLINE_SCRIPT_SHA, [
  * prepare CSP string from env config
  * @param {object} env - env config
  * @param {Function} keyFilter
+ * @param {Array<string>} [extraItems]
  */
-function prepareCSP(env, keyFilter) {
+function prepareCSP(env, keyFilter, extraItems) {
     // make array of filtered URLs
     const filteredKeys = Object.keys(env).filter(keyFilter);
     const filtered = filteredKeys.map((key) => env[key]).filter((item) => typeof item === 'string');
@@ -67,19 +68,29 @@ function prepareCSP(env, keyFilter) {
         return parsed.indexOf(item) === pos && parsed.indexOf('*.' + item) === -1;
     });
 
-    return parsedUnique.join(' ');
+    return parsedUnique.concat(extraItems).join(' ');
 }
 
 const connectCSP = prepareCSP(varsConfig, (item) => {
     return item.indexOf('API_URL') >= 0 || item.indexOf('RTM_URL') >= 0 || item.indexOf('API_HOST') >= 0;
-});
+}, [
+    // lite-youtube-embed
+    'www.youtube-nocookie.com',
+    'https://www.youtube.com',
+]);
 const imageCSP = prepareCSP(varsConfig, (item) => {
     return item === 'APP_ACCOUNTS_API_URL';
-});
+}, [
+    // lite-youtube-embed
+    'https://i.ytimg.com',
+    '*.minter.network',
+]);
 const scriptCSP = CSP_SCRIPT.map((item) => {
     // wrap sha-strings with quotes
     return item.indexOf('sha') === 0 ? `'${item}'` : item;
 }).join(' ');
+
+const subappPrefix = SUBAPP ? '/' + SUBAPP : '';
 
 
 module.exports = {
@@ -100,7 +111,7 @@ module.exports = {
                     default-src 'self' ${connectCSP};
                     script-src 'self' ${scriptCSP} 'unsafe-eval';
                     style-src 'self' 'unsafe-inline';
-                    img-src 'self' ${imageCSP} *.minter.network data:;
+                    img-src 'self' ${imageCSP} data:;
                     font-src 'self' data:;
                     base-uri 'none';
                     form-action 'none';
@@ -113,11 +124,11 @@ module.exports = {
             { hid: 'description', name: 'description', content: BASE_DESCRIPTION },
             { hid: 'og-title', name: 'og:title', content: BASE_TITLE },
             { hid: 'og-description', name: 'og:description', content: BASE_DESCRIPTION },
-            { hid: 'og-image', name: 'og:image', content: '/social-share.png' },
+            { hid: 'og-image', name: 'og:image', content: subappPrefix + '/social-share.png' },
         ],
         link: [
-            { rel: 'icon', href: '/favicon.png' },
-            { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+            { rel: 'icon', href: subappPrefix + '/favicon.png' },
+            { rel: 'apple-touch-icon', href: subappPrefix + '/apple-touch-icon.png' },
         ],
     },
     css: [

@@ -5,7 +5,7 @@ export default {
     SPOT_PRICE_METAGARDEN,
     SPOT_PRICE_USD,
     layout(context) {
-        return context.store.state.isMetagarden ? 'metagarden' : 'default';
+        return context.store.getters.isMetagarden ? 'metagarden' : 'default';
     },
     components: {
         ActionMetagardenBuySpot,

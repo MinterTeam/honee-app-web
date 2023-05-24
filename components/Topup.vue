@@ -120,14 +120,14 @@ export default {
         <h1 class="u-h3 u-mb-025 u-text-center">
             <template v-if="title">{{ title }}</template>
             <template v-else>
-                {{ $td('Top up with', 'topup-network.title') }} {{ network.coin }}
+                {{ $td('Top up with', 'topup-network.title') }} {{ network.name }}
             </template>
         </h1>
         <template v-if="!isDepositProcessing && !successDeposit">
             <p class="u-text-center u-text-medium" v-if="description">{{ description }}</p>
             <p class="u-text-center u-text-medium" v-else-if="description !== false">
                 <template v-if="network.coin === $store.getters.BASE_COIN">
-                    {{ $td(`Send any amount of ${network.coin}, BEE, or any other Minter coin to this address`, 'topup-network.description-minter', {coin: network.coin}) }}
+                    {{ $td(`Send any amount of Minter Network coins to this address`, 'topup-network.description-minter', {coin: network.coin}) }}
                 </template>
                 <template v-else>
                     {{ $td(`Send any amount of ${network.coin} to this address`, 'topup-network.description', {coin: network.coin}) }}

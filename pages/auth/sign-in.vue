@@ -15,7 +15,7 @@ export default {
                 { hid: 'og-title', name: 'og:title', content: title },
             ],
             htmlAttrs: {
-                class: this.$route.query.battle ? 'splash-layout splash-layout--battle' : '',
+                class: this.$route.query.battle ? 'splash-layout splash-layout--battle' : undefined,
             },
         };
     },
@@ -28,7 +28,7 @@ export default {
 <template>
     <div class="u-section u-relative u-container u-container--small">
         <div class="card card__content">
-            <h1 class="u-h3 u-mb-05 u-text-center">{{ $td('Sign in', 'index.sign-in') }}</h1>
+            <h1 class="u-h3 u-mb-05 u-text-center">{{ $td('Sign in to your wallet', 'index.already-have-wallet-2') }}</h1>
 
             <AuthLogin
                 class="u-mt-10"

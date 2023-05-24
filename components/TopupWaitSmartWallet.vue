@@ -1,21 +1,26 @@
 <script>
 import {defineComponent} from 'vue';
 import stripZeros from 'pretty-num/src/strip-zeros.js';
-import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_NETWORK_SLUG} from '~/assets/variables.js';
+import {isCoinSymbol} from 'minter-js-sdk/src/utils.js';
+import {HUB_BUY_STAGE as LOADING_STAGE, HUB_CHAIN_BY_ID, HUB_CHAIN_DATA, HUB_COIN_DATA as DEPOSIT_COIN_DATA, HUB_NETWORK_SLUG, SWAP_TYPE} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import {wait, waitCondition} from '@shrpne/utils/src/wait.js';
 import {pretty} from '~/assets/utils.js';
 import {findHubCoinItemByTokenAddress, findHubCoinItem, waitHubTransferToMinter} from '~/api/hub.js';
 import {waitRelayTxSuccess} from 'minter-js-web3-sdk/src/api/smart-wallet-relay.js';
+import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 import useHubDiscount from '~/composables/use-hub-discount.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3AddressBalance from '~/composables/use-web3-address-balance';
 import useWeb3SmartWalletSwap from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet-swap.js';
 import useTxService from '~/composables/use-tx-service.js';
+import useTxMinterPresets from '~/composables/use-tx-minter-presets.js';
+import {addStepDataRelay, addStepDataBridgeDeposit} from '~/composables/use-tx-minter-presets.js';
 import {TOP_UP_NETWORK} from '~/components/Topup.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
-import HubBuyTxListItem from '~/components/HubBuyTxListItem.vue';
+import SwapEstimationWithFee from '~/components/base/SwapEstimationWithFee.vue';
+import HubBuyTxListItem from '~/components/base/StepListItem.vue';
 
 /**
  * @enum {string}
@@ -29,6 +34,7 @@ export default defineComponent({
     LOADING_STAGE,
     components: {
         BaseLoader,
+        SwapEstimationWithFee,
         HubBuyTxListItem,
     },
     props: {
@@ -48,6 +54,9 @@ export default defineComponent({
         showWaitIndicator: {
             type: Boolean,
             default: false,
+        },
+        coinSwapAfterDeposit: {
+            type: String,
         },
     },
     emits: [
@@ -83,16 +92,6 @@ export default defineComponent({
         } = useWeb3AddressBalance();
 
         const {
-            // discountUpsidePercent,
-            // destinationFeeInCoin,
-            // hubFeeRate,
-            // hubFeeRatePercent,
-            // hubFee,
-            // withdrawAmountToReceive,
-            // minAmountToWithdraw,
-            // withdrawTxParams,
-            // withdrawFeeTxParams,
-
             gasPrice,
             relayRewardAmount,
             amountEstimationLimitForRelayReward: smartWalletRelayReward,
@@ -110,6 +109,7 @@ export default defineComponent({
             setSmartWalletSwapProps,
         } = useWeb3SmartWalletSwap();
 
+        const {sendMinterSwapTx} = useTxMinterPresets();
         const {txServiceState, currentLoadingStage, setTxServiceProps, setStepList, estimateTxGas, waitPendingStep, addStepData} = useTxService();
 
         return {
@@ -149,6 +149,8 @@ export default defineComponent({
             buildTxListAndCallSmartWallet,
             setSmartWalletSwapProps,
 
+            sendMinterSwapTx,
+
             txServiceState,
             currentLoadingStage,
             // setTxServiceProps,
@@ -170,8 +172,17 @@ export default defineComponent({
             updatedBalanceItem: null,
             evmWaitCanceler: () => {},
             relayWaitCanceler: () => {},
+            depositWaitCanceler: () => {},
             serverError: '',
             // isConfirmModalVisible: false,
+
+            /** @type {FeeData} */
+            fee: undefined,
+            // just `estimation` refers to minter swap estimation
+            estimation: 0,
+            estimationFetchState: null,
+            v$estimation: {},
+            txData: {},
         };
     },
     computed: {
@@ -223,6 +234,10 @@ export default defineComponent({
             return this.depositHubCoin
                 ? this.depositHubCoin[this.hubChainData.hubNetworkSlug]
                 : undefined;
+        },
+        minterCoinToGet() {
+            const coinToGet = this.coinSwapAfterDeposit || this.$route.query.coinToGet;
+            return isCoinSymbol(coinToGet) ? coinToGet : '';
         },
         // hubFeeRate() {
         //     const discountModifier = 1 - this.discount;
@@ -278,7 +293,7 @@ export default defineComponent({
                     depositDestinationAddress: this.$store.getters.evmAddress,
                     chainId: this.hubChainData.chainId,
                     isLegacy: this.isLegacy,
-                    gasPrice: this.networkGasPrice,
+                    gasPriceGwei: this.networkGasPrice,
                     valueToSell: this.selectedAmount,
                     tokenToSellContractAddress: this.selectedBalanceItem?.tokenContractAddress,
                     tokenToSellDecimals: this.selectedBalanceItem?.decimals,
@@ -324,6 +339,8 @@ export default defineComponent({
                 addressBalance: this.addressBalance,
                 amountAfterDeposit: this.amountAfterDeposit,
                 smartWalletRelayReward: this.smartWalletRelayReward,
+                minterCoinToGet: this.minterCoinToGet,
+                minterEstimation: this.estimation,
                 // relay reward error
                 estimationLimitForRelayRewardsError: this.estimationLimitForRelayRewardsError,
                 // combined error
@@ -344,6 +361,7 @@ export default defineComponent({
     destroyed() {
         this.evmWaitCanceler();
         this.relayWaitCanceler();
+        this.depositWaitCanceler();
     },
     methods: {
         pretty,
@@ -394,40 +412,14 @@ export default defineComponent({
 
             return this.buildTxListAndCallSmartWallet()
                 .then((result) => {
-                    // window.alert(`https://explorer.minter.network/smart-wallet-relay/${this.hubChainData.hubNetworkSlug}/${result.hash}`);
-                    this.addStepData(LOADING_STAGE.SEND_TO_RELAY, {
-                        tx: {
-                            hash: result.hash,
-                            timestamp: (new Date()).toISOString(),
-                        },
-                    });
-                    const [promise, canceler] = waitRelayTxSuccess(this.hubChainData.chainId, result.hash);
+                    const [promise, canceler] = addStepDataRelay(this.hubChainData.chainId, result.hash);
                     this.relayWaitCanceler = canceler;
                     return promise;
                 })
                 .then((result) => {
-                    this.addStepData(LOADING_STAGE.SEND_TO_RELAY, {finished: true});
-                    this.addStepData(LOADING_STAGE.SEND_BRIDGE, {
-                        coin: this.depositHubCoin.symbol,
-                        // it is approximate amount based on estimation, maybe extract actual amount from tx
-                        amount: this.amountToDeposit,
-                        tx: {
-                            hash: result.txHash,
-                            params: {
-                                chainId: this.hubChainData.chainId,
-                            },
-                            timestamp: (new Date()).toISOString(),
-                        },
-                        finished: true, // is really finished here?
-                    });
-
-                    this.addStepData(LOADING_STAGE.WAIT_BRIDGE, {coin: this.depositHubCoin.symbol /* calculate receive amount? */}, true);
-                    return waitHubTransferToMinter(result.txHash, this.$store.getters.address, this.depositHubCoin.symbol);
-                })
-                .then(({ tx: minterTx, outputAmount}) => {
-                    this.addStepData(LOADING_STAGE.WAIT_BRIDGE, {amount: outputAmount, tx: minterTx, finished: true});
-
-                    return outputAmount;
+                    const [promise, canceler] = addStepDataBridgeDeposit(this.hubChainData.chainId, result.txHash, this.depositHubCoin.symbol, this.amountToDeposit, this.$store.getters.address);
+                    this.depositWaitCanceler = canceler;
+                    return promise;
                 })
                 .catch((error) => {
                     this.addStepData(this.currentLoadingStage, {error});
@@ -444,7 +436,27 @@ export default defineComponent({
                     return this.depositFromEthereum();
                 })
                 .then((outputAmount) => {
-                    this.finishTopup(outputAmount, this.tokenSymbol);
+                    const coinToDeposit = this.depositHubCoin.symbol;
+                    if (this.minterCoinToGet) {
+                        return this.sendMinterSwapTx({
+                            initialTxParams: {
+                                data: {
+                                    coinToSell: coinToDeposit,
+                                    coinToBuy: this.minterCoinToGet,
+                                    valueToSell: outputAmount,
+                                },
+                            },
+                            options: {
+                                privateKey: this.$store.getters.privateKey,
+                            },
+                            prepare: () => this.prepareMinterSwapParams(outputAmount, coinToDeposit),
+                        })
+                            .then((tx) => {
+                                this.finishTopup(tx.result.returnAmount, this.minterCoinToGet);
+                            });
+                    } else {
+                        this.finishTopup(outputAmount, coinToDeposit);
+                    }
                 })
                 .catch((error) => {
                     if (error.isCanceled) {
@@ -485,6 +497,32 @@ export default defineComponent({
             this.$emit('update:processing', false);
             this.$emit('topup', {amount: stripZeros(amount), coinSymbol});
         },
+        async prepareMinterSwapParams(amount, coinToSell) {
+            await this.$refs.estimation.refineFee();
+            await this.$nextTick();
+
+            const valueToSell = getAvailableSelectedBalance({
+                coin: this.$store.state.explorer.coinMap[coinToSell],
+                amount,
+            }, this.fee);
+
+            // @TODO maybe not perform initial estimation and estimate only here in prepare (need to disable check validations in SwapEstimation.getEstimation) (maybe not, because initial estimation is needed for SmartWalletWrap deposit form)
+            return this.$refs.estimation.getEstimation(true, true, {
+                valueToSell,
+                gasCoin: this.fee.coin,
+                // sellAll: isSellAll,
+            })
+                .then(() => {
+                    return {
+                        type: this.$refs.estimation.getTxType(),
+                        data: {
+                            ...this.txData,
+                            valueToSell,
+                        },
+                        gasCoin: this.fee.coin,
+                    };
+                });
+        },
     },
 });
 </script>
@@ -506,5 +544,26 @@ export default defineComponent({
             :loadingStage="item.loadingStage"
         />
         <div class="form__error u-mt-10" v-if="serverError">{{ serverError }}</div>
+        <div class="form-row u-text-medium u-fw-500" v-if="minterCoinToGet && currentLoadingStage && currentLoadingStage !== $options.LOADING_STAGE.FINISH">
+            <span class="u-emoji">⚠️</span> {{ $td('Please keep this page active, otherwise progress may&nbsp;be&nbsp;lost.', 'index.keep-page-active') }}
+        </div>
+
+        <SwapEstimationWithFee
+            class="u-text-medium form-row u-hidden"
+            ref="estimation"
+            idPreventConcurrency="swapAfterDeposit"
+            :coin-to-sell="depositHubCoin?.symbol"
+            :coin-to-buy="minterCoinToGet"
+            :value-to-sell="amountAfterDeposit"
+            :max-amount-to-spend="amountAfterDeposit"
+            :force-sell-all="false"
+            :is-use-max="false"
+            :is-worst-route="true"
+            @update:estimation="estimation = $event"
+            @update:tx-data="txData = $event"
+            @update:v$estimation="v$estimation = $event"
+            @update:fetch-state="estimationFetchState = $event"
+            @update:fee="fee = $event"
+        />
     </div>
 </template>

@@ -179,7 +179,7 @@ export default {
             />
         </div>
         <div class="form-row">
-            <button class="button button--main button--full" type="submit">Send</button>
+            <button class="button button--main button--full" type="submit">{{ $td('Send', 'form.wallet-send-button') }}</button>
         </div>
     </form>
 </template>

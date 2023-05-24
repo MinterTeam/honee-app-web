@@ -10,6 +10,10 @@ export default {
 
 <template>
     <SplashLayout>
-        <nuxt class="splash-layout__inner"/>
+        <nuxt
+            class="splash-layout__inner"
+            :class="{'splash-layout__inner': !isIosWebView}"
+            :style="isIosWebView ? 'padding-bottom: 400px' : ''"
+        />
     </SplashLayout>
 </template>

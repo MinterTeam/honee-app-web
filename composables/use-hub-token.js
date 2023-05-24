@@ -89,6 +89,11 @@ export default function useHubToken() {
             || tokenContractAddress.value === NATIVE_COIN_ADDRESS
             || tokenContractAddress.value === getWrappedNativeContractAddress(props.chainId);
     });
+    const isWrappedNativeToken = computed(() => {
+        // Hub bridge always withdraw native BNB (automatically unwrap WBNB)
+        return false;
+        // return tokenContractAddress.value === getWrappedNativeContractAddress(props.chainId);
+    });
     // price in dollar
     const tokenPrice = computed(() => {
         const priceItem = hubPriceList.value.find((item) => item.name === hubCoin.value?.denom);
@@ -148,6 +153,7 @@ export default function useHubToken() {
         tokenContractAddressFixNative,
         tokenDecimals,
         isNativeToken,
+        isWrappedNativeToken,
 
         setHubTokenProps: setProps,
     };

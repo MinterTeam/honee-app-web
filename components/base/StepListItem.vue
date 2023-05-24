@@ -64,6 +64,9 @@ export default {
         getEvmNetworkName(networkSlug) {
             return HUB_CHAIN_DATA[networkSlug]?.shortName || 'EVM';
         },
+        isLoadingStage(stage) {
+            return new RegExp(`^${stage}\\d*$`).test(this.loadingStage);
+        },
     },
 };
 </script>
@@ -91,10 +94,10 @@ export default {
             <template v-if="loadingStage === $options.LOADING_STAGE.SEND_TO_RELAY">
                 {{ $td('Send', 'form.stage-send') }} {{ pretty(step.amount) }} {{ step.coin }} {{ $td('from smart-wallet', 'form.stage-to-relay') }}
             </template>
-            <template v-if="loadingStage === $options.LOADING_STAGE.SEND_BRIDGE">
+            <template v-if="isLoadingStage($options.LOADING_STAGE.SEND_BRIDGE)">
                 {{ $td('Send', 'form.stage-send') }} {{ pretty(step.amount) }} {{ step.coin }} {{ $td('to bridge', 'form.stage-to-bridge') }}
             </template>
-            <template v-if="loadingStage === $options.LOADING_STAGE.WAIT_BRIDGE">
+            <template v-if="isLoadingStage($options.LOADING_STAGE.WAIT_BRIDGE)">
                 <template v-if="!step.finished">{{ $td('Waiting', 'form.stage-waiting') }} {{ step.coin }} {{ $td('from bridge', 'form.stage-from-bridge') }}</template>
                 <template v-else>{{ $td('Received', 'form.stage-received') }} {{ pretty(step.amount) }} {{ step.coin }} {{ $td('from bridge', 'form.stage-from-bridge') }}</template>
             </template>
@@ -106,7 +109,7 @@ export default {
             </template>
             <TxPreview
                 class="u-display-inline"
-                v-if="step.txParams && /^minter\d+$/.test(loadingStage)"
+                v-if="step.txParams && isLoadingStage($options.LOADING_STAGE.MINTER)"
                 :tx="step.txParams"
             />
         </div>
