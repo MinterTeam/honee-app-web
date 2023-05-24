@@ -148,6 +148,10 @@ export default function useWeb3AddressBalance() {
      * @private
      */
     function _waitBalanceUpdate(signal) {
+        // Sending was canceled
+        if (signal.isCanceled) {
+            return Promise.reject(new CancelError());
+        }
         return updateAddressBalance()
             .then((updatedList) => {
                 // Sending was canceled
