@@ -72,7 +72,7 @@ export default {
 <template>
     <div class="u-text-center u-container--small">
         <img class="u-image u-mb-10" src="/img/logo-megachain-side.svg" alt="Metagarden Chain" width="265" height="48">
-        <h1 class="u-h4 u-mb-15">{{ $td('Buy MEGANET tokens to join the Metagarden Chain with a 100% bonus.', 'meganet.buy-text') }}</h1>
+        <h1 class="u-h4 u-mb-15">{{ $td('Buy MEGANET tokens to join the Metagarden Chain with any of these options.', 'meganet.buy-text') }}</h1>
 
 
 
