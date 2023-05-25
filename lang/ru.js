@@ -111,9 +111,24 @@ export default {
         'footer-disclaimer-p3': 'Комиссии внутри блокчейна, которые взимаются за проведение транзакций, не являются платой за использование сервиса Honee.',
         'footer-disclaimer-p4': 'Если вы столкнулись с какими-либо ошибками, сбоями, отсутствием функциональности или другими проблемами во время использования сервиса Honee, свяжитесь с нами:',
 
+        'footer-disclaimer-megachain-p1': 'Операции с виртуальными активами сопряжены с внутренними рисками, включая денежные потери. Мы настоятельно рекомендуем обратиться за профессиональной консультацией, прежде чем совершать какие-либо операции с виртуальными активами.',
+        'footer-disclaimer-megachain-p2': 'Мы не даем никаких гарантий, явных или подразумеваемых, в отношении пригодности или удобства использования блокчейна Metagarden Chain, его программного обеспечения или любого его содержимого. Мы не несем ответственности за любые убытки, — прямые, косвенные, особые или вытекающие, — понесенные любой стороной в результате использования блокчейна Metagarden Chain, его функций и содержимого.',
+        'footer-disclaimer-megachain-p3': 'Если вы столкнулись с какими-либо ошибками, сбоями, отсутствием функциональности или другими проблемами во время использования блокчейна Metagarden Chain, свяжитесь с нами:',
+
         'footer-menu-useful': 'Полезная информация',
         'footer-menu-about': 'О Honee',
         'footer-menu-contacts': 'Контакты',
+
+        'footer-menu-megachain-useful': 'Полезная информация',
+        'footer-menu-megachain-about': 'О Metagarden Chain',
+        'footer-menu-megachain-blockchain': 'EVM-блокчейн',
+        'footer-menu-megachain-early': 'Ранний доступ',
+        'footer-menu-megachain-tokenomics': 'Токеномика',
+        'footer-menu-megachain-testnet': 'Тестнет',
+        'footer-menu-megachain-blockchain-url': 'https://metagarden.io/ru',
+        'footer-menu-megachain-early-url': 'https://metagarden.io/ru/early-access',
+        'footer-menu-megachain-tokenomics-url': 'https://metagarden.io/ru/tokenomics',
+        'footer-menu-megachain-сontact': 'Контакты',
 
         'footer-link-box-buy-bitcoin': 'Купить Биткоин',
         'footer-link-box-earn-bitcoin': 'Заработать Биткоин',
@@ -171,7 +186,7 @@ export default {
 
         'save-phrase-warning': 'Сохраните эту сид-фразу, чтобы получать доступ к своим средствам в будущем.',
         'save-phrase-checkbox': 'Я сохранил(-а) фразу!',
-        'launch-honee': 'Запустить Honee',
+        'launch-honee': 'Запустить',
         'save-phrase-error': 'Сперва нужно подтвердить, что вы сохранили фразу',
         'back': 'Назад',
         'back-index': 'Назад в кошелек',

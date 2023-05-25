@@ -5,6 +5,7 @@ import TheHeader from '~/layouts/_header.vue';
 import TheHeaderMetagarden from '~/layouts/_header-metagarden.vue';
 import TheHeaderMegachain from '~/layouts/_header-megachain.vue';
 import TheFooter from '~/layouts/_footer.vue';
+import TheFooterMegachain from '~/layouts/_footer-megachain.vue';
 import FooterGarden from '~/components/layout/FooterGarden.vue';
 import FooterSupport from '~/layouts/_footer-support.vue';
 import BackButtonFull from '~/components/layout/BackButtonFull.vue';
@@ -18,6 +19,7 @@ export default {
         TheHeaderMetagarden,
         TheHeaderMegachain,
         TheFooter,
+        TheFooterMegachain,
         FooterGarden,
         FooterSupport,
         BackButtonFull,
@@ -79,7 +81,8 @@ export default {
 
         <nuxt class="u-section u-container" data-nuxt-page/>
 
-        <TheFooter/>
+        <TheFooter v-if="!isMegachain"/>
+        <TheFooterMegachain v-else-if="isMegachain"/>
         <FooterGarden v-if="isHonee"/>
         <FooterSupport/>
 

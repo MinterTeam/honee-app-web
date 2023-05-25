@@ -72,7 +72,7 @@ export default {
 <template>
     <div class="u-text-center u-container--small">
         <img class="u-image u-mb-10" src="/img/logo-megachain-side.svg" alt="Metagarden Chain" width="265" height="48">
-        <h1 class="u-h4 u-mb-15">{{ $td('Buy MEGANET tokens to join the Metagarden Chain with any of these options.', 'meganet.buy-text') }}</h1>
+        <h1 class="u-h4 u-mb-15">{{ $td('Buy MEGANET tokens with any of these options to join the Metagarden Chain.', 'meganet.buy-text') }}</h1>
 
 
 
@@ -144,7 +144,6 @@ export default {
                     <img class="u-mr-05" src="/img/icon-card.svg" alt="" role="presentation" width="24" height="24">
                     {{ $td('Bank cards', 'deposit.title-card') }}
                 </h2>
-                <p class="u-text-medium">{{ $td('Buy with fiat money via bank card.', 'deposit.description-buy-with-card') }}</p>
                 <a class="button button--main button--full u-mt-10" :href="card2MinterUrl">
                     {{ $td('Buy with card', 'deposit.button-buy-with-card') }}
                 </a>
