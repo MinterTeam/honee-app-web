@@ -9,7 +9,6 @@ import Big from 'minterjs-util/src/big.js';
 import {pretty, decreasePrecisionSignificant} from '~/assets/utils.js';
 import {getAvailableSelectedBalance} from '~/components/base/FieldCombinedBaseAmount.vue';
 
-//@TODO refactor HubBuyForm
 export default defineComponent({
     mixins: [validationMixin],
     emits: [
@@ -34,6 +33,7 @@ export default defineComponent({
             type: [Number, String],
         },
         fee: {
+            /** @type {PropType<FeeData>} */
             type: Object,
             default: null,
         },
@@ -171,7 +171,7 @@ export default defineComponent({
                 // `coins` or `coinToSell` + `coinToBuy`
                 ...this.estimationTxDataPartial,
                 // sell
-                valueToSell: this.valueToSell,
+                valueToSell: this.maxAmountAfterFee,
                 minimumValueToBuy: this.minimumValueToBuy,
                 // buy
                 valueToBuy: this.valueToBuy,
@@ -200,12 +200,15 @@ export default defineComponent({
             if (this.isSellAll) {
                 return this.maxAmount;
             }
-            const selectedCoin = this.$store.getters.getBalanceItem(this.coinToSell);
+            const selectedCoin = this.$store.state.explorer.coinMap[this.coinToSell];
             // coin not selected
             if (!selectedCoin) {
-                return 0;
+                return this.maxAmount;
             }
-            return getAvailableSelectedBalance(selectedCoin, this.fee);
+            return getAvailableSelectedBalance({
+                coin: selectedCoin,
+                amount: this.maxAmount,
+            }, this.fee);
         },
         isEstimationErrorHidden() {
             // estimation is not ready until swap props are valid
@@ -275,6 +278,12 @@ export default defineComponent({
             }
             this.getEstimation();
         },
+        /**
+         * @param {boolean} [force]
+         * @param {boolean} [throwOnError]
+         * @param {Partial<EstimateSwapOptions>} [overrideParams]
+         * @return {Promise<(EstimateSellResult|EstimateSellAllResult|EstimateBuyResult) & {route?: Array<Coin>}>}
+         */
         getEstimation(force, throwOnError, overrideParams = {}) {
             if (this.$v.propsGroup.$invalid) {
                 return Promise.reject(new Error('get swap estimation: Invalid props passed'));
@@ -282,6 +291,7 @@ export default defineComponent({
 
             return this.estimateSwap({
                 coinToSell: this.coinToSell,
+                // don't use maxAmountAfterFee here to not fall in estimation loop (afterFee -> estimation -> txData -> fee -> afterFee -> estimation -> ...)
                 valueToSell: this.valueToSell,
                 coinToBuy: this.coinToBuy,
                 valueToBuy: this.valueToBuy,
@@ -292,8 +302,13 @@ export default defineComponent({
                 ...overrideParams,
             });
         },
-        getTxType() {
-            return getTxType({isSelling: this.isTypeSell, isPool: this.isEstimationTypePool, isSellAll: this.isSellAll});
+        /**
+         * @param {boolean} [isIgnoreSellAll] - ignore `isSellAll` to get `sell` fee (assume sell and sell-all txs consume equal fees)
+         * @return {TX_TYPE}
+         */
+        getTxType(isIgnoreSellAll) {
+            const isSellAll = this.isSellAll && !isIgnoreSellAll;
+            return getTxType({isSelling: this.isTypeSell, isPool: this.isEstimationTypePool, isSellAll});
         },
     },
 });

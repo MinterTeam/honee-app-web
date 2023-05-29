@@ -11,12 +11,13 @@ export default {
         'BEE',
         'BIP',
         'HUB',
-        'MUSD',
         'METAGARDEN',
         'WONDER',
+        'SNATCH',
+        'MEGANET',
     ],
     layout(context) {
-        return context.store.state.isMetagarden ? 'metagarden' : 'default';
+        return context.store.getters.isMetagarden ? 'metagarden' : 'default';
     },
     components: {
         FieldCombined,
@@ -32,9 +33,12 @@ export default {
         };
     },
     data() {
+        const queryCoin = this.$route.query.coin;
+        const isQueryCoinValid = this.$options.CARD_COIN_LIST.includes(queryCoin);
+
         return {
             form: {
-                coin: this.$options.CARD_COIN_LIST[0],
+                coin: isQueryCoinValid ? queryCoin : this.$options.CARD_COIN_LIST[0],
             },
         };
     },

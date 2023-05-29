@@ -107,10 +107,16 @@
     &:hover, &:focus {background: rgba(var(--color-main-rgb), 0.2);}
     &:active {background: rgba(var(--color-main-rgb), 0.4);}
 }
-.button--light-gray {
+.button--light-main {
     color: var(--color-main); background: var(--color-light-gray);
     &:hover, &:focus {background: rgba(var(--color-main-rgb), 0.2);}
     &:active {background: rgba(var(--color-main-rgb), 0.4);}
+}
+.button--light {
+    background: var(--color-light-gray);
+    &:hover, &:focus {background: rgba(var(--color-main-rgb), 0.2);}
+    &:active {background: rgba(var(--color-main-rgb), 0.4);}
+    &.is-inactive {background: var(--color-light-gray);}
 }
 //.button--ghost-white {
 //    color: #fff; background: transparent; border-color: #fff;

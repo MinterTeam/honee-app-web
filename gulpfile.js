@@ -55,6 +55,9 @@ gulp.task('less', function() {
             postcssPresetEnv({
                 stage: 2,
                 features: {
+                    // produce invalid result (improperly scaled images even for supported browsers)
+                    'image-set': false,
+                    'image-set-function': false,
                     // not performant
                     'all-property': false,
                     'case-insensitive-attributes': false,

@@ -20,9 +20,10 @@ export default {
 <template>
     <MetagardenGame v-slot="{game}">
         <a class="button button--main button--full u-mb-10 u-mt-15" href="https://perfect-city-nft.github.io/babylon/" target="_blank">{{ $td('Play', 'mg-games.button-play') }}</a>
-        <nuxt-link class="button button--ghost-main button--full" :to="$i18nGetPreferredPath('/swap/' + game.coin)">
+        <nuxt-link class="button button--ghost-main button--full u-mb-10" :to="$i18nGetPreferredPath('/swap/' + game.coin)">
             {{ $t('action.title-buy-coin', {coin: game.coin}) }}
         </nuxt-link>
+        <a class="button button--ghost-main button--full" :href="$i18nGetPreferredPath('/withdraw?coin='+ game.coin +'&network=bsc')">{{ $td('Send tokens to the Game', 'mg-games.button-send-tokens') }}</a>
 
         <div class="u-h--uppercase u-mt-10 u-mb-10">{{ $td('Game community', 'mg-games.game-community') }}</div>
         <a class="button button--ghost-main button--full u-mb-10" href="https://t.me/perfect_city_nft" target="_blank">

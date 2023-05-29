@@ -54,8 +54,8 @@ export default {
 
             <nuxt-link v-if="isAuthorized && !isAccountPage" :to="$i18nGetPreferredPath('/metagarden/account')" class="header__controls-link header__controls-user u-semantic-button">
                 <div class="u-mr-10 u-text-right">
-                    <div class="u-fw-700 header__controls-mg-user-name">{{ $td('Your account', 'metagarden.your-account') }}</div>
-                    <div class="u-fw-600 header__controls-mg-user-balance">${{ prettyUsd($store.state.totalBalanceSumUsd) }}</div>
+                    <div class="u-fw-700 header__controls-user-name">{{ $td('Your account', 'metagarden.your-account') }}</div>
+                    <div class="u-fw-600 header__controls-user-balance">${{ prettyUsd($store.state.totalBalanceSumUsd) }}</div>
                 </div>
                 <img class="header__controls-user-avatar u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation" width="32" height="32"/>
             </nuxt-link>

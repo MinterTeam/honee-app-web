@@ -157,7 +157,9 @@ export default function useWeb3Deposit(destinationMinterAddress) {
         const depositReceipt = await waitPendingStep(LOADING_STAGE.SEND_BRIDGE);
 
         addStepData(LOADING_STAGE.WAIT_BRIDGE, {coin: props.tokenSymbol /* calculate receive amount? */}, true);
-        return waitHubTransferToMinter(depositReceipt.transactionHash, props.destinationMinterAddress, props.tokenSymbol)
+        // @TODO can't expose canceler here because depositFromEthereum is async and always returns promise
+        const [promiseWithTx, canceler] = waitHubTransferToMinter(depositReceipt.transactionHash, props.destinationMinterAddress, props.tokenSymbol);
+        return promiseWithTx
             .then(({ tx: minterTx, outputAmount}) => {
                 addStepData(LOADING_STAGE.WAIT_BRIDGE, {amount: outputAmount, tx: minterTx, finished: true});
                 return outputAmount;

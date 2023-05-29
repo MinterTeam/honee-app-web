@@ -3,6 +3,7 @@ import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
 import stripZeros from 'pretty-num/src/strip-zeros.js';
 import {convertToPip} from 'minterjs-util';
 import coinBlockList from 'minter-coin-block-list';
+import {wait} from '@shrpne/utils/src/wait.js';
 import {getVerifiedMinterCoinList} from '~/api/hub.js';
 import {getCoinIconList as getChainikIconList} from '~/api/chainik.js';
 import {BASE_COIN, EXPLORER_API_URL, TX_STATUS} from '~/assets/variables.js';
@@ -152,14 +153,20 @@ export function getTransaction(hash) {
 export async function getBalance(address) {
     const response = await explorer.get('addresses/' + address + '?with_sum=true');
 
-    // replace empty BIP with BEE
     const bipBalance = response.data.data.balances.find((item) => item.coin.symbol === BASE_COIN);
+    const beeBalance = response.data.data.balances.find((item) => item.coin.symbol === 'BEE');
     if (bipBalance && Number(bipBalance.amount) === 0) {
-        bipBalance.coin = {
-            symbol: 'BEE',
-            id: 2361,
-            type: 'token',
-        };
+        if (!beeBalance) {
+            // replace empty BIP with BEE
+            bipBalance.coin = {
+                symbol: 'BEE',
+                id: 2361,
+                type: 'token',
+            };
+        } else {
+            // remove empty BIP
+            response.data.data.balances = response.data.data.balances.filter((item) => item.coin.symbol !== BASE_COIN);
+        }
     }
 
     response.data.data.balances = await prepareBalance(response.data.data.balances);
@@ -189,6 +196,12 @@ export async function prepareBalance(balanceList) {
     balanceList = await markVerified(Promise.resolve(balanceList));
 
     return balanceList.sort((a, b) => {
+            // BEE goes first
+            if (a.coin.symbol === 'BEE') {
+                return -1;
+            } else if (b.coin.symbol === 'BEE') {
+                return 1;
+            }
             // base coin goes first
             if (a.coin.symbol === BASE_COIN) {
                 return -1;
@@ -203,8 +216,10 @@ export async function prepareBalance(balanceList) {
                 return 1;
             }
 
+            return +b.bipAmount - +a.bipAmount;
+
             // sort coins by name, instead of reserve
-            return a.coin.symbol.localeCompare(b.coin.symbol);
+            // return a.coin.symbol.localeCompare(b.coin.symbol);
         })
         .map((coinItem) => {
             return {
@@ -417,11 +432,12 @@ const poolCache = new Cache({ttl: 10 * 1000, max: 100});
 /**
  * @param {string|number} coin0
  * @param {string|number} coin1
+ * @param {boolean} [skipCache]
  * @return {Promise<Pool>}
  */
-export function getPool(coin0, coin1) {
+export function getPool(coin0, coin1, skipCache) {
     return explorer.get(`pools/coins/${coin0}/${coin1}`, {
-            cache: poolCache,
+            cache: skipCache ? undefined : poolCache,
         })
         .then((response) => response.data.data);
 }
@@ -435,6 +451,29 @@ export function getPoolByToken(symbol) {
             cache: poolCache,
         })
         .then((response) => response.data.data);
+}
+
+/**
+ * @param {string|number} coin0
+ * @param {string|number} coin1
+ * @param {object} [options]
+ * @param {number} [options.updatedAtBlock]
+ * @param {number} [options.tryLimit]
+ * @return {Promise<Pool>}
+ */
+export function waitPool(coin0, coin1, {updatedAtBlock, tryLimit = 15} = {}) {
+    return getPool(coin0, coin1, !!updatedAtBlock)
+        .then((poolData) => {
+            if (!updatedAtBlock || poolData.updatedAtBlock >= updatedAtBlock) {
+                return poolData;
+            }
+            if (tryLimit <= 0) {
+                return poolData;
+            }
+            return wait(3000).then(() => {
+                return waitPool(coin0, coin1, {updatedAtBlock, tryLimit: tryLimit - 1});
+            });
+        });
 }
 
 /**
@@ -470,6 +509,19 @@ export function getProviderPoolList(address, params) {
  * @property {Array<PoolProvider>} data
  * @property {PaginationMeta} meta
  */
+
+
+/**
+ * @param {string} symbol
+ * @return {Promise<CoinInfo>}
+ */
+export function getCoinBySymbol(symbol) {
+    symbol = symbol.toUpperCase();
+    return explorer.get(`coins/symbol/${symbol}`)
+        .then((response) => {
+            return response.data.data;
+        });
+}
 
 
 /**
@@ -581,8 +633,9 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
  * @property {number|string} amount1
  * @property {number|string} liquidity
  * @property {number|string} liquidityBip
- * @property {string} token
+ * @property {Coin} token
  * @property {number|string} tradeVolumeBip1D
+ * @property {number} updatedAtBlock
  */
 
 /**
@@ -701,6 +754,9 @@ export function getSwapEstimate(coin0, coin1, {buyAmount, sellAmount}, axiosOpti
  * @property {string|null} ownerAddress
  * @property {boolean} [verified] - filled from hub api
  * @property {boolean} [icon] - filled from chainik app
+ * @property {number|string} priceUsd
+ * @property {number|string} tradingVolume24H
+ * @property {number|string} tradingVolume1Mo
  */
 
 /**

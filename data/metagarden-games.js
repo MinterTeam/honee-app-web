@@ -15,7 +15,7 @@ export default [
     },
     {
         title: 'Lucky Miner',
-        description: 'Mining Metagarden platform tokens is an exciting process in the form of a game. Buy a Miner and receive daily rewards with many other bonuses.',
+        description: 'Become a miner of METAGARDEN tokens. It\'s an exciting process in the form of a game. You\'ll be receiving daily rewards with many other bonuses.',
         coin: 'METAGARDEN',
         slug: 'miner',
         ru: {
@@ -24,14 +24,13 @@ export default [
         },
     },
     {
-        title: 'Wonder Game',
-        description: 'Buy Magic Boxes or get them for free. Each box contains coins or other valuable prizes.',
+        title: 'Wonder',
+        description: 'Win, collect and sell unique NFTs that can be found in different WonderBoxes!',
         category: 'Lottery',
         coin: 'WONDER',
         slug: 'magic-box',
-        isComingSoon: true,
         ru: {
-            description: 'Покупайте или получайте бесплатно волшебные коробки. Каждая коробка содержит монеты или другие ценные призы.',
+            description: 'Выигрывайте, собирайте и продавайте уникальные NFT, которые можно найти в разных ВандерБоксах!',
             category: 'Лотерея',
         },
     },
@@ -41,7 +40,6 @@ export default [
         category: 'Lottery',
         coin: 'SNATCH',
         slug: 'snatch',
-        isComingSoon: true,
         ru: {
             description: 'Многопользовательская игра, в которой необходимо открывать банковские ячейки, чтобы забирать призы.',
             category: 'Лотерея',

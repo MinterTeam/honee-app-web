@@ -14,7 +14,7 @@ Vue.mixin({
         },
         $getDashboardUrl(page = '/', baseUrl) {
             if (!baseUrl) {
-                baseUrl = this.$store.state.isMetagarden ? DASHBOARD_URL_METAGARDEN : DASHBOARD_URL;
+                baseUrl = this.$store.getters.isMetagarden ? DASHBOARD_URL_METAGARDEN : DASHBOARD_URL;
             }
             return this.$i18nGetPreferredPath((baseUrl + page).replace('//', '/'));
         },

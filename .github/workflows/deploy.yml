@@ -2,15 +2,17 @@ name: CI
 
 on:
   push:
-    branches: [ master, dev, testnet ]
+    branches: [ master, dev, testnet, megachain ]
 env:
-  PRODUCTION_BRANCH: "master"
+  PRODUCTION_BRANCH: ( master, megachain )
   INGRESS_DOMAIN_master: "my.honee.app"
   INGRESS_DOMAIN_dev: "honee.dev"
   INGRESS_DOMAIN_testnet: "testnet.honee.dev"
+  INGRESS_DOMAIN_megachain: "launchpad.metagarden.io"
   KUBE_NAMESPACE_master: "honee"
   KUBE_NAMESPACE_dev: "default"
   KUBE_NAMESPACE_testnet: "default"
+  KUBE_NAMESPACE_megachain: "honee"
 jobs:
   ci:
     name: build
@@ -19,23 +21,26 @@ jobs:
     steps:
       - name: set env BUILD_BRANCH
         run: echo "BUILD_BRANCH=$(echo $GITHUB_REF | sed 's:refs/heads/::')" >> $GITHUB_ENV
-      
+
       - name: set branch prefix env to be used during docker build, .e.g. "refs/heads/testnet" => ".testnet"
         run: echo "BUILD_BRANCH_ENV_PREFIX=$(echo .$BUILD_BRANCH)" >> $GITHUB_ENV
-      
+
       - name: set env PROJECT_NAME
-        run: echo "PROJECT_NAME=$(echo $GITHUB_REPOSITORY | sed "s:MinterTeam/::")" >> $GITHUB_ENV
-      
+        run: echo "PROJECT_NAME=$(echo $GITHUB_REPOSITORY | sed 's:MinterTeam/::')" >> $GITHUB_ENV
+
+      - name: set env RELEASE_NAME
+        run: echo "RELEASE_NAME=$PROJECT_NAME-$BUILD_BRANCH" >> $GITHUB_ENV
+
       - name: set env INGRESS_DOMAIN
         env:
           INGRESS_DOMAIN_KEY: INGRESS_DOMAIN_${{ env.BUILD_BRANCH }}
         run: echo "INGRESS_DOMAIN=$(echo ${!INGRESS_DOMAIN_KEY})" >> $GITHUB_ENV
-      
+
       - name: set env KUBE_NAMESPACE
         env:
           KUBE_NAMESPACE_KEY: KUBE_NAMESPACE_${{ env.BUILD_BRANCH }}
         run: echo "KUBE_NAMESPACE=$(echo ${!KUBE_NAMESPACE_KEY})" >> $GITHUB_ENV
-      
+
       - uses: actions/checkout@v2
       - name: build and push docker image
         uses: opspresso/action-docker@v0.2.13
@@ -48,7 +53,7 @@ jobs:
           TAG_NAME: ${{ github.sha }}
           DOCKERFILE: ".docker/Dockerfile"
           DOCKER_BUILD_ARGS: --build-arg BUILD_BRANCH_ENV_PREFIX
-      
+
       #      - name: DigitalOcean Kubernetes
       #        if: env.BUILD_BRANCH == env.PRODUCTION_BRANCH
       #        uses: matootie/dokube@v1.3.4
@@ -64,26 +69,26 @@ jobs:
       #        if: env.BUILD_BRANCH == env.PRODUCTION_BRANCH
       #        env:
       #          TAG_NAME: ${{ github.sha }}
-      #        run: ./linux-amd64/helm upgrade -n ${{ env.KUBE_NAMESPACE }} -i $PROJECT_NAME chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN
-      
+      #        run: ./linux-amd64/helm upgrade -n ${{ env.KUBE_NAMESPACE }} -i $RELEASE_NAME chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN
+
       - name: deploy to production cluster
-        if: env.BUILD_BRANCH == env.PRODUCTION_BRANCH
+        if: contains(env.PRODUCTION_BRANCH, env.BUILD_BRANCH)
         uses: wahyd4/kubectl-helm-action@v0.1.2
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_PROD_CONFIG_DATA }}
           TAG_NAME: ${{ github.sha }}
         with:
-          args: helm upgrade -n $KUBE_NAMESPACE -i $PROJECT_NAME chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN
-      
+          args: helm upgrade -n $KUBE_NAMESPACE -i $RELEASE_NAME chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN
+
       - name: deploy to staging cluster
-        if: env.BUILD_BRANCH != env.PRODUCTION_BRANCH
+        if: "!contains(env.PRODUCTION_BRANCH, env.BUILD_BRANCH)"
         uses: wahyd4/kubectl-helm-action@master
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_STAGE_CONFIG_DATA }}
           TAG_NAME: ${{ github.sha }}
         with:
-          args: helm upgrade -n $KUBE_NAMESPACE -i "${{ env.PROJECT_NAME }}-${{env.BUILD_BRANCH}}" chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN --set ingress.issuer=letsencrypt-http --set ingress.clusterissuer=""
-      
+          args: helm upgrade -n $KUBE_NAMESPACE -i $RELEASE_NAME chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN --set ingress.issuer=letsencrypt-http --set ingress.clusterissuer=""
+
       - name: notification
         if: cancelled() == false
         uses: xinthink/action-telegram@v1.1

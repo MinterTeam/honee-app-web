@@ -169,7 +169,6 @@ export default function useWeb3SmartWalletSwapWithdraw() {
         amountAfterDeposit,
         amountEstimationAfterSwapToHub,
         swapToHubParams,
-        // feeTxParams,
 
         setSmartWalletSwapWithdrawProps: setProps,
         buildTxForRelayReward,

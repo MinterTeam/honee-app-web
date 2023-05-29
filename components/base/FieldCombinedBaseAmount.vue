@@ -186,7 +186,7 @@ function isSelectedCoinSameAsFeeCoin(selectedCoinItem, feeCoinIdOrSymbol) {
                 />
                 <button
                     class="h-field__aside-max link--main link--opacity u-semantic-button" type="button"
-                    v-else-if="isMaxValueDefined && !isMaxValueUsed"
+                    v-else-if="isMaxValueDefined && !isMaxValueUsed && !isEstimation"
                     @click="useMax()"
                 >
                     {{ $td('Use max', 'index.use-max') }}. {{ isMaxValueRounded ? '≈' : '' }}{{ pretty(maxValueComputed) }}

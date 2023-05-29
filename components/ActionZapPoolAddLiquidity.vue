@@ -6,7 +6,7 @@ import minLength from 'vuelidate/src/validators/minLength.js';
 import minValue from 'vuelidate/src/validators/minValue.js';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {wait} from '@shrpne/utils/src/wait.js';
-import {getPool} from '~/api/explorer.js';
+import {waitPool} from '~/api/explorer.js';
 import {estimateTxCommissionGasCoinOnly} from '~/api/gate.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import {pretty, prettyExact} from "~/assets/utils.js";
@@ -83,6 +83,7 @@ export default {
             v$estimation1: {},
             estimationFetchState0: null,
             estimationFetchState1: null,
+            /** @type {Pool|null} */
             poolData: null,
             isSequenceProcessing: false,
         };
@@ -161,6 +162,7 @@ export default {
             return this.fee?.resultList?.[2];
         },
         sequenceParams() {
+            let poolBlock = this.poolData?.updatedAtBlock;
             const finalState = {
                 coin0Amount: this.coin0Amount,
                 coin1Amount: this.coin1Amount,
@@ -202,6 +204,11 @@ export default {
                     finalize: (tx) => {
                         const swapReturn = convertFromPip(tx.tags['tx.return']);
                         finalState[`coin${index}Amount`] = swapReturn;
+
+                        if (isPoolAffected(tx, this.poolData.token.symbol)) {
+                            poolBlock = Number(tx.height);
+                        }
+
                         return tx;
                     },
                 };
@@ -215,14 +222,16 @@ export default {
                 prepare: [
                     // @TODO 3rd estimated fee will stay as dust
                     async () => {
-                        await this.fetchPoolData();
+                        await this.fetchPoolData(poolBlock);
 
-                        console.log('finalState', finalState);
+                        console.log('finalState', {...finalState}, {...this.poolData});
                         let isCoin1Bigger = getIsCoin1Bigger(finalState, this.poolData);
+                        // use bigger coin as new gasCoin
+                        const gasCoin = isCoin1Bigger ? this.params.coin1 : this.params.coin0;
+                        // @TODO can throw here, new gasCoin may be not eligible to pay fee, need to use old gasCoin
                         const {commission} = await estimateTxCommissionGasCoinOnly({
                             ...this.sequenceParams[2].txParams,
-                            // use bigger coin as new gasCoin
-                            gasCoin: isCoin1Bigger ? this.params.coin1 : this.params.coin0,
+                            gasCoin,
                         });
                         // reduce amount by fee
                         if (isCoin1Bigger) {
@@ -231,11 +240,18 @@ export default {
                             finalState.coin0Amount = new Big(finalState.coin0Amount).minus(commission).toString();
                         }
 
+                        // @TODO some validation can be made to prevent such case
+                        if (finalState.coin1Amount < 0 || finalState.coin0Amount < 0) {
+                            throw new Error(`Not enough ${gasCoin} to pay fee`);
+                        }
 
-                        console.log('finalState', finalState);
+
+                        console.log('finalState', {...finalState}, {...this.poolData});
+                        // update isCoin1Bigger after fee deduction
                         isCoin1Bigger = getIsCoin1Bigger(finalState, this.poolData);
 
                         return {
+                            gasCoin,
                             // bigger volume go second
                             data: isCoin1Bigger ? {
                                 coin0: this.params.coin0,
@@ -290,15 +306,15 @@ export default {
     methods: {
         pretty,
         prettyExact,
-        fetchPoolData() {
+        fetchPoolData(updatedAtBlock) {
             // no pair entered
             if (!this.form.coin0 || !this.form.coin1 || this.form.coin0 === this.form.coin1) {
                 return;
             }
 
-            return getPool(this.form.coin0, this.form.coin1)
+            return waitPool(this.form.coin0, this.form.coin1, {updatedAtBlock})
                 .then((poolData) => {
-                    this.poolData = poolData;
+                    this.poolData = Object.freeze(poolData);
                 });
         },
         clearForm() {
@@ -309,6 +325,25 @@ export default {
         },
     },
 };
+
+function isPoolAffected(tx, lpTokenSymbol) {
+    const tagsPoolId = Number(lpTokenSymbol.replace('LP-', ''));
+
+    const swapPools = jsonParse(tx.tags['tx.pools']);
+    const feePool = jsonParse(tx.tags['tx.commission_details']);
+    const pools = [].concat(swapPools, feePool);
+    const idList = pools.map((pool) => pool?.['pool_id']);
+
+    return idList.includes(tagsPoolId);
+}
+
+function jsonParse(value) {
+    try {
+        return JSON.parse(value);
+    } catch (e) {
+        return undefined;
+    }
+}
 </script>
 
 <template>

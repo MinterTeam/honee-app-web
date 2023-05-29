@@ -4,7 +4,7 @@ import Topup, {TOP_UP_NETWORK} from '~/components/Topup.vue';
 
 export default {
     layout(context) {
-        return context.store.state.isMetagarden ? 'metagarden' : 'default';
+        return context.store.getters.isMetagarden ? 'metagarden' : 'default';
     },
     components: {
         Topup,

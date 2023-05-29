@@ -24,8 +24,15 @@ export default {
             :style="isIosWebView ? 'padding-bottom: 400px' : ''"
         >
             <div class="u-relative u-container u-container--mini">
-                <img class="auth__logo" src="/img/logo-honee.svg" alt="Honee" width="280" height="56">
-                <h3 class="auth__subtitle">{{ $td('Crypto wallet that helps you earn', 'index.sign-up-subtitle') }}</h3>
+                <template v-if="$store.getters.isHonee">
+                    <img class="auth__logo u-mb-15" src="/img/logo-honee.svg" alt="Honee" width="280" height="56">
+                    <h3 class="auth__subtitle u-mb-25">{{ $td('Crypto wallet that helps you earn', 'index.sign-up-subtitle') }}</h3>
+                </template>
+                <template v-if="$store.getters.isMegachain">
+                    <img class="auth__logo u-mb-20" src="/img/logo-megachain-center.svg" alt="Metagarden Chain" width="193" height="180">
+                    <h3 class="auth__subtitle-2">{{ $td('The Ultimate Gaming EVM', 'index.megachain-sign-up-subtitle') }}</h3>
+                    <p class="auth__p u-mb-15">{{ $td('Metagarden Chain Launchpad', 'index.megachain-sign-up-p') }}</p>
+                </template>
             </div>
 
             <nuxt/>

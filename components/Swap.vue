@@ -2,14 +2,12 @@
 import {postTx} from '~/api/gate.js';
 import {getErrorText} from "~/assets/server-error";
 import {pretty, prettyExact, prettyPrecise, decreasePrecisionSignificant, getExplorerTxUrl} from '~/assets/utils.js';
-import useFee from '~/composables/use-fee.js';
 import InlineSvg from 'vue-inline-svg';
-import {getTxType} from '~/components/base/SwapEstimation.vue';
 import BaseAmountEstimation from '~/components/base/BaseAmountEstimation.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
 import FieldCombined from '~/components/base/FieldCombined.vue';
-import SwapEstimation from '~/components/base/SwapEstimation.vue';
+import SwapEstimationWithFee from '~/components/base/SwapEstimationWithFee.vue';
 import SwapPriceImpact from '~/components/SwapPriceImpact.vue';
 
 export default {
@@ -19,7 +17,7 @@ export default {
         BaseLoader,
         Modal,
         FieldCombined,
-        SwapEstimation,
+        SwapEstimationWithFee,
         SwapPriceImpact,
     },
     emits: [
@@ -34,14 +32,10 @@ export default {
             type: Object,
             default: () => ({}),
         },
-    },
-    setup() {
-        const {fee, setFeeProps} = useFee();
-
-        return {
-            fee,
-            setFeeProps,
-        };
+        showDeposit: {
+            type: Boolean,
+            default: true,
+        },
     },
     data() {
         const coinList = this.$store.state.balance;
@@ -62,6 +56,8 @@ export default {
             },
             isSelling: true,
             isUseMax: false, // should sellAllTx be used
+            /** @type {FeeData} */
+            fee: undefined,
             v$estimation: {
                 estimationError: {},
                 isEstimationWaiting: {},
@@ -80,30 +76,6 @@ export default {
                 this.handleEstimationError(this.v$estimation.estimationError?.$invalid);
             },
         },
-    },
-    created() {
-        // feeBusParams
-        this.$watch(
-            () => {
-                const isEstimationTypePool = !!this.txData.coins;
-                return {
-                    txParams: {
-                        // don't use `this.txType`, it may lead to infinite loop
-                        // ignore `isSellAll` to get `sell` fee (assume sell and sell-all txs consume equal fees)
-                        type: getTxType({isPool: isEstimationTypePool, isSelling: this.isSelling, isSellAll: false}),
-                        data: {
-                            // pass only fields that affect fee
-                            coinToSell: this.form.coinFrom,
-                            coins: this.txData.coins,
-                        },
-                    },
-                    baseCoinAmount: this.$store.getters.baseCoinAmount,
-                    fallbackToCoinToSpend: true,
-                };
-            },
-            (newVal) => this.setFeeProps(newVal),
-            {deep: true, immediate: true},
-        );
     },
     methods: {
         pretty,
@@ -226,7 +198,7 @@ export default {
                 <span class="form-field__error" v-if="v$estimation.valueToSell.$dirty && !v$estimation.valueToSell.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
                 <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && !v$estimation.valueToSell.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
                 <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && v$estimation.maxAmount.$invalid">{{ $td('Not enough coins', 'form.not-enough-coins') }}</span>
-                <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && v$estimation.maxAmountAfterFee.$invalid">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee.value) }} {{ fee.coinSymbol }}</span>
+                <span class="form-field__error" v-else-if="v$estimation.valueToSell.$dirty && v$estimation.maxAmountAfterFee.$invalid">{{ $td('Not enough to pay transaction fee', 'form.fee-error-insufficient') }}: {{ pretty(fee?.value) }} {{ fee?.coinSymbol }}</span>
             </div>
 
             <button
@@ -254,7 +226,7 @@ export default {
                 <span class="form-field__error" v-else-if="v$estimation.valueToBuy.$dirty && !v$estimation.valueToBuy.validAmount">{{ $td('Wrong amount', 'form.number-invalid') }}</span>
             </div>
 
-            <SwapEstimation
+            <SwapEstimationWithFee
                 class="information form-row"
                 ref="estimation"
                 idPreventConcurrency="swapForm"
@@ -263,14 +235,14 @@ export default {
                 :value-to-sell="isSelling ? form.sellAmount : undefined"
                 :value-to-buy="!isSelling ? form.buyAmount : undefined"
                 :is-use-max="isUseMax"
-                :fee="fee"
                 :hide-props-validation-error="true"
                 @update:estimation="handleGetEstimation($event)"
                 @update:tx-data="txData = $event"
                 @update:v$estimation="v$estimation = $event"
+                @update:fee="fee = $event"
             />
 
-            <div class="information form-row" v-if="!v$estimation.$invalid && (params.coinToSell || params.coinToBuy)">
+            <div class="information form-row" v-if="(params.coinToSell || params.coinToBuy)">
                 <template v-if="params.coinToSell">
                     <h3 class="information__title">{{ $td('You spend approximately', 'form.swap-confirm-spend-estimation') }}</h3>
                     <div class="information__item">
@@ -323,6 +295,13 @@ export default {
             <p class="form-row u-text-center u-text-muted u-text-small">{{ $td('By clicking this button, you confirm that you’ve read and understood the disclaimer in the footer.', 'form.read-understood') }}</p>
         </form>
 
+        <hr class="card__fake-divider" v-if="showDeposit">
+
+        <nuxt-link v-if="showDeposit" class="button button--full button--ghost-main" :to="$i18nGetPreferredPath('/topup/instant')">
+            {{ $td('+ Instant deposit', 'index.topup-instant') }}
+        </nuxt-link>
+
+
         <!-- Confirm Modal -->
         <Modal :isOpen.sync="isConfirmModalVisible">
             <h2 class="u-h3 u-mb-10">
@@ -367,9 +346,9 @@ export default {
                 </div>
 
                 <h3 class="information__title">{{ $td('Transaction fee', 'form.tx-fee') }}</h3>
-                <BaseAmountEstimation :coin="fee.coinSymbol" :amount="fee.value" :exact="true"/>
+                <BaseAmountEstimation :coin="fee?.coinSymbol" :amount="fee?.value" :exact="true"/>
 
-                <div class="u-mt-10 u-fw-700" v-if="fee.isHighFee"><span class="u-emoji">⚠️</span> {{ $td('Transaction requires high fee.', 'form.tx-fee-high') }}</div>
+                <div class="u-mt-10 u-fw-700" v-if="fee?.isHighFee"><span class="u-emoji">⚠️</span> {{ $td('Transaction requires high fee.', 'form.tx-fee-high') }}</div>
                 -->
 
                 <SwapPriceImpact
@@ -410,10 +389,5 @@ export default {
                 {{ $td('Close', 'form.success-close-button') }}
             </button>
         </Modal>
-        <div class="card__content--instant-block">
-            <nuxt-link class="button button--full button--ghost-main" :to="$i18nGetPreferredPath('/topup/instant')">
-                {{ $td('+ Instant deposit', 'index.topup-instant') }}
-            </nuxt-link>
-        </div>
     </div>
 </template>

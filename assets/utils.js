@@ -241,7 +241,7 @@ export function getTimeStamp(timestamp) {
         return false;
     }
 
-    return format(parseTime(timestamp), 'dd MMM yyyy HH:mm:ss');
+    return format(timestamp, 'dd MMM yyyy HH:mm:ss');
 }
 
 /**
@@ -263,16 +263,27 @@ export function getDateAmerican(timestamp, {locale} = {}) {
         formatTemplate = 'MMMM d, yyyy';
     }
 
-    return format(parseTime(timestamp), formatTemplate, {locale: getDateFnsLocale(locale)});
+    return format(timestamp, formatTemplate, {locale: getDateFnsLocale(locale)});
 }
 
-export function getTime(timestamp) {
+export function getDate(timestamp) {
     timestamp = parseTime(timestamp);
     if (!timestamp) {
         return false;
     }
 
-    return format(parseTime(timestamp), 'HH:mm:ss');
+    return format(timestamp, 'dd.MM.yyyy');
+}
+
+export function getTime(timestamp, isShort) {
+    timestamp = parseTime(timestamp);
+    if (!timestamp) {
+        return false;
+    }
+
+    const secondsPart = isShort ? '' : ':ss';
+
+    return format(timestamp, `HH:mm${secondsPart}`);
 }
 
 // export function getTimeZone(timestamp) {

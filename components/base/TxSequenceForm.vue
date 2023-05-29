@@ -7,7 +7,7 @@ import useFee from '~/composables/use-fee.js';
 import useTxService from '~/composables/use-tx-service.js';
 import Loader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
-import HubBuyTxListItem from '~/components/HubBuyTxListItem.vue';
+import HubBuyTxListItem from '~/components/base/StepListItem.vue';
 
 export default {
     LOADING_STAGE,
@@ -59,7 +59,7 @@ export default {
     },
     setup() {
         const {fee, setFeeProps, refineByIndex} = useFee();
-        const { txServiceState, currentLoadingStage, setStepList, sendTxSequence} = useTxService();
+        const { txServiceState, currentStep, currentLoadingStage, setStepList, sendTxSequence} = useTxService();
 
         return {
             fee,
@@ -67,6 +67,7 @@ export default {
             refineByIndex,
 
             txServiceState,
+            currentStep,
             currentLoadingStage,
             setStepList,
             sendTxSequence,
@@ -108,8 +109,12 @@ export default {
             () => {
                 /** @type {Array<SendSequenceItem>} */
                 const sequenceParamsArray = Array.isArray(this.sequenceParams) ? this.sequenceParams : [this.sequenceParams];
-                // check only nullish, because 'false' feeTxParams mean 'skip estimation'
-                const txParamsList = sequenceParamsArray.map((item) => item.feeTxParams ?? item.txParams);
+                const txParamsList = sequenceParamsArray.map((item) => {
+                    return item.skip
+                        ? false
+                        // check only nullish, because 'false' feeTxParams mean 'skip estimation'
+                        : item.feeTxParams ?? item.txParams;
+                });
 
                 return {
                     txParamsList,
@@ -352,7 +357,7 @@ function arrayInsertAtPosition(target, item, position) {
                     </div>
                 </div>
             </div>
-            <div class="form-row u-text-medium u-fw-500" v-if="currentLoadingStage !== $options.LOADING_STAGE.FINISH">
+            <div class="form-row u-text-medium u-fw-500" v-if="currentLoadingStage !== $options.LOADING_STAGE.FINISH && currentStep?.required">
                 <span class="u-emoji">⚠️</span> {{ $td('Please keep this page active, otherwise progress may&nbsp;be&nbsp;lost.', 'index.keep-page-active') }}
             </div>
             <div class="form-row" v-if="currentLoadingStage === $options.LOADING_STAGE.FINISH">

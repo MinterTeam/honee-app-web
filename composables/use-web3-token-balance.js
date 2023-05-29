@@ -139,6 +139,10 @@ export default function useWeb3TokenBalance() {
      * @private
      */
     function _waitEnoughTokenBalance(targetAmount, signal) {
+        // Sending was canceled
+        if (signal.isCanceled) {
+            return Promise.reject(new CancelError());
+        }
         return updateTokenBalance()
             .then(() => {
                 // Sending was canceled

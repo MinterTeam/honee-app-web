@@ -5,6 +5,7 @@ import withParams from 'vuelidate/src/withParams';
 import autosize from 'v-autosize';
 import {isValidMnemonic} from 'minterjs-wallet';
 import checkEmpty from '~/assets/v-check-empty.js';
+import {IS_ONBOARDING_DISABLED} from '~/assets/variables.js';
 
 const mnemonicValidator = withParams({type: 'mnemonic'}, isValidMnemonic);
 
@@ -47,7 +48,7 @@ export default {
         authorize() {
             // redirect
             let authRedirectPath;
-            if (this.onboardingUrl) {
+            if (this.onboardingUrl && !IS_ONBOARDING_DISABLED) {
                 authRedirectPath = this.onboardingUrl;
             } else {
                 authRedirectPath = this.$store.state.authRedirectPath || this.DASHBOARD_URL;

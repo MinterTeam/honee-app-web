@@ -33,8 +33,11 @@ export default function useEstimateSwap({idPreventConcurrency, vm} = {}) {
      * @property {string} coinToBuy
      * @property {number|string} [valueToBuy]
      * @property {boolean} [isSelling = true]
+     * @property {boolean} [sellAll]
      * @property {boolean} [throwOnError = false]
-     *
+     */
+
+    /**
      * @param {EstimateSwapOptions} options
      * @return {Promise}
      */
@@ -77,7 +80,9 @@ export default function useEstimateSwap({idPreventConcurrency, vm} = {}) {
                 state.estimationType = result.swap_from;
                 state.isEstimationTypePool = result.swap_from === ESTIMATE_SWAP_TYPE.POOL;
                 state.isEstimationTypeBancor = result.swap_from === ESTIMATE_SWAP_TYPE.BANCOR;
+                /** @type {Array<Coin>|null} - null if bancor */
                 state.estimationRoute = result.route;
+                /** @type {Array<number>} */
                 state.estimationTxDataCoinsRoute = result.route
                     ? result.route.map((coin) => coin.id)
                     : [coinToSell, coinToBuy];
@@ -123,7 +128,7 @@ export default function useEstimateSwap({idPreventConcurrency, vm} = {}) {
     /**
      *
      * @param {EstimateSwapOptions&{force?: boolean}} options
-     * @return {Promise}
+     * @return {Promise<(EstimateSellResult|EstimateSellAllResult|EstimateBuyResult) & {route?: Array<Coin>}>}
      */
     function estimateSwap(options) {
         if (options.force) {

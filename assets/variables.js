@@ -1,3 +1,5 @@
+export const SUBAPP = process.env.APP_SUBAPP;
+export const IS_SUBAPP_MEGACHAIN = SUBAPP === 'megachain';
 export const MAINNET = 'mainnet';
 export const TESTNET = 'testnet';
 export const NETWORK = process.env.APP_ENV === MAINNET ? MAINNET : TESTNET;
@@ -56,6 +58,9 @@ export const SMART_WALLET_FACTORY_CONTRACT_ADDRESS = "0x324718b3cE9906fcf5cE1403
 export const SMART_WALLET_FACTORY_LEGACY_BSC_CONTRACT_ADDRESS = "0x7F3C8d5363B44875001Fa2A63A7dB6FCb8BEE989";
 export const SMART_WALLET_RELAY_BROADCASTER_ADDRESS = '0x64e51D5930CDBbf99f3cB27654A03b18f7060C5E';
 export const SMART_WALLET_RELAY_MINTER_ADDRESS = "Mxc9b1b39f4c94b1bcbf68c1beba97ab84f7763cf0";
+// export const LOANS_METAGARDEN_BSC_CONTRACT_ADDRESS = '0x5b0bda49e3d8caa23a21c697bf898999d6ae3887';
+export const LOANS_METAGARDEN_BSC_CONTRACT_ADDRESS = '0xe5d42f8CC8792174A4377cAf128358AC55770633';
+export const LOANS_BEE_BSC_CONTRACT_ADDRESS = '0xF64f9BaBdb306ABD3ca498fc49e84944AE02849c';
 export const GOATCOUNTER_HOST = 'https://counter-api.minter.network';
 export const GOATCOUNTER_SCRIPT_HASH = 'sha384-Y8F5Ua/zQ+NPBrMSdg9H3WezYaB49Qf3WJsv3LLUntxBwBV2r8pOWJWJ7X7l8DXX';
 export const TWA_SCRIPT_URL = 'https://telegram.org/js/telegram-web-app.js';
@@ -75,6 +80,7 @@ export const SUCCESS_FEE_FUND_ADDRESS = 'Mx2d347ede679b8c6b91d272c9aade5a716bda4
 export const STAKE_RECALCULATE_BLOCK_COUNT = 720;
 export const DASHBOARD_URL = '/';
 export const DASHBOARD_URL_METAGARDEN = '/metagarden';
+export const IS_ONBOARDING_DISABLED = true;
 
 export const REF_ID_QUERY = 'r';
 
@@ -92,6 +98,19 @@ export const COIN_TYPE = {
     TOKEN: 'token',
     POOL_TOKEN: 'pool_token',
 };
+
+/**
+ * @typedef {'METAGARDEN' | 'BEE'} LoansCollateralCoin
+ */
+
+/**
+ * @type {Record<LoansCollateralCoin, string>}
+ */
+export const LOANS_BSC_CONTRACT_ADDRESS_LIST = {
+    METAGARDEN: LOANS_METAGARDEN_BSC_CONTRACT_ADDRESS,
+    BEE: LOANS_BEE_BSC_CONTRACT_ADDRESS,
+};
+
 
 /**
  * @readonly
@@ -225,6 +244,7 @@ export const HUB_BUY_STAGE = {
     // common
     WAIT_BRIDGE: 'wait_bridge',
     SWAP_MINTER: 'swap_minter',
+    MINTER: 'minter',
     FINISH: 'finish',
 };
 
