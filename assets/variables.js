@@ -1,5 +1,6 @@
 export const SUBAPP = process.env.APP_SUBAPP;
 export const IS_SUBAPP_MEGACHAIN = SUBAPP === 'megachain';
+export const IS_SUBAPP_MEGAGAMER = SUBAPP === 'megagamer';
 export const MAINNET = 'mainnet';
 export const TESTNET = 'testnet';
 export const NETWORK = process.env.APP_ENV === MAINNET ? MAINNET : TESTNET;
@@ -16,8 +17,9 @@ export const CHAINIK_API_URL = 'https://chainik.io/json/';
 export const FARM_API_URL = 'https://yf.chainik.io/api/v1/';
 export const CARD_TO_MINTER_HOST = process.env.APP_CARD_TO_MINTER_HOST;
 export const CARD_TO_MINTER_API_URL = 'https://card-api.minter.trade/v1/';
-export const TELEGRAM_LEGACY_AUTH_API_URL = 'https://telegram-auth.honee.app/api/v1/';
-export const TELEGRAM_AUTH_API_URL = 'https://premium-bot.honee.app/api/v1/';
+export const TELEGRAM_AUTH_HOST = process.env.APP_TELEGRAM_AUTH_HOST;
+export const TELEGRAM_AUTH_API_URL = TELEGRAM_AUTH_HOST + '/api/v1/';
+export const TELEGRAM_LEGACY_AUTH_API_URL = IS_SUBAPP_MEGAGAMER ? TELEGRAM_AUTH_API_URL : 'https://telegram-auth.honee.app/api/v1/';
 export const STAKING_API_URL = process.env.APP_STAKING_API_URL;
 export const REFERRAL_API_URL = process.env.APP_REFERRAL_API_URL;
 export const PORTFOLIO_API_URL = process.env.APP_PORTFOLIO_API_URL;

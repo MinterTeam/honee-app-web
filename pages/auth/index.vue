@@ -1,10 +1,12 @@
 <script>
 import getTitle from '~/assets/get-title.js';
+import TelegramAuth from '~/components/TelegramAuth.vue';
 
 export default {
     PAGE_TITLE: 'Auth',
     layout: 'splash-index',
     components: {
+        TelegramAuth,
     },
     head() {
         return {
@@ -13,9 +15,20 @@ export default {
                 { hid: 'og-title', name: 'og:title', content: getTitle(this.$options.PAGE_TITLE) },
             ],
             bodyAttrs: {
-                class: this.$store.getters.isMegachain ? 'megachain__auth-body layout--hide-header-logo layout--transparent-header' : undefined,
+                class: this.bodyClass,
             },
         };
+    },
+    computed: {
+        bodyClass() {
+            if (this.$store.getters.isMegachain) {
+                return 'megachain__auth-body layout--hide-header-logo layout--transparent-header';
+            }
+            if (this.$store.getters.isMegagamer) {
+                return 'megagamer__auth-body layout--hide-header-logo layout--transparent-header';
+            }
+            return undefined;
+        },
     },
     methods: {
 
@@ -25,15 +38,25 @@ export default {
 
 <template>
     <div class="u-container u-container--mini">
-        <nuxt-link class="button button--main button--full button--large" :to="$i18nGetPreferredPath('/auth/sign-up')">
-            {{ $td('Create a new wallet', 'index.sign-up') }}
-        </nuxt-link>
-
-        <div class="u-text-center u-mt-15">
-            <nuxt-link class="link link--underline u-fw-700" :to="$i18nGetPreferredPath('/auth/sign-in')">
-                {{ $td('I already have a wallet', 'index.already-have-wallet') }}
+        <template v-if="!$store.getters.isMegagamer">
+            <nuxt-link class="button button--main button--full button--large" :to="$i18nGetPreferredPath('/auth/sign-up')">
+                {{ $td('Create a new wallet', 'index.sign-up') }}
             </nuxt-link>
-        </div>
+
+            <div class="u-text-center u-mt-15">
+                <nuxt-link class="link link--underline u-fw-700" :to="$i18nGetPreferredPath('/auth/sign-in')">
+                    {{ $td('I already have a wallet', 'index.already-have-wallet') }}
+                </nuxt-link>
+            </div>
+        </template>
+        <template v-else>
+            <TelegramAuth
+                class="u-text-center"
+                reason="gamer-id"
+                :label="$td('Create GamerID via Telegram', 'index.megagamer-create-telegram-button')"
+                :label-secondary="$td('I already have a GamerID', 'index.megagamer-have-telegram-button')"
+            />
+        </template>
     </div>
 </template>
 

@@ -1,4 +1,6 @@
+import {v4 as getUid} from 'uuid';
 import {getAuth, getLegacyAuth, getUserPortfolioNotificationList, switchLegacyAuth} from '~/api/telegram.js';
+import {IS_SUBAPP_MEGAGAMER} from '~/assets/variables.js';
 
 /**
  // * @typedef {import('~/api/telegram.js').TelegramAuthResponse} TelegramAuthResponse
@@ -24,6 +26,13 @@ export const getters = {
         }
         return `id=${state.auth.user.telegramId}&hash=${state.auth.signed}`;
     },
+    username(state) {
+        if (!state.auth) {
+            return '';
+        } else {
+            return state.auth.user.username || state.auth.user.telegramId;
+        }
+    },
 };
 
 export const mutations = {
@@ -32,6 +41,15 @@ export const mutations = {
         if (!state.legacySecretDeviceId) {
             try {
                 state.legacySecretDeviceId = window.localStorage.getItem(LEGACY_TELEGRAM_SECRET_ID_STORAGE_KEY);
+            } catch (e) {}
+        }
+    },
+    initLegacySecretId(state) {
+        // init new
+        if (!state.legacySecretDeviceId) {
+            state.legacySecretDeviceId = getUid();
+            try {
+                window.localStorage.setItem(LEGACY_TELEGRAM_SECRET_ID_STORAGE_KEY, state.legacySecretDeviceId);
             } catch (e) {}
         }
     },
@@ -60,10 +78,17 @@ export const mutations = {
 };
 
 export const actions = {
+    fetchAuth({dispatch}) {
+        if (IS_SUBAPP_MEGAGAMER) {
+            return dispatch('fetchLegacyAuth');
+        } else {
+            return dispatch('fetchEcdsaAuth');
+        }
+    },
     /**
      * @return {Promise<TelegramAuthResponse>}
      */
-    fetchAuth({state, getters, commit, dispatch, rootGetters}) {
+    fetchEcdsaAuth({state, getters, commit, dispatch, rootGetters}) {
         if (!rootGetters.privateKey) {
             return Promise.reject(new Error('Minter user not logged in'));
         }
@@ -77,6 +102,22 @@ export const actions = {
             ? dispatch('tryFetchAndSwitchLegacyAuth')
             : getAuth(rootGetters.privateKey);
         return authPromise
+            .then((data) => {
+                commit('saveAuth', data);
+                return data;
+            })
+            .catch((error) => {
+                if (error.response?.status !== 404) {
+                    throw error;
+                }
+            });
+    },
+    fetchLegacyAuth({state, commit}) {
+        if (!state.legacySecretDeviceId) {
+            commit('loadLegacySecretId');
+            commit('initLegacySecretId');
+        }
+        return getLegacyAuth(state.legacySecretDeviceId)
             .then((data) => {
                 commit('saveAuth', data);
                 return data;

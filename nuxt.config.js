@@ -90,7 +90,7 @@ const scriptCSP = CSP_SCRIPT.map((item) => {
     return item.indexOf('sha') === 0 ? `'${item}'` : item;
 }).join(' ');
 
-const subappPrefix = SUBAPP ? '/' + SUBAPP : '';
+const subappPrefix = SUBAPP && SUBAPP !== 'megagamer' ? '/' + SUBAPP : '';
 
 
 module.exports = {

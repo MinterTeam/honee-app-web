@@ -6,6 +6,7 @@ import TheHeaderMetagarden from '~/layouts/_header-metagarden.vue';
 import TheHeaderMegachain from '~/layouts/_header-megachain.vue';
 import TheFooter from '~/layouts/_footer.vue';
 import TheFooterMegachain from '~/layouts/_footer-megachain.vue';
+import TheHeaderMegagamer from '~/layouts/_header-megagamer.vue';
 import FooterGarden from '~/components/layout/FooterGarden.vue';
 import FooterSupport from '~/layouts/_footer-support.vue';
 import BackButtonFull from '~/components/layout/BackButtonFull.vue';
@@ -18,6 +19,7 @@ export default {
         TheHeader,
         TheHeaderMetagarden,
         TheHeaderMegachain,
+        TheHeaderMegagamer,
         TheFooter,
         TheFooterMegachain,
         FooterGarden,
@@ -45,23 +47,23 @@ export default {
         isMetagarden() {
             return this.$options.subapp === 'metagarden' || this.$store.getters.isMetagarden;
         },
-        isMegachain() {
-            return this.$store.getters.isMegachain;
+        isMegagroup() {
+            return this.$store.getters.isMegachain || this.$store.getters.isMegagamer;
         },
         isHonee() {
-            return !this.isMetagarden && !this.isMegachain;
+            return !this.isMetagarden && !this.isMegagroup;
         },
         htmlClass() {
             if (this.isMetagarden) {
                 return 'metagarden-layout theme--metagarden';
             }
-            if (this.isMegachain) {
+            if (this.isMegagroup) {
                 return 'megachain-layout theme--megachain';
             }
             return '';
         },
         bodyClass() {
-            if (this.isMetagarden || this.isMegachain) {
+            if (this.isMetagarden || this.isMegagroup) {
                 return '';
             }
             return 'default-layout';
@@ -72,17 +74,18 @@ export default {
 
 <template>
     <div>
-        <HeaderBanner v-if="!isMegachain"/>
+        <HeaderBanner v-if="!isMegagroup"/>
         <TheHeaderMetagarden v-if="isMetagarden"/>
-        <TheHeaderMegachain v-else-if="isMegachain"/>
+        <TheHeaderMegachain v-else-if="$store.getters.isMegachain"/>
+        <TheHeaderMegagamer v-else-if="$store.getters.isMegagamer"/>
         <TheHeader v-else :show-language="false"/>
 
         <BackButtonFull v-if="isHonee"/>
 
         <nuxt class="u-section u-container" data-nuxt-page/>
 
-        <TheFooter v-if="!isMegachain"/>
-        <TheFooterMegachain v-else-if="isMegachain"/>
+        <TheFooter v-if="!isMegagroup"/>
+        <TheFooterMegachain v-else-if="isMegagroup"/>
         <FooterGarden v-if="isHonee"/>
         <FooterSupport/>
 

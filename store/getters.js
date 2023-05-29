@@ -1,7 +1,7 @@
 import {isValidMnemonic, walletFromMnemonic} from 'minterjs-wallet';
 import {getSmartWalletAddress} from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet.js';
 import {getAvatarUrl, shortHashFilter} from "~/assets/utils";
-import {COIN_NAME, CHAIN_ID, IS_SUBAPP_MEGACHAIN} from '~/assets/variables.js';
+import {COIN_NAME, CHAIN_ID, IS_SUBAPP_MEGACHAIN, IS_SUBAPP_MEGAGAMER} from '~/assets/variables.js';
 
 export default {
     /**
@@ -74,10 +74,13 @@ export default {
         return getters.getBalanceAmount(COIN_NAME);
     },
     isHonee(state, getters) {
-        return !getters.isMetagarden && !getters.isMegachain;
+        return !getters.isMetagarden && !getters.isMegachain && !getters.isMegagamer;
     },
     isMegachain(state) {
         return IS_SUBAPP_MEGACHAIN;
+    },
+    isMegagamer(state) {
+        return IS_SUBAPP_MEGAGAMER;
     },
     isMetagarden(state, getters) {
         return !getters.isMegachain && state.isMetagarden;

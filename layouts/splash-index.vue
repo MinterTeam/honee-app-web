@@ -12,6 +12,11 @@ export default {
             },
         };
     },
+    computed: {
+        fixIosWebView() {
+            return this.$store.getters.isIosWebView && !this.$store.getters.isMegagamer;
+        },
+    },
 };
 </script>
 
@@ -20,8 +25,8 @@ export default {
         <!-- workaround for Telegram Web App in iOS web view: opened keyboard covers input field -->
         <div
             class="u-section"
-            :class="{'splash-layout__inner': !isIosWebView}"
-            :style="isIosWebView ? 'padding-bottom: 400px' : ''"
+            :class="{'splash-layout__inner': !fixIosWebView}"
+            :style="fixIosWebView ? 'padding-bottom: 400px' : ''"
         >
             <div class="u-relative u-container u-container--mini">
                 <template v-if="$store.getters.isHonee">
@@ -32,6 +37,11 @@ export default {
                     <img class="auth__logo u-mb-20" src="/img/logo-megachain-center.svg" alt="Metagarden Chain" width="193" height="180">
                     <h3 class="auth__subtitle-2">{{ $td('The Ultimate Gaming EVM', 'index.megachain-sign-up-subtitle') }}</h3>
                     <p class="auth__p u-mb-15">{{ $td('Metagarden Chain Launchpad', 'index.megachain-sign-up-p') }}</p>
+                </template>
+                <template v-if="$store.getters.isMegagamer">
+                    <img class="auth__logo u-mb-20" src="/img/logo-megachain-center.svg" alt="Metagarden Chain" width="193" height="180">
+                    <h3 class="auth__subtitle-2 u-mb-05">{{ $td('Get your GamerID', 'index.megagamer-sign-up-subtitle') }}</h3>
+                    <p class="auth__p u-mb-15">{{ $td('Please verify using your Telegram account. Other verification methods may become available later.', 'index.megagamer-sign-up-p') }}</p>
                 </template>
             </div>
 

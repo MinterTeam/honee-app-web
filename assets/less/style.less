@@ -297,7 +297,7 @@
         color: #fff;
         opacity: 0.5;
     }
-    .u-h--uppercase {color: #AB56FF;}
+    .u-h--uppercase {color: @c-mega;}
 }
 .card--metagarden-staking {
     background: url(../img/metagarden-staking-bg.svg) no-repeat top -80% right 25% , radial-gradient(72.64% 72.64% at 11.37% 27.36%, #102348 0%, #15406D 100%);
@@ -689,6 +689,16 @@
         url(../img/megachain-auth-bg.png) 1x,
         url(../img/megachain-auth-bg@2x.png) 2x
     );
+}
+.megagamer__body {background: url(../img/megagamer-bg-bottom.svg) no-repeat 50% 100%, url(../img/megagamer-bg-top.svg) no-repeat 50% 0;}
+.megagamer__auth-body {
+    background: url(../img/megagamer-auth-bg.png) no-repeat 50% 0, url(../img/megagamer-bg-bottom.svg) no-repeat 50% 100%, url(../img/megagamer-bg-top.svg) no-repeat 50% 0;
+    background-image: image-set(
+        url(../img/megagamer-auth-bg.png) 1x,
+        url(../img/megagamer-auth-bg@2x.png) 2x
+    ),
+    url(../img/megagamer-bg-bottom.svg),
+    url(../img/megagamer-bg-top.svg);
 }
 
 .mg-cards {display: flex; margin-inline: -@container-padding-small; padding-inline: @container-padding-small; overflow-y: auto;}

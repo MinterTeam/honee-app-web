@@ -2,17 +2,19 @@ name: CI
 
 on:
   push:
-    branches: [ master, dev, testnet, megachain ]
+    branches: [ master, dev, testnet, megachain, megagamer ]
 env:
-  PRODUCTION_BRANCH: ( master, megachain )
+  PRODUCTION_BRANCH: ( master, megachain, megagamer )
   INGRESS_DOMAIN_master: "my.honee.app"
   INGRESS_DOMAIN_dev: "honee.dev"
   INGRESS_DOMAIN_testnet: "testnet.honee.dev"
   INGRESS_DOMAIN_megachain: "launchpad.metagarden.io"
+  INGRESS_DOMAIN_megagamer: "gamerid.metagarden.io"
   KUBE_NAMESPACE_master: "honee"
   KUBE_NAMESPACE_dev: "default"
   KUBE_NAMESPACE_testnet: "default"
   KUBE_NAMESPACE_megachain: "honee"
+  KUBE_NAMESPACE_megagamer: "honee"
 jobs:
   ci:
     name: build

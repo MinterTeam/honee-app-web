@@ -23,7 +23,7 @@ export default {
             if (this.$store.getters.isMetagarden) {
                 return 'theme--metagarden';
             }
-            if (this.$store.getters.isMegachain) {
+            if (this.$store.getters.isMegachain || this.$store.getters.isMegagamer) {
                 return 'theme--megachain';
             }
             return '';
@@ -34,7 +34,7 @@ export default {
 
 <template>
     <div class="splash-layout__wrap">
-        <HeaderBanner v-if="!$store.getters.isMegachain"/>
+        <HeaderBanner v-if="!$store.getters.isMegachain && !$store.getters.isMegagamer"/>
         <TheHeader :simple="false" :show-language="true"/>
 
         <slot></slot>

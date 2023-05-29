@@ -1,5 +1,6 @@
 <script>
 import {getAuthString} from '~/api/telegram.js';
+import {IS_SUBAPP_MEGAGAMER, TELEGRAM_AUTH_HOST} from '~/assets/variables.js';
 import useNow from '~/composables/use-now.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 import Modal from '~/components/base/Modal.vue';
@@ -13,6 +14,7 @@ export default {
     },
     props: {
         label: String,
+        labelSecondary: String,
         reason: String,
     },
     emits: [
@@ -43,11 +45,25 @@ export default {
             }
             return getAuthString(this.timestamp, this.$store.getters.privateKey);
         },
+        botName() {
+            if (this.$store.getters.isMegagamer) {
+                return 'MetagardenBot';
+            } else {
+                return 'HoneePremiumBot';
+            }
+        },
         loginUrl() {
             if (!this.$store.getters.privateKey) {
                 return '';
             }
-            return `https://premium-bot.honee.app/login?timestamp=${this.timestamp}&auth=${this.authString}&reason=${this.reason}`;
+            return `${TELEGRAM_AUTH_HOST}/login?timestamp=${this.timestamp}&auth=${this.authString}&reason=${this.reason}`;
+        },
+        loginUrlLegacy() {
+            return `https://t.me/${this.botName}?start=${base64UrlEncode(this.$store.state.telegram.legacySecretDeviceId)}`;
+            // return `https://t.me/HoneeAuthBot?start=${this.$store.state.telegram.legacySecretDeviceId}`;
+        },
+        loginUrlFinal() {
+            return IS_SUBAPP_MEGAGAMER ? this.loginUrlLegacy : this.loginUrl;
         },
     },
     destroyed() {
@@ -74,6 +90,17 @@ export default {
         },
     },
 };
+
+function base64UrlEncode(str) {
+    try {
+        return btoa(str)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=/g, '');
+    } catch (e) {
+        return '';
+    }
+}
 </script>
 
 <template>
@@ -81,19 +108,31 @@ export default {
         <a
             class="button button--telegram button--full" target="_blank"
             v-show="!$fetchState.pending"
-            :href="loginUrl"
+            :href="loginUrlFinal"
             @click="login($event)"
         >
             <img class="button__icon" src="/img/icon-social-telegram.svg" alt="" role="presentation">
             <template v-if="!$store.getters['telegram/isAuthorized']">
                 {{ label || $td('Login with Telegram', 'battle.telegram-login-button') }}
             </template>
-            <template v-else>Logged as @{{ $store.state.telegram.auth.user.username }}</template>
+            <template v-else>Logged as @{{ $store.getters['telegram/username'] }}</template>
+        </a>
+        <a
+            class="link link--underline u-fw-700 u-mt-10 u-display-ib" target="_blank"
+            v-if="labelSecondary && !$store.getters['telegram/isAuthorized']"
+            v-show="!$fetchState.pending"
+            :href="loginUrlFinal"
+            @click="login($event)"
+        >
+            {{ labelSecondary }}
         </a>
 
-        <Modal :isOpen.sync="isModalVisible" :disable-outside-click="true" :hide-close-button="true">
+        <Modal class="u-text-center" :isOpen.sync="isModalVisible" :disable-outside-click="true" :hide-close-button="true">
             <h2 class="u-h3 u-mb-10">{{ $td('Login with Telegram', 'battle.telegram-login-button') }}</h2>
-            <p class="u-mb-10">{{ $td('Click Start in the HoneePremiumBot', 'battle.telegram-login-description') }}</p>
+            <p class="u-mb-10">
+                {{ $td('Click Start in the', 'battle.telegram-login-description') }}
+                {{ botName }}
+            </p>
 
             <BaseLoader :is-loading="true"/>
         </Modal>

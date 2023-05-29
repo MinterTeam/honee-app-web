@@ -1,4 +1,4 @@
-import {DASHBOARD_URL, DASHBOARD_URL_METAGARDEN} from '~/assets/variables.js';
+import {DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, IS_SUBAPP_MEGAGAMER} from '~/assets/variables.js';
 
 export default function({app, store, route, redirect, error}) {
     if (process.server) {
@@ -7,6 +7,8 @@ export default function({app, store, route, redirect, error}) {
     console.log('CHECK AUTH');
     console.log('-- route', route);
     console.log('-- path', route.path);
+
+    const isAuthorized = IS_SUBAPP_MEGAGAMER ? store.getters['telegram/isAuthorized'] : store.getters.isAuthorized;
 
     const urlHoneeSpecific = [
         /^(\/ru)?\/?$/,
@@ -50,16 +52,16 @@ export default function({app, store, route, redirect, error}) {
         }
         return Promise.resolve();
     }
-    if (!store.getters.isAuthorized && !urlRequiresNonAuth) {
+    if (!isAuthorized && !urlRequiresNonAuth) {
         console.log('-- restricted: redirect to auth');
         store.commit('SET_AUTH_REDIRECT_PATH', route.fullPath);
         return redirect(app.i18nGetPreferredPath({path: '/auth'}));
     }
-    if (store.getters.isAuthorized && urlAuthBattle) {
+    if (isAuthorized && urlAuthBattle) {
         console.log('-- restricted: redirect to battle onboarding');
         return redirect(app.i18nGetPreferredPath({path: '/onboarding/battle'}));
     }
-    if (store.getters.isAuthorized && urlRequiresNonAuth) {
+    if (isAuthorized && urlRequiresNonAuth) {
         console.log('-- restricted: redirect to index');
         return redirect(app.i18nGetPreferredPath({path: DASHBOARD_URL}));
     }
