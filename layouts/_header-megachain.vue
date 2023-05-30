@@ -58,7 +58,7 @@ export default {
 
             <!--<div class="header__controls">-->
 
-            <nuxt-link v-if="isAuthorized && !isAccountPage" class="header__controls-link header__controls-user u-semantic-button" :to="$i18nGetPreferredPath('/balance')">
+            <nuxt-link v-if="isAuthorized && !isAccountPage" class="header__controls-link header__controls-user u-semantic-button" :to="$i18nGetPreferredPath('/meganet/balance')">
                 <div class="u-mr-10 u-text-right">
                     <div class="u-fw-700 header__controls-user-name">{{ $td('Your balance', 'megachain.header-account') }}</div>
                     <div class="u-fw-600 header__controls-user-balance">

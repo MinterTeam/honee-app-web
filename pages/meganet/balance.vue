@@ -179,6 +179,12 @@ export default {
                     {{ $td('Minter Network', 'deposit.title-minter') }}
                 </h2>
 
+                <FieldAddressDisplay
+                    class="u-mt-10"
+                    :value="$store.getters.address"
+                    :label="$td('Your Minter wallet address', 'meganet.minter-address-label')"
+                />
+
                 <Swap class="u-mt-10" :params="{coinToBuy: 'MEGANET'}" :show-deposit="false"/>
             </div>
 
