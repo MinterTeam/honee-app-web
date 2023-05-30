@@ -34,7 +34,7 @@ export default function({app, store, route, redirect, error}) {
     const urlAuthBattle = /^(\/ru)?\/auth\/battle(\/|$)/.test(route.path);
 
     if (!store.getters.isHonee && urlHoneeSpecific) {
-        console.log('-- honee specific');
+        console.log('-- restrict: honee specific');
         if (store.getters.isMetagarden) {
             return redirect(app.i18nGetPreferredPath({path: DASHBOARD_URL_METAGARDEN}));
         }
