@@ -167,7 +167,7 @@ export default {
                 <p class="u-text-medium u-mt-10">
                     {{ $td('You will need to give your Minter address to the Telegram bot.', 'deposit.telegram-find-address-description') }}
                     <button type="button" class="link link--underline u-semantic-button" @click="isAddressModalOpen = true">
-                        {{ $td('You can find it here', 'deposit.telegram-find-address-button') }}
+                        {{ $td('You can find it here.', 'deposit.telegram-find-address-button') }}
                     </button>
                 </p>
             </div>

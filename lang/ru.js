@@ -266,8 +266,8 @@ export default {
         'button-buy-with-card': 'Купить картой',
         'title-telegram': 'Telegram бот',
         'button-buy-with-telegram': 'Перейти в Telegram',
-        'telegram-find-address-description': 'Вам нужно будет предоставить свой Minter-адрес боту Telegram.',
-        'telegram-find-address-button': 'Вы можете найти его здесь',
+        'telegram-find-address-description': 'Вам нужно будет предоставить свой Minter-адрес Telegram боту.',
+        'telegram-find-address-button': 'Вы можете найти его здесь.',
     },
     'topup-network': {
         'title': 'Пополнить через',
@@ -770,7 +770,7 @@ export default {
         'description': 'Присоединяйтесь к Metagarden Chain, передовому EVM-блокчейну, предназначенному для игр. Купите токены MEGANET, чтобы получить 100% бонус, когда запустится мейннет. Не упустите шанс стать частью истории!',
         'buy-button': 'Купить токены MEGANET',
         'buy-text': 'Купите токены MEGANET любым из этих вариантов, чтобы присоединиться к Metagarden Chain.',
-        'early-adopter-title': 'Станьте первопроходцем',
+        'early-adopter-title': 'Участвовать',
         'early-adopter-description': 'Купите токены MEGANET, чтобы присоединиться к сети Metagarden Chain. Все держатели токенов MEGANET получат нативные монеты Metagarden Chain со 100% бонусом.',
         'testnet-address-title': 'Ваш адрес в тестнете',
         'testnet-address-label': 'Адрес тестнета Metagarden',
@@ -781,6 +781,8 @@ export default {
         'useful-links-button-platform': 'Игровая платформа',
         'header-account': 'Ваш баланс',
         'minter-address-label': 'Адрес вашего кошелька в Minter',
+        'tokens-left-1': 'Осталось ',
+        'tokens-left-2': 'из 500 000 токенов',
     },
     'mg-lootbox': {
         'title-inactive': 'Лутбокс еще не готов',

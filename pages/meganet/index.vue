@@ -42,7 +42,7 @@ export default {
 
             <div class="meganet__range u-mt-15" :style="`--val: 305; --min: 0; --max: 500; --step: 1`"></div>
 
-            <div class="u-mt-10 u-text-medium u-fw-700">{{ prettyRound(500000 - 305000) }} of 500 000 tokens left</div>
+            <div class="u-mt-10 u-text-medium u-fw-700">{{ $td('', 'meganet.tokens-left-1') }}{{ prettyRound(500000 - 305000) }} {{ $td('of 500 000 tokens left', 'meganet.tokens-left-2') }}</div>
 
             <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath('/meganet/balance')">
                 {{ $td('Buy MEGANET tokens', 'meganet.buy-button') }}
