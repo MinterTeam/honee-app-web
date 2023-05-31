@@ -64,9 +64,9 @@ export default {
         <div class="card card__content card__content--medium u-text-center">
             <h2 class="u-h3 u-mb-05">{{ $td('Useful links', 'meganet.useful-links-title') }}</h2>
 
-            <a class="button button--ghost-main button--full u-mt-10" href="https://metagarden.io/" target="_blank">{{ $td('About EVM blockchain', 'meganet.useful-links-button-about') }}</a>
-            <a class="button button--ghost-main button--full u-mt-10" href="https://metagarden.io/tokenomics" target="_blank">{{ $td('Tokenomics', 'meganet.useful-links-button-tokenomics') }}</a>
-            <a class="button button--ghost-main button--full u-mt-10" href="https://metagarden.io/platform" target="_blank">{{ $td('Gaming platform', 'meganet.useful-links-button-platform') }}</a>
+            <a class="button button--ghost-main button--full u-mt-10" :href="$td('https://metagarden.io/', 'meganet.useful-links-button-about-url')" target="_blank">{{ $td('About EVM blockchain', 'meganet.useful-links-button-about') }}</a>
+            <a class="button button--ghost-main button--full u-mt-10" :href="$td('https://metagarden.io/tokenomics', 'meganet.useful-links-button-tokenomics-url')" target="_blank">{{ $td('Tokenomics', 'meganet.useful-links-button-tokenomics') }}</a>
+            <a class="button button--ghost-main button--full u-mt-10" :href="$td('https://metagarden.io/platform', 'meganet.useful-links-button-platform-url')" target="_blank">{{ $td('Gaming platform', 'meganet.useful-links-button-platform') }}</a>
         </div>
     </div>
 </template>
