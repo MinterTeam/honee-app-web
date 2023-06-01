@@ -786,6 +786,10 @@ export default {
         'minter-address-label': 'Адрес вашего кошелька в Minter',
         'tokens-left-1': 'Осталось ',
         'tokens-left-2': 'из 500 000 токенов',
+        'token-price-stages-title': 'Стадии цены MEGANET',
+        'token-price-stages-description-1': 'Текущая цена токенов раннего доступа MEGANET составляет',
+        'token-price-stages-description-2': 'за токен.',
+        'token-price-stages-p': 'Цена токена может быть увеличена в любое время.',
     },
     'mg-lootbox': {
         'title-inactive': 'Лутбокс еще не готов',

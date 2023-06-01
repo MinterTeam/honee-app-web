@@ -50,6 +50,13 @@ export default {
         </div>
 
         <div class="card card__content card__content--medium u-text-center u-mb-10">
+            <h2 class="u-h3 u-mb-05">{{ $td('MEGANET Price Stages', 'meganet.token-price-stages-title') }}</h2>
+            <p class="u-text-medium u-mb-10">{{ $td('The current price of early access MEGANET tokens is', 'meganet.token-price-stages-description-1') }} <span class="span-green">$0.32</span> {{ $td('per token.', 'meganet.token-price-stages-description-2') }}</p>
+            <img src="/img/megachain-prices.svg" alt="MEGANET Price Stages" width="100%">
+            <p class="u-text-small">{{ $td('The token price can be subject to increase at any time.', 'meganet.token-price-stages-p') }}</p>
+        </div>
+
+        <div class="card card__content card__content--medium u-text-center u-mb-10">
             <h2 class="u-h3 u-mb-05">{{ $td('Your testnet address', 'meganet.testnet-address-title') }}</h2>
 
             <FieldAddressDisplay
