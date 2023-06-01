@@ -122,12 +122,9 @@ export default {
         currentMode() {
             // 0.04 price check is made by comparing estimation (which is made based on 1000 and 40 prices)
             // const isMetagardenCheaper = this.estimationSpendForUsd <= 0 || Number(this.estimationSpendForMetagarden) <= Number(this.estimationSpendForUsd);
-            /* disable SEND_METAGARDEN mode
             if (this.form.coin === METAGARDEN_SYMBOL) {
                 return MODE.SEND_METAGARDEN;
-            } else
-            */
-            if (this.form.coin === USD_SYMBOL) {
+            } else if (this.form.coin === USD_SYMBOL) {
                 return MODE.SEND_USD;
             // disable BUY_METAGARDEN mode
             // } else if (isMetagardenCheaper) {
