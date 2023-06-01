@@ -11,6 +11,9 @@ import * as varsLocalConfig from "./assets/variables.js";
 import * as varsSdkConfig from "minter-js-web3-sdk/src/config.js";
 const varsConfig = {...varsLocalConfig, ...varsSdkConfig};
 
+console.log('SUBAPP', SUBAPP);
+console.log('envConfig', envConfig);
+
 const NUXT_LOADING_INLINE_SCRIPT_SHA = process.env.NODE_ENV === 'production'
     ? [
         // loader (minified)

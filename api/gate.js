@@ -8,6 +8,7 @@ import EstimateCoinBuy from 'minter-js-sdk/src/api/estimate-coin-buy';
 import EstimateTxCommission, {FEE_PRECISION_SETTING} from 'minter-js-sdk/src/api/estimate-tx-commission.js';
 import {ESTIMATE_SWAP_TYPE} from 'minter-js-sdk/src/variables.js';
 import {ReplaceCoinSymbol, ReplaceCoinSymbolByPath} from 'minter-js-sdk/src/api/replace-coin.js';
+import GetPoolInfo from 'minter-js-sdk/src/api/get-pool-info.js';
 import {GATE_API_URL, CHAIN_ID} from '~/assets/variables.js';
 import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 import debounceAdapter from '~/assets/axios-debounce.js';
@@ -107,4 +108,5 @@ export const estimateTxCommissionGasCoinOnly = (txParams) => {
 
 export const replaceCoinSymbol = ReplaceCoinSymbol(minterApi, {cache: coinCache});
 export const replaceCoinSymbolByPath = ReplaceCoinSymbolByPath(minterApi, {cache: coinCache});
+export const getPoolInfo = GetPoolInfo(minterApi);
 
