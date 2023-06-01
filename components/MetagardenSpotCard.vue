@@ -151,7 +151,7 @@ export default {
                 </a>
             </div>
             <div class="u-cell u-cell--1-2">
-                <nuxt-link :to="$i18nGetPreferredPath('/metagarden/buy-spot')" class="button button--full button--narrow">
+                <nuxt-link :to="$i18nGetPreferredPath('/metagarden/buy-miner')" class="button button--full button--narrow">
                     <img class="button__icon" src="/img/icon-blockchain.svg" alt="" role="presentation"/>
                     {{ $td('Crypto', 'metagarden.buy-button-crypto') }}
                 </nuxt-link>
