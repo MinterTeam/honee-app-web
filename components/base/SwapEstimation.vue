@@ -171,7 +171,7 @@ export default defineComponent({
                 // `coins` or `coinToSell` + `coinToBuy`
                 ...this.estimationTxDataPartial,
                 // sell
-                valueToSell: this.maxAmountAfterFee,
+                valueToSell: this.valueToSell,
                 minimumValueToBuy: this.minimumValueToBuy,
                 // buy
                 valueToBuy: this.valueToBuy,
