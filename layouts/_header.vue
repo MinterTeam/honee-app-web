@@ -1,6 +1,6 @@
 <script>
 import InlineSvg from 'vue-inline-svg';
-import {HUB_NETWORK_SLUG, DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR} from '~/assets/variables.js';
+import {HUB_NETWORK_SLUG, DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR, IS_SUBAPP_MEGAGAMER} from '~/assets/variables.js';
 import {shortHashFilter} from '~/assets/utils.js';
 import Language from '~/components/layout/Language.vue';
 import Modal from '~/components/base/Modal.vue';
@@ -73,7 +73,7 @@ export default {
             return this.$route.path === this.$i18nGetPreferredPath('/premium');
         },
         isAuthorized() {
-            return this.$store.getters.isAuthorized;
+            return IS_SUBAPP_MEGAGAMER ? this.$store.getters['telegram/isAuthorized'] : this.$store.getters.isAuthorized;
         },
     },
     methods: {

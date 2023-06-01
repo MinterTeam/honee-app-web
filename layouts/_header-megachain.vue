@@ -1,6 +1,6 @@
 <script>
 import InlineSvg from 'vue-inline-svg';
-import {DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, HUB_NETWORK_SLUG, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR} from '~/assets/variables.js';
+import {DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, HUB_NETWORK_SLUG, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR, IS_SUBAPP_MEGAGAMER} from '~/assets/variables.js';
 import {pretty} from '~/assets/utils.js';
 
 export default {
@@ -33,7 +33,7 @@ export default {
             return this.$route.name.indexOf('auth' + ROUTE_NAME_SPLITTER) === 0 || this.$route.name.indexOf('auth' + I18N_ROUTE_NAME_SEPARATOR) === 0;
         },
         isAuthorized() {
-            return this.$store.getters.isAuthorized;
+            return IS_SUBAPP_MEGAGAMER ? this.$store.getters['telegram/isAuthorized'] : this.$store.getters.isAuthorized;
         },
     },
     methods: {

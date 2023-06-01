@@ -32,7 +32,8 @@ export default {
     },
     methods: {
         logout() {
-            this.$store.commit('LOGOUT');
+            this.$store.commit('telegram/saveAuth', undefined);
+            this.$store.commit('telegram/cleanLegacySecretId');
             this.$router.push(this.$i18nGetPreferredPath('/auth'));
         },
     },
@@ -87,7 +88,7 @@ export default {
             <p class="u-text-medium">{{ $td('This is your universal address for the Metagarden chain and other EVM-compatible blockchains such as Ethereum, BNB Smart Chain, Polygon, Arbitrum and others.', 'gamer-id.universal-address-description') }}</p>
 
             <FieldAddressDisplay
-                class="u-mt-10 u-mb-25"
+                class="u-mt-10"
                 :value="$store.getters.smartWalletAddress"
                 :label="$td('Universal address', 'gamer-id.universal-address')"
             />

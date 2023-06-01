@@ -55,6 +55,7 @@ export default {
                 reason="gamer-id"
                 :label="$td('Create GamerID via Telegram', 'index.megagamer-create-telegram-button')"
                 :label-secondary="$td('I already have a GamerID', 'index.megagamer-have-telegram-button')"
+                @success="() => $router.replace($i18nGetPreferredPath('/'))"
             />
         </template>
     </div>
