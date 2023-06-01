@@ -172,9 +172,11 @@ export default {
                     <nuxt-link class="button button--main button--full-mobile" :to="$i18nGetPreferredPath(`/loans/METAGARDEN/borrow`)">
                         {{ $td('Borrow with', 'todo') }} METAGARDEN
                     </nuxt-link>
-                    <nuxt-link class="button button--main button--full-mobile" :to="$i18nGetPreferredPath(`/loans/BEE/borrow`)">
+                    <!--
+                    <nuxt-link class="button button&#45;&#45;main button&#45;&#45;full-mobile" :to="$i18nGetPreferredPath(`/loans/BEE/borrow`)">
                         {{ $td('Borrow with', 'todo') }} BEE
                     </nuxt-link>
+                    -->
                 </div>
             </div>
         </div>
@@ -286,7 +288,7 @@ export default {
         <!-- prop names not normalized here, so camelCase is required -->
         <ReuseTemplate :lendList="lendListMetagarden" collateralCoin="METAGARDEN"/>
 
-        <ReuseTemplate :lendList="lendListBee" collateralCoin="BEE"/>
+        <!--<ReuseTemplate :lendList="lendListBee" collateralCoin="BEE"/>-->
     </div>
 </template>
 
