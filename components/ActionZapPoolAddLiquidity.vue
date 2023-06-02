@@ -7,6 +7,7 @@ import minValue from 'vuelidate/src/validators/minValue.js';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {wait} from '@shrpne/utils/src/wait.js';
 import {waitPool} from '~/api/explorer.js';
+import {getPoolInfo} from '~/api/gate.js';
 import {estimateTxCommissionGasCoinOnly} from '~/api/gate.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import {pretty, prettyExact} from "~/assets/utils.js";
@@ -83,7 +84,7 @@ export default {
             v$estimation1: {},
             estimationFetchState0: null,
             estimationFetchState1: null,
-            /** @type {Pool|null} */
+            /** @type {PoolInfo|null} */
             poolData: null,
             isSequenceProcessing: false,
         };
@@ -162,8 +163,7 @@ export default {
             return this.fee?.resultList?.[2];
         },
         sequenceParams() {
-            let poolBlock = this.poolData?.updatedAtBlock;
-            const finalState = {
+            const amountState = {
                 coin0Amount: this.coin0Amount,
                 coin1Amount: this.coin1Amount,
             };
@@ -203,11 +203,7 @@ export default {
                     },
                     finalize: (tx) => {
                         const swapReturn = convertFromPip(tx.tags['tx.return']);
-                        finalState[`coin${index}Amount`] = swapReturn;
-
-                        if (isPoolAffected(tx, this.poolData.token.symbol)) {
-                            poolBlock = Number(tx.height);
-                        }
+                        amountState[`coin${index}Amount`] = swapReturn;
 
                         return tx;
                     },
@@ -216,16 +212,17 @@ export default {
 
 
             const addLiquidity = {
+                retryCount: 2,
                 // manual estimateTxCommission is used
                 prepareGasCoinPosition: 'skip',
                 // wait for computed to recalculate
                 prepare: [
                     // @TODO 3rd estimated fee will stay as dust
                     async () => {
-                        await this.fetchPoolData(poolBlock);
+                        await this.fetchPoolData();
 
-                        console.log('finalState', {...finalState}, {...this.poolData});
-                        let isCoin1Bigger = getIsCoin1Bigger(finalState, this.poolData);
+                        console.log('amountState', {...amountState}, {...this.poolData});
+                        let isCoin1Bigger = getIsCoin1Bigger(amountState, this.poolData);
                         // use bigger coin as new gasCoin
                         const gasCoin = isCoin1Bigger ? this.params.coin1 : this.params.coin0;
                         // @TODO can throw here, new gasCoin may be not eligible to pay fee, need to use old gasCoin
@@ -233,6 +230,9 @@ export default {
                             ...this.sequenceParams[2].txParams,
                             gasCoin,
                         });
+
+                        // another state to keep amountState unchanged for possible retries
+                        const finalState = {...amountState};
                         // reduce amount by fee
                         if (isCoin1Bigger) {
                             finalState.coin1Amount = new Big(finalState.coin1Amount).minus(commission).toString();
@@ -266,10 +266,10 @@ export default {
                             },
                         };
 
-                        function getIsCoin1Bigger(finalState, poolData) {
-                            const coin1CostInCoin0 = new Big(finalState.coin1Amount).div(poolData.amount1).times(poolData.amount0).toString();
-                            console.log({coin1CostInCoin0, isCoin1Bigger: new Big(coin1CostInCoin0).gt(finalState.coin0Amount)});
-                            return new Big(coin1CostInCoin0).gt(finalState.coin0Amount);
+                        function getIsCoin1Bigger(amountState, poolData) {
+                            const coin1CostInCoin0 = new Big(amountState.coin1Amount).div(poolData.amount1).times(poolData.amount0).toString();
+                            console.log({coin1CostInCoin0, isCoin1Bigger: new Big(coin1CostInCoin0).gt(amountState.coin0Amount)});
+                            return new Big(coin1CostInCoin0).gt(amountState.coin0Amount);
                         }
                     },
 
@@ -306,13 +306,13 @@ export default {
     methods: {
         pretty,
         prettyExact,
-        fetchPoolData(updatedAtBlock) {
+        fetchPoolData() {
             // no pair entered
             if (!this.form.coin0 || !this.form.coin1 || this.form.coin0 === this.form.coin1) {
                 return;
             }
 
-            return waitPool(this.form.coin0, this.form.coin1, {updatedAtBlock})
+            return getPoolInfo(this.form.coin0, this.form.coin1)
                 .then((poolData) => {
                     this.poolData = Object.freeze(poolData);
                 });

@@ -108,5 +108,5 @@ export const estimateTxCommissionGasCoinOnly = (txParams) => {
 
 export const replaceCoinSymbol = ReplaceCoinSymbol(minterApi, {cache: coinCache});
 export const replaceCoinSymbolByPath = ReplaceCoinSymbolByPath(minterApi, {cache: coinCache});
-export const getPoolInfo = GetPoolInfo(minterApi);
+export const getPoolInfo = GetPoolInfo(minterApi, undefined, {cache: coinCache});
 

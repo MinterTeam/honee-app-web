@@ -78,7 +78,7 @@
     "lite-youtube-embed": "^0.2.0",
     "lodash-es": "^4.17.21",
     "minter-coin-block-list": "0.0.10",
-    "minter-js-sdk": "^0.45.6",
+    "minter-js-sdk": "^0.46.1",
     "minter-js-web3-sdk": "^0.0.6",
     "minterjs-tx": "^12.0.3",
     "minterjs-util": "^0.25.1",

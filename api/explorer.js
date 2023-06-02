@@ -454,6 +454,7 @@ export function getPoolByToken(symbol) {
 }
 
 /**
+ * @TODO waitPool not protect from changed pool data in next block because of arbitrage bots
  * @param {string|number} coin0
  * @param {string|number} coin1
  * @param {object} [options]

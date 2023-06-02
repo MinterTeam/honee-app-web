@@ -103,6 +103,27 @@ function sendMinterTx(txParams, options = {}) {
         .then((tx) => {
             tx = Object.freeze({...tx, timestamp: (new Date()).toISOString()});
             return tx;
+        })
+        .catch((error) => {
+            error.isSendMinterTxError = true;
+            throw error;
+        });
+}
+
+/**
+ * @template {any} T
+ * @param {function(): Promise<T>} sendFn
+ * @param {number|any} retryCount
+ * @return {Promise<T>}
+ */
+function retrySendMinterTx(sendFn, retryCount) {
+    return sendFn()
+        .catch((error) => {
+            if (error.isSendMinterTxError && retryCount > 0) {
+                return retrySendMinterTx(sendFn, retryCount - 1);
+            }
+
+            throw error;
         });
 }
 
@@ -226,6 +247,7 @@ function estimateTxGas({to, value, data}) {
  * @property {string} [privateKey] - overwrite privateKey from `options` (to sign tx by isolated portfolio wallet)
  * @property {Array<PrepareTxParams> | PrepareTxParams} [prepare] - functions to prepare txParams, executes in series, as se
  * @property {FinalizePostTx} [finalize]
+ * @property {number} [retryCount] - number of retries (default: 0)
  * @property {boolean} [skip] - skip sending tx and all prepare/finalize fns
  * @property {boolean} [skipAddStepData] - skip adding step data
  * @property {'start'|'end'|'skip'} [prepareGasCoinPosition = 'start'] - used in TxSequenceForm
@@ -237,23 +259,28 @@ function estimateTxGas({to, value, data}) {
  */
 async function sendTxSequence(list, options) {
     let result;
-    for (const [index, {txParams, privateKey, prepare, finalize, skip, skipAddStepData}] of Object.entries(list)) {
+    for (const [index, {txParams, privateKey, prepare, finalize, retryCount, skip, skipAddStepData}] of Object.entries(list)) {
         if (skip) {
             continue;
         }
+
         try {
             // init
             skipAddStepData || addStepData(`minter${index}`, {required: true});
-            // prepare
-            const txParamsAdditionList = await awaitSeries(prepare, result);
-            const preparedTxParams = deepMerge({}, txParams, ...txParamsAdditionList);
-            console.debug('prepare', [txParams, ...txParamsAdditionList]);
-            // execute
-            skipAddStepData || addStepData(`minter${index}`, {txParams: preparedTxParams});
-            let result = await sendMinterTx(preparedTxParams, {
-                ...options,
-                privateKey: privateKey || options.privateKey,
-            });
+
+            result = await retrySendMinterTx(async () => {
+                // prepare
+                const txParamsAdditionList = await awaitSeries(prepare, result);
+                const preparedTxParams = deepMerge({}, txParams, ...txParamsAdditionList);
+                console.debug('prepare', [txParams, ...txParamsAdditionList]);
+                // execute
+                skipAddStepData || addStepData(`minter${index}`, {txParams: preparedTxParams});
+                return sendMinterTx(preparedTxParams, {
+                    ...options,
+                    privateKey: privateKey || options.privateKey,
+                });
+            }, retryCount);
+
             // finalize
             result = await ensurePromise(finalize, result, {fallbackToArg: true});
             skipAddStepData || addStepData(`minter${index}`, {tx: result, finished: true});
