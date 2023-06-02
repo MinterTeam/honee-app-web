@@ -228,7 +228,7 @@ export default {
         'megachain-sign-up-p': 'Лаунчпад Metagarden Chain',
 
         'megagamer-sign-up-subtitle': 'Получите свой GamerID',
-        'megagamer-sign-up-p': 'Пожалуйста, подтвердите свой аккаунт Telegram. Другие способы верификации могут стать доступны позже.',
+        'megagamer-sign-up-p': 'Для получения GamerID потребуется ваш Telegram-аккаунт. Другие способы верификации могут стать доступны позже.',
         'megagamer-create-telegram-button': 'Создать GamerID',
         'megagamer-have-telegram-button': 'У меня уже есть GamerID',
     },
