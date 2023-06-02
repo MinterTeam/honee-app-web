@@ -57,28 +57,28 @@ export default {
 
             <div class="card__content card__content--medium">
                 <div class="u-flex u-flex--justify-between u-flex--align-center">
-                    <div class="u-flex u-flex--align-center">
+                    <div class="u-flex u-flex--align-center u-mr-10">
                         <img class="u-image u-image--round u-mr-05" alt="" :src="$store.getters['explorer/getCoinIcon'](coin)" width="24" height="24">
-                        <div class="u-h--uppercase u-text-mega-muted">{{ $td(`${coin} tokens bought`, 'meganet.tokens-bought', {coin}) }}</div>
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td(`${coin} balance`, 'meganet.launch-balance', {coin}) }}</div>
                     </div>
 
-                    <div class="u-h u-h3">{{ pretty(minterBalance) || '0' }}</div>
+                    <div class="u-h u-h4">{{ pretty(minterBalance) || '0' }}</div>
                 </div>
                 <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
-                    <div class="u-flex u-flex--align-center">
+                    <div class="u-flex u-flex--align-center u-mr-10">
                         <div class="u-mr-05" style="width: 24px"></div>
-                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Mainnet launch bonus', 'meganet.launch-bonus') }}</div>
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Your bonus', 'meganet.launch-bonus') }}</div>
                     </div>
 
-                    <div class="u-h u-h3">100%</div>
+                    <div class="u-h u-h4">100%</div>
                 </div>
                 <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
-                    <div class="u-flex u-flex--align-center">
+                    <div class="u-flex u-flex--align-center u-mr-10">
                         <div class="u-mr-05" style="width: 24px"></div>
-                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Total balance after mainnet launch', 'meganet.launch-balance') }}</div>
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Tokens you\'re entitled to&nbsp;receive', 'meganet.launch-receive') }}</div>
                     </div>
 
-                    <div class="u-h u-h3">{{ pretty(minterBalance * 2) || '0' }}</div>
+                    <div class="u-h u-h4">{{ pretty(minterBalance * 2) || '0' }}</div>
                 </div>
             </div>
         </div>
