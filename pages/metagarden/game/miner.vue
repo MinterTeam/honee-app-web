@@ -1,7 +1,7 @@
 <script>
 import MetagardenGame from '~/components/MetagardenGame.vue';
 import MetagardenSpotCard from '~/components/MetagardenSpotCard.vue';
-import MetagardenSwHoldCard from '~/components/CardSwHold.vue';
+//import MetagardenSwHoldCard from '~/components/CardSwHold.vue';
 import MetagardenMeganetCard from '~/components/CardMeganet.vue';
 import MetagardenLootboxCard from '~/components/MetagardenLootboxCard.vue';
 import MetagardenStakingCard from '~/components/CardMetagardenStaking.vue';
@@ -11,7 +11,7 @@ export default {
     components: {
         MetagardenGame,
         MetagardenSpotCard,
-        MetagardenSwHoldCard,
+        //MetagardenSwHoldCard,
         MetagardenMeganetCard,
         MetagardenLootboxCard,
         MetagardenStakingCard,
@@ -35,6 +35,6 @@ export default {
 
         <MetagardenStakingCard/>
 
-        <MetagardenSwHoldCard class="u-mt-10" coin="METAGARDEN" :is-small="false"/>
+        <!--<MetagardenSwHoldCard class="u-mt-10" coin="METAGARDEN" :is-small="false"/>-->
     </MetagardenGame>
 </template>

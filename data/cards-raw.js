@@ -89,13 +89,13 @@ export default {
 
                 },
             },
-            makeCard(presets.farm('WONDER', 'BNB'), {
+            /*makeCard(presets.farm('WONDER', 'BNB'), {
                 stats: {
                     apr: {
                         percent: '120',
                     },
                 },
-            }),
+            }),*/
             {
                 style: 'extended-card card--bee-buy',
                 caption: 'Buy',
@@ -113,7 +113,7 @@ export default {
                     buttonLabel: 'Купить BEE',
                 },
             },
-            makeCard(presets.stake(19), {
+            /*makeCard(presets.stake(19), {
                 style: 'extended-card card--bee-staking',
                 coin: `BEE`,
                 description: 'Stake BEE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
@@ -129,8 +129,8 @@ export default {
                     tooltip: '',
                     video: '',
                 },
-            }),
-            makeCard(presets.farm('BEE', 'USDTE'), {
+            }),*/
+            /*makeCard(presets.farm('BEE', 'USDTE'), {
                 style: 'extended-card card--bee-farming',
                 stats: {
                     apr: {
@@ -145,7 +145,7 @@ export default {
                         percent: '73',
                     },
                 },
-            }),
+            }),*/
             makeCard(presets.farm('METAGARDEN', 'USDTE'), {
                 stats: {
                     apr: {

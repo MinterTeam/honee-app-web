@@ -58,7 +58,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <div class="card__content card__content--medium" v-if="$store.getters.smartWalletAddress">
+            <div class="card__content card__content--medium">
                 <h2 class="u-h5 u-mb-05">{{ $td('Your Privileges', 'gamer-id.privileges-title') }}</h2>
                 <ul class="list-simple u-text-medium">
                     <template v-if="$i18n.locale === 'en'">

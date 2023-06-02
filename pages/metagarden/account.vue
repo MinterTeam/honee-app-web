@@ -3,7 +3,7 @@ import AddressAssets from '~/components/AddressAssets.vue';
 import MetagardenSpotCard from '~/components/MetagardenSpotCard.vue';
 import MetagardenMeganetCard from '~/components/CardMeganet.vue';
 import MetagardenStakingCard from '~/components/CardMetagardenStaking.vue';
-import MetagardenSwHoldCard from '~/components/CardSwHold.vue';
+//import MetagardenSwHoldCard from '~/components/CardSwHold.vue';
 
 export default {
     layout: 'metagarden',
@@ -12,7 +12,7 @@ export default {
         MetagardenMeganetCard,
         MetagardenStakingCard,
         MetagardenSpotCard,
-        MetagardenSwHoldCard,
+        //MetagardenSwHoldCard,
     },
     fetch() {
         this.$store.commit('SET_METAGARDEN');
@@ -47,7 +47,7 @@ export default {
 
         <MetagardenStakingCard/>
 
-        <MetagardenSwHoldCard class="u-mt-10" coin="METAGARDEN" :is-small="false"/>
+        <!--<MetagardenSwHoldCard class="u-mt-10" coin="METAGARDEN" :is-small="false"/>-->
 
         <button type="button" class="button button--full button--ghost-red u-mt-10" @click="logout()">{{ $td('Logout', 'common.logout') }}</button>
 

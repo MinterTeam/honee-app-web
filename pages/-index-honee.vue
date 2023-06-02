@@ -131,9 +131,9 @@ export default {
                 <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell" v-for="card in earnBeeList" :key="card.action">
                     <Card :card="card" v-if="card.action"/>
                 </div>
-                <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
+                <!--<div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
                     <CardSwHold class="card--extended-card card--bee-hold" coin="BEE" :is-small="true"/>
-                </div>
+                </div>-->
                 <!--<div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
                     <div class="card card--action card--invert card--twitter card__content--small">
                         <CardHead :card="$options.TWITTER_CARD_HEAD"/>
@@ -160,9 +160,9 @@ export default {
                     {{ $td($options.cardList.earn.title, `action.category-earn`) }}
                 </h2>
                 <div class="u-grid u-grid--vertical-margin">
-                    <div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
+                    <!--<div class="u-cell u-cell--medium--1-2 u-cell--large--1-3 card-wrap-cell">
                         <CardSwHold coin="METAGARDEN" :is-small="true"/>
-                    </div>
+                    </div>-->
                     <!--
                     <div class="u-cell u-cell&#45;&#45;medium&#45;&#45;1-2 u-cell&#45;&#45;large&#45;&#45;1-3 card-wrap-cell">
                         <CardLoans coin="METAGARDEN" :is-small="true"/>
