@@ -41,7 +41,7 @@ export default {
                 <template v-if="$store.getters.isMegagamer">
                     <img class="auth__logo u-mb-20" src="/img/logo-megachain-center.svg" alt="Metagarden Chain" width="193" height="180">
                     <h3 class="auth__subtitle-2 u-mb-05">{{ $td('Get your GamerID', 'index.megagamer-sign-up-subtitle') }}</h3>
-                    <p class="auth__p u-mb-15">{{ $td('Please verify using your Telegram account. Other verification methods may become available later.', 'index.megagamer-sign-up-p') }}</p>
+                    <p class="auth__p u-mb-15">{{ $td('Please get verified with your Telegram account. Other verification methods may become available later.', 'index.megagamer-sign-up-p') }}</p>
                 </template>
             </div>
 

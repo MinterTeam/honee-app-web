@@ -50,7 +50,7 @@ export default {
                         <div class="card__action-title-value">@{{ $store.getters['telegram/username'] }}</div>
                     </div>
                     <div class="card__action-stats">
-                        <div class="card__action-stats-caption">{{ $td('Gamer rating', 'gamer-id.rating-label') }}</div>
+                        <div class="card__action-stats-caption">{{ $td('Gamer Level', 'gamer-id.rating-label') }}</div>
                         <div class="card__action-stats-value">
                             <span class="u-text-main" style="vertical-align: top;margin-top: -1px;display: inline-block;">⭑</span>
                             1
@@ -62,13 +62,16 @@ export default {
                 <h2 class="u-h5 u-mb-05">{{ $td('Your Privileges', 'gamer-id.privileges-title') }}</h2>
                 <ul class="list-simple u-text-medium">
                     <template v-if="$i18n.locale === 'en'">
-                        <li>Withdraw to the wallet you own first (the one you have a seed phrase to);</li>
-                        <li>Do not withdraw to an exchange because many do not accept deposits from smart contracts and your tokens will be lost;</li>
-                        <li>Pay attention to Ethereum and Minter Hub fees;</li>
-                        <li>Minter Hub is open-source. If needed, you may investigate its code before making use of the features offered on this page.</li>
+                        <li>Ability to receive free game tokens;</li>
+                        <li>Various game bonuses;</li>
+                        <li>Income boosts on the platform;</li>
+                        <li>GamerID will be released in the form of an NFT at the mainnet launch.</li>
                     </template>
                     <template v-if="$i18n.locale === 'ru'">
-                        <li>todo</li>
+                        <li>Возможность получать бесплатные игровые токены;</li>
+                        <li>Различные игровые бонусы;</li>
+                        <li>Увеличение доходов на платформе;</li>
+                        <li>GamerID будет выпущен в форме NFT при запуске основной сети.</li>
                     </template>
                 </ul>
             </div>

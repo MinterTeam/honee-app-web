@@ -226,6 +226,11 @@ export default {
         'support-button': 'Поддержка',
         'megachain-sign-up-subtitle': 'Игровой EVM-блокчейн',
         'megachain-sign-up-p': 'Лаунчпад Metagarden Chain',
+
+        'megagamer-sign-up-subtitle': 'Получите свой GamerID',
+        'megagamer-sign-up-p': 'Пожалуйста, подтвердите свой аккаунт Telegram. Другие способы верификации могут стать доступны позже.',
+        'megagamer-create-telegram-button': 'Создать GamerID',
+        'megagamer-have-telegram-button': 'У меня уже есть GamerID',
     },
     topup: {
         'title': 'Пополнить баланс',
@@ -718,7 +723,7 @@ export default {
         'begin-title': 'Да начнется битва!',
         'begin-description': 'Вы зарегистрировались на турнир. Теперь вам нужно авторизоваться через Telegram и создать свой портфель.',
         'begin-description-already-created': 'Вы зарегистрировались на турнир. У вас уже есть портфель.',
-        'telegram-login-button': 'Войти через Telegram',
+        'telegram-login-button': 'Вход через Telegram',
         'telegram-login-description': 'Нажмите "Запустить" в',
         'create-description-1': 'Выберите от 2х до 10ти токенов и укажите их долю в процентах.',
         'create-remember': 'Помните:',
@@ -824,6 +829,10 @@ export default {
     'deposit-p2p': {
         'title': 'Пополнение с карты',
         'description': 'Выберите токен, который хотите купить',
+    },
+    'gamer-id': {
+        'rating-label': 'Уровень игрока',
+        'privileges-title': 'Ваши привилегии',
     },
     borrow: {
         you_pledge: "Вы закладываете",
