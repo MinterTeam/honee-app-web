@@ -1,6 +1,6 @@
 <script>
 import FieldAddressDisplay from '~/components/base/FieldAddressDisplay.vue';
-import {prettyRound} from '~/assets/utils';
+import {pretty, prettyRound} from '~/assets/utils';
 
 export default {
     components: {
@@ -25,8 +25,15 @@ export default {
         };
     },
     computed: {
+        coin() {
+            return 'MEGANET';
+        },
+        minterBalance() {
+            return this.$store.getters.getBalanceAmount(this.coin);
+        },
     },
     methods: {
+        pretty,
         prettyRound,
     },
 };
@@ -34,19 +41,46 @@ export default {
 
 <template>
     <div class="u-container--small">
-        <div class="card card__content card__content--medium u-text-center u-mb-10">
-            <h2 class="u-h3 u-mb-05">{{ $td('Become early adopter', 'meganet.early-adopter-title') }}</h2>
-            <p class="u-text-medium">{{ $td('Buy MEGANET tokens to join the Metagarden Chain. All MEGANET token holders will receive native Metagarden Chain coins with a 100% bonus.', 'meganet.early-adopter-description') }}</p>
+        <div class="card u-mb-10">
+            <div class="card__content card__content--medium u-text-center">
+                <h2 class="u-h3 u-mb-05">{{ $td('Become early adopter', 'meganet.early-adopter-title') }}</h2>
+                <p class="u-text-medium">{{ $td('Buy MEGANET tokens to join the Metagarden Chain. All MEGANET token holders will receive native Metagarden Chain coins with a 100% bonus.', 'meganet.early-adopter-description') }}</p>
 
+                <div class="meganet__range u-mt-15" :style="`--val: 305; --min: 0; --max: 500; --step: 1`"></div>
 
+                <div class="u-mt-10 u-text-medium u-fw-700">{{ $td('', 'meganet.tokens-left-1') }}{{ prettyRound(500000 - 305000) }} {{ $td('of 500 000 tokens left', 'meganet.tokens-left-2') }}</div>
 
-            <div class="meganet__range u-mt-15" :style="`--val: 305; --min: 0; --max: 500; --step: 1`"></div>
+                <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath('/meganet/balance')">
+                    {{ $td('Buy MEGANET tokens', 'meganet.buy-button') }}
+                </nuxt-link>
+            </div>
 
-            <div class="u-mt-10 u-text-medium u-fw-700">{{ $td('', 'meganet.tokens-left-1') }}{{ prettyRound(500000 - 305000) }} {{ $td('of 500 000 tokens left', 'meganet.tokens-left-2') }}</div>
+            <div class="card__content card__content--medium">
+                <div class="u-flex u-flex--justify-between u-flex--align-center">
+                    <div class="u-flex u-flex--align-center">
+                        <img class="u-image u-image--round u-mr-05" alt="" :src="$store.getters['explorer/getCoinIcon'](coin)" width="24" height="24">
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td(`${coin} tokens bought`, 'meganet.tokens-bought', {coin}) }}</div>
+                    </div>
 
-            <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath('/meganet/balance')">
-                {{ $td('Buy MEGANET tokens', 'meganet.buy-button') }}
-            </nuxt-link>
+                    <div class="u-h u-h3">{{ pretty(minterBalance) || '0' }}</div>
+                </div>
+                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
+                    <div class="u-flex u-flex--align-center">
+                        <div class="u-mr-05" style="width: 24px"></div>
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Mainnet launch bonus', 'meganet.launch-bonus') }}</div>
+                    </div>
+
+                    <div class="u-h u-h3">100%</div>
+                </div>
+                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
+                    <div class="u-flex u-flex--align-center">
+                        <div class="u-mr-05" style="width: 24px"></div>
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Total balance after mainnet launch', 'meganet.launch-balance') }}</div>
+                    </div>
+
+                    <div class="u-h u-h3">{{ pretty(minterBalance * 2) || '0' }}</div>
+                </div>
+            </div>
         </div>
 
         <div class="card card__content card__content--medium u-text-center u-mb-10">
@@ -82,6 +116,7 @@ export default {
 <style lang="less">
 @import '~/assets/less/include/variables.less';
 
+.u-text-mega-muted {color: #8b5ab9;}
 .meganet-range-track() {
     border-radius: 8px;
     height: 16px;
