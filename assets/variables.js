@@ -1,10 +1,21 @@
 export const SUBAPP = process.env.APP_SUBAPP;
-export const IS_SUBAPP_MEGACHAIN = SUBAPP === 'megachain';
-export const IS_SUBAPP_MEGAGAMER = SUBAPP === 'megagamer';
+export const SUBAPP_MEGACHAIN = 'megachain';
+export const SUBAPP_MEGAGAMER = 'megagamer';
+export const IS_SUBAPP_MEGACHAIN = SUBAPP === SUBAPP_MEGACHAIN;
+export const IS_SUBAPP_MEGAGAMER = SUBAPP === SUBAPP_MEGAGAMER;
 export const MAINNET = 'mainnet';
 export const TESTNET = 'testnet';
 export const NETWORK = process.env.APP_ENV === MAINNET ? MAINNET : TESTNET;
-export const BASE_TITLE = 'Honee';
+export const BASE_TITLE = (() => {
+    switch (SUBAPP) {
+        case SUBAPP_MEGACHAIN:
+            return 'Metagarden Launchpad';
+        case SUBAPP_MEGAGAMER:
+            return 'Metagarden GamerID';
+        default:
+            return 'Honee';
+    }
+})();
 export const BASE_DESCRIPTION = '';
 export const BASE_URL_PREFIX = '';
 export const ACCOUNTS_API_URL = process.env.APP_ACCOUNTS_API_URL;
