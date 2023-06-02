@@ -35,7 +35,7 @@ export default {
             <BaseTooltip class="u-flex-item--no-shrink u-ml-10 card__action-tooltip" :content="tooltipContent"/>
         </div>
         <img v-if="!isSmall" class="u-image u-image-center u-mt-15 u-mb-10" src="/img/mg-chain.svg" alt="" role="presentation" width="165" height="136">
-        <p class="card__action-description">{{ $td(`Join the Metagarden chain, the ultimate EVM blockchain designed for gaming. Buy MEGANET tokens to get a 100% bonus when the main network goes live. Don't miss the chance to be part of history!`, 'meganet.description') }}</p>
+        <p class="card__action-description">{{ $td(`Join the Metagarden Chain, the ultimate EVM blockchain designed for gaming. Buy MEGANET tokens to get a 100% bonus when the main network goes live.`, 'meganet.description') }}</p>
 
         <nuxt-link :to="$i18nGetPreferredPath('/topup/coin/MEGANET')" class="button button--full u-mt-15">
             {{ $td('Buy MEGANET tokens', 'meganet.buy-button') }}
