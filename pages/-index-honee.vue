@@ -2,7 +2,7 @@
 import cardList from '~/data/cards.js';
 import Card from '~/components/Card.vue';
 import CardPremium from '~/components/CardPremium.vue';
-import CardSwHold from '~/components/CardSwHold.vue';
+//import CardSwHold from '~/components/CardSwHold.vue';
 import CardLoans from '~/components/CardLoans.vue';
 import AddressAssets from '~/components/AddressAssets.vue';
 import InvestmentList from '~/components/InvestmentList.vue';
@@ -50,7 +50,7 @@ export default {
         MetagardenMeganetCard,
         Card,
         // CardPremium,
-        CardSwHold,
+        //CardSwHold,
         // CardLoans,
         AddressAssets,
         InvestmentList,
