@@ -112,23 +112,55 @@ export default {
                     <img class="u-mr-05" src="https://explorer-static.minter.network/coins/2065.png" alt="" role="presentation" width="24" height="24">
                     ETH
                 </h2>
+                <p class="u-text-medium">
+                    <template v-if="$i18n.locale === 'en'">
+                    Send ETH or USDT (ERC-20)
+                    </template>
+                    <template v-if="$i18n.locale === 'ru'">
+                    Отправляйте ETH или USDT (ERC-20)
+                    </template>
+                </p>
                 <FieldAddressDisplay
-                    class="u-mt-10 u-mb-25"
+                    class="u-mt-05 u-mb-05"
                     :value="$store.getters.smartWalletAddress"
                     :label="$td('Send ETH to this address', 'deposit.label-buy-with-eth')"
                 />
+                <p class="form-row u-text-muted u-text-small u-text-left u-mb-25">
+                    <template v-if="$i18n.locale === 'en'">
+                    The fee in the Ethereum network ≈ $100. However, we will compensate you in the form of MEGANET tokens. Please contact support to receive compensation.
+                    </template>
+                    <template v-if="$i18n.locale === 'ru'">
+                    Комиссия в сети Ethereum ≈ $100. Однако, мы выплатим вам компенсацию в виде токенов MEGANET. Для получения компенсации обратитесь в службу поддержки.
+                    </template>
+                </p>
                 <!-- evm bsc -->
                 <h2 class="u-h--uppercase-solid u-mb-025 u-flex u-flex--align-center">
                     <img class="u-mr-05" src="https://explorer-static.minter.network/coins/2107.png" alt="" role="presentation" width="24" height="24">
                     BNB
                 </h2>
+                <p class="u-text-medium">
+                    <template v-if="$i18n.locale === 'en'">
+                    Send BNB or any BEP-20 token
+                    </template>
+                    <template v-if="$i18n.locale === 'ru'">
+                    Отправляйте BNB или любой токен BEP-20
+                    </template>
+                </p>
                 <FieldAddressDisplay
-                    class="u-mt-10 u-mb-25"
+                    class="u-mt-05 u-mb-05"
                     :value="$store.getters.smartWalletAddress"
                     :label="$td('Send BNB to this address', 'deposit.label-buy-with-bnb')"
                 />
+                <p class="form-row u-text-muted u-text-small u-text-left">
+                    <template v-if="$i18n.locale === 'en'">
+                    The fee in the BNB Smart Chain network ≈ $3.
+                    </template>
+                    <template v-if="$i18n.locale === 'ru'">
+                    Комиссия в сети BNB Smart Chain ≈ $3.
+                    </template>
+                </p>
                 <!-- evm token -->
-                <h2 class="u-h--uppercase-solid u-mb-025 u-flex u-flex--align-center">
+                <!--<h2 class="u-h--uppercase-solid u-mb-025 u-flex u-flex--align-center">
                     <img class="u-mr-minus-025" src="https://explorer-static.minter.network/coins/2065.png" alt="" role="presentation" width="24" height="24">
                     <img class="u-mr-05" src="https://explorer-static.minter.network/coins/2107.png" alt="" role="presentation" width="24" height="24">
                     {{ $td('Any ERC-20 / BEP-20 token', 'deposit.title-buy-with-token') }}
@@ -138,7 +170,7 @@ export default {
                     class="u-mt-10"
                     :value="$store.getters.smartWalletAddress"
                     :label="$td('Your smart wallet address', 'deposit.smart-wallet-address')"
-                />
+                />-->
             </div>
         </div>
 

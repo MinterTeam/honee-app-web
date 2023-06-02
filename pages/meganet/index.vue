@@ -43,7 +43,7 @@ export default {
     <div class="u-container--small">
         <div class="card u-mb-10">
             <div class="card__content card__content--medium u-text-center">
-                <h2 class="u-h3 u-mb-05">{{ $td('Become early adopter', 'meganet.early-adopter-title') }}</h2>
+                <h2 class="u-h3 u-mb-05">{{ $td('Buy tokens before Mainnet launch', 'meganet.early-adopter-title') }}</h2>
                 <p class="u-text-medium">{{ $td('Buy MEGANET tokens to join the Metagarden Chain. All MEGANET token holders will receive native Metagarden Chain coins with a 100% bonus.', 'meganet.early-adopter-description') }}</p>
 
                 <div class="meganet__range u-mt-15" :style="`--val: 305; --min: 0; --max: 500; --step: 1`"></div>
@@ -66,15 +66,15 @@ export default {
                 </div>
                 <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
                     <div class="u-flex u-flex--align-center u-mr-10">
-                        <div class="u-mr-05" style="width: 24px"></div>
+                        <div class="u-mr-05" style="width: 24px;"></div>
                         <div class="u-h--uppercase u-text-mega-muted">{{ $td('Your bonus', 'meganet.launch-bonus') }}</div>
                     </div>
 
-                    <div class="u-h u-h4">100%</div>
+                    <div class="u-h u-h4">+100%</div>
                 </div>
                 <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
                     <div class="u-flex u-flex--align-center u-mr-10">
-                        <div class="u-mr-05" style="width: 24px"></div>
+                        <div class="u-mr-05" style="width: 24px;"></div>
                         <div class="u-h--uppercase u-text-mega-muted">{{ $td('Tokens you\'re entitled to&nbsp;receive', 'meganet.launch-receive') }}</div>
                     </div>
 

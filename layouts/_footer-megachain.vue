@@ -38,8 +38,8 @@ export default {
                 </div>
                 <div class="footer__contacts u-cell u-cell--auto">
                     <h3 class="footer__caption u-mb-05">{{ $td('Contacts', 'index.footer-menu-contacts') }}</h3>
-                    GROM R&D LIMITED, COMPANY NUMBER 12444209, 27 OLD GLOUCESTER STREET, LONDON, UNITED KINGDOM, WC1N 3AX.<br>
-                    <a href="mailto:hello@metagarden.io" class="link--default-black">hello@metagarden.io</a>
+                    Minter Development Foundation. All Rights Reserved. 75 Broadway, Suite 202, San Francisco, CA, 94111.<br>
+                    For correspondence: 548 Market St #32852, San Francisco, CA 94104-5401. <a href="mailto:hello@metagarden.io" class="link--default-black">hello@metagarden.io</a>
                 </div>
             </div>
             <div class="u-flex u-flex--align-center u-flex--justify-between">
