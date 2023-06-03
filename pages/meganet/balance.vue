@@ -110,7 +110,7 @@ export default {
                 <!-- evm eth -->
                 <h2 class="u-h--uppercase-solid u-mb-025 u-flex u-flex--align-center">
                     <img class="u-mr-05" src="https://explorer-static.minter.network/coins/2065.png" alt="" role="presentation" width="24" height="24">
-                    ETH
+                    ETHEREUM NETWORK
                 </h2>
                 <p class="u-text-medium">
                     <template v-if="$i18n.locale === 'en'">
@@ -123,11 +123,11 @@ export default {
                 <FieldAddressDisplay
                     class="u-mt-05 u-mb-05"
                     :value="$store.getters.smartWalletAddress"
-                    :label="$td('Send ETH to this address', 'deposit.label-buy-with-eth')"
+                    :label="$td('SEND ETH OR USDT TO THIS ADDRESS', 'deposit.label-buy-with-eth')"
                 />
                 <p class="form-row u-text-muted u-text-small u-text-left u-mb-25">
                     <template v-if="$i18n.locale === 'en'">
-                    The fee in the Ethereum network ≈ $100. However, we will compensate you in the form of MEGANET tokens. Please contact support to receive compensation.
+                    Ethereum network fee will be ≈ $100. However, we will compensate you with MEGANET tokens. To receive compensation, please contact support.
                     </template>
                     <template v-if="$i18n.locale === 'ru'">
                     Комиссия в сети Ethereum ≈ $100. Однако, мы выплатим вам компенсацию в виде токенов MEGANET. Для получения компенсации обратитесь в службу поддержки.
@@ -136,24 +136,24 @@ export default {
                 <!-- evm bsc -->
                 <h2 class="u-h--uppercase-solid u-mb-025 u-flex u-flex--align-center">
                     <img class="u-mr-05" src="https://explorer-static.minter.network/coins/2107.png" alt="" role="presentation" width="24" height="24">
-                    BNB
+                    BNB SMART CHAIN
                 </h2>
                 <p class="u-text-medium">
                     <template v-if="$i18n.locale === 'en'">
-                    Send BNB or any BEP-20 token
+                    Send BNB or USDT (BEP-20)
                     </template>
                     <template v-if="$i18n.locale === 'ru'">
-                    Отправляйте BNB или любой токен BEP-20
+                    Отправляйте BNB или USDT (BEP-20)
                     </template>
                 </p>
                 <FieldAddressDisplay
                     class="u-mt-05 u-mb-05"
                     :value="$store.getters.smartWalletAddress"
-                    :label="$td('Send BNB to this address', 'deposit.label-buy-with-bnb')"
+                    :label="$td('SEND ETH OR USDT TO THIS ADDRESS', 'deposit.label-buy-with-bnb')"
                 />
                 <p class="form-row u-text-muted u-text-small u-text-left">
                     <template v-if="$i18n.locale === 'en'">
-                    The fee in the BNB Smart Chain network ≈ $3.
+                    BNB Smart Chain network fee ≈ 3$.
                     </template>
                     <template v-if="$i18n.locale === 'ru'">
                     Комиссия в сети BNB Smart Chain ≈ $3.
