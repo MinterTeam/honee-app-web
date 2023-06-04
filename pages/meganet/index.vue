@@ -75,7 +75,7 @@ export default {
                 <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
                     <div class="u-flex u-flex--align-center u-mr-10">
                         <div class="u-mr-05" style="width: 24px;"></div>
-                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Tokens you\'re entitled to&nbsp;receive', 'meganet.launch-receive') }}</div>
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Tokens to receive', 'meganet.launch-receive') }}</div>
                     </div>
 
                     <div class="u-h u-h4">{{ pretty(minterBalance * 2) || '0' }}</div>

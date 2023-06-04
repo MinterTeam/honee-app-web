@@ -112,25 +112,17 @@ export default {
                     <img class="u-mr-05" src="https://explorer-static.minter.network/coins/2065.png" alt="" role="presentation" width="24" height="24">
                     ETHEREUM NETWORK
                 </h2>
-                <p class="u-text-medium">
-                    <template v-if="$i18n.locale === 'en'">
-                    Send ETH or USDT (ERC-20)
-                    </template>
-                    <template v-if="$i18n.locale === 'ru'">
-                    Отправляйте ETH или USDT (ERC-20)
-                    </template>
-                </p>
+                <p class="u-text-medium">{{ $td('Send ETH or USDT (ERC-20) to this address', 'deposit.label-buy-with-eth') }}</p>
                 <FieldAddressDisplay
                     class="u-mt-05 u-mb-05"
                     :value="$store.getters.smartWalletAddress"
-                    :label="$td('SEND ETH OR USDT TO THIS ADDRESS', 'deposit.label-buy-with-eth')"
                 />
                 <p class="form-row u-text-muted u-text-small u-text-left u-mb-25">
                     <template v-if="$i18n.locale === 'en'">
                     Ethereum network fee will be ≈ $100. However, we will compensate you with MEGANET tokens. To receive compensation, please contact support.
                     </template>
                     <template v-if="$i18n.locale === 'ru'">
-                    Комиссия в сети Ethereum ≈ $100. Однако, мы выплатим вам компенсацию в виде токенов MEGANET. Для получения компенсации обратитесь в службу поддержки.
+                    Комиссия в сети Ethereum ≈ $100. Однако, мы компенсируем ее в виде токенов MEGANET. Для получения компенсации обратитесь в службу поддержки.
                     </template>
                 </p>
                 <!-- evm bsc -->
@@ -138,18 +130,10 @@ export default {
                     <img class="u-mr-05" src="https://explorer-static.minter.network/coins/2107.png" alt="" role="presentation" width="24" height="24">
                     BNB SMART CHAIN
                 </h2>
-                <p class="u-text-medium">
-                    <template v-if="$i18n.locale === 'en'">
-                    Send BNB or USDT (BEP-20)
-                    </template>
-                    <template v-if="$i18n.locale === 'ru'">
-                    Отправляйте BNB или USDT (BEP-20)
-                    </template>
-                </p>
+                <p class="u-text-medium">{{ $td('Send BNB or USDT (BEP-20) to this address', 'deposit.label-buy-with-bnb') }}</p>
                 <FieldAddressDisplay
                     class="u-mt-05 u-mb-05"
                     :value="$store.getters.smartWalletAddress"
-                    :label="$td('SEND ETH OR USDT TO THIS ADDRESS', 'deposit.label-buy-with-bnb')"
                 />
                 <p class="form-row u-text-muted u-text-small u-text-left">
                     <template v-if="$i18n.locale === 'en'">
@@ -197,10 +181,7 @@ export default {
                 </a>
 
                 <p class="u-text-medium u-mt-10">
-                    {{ $td('You will need to give your Minter address to the Telegram bot.', 'deposit.telegram-find-address-description') }}
-                    <button type="button" class="link link--underline u-semantic-button" @click="isAddressModalOpen = true">
-                        {{ $td('You can find it here.', 'deposit.telegram-find-address-button') }}
-                    </button>
+                    {{ $td('You will need to give', 'deposit.telegram-find-address-description-1') }} <button type="button" class="link link--underline u-semantic-button" @click="isAddressModalOpen = true">{{ $td('this Minter address', 'deposit.telegram-find-address-button') }}</button> {{ $td('to the Telegram bot.', 'deposit.telegram-find-address-description-2') }}
                 </p>
             </div>
 
