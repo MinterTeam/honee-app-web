@@ -172,7 +172,7 @@ export default {
                     description: 'Стейкуйте METAGARDEN на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
                 },
             }),
-            makeCard(presets.stake(24), {
+            /*makeCard(presets.stake(24), {
                 coin: `MUSD`,
                 description: 'Stake MUSD for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
                 stats: {
@@ -183,7 +183,7 @@ export default {
                 ru: {
                     description: 'Стейкуйте MUSD на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
                 },
-            }),
+            }),*/
             makeCard(presets.stake(21), {
                 coin: `HUBSTAKE`,
                 description: 'Stake HUBSTAKE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
