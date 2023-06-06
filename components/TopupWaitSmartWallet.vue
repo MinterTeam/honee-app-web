@@ -433,8 +433,18 @@ export default defineComponent({
                 .then(() => wait(100))
                 .then(() => this.waitEvmBalance())
                 .then(() => {
-                    return this.depositFromEthereum();
+                    return this.proceedEvmBalance();
                 })
+                .catch((error) => {
+                    if (error.isCanceled) {
+                        return;
+                    }
+                    console.error(error);
+                    this.serverError = getErrorText(error);
+                });
+        },
+        proceedEvmBalance() {
+            return this.depositFromEthereum()
                 .then((outputAmount) => {
                     const coinToDeposit = this.depositHubCoin.symbol;
                     if (this.minterCoinToGet) {
@@ -457,13 +467,6 @@ export default defineComponent({
                     } else {
                         this.finishTopup(outputAmount, coinToDeposit);
                     }
-                })
-                .catch((error) => {
-                    if (error.isCanceled) {
-                        return;
-                    }
-                    console.error(error);
-                    this.serverError = getErrorText(error);
                 });
         },
         /*
@@ -483,10 +486,7 @@ export default defineComponent({
             this.setStepList({});
             // this.isConfirmModalVisible = false;
 
-            this.depositFromEthereum()
-                .then((outputAmount) => {
-                    this.finishTopup(outputAmount, this.tokenSymbol);
-                })
+            return this.proceedEvmBalance()
                 .catch((error) => {
                     console.error(error);
                     this.serverError = getErrorText(error);

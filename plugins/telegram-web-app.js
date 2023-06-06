@@ -31,7 +31,7 @@ export default ({ app, store }) => {
 
     function sendAddress() {
         if (store.getters.isAuthorized) {
-            const userId = window.Telegram.WebApp.initDataUnsafe.user?.id || 123;
+            const userId = window.Telegram.WebApp.initDataUnsafe.user?.id;
             // sendData not available in Keyboard WebApp
             // window.Telegram.WebApp.sendData(`user_id=${userId}&address=${store.getters.address}`);
             _sendAddress(userId, store.getters.address, window.Telegram.WebApp.initData);
