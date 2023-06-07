@@ -104,7 +104,19 @@ export default {
             <a class="button button--main button--full u-mt-10" :href="`https://scan.testnet.metagarden.io/address/${$store.getters.evmAddress}`" target="_blank">{{ $td('View in block explorer', 'meganet.testnet-address-button') }}</a>
         </div>
 
-        <LiteYoutube class="u-mb-10" video-id="xC97gHtKO6w"/>
+        <div class="card card__content card__content--medium u-text-center u-mb-10">
+            <div class="video-section-video">
+                <LiteYoutube
+                    class="video-youtube u-mb-10"
+                    :video-id="$td('xC97gHtKO6w', 'meganet.gaming-platform-videoid')"
+                />
+            </div>
+            <h2 class="u-h3 u-mb-05">{{ $td('Gaming Platform', 'meganet.gaming-platform-title') }}</h2>
+            <p class="u-text-medium u-mb-10">{{ $td('Try out the first play-to-earn Metagarden platform games. By the end of 2023, we plan to launch more than 100 mini-games from different developers. The games presented are in alpha status and can be played from a single Telegram bot, so you can easily switch between them without leaving your favorite messenger.', 'meganet.gaming-platform-p') }}</p>
+            <a class="button button--main button--full u-mb-05" href="http://t.me/metagardenbot?start=start" target="_blank">{{ $td('Play', 'meganet.gaming-platform-button') }}</a>
+            <p class="u-text-small u-mb-10">{{ $td('Try α-versions of our games in Telegram', 'meganet.gaming-platform-p-small') }}</p>
+            <a :href="$td('https://metagarden.io/platform', 'meganet.gaming-platform-more-url')" target="_blank" class="link link--bold link--underline">{{ $td('Read more about platform', 'meganet.gaming-platform-more') }}</a>
+        </div>
 
         <div class="card card__content card__content--medium u-text-center">
             <h2 class="u-h3 u-mb-05">{{ $td('Useful links', 'meganet.useful-links-title') }}</h2>
