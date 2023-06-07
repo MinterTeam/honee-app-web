@@ -52,7 +52,7 @@ jobs:
           REGISTRY: "registry.minter.network"
           IMAGE_NAME: ${{ env.PROJECT_NAME }}
           LATEST: "true"
-          TAG_NAME: ${{ github.sha }}
+          TAG_NAME: ${{ env.BUILD_BRANCH }}-${{ github.sha }}
           DOCKERFILE: ".docker/Dockerfile"
           DOCKER_BUILD_ARGS: --build-arg BUILD_BRANCH_ENV_PREFIX
 
