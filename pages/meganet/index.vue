@@ -1,9 +1,11 @@
 <script>
-import FieldAddressDisplay from '~/components/base/FieldAddressDisplay.vue';
 import {pretty, prettyRound} from '~/assets/utils';
+import LiteYoutube from '~/components/base/LiteYoutube.vue';
+import FieldAddressDisplay from '~/components/base/FieldAddressDisplay.vue';
 
 export default {
     components: {
+        LiteYoutube,
         FieldAddressDisplay,
     },
     head: {
@@ -101,6 +103,8 @@ export default {
 
             <a class="button button--main button--full u-mt-10" :href="`https://scan.testnet.metagarden.io/address/${$store.getters.evmAddress}`" target="_blank">{{ $td('View in block explorer', 'meganet.testnet-address-button') }}</a>
         </div>
+
+        <LiteYoutube class="u-mb-10" video-id="xC97gHtKO6w"/>
 
         <div class="card card__content card__content--medium u-text-center">
             <h2 class="u-h3 u-mb-05">{{ $td('Useful links', 'meganet.useful-links-title') }}</h2>

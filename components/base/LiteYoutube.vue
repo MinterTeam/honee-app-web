@@ -45,6 +45,10 @@ export default {
     />
 </template>
 
-<style>
+<style lang="less">
+@import (inline) '../../node_modules/lite-youtube-embed/src/lite-yt-embed.css';
 lite-youtube::before {background: none;}
+
+// custom styles
+lite-youtube {max-width: 100%; border-radius: 16px;}
 </style>
