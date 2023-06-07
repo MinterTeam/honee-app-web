@@ -43,6 +43,9 @@ jobs:
           KUBE_NAMESPACE_KEY: KUBE_NAMESPACE_${{ env.BUILD_BRANCH }}
         run: echo "KUBE_NAMESPACE=$(echo ${!KUBE_NAMESPACE_KEY})" >> $GITHUB_ENV
 
+      - name: set env IMAGE_TAG_NAME
+        run: echo "IMAGE_TAG_NAME=$BUILD_BRANCH-$GITHUB_SHA" >> $GITHUB_ENV
+
       - uses: actions/checkout@v2
       - name: build and push docker image
         uses: opspresso/action-docker@v0.2.13
@@ -52,7 +55,7 @@ jobs:
           REGISTRY: "registry.minter.network"
           IMAGE_NAME: ${{ env.PROJECT_NAME }}
           LATEST: "true"
-          TAG_NAME: ${{ env.BUILD_BRANCH }}-${{ github.sha }}
+          TAG_NAME: ${{ env.IMAGE_TAG_NAME }}
           DOCKERFILE: ".docker/Dockerfile"
           DOCKER_BUILD_ARGS: --build-arg BUILD_BRANCH_ENV_PREFIX
 
@@ -70,7 +73,7 @@ jobs:
       #      - name: Deploy to DO
       #        if: env.BUILD_BRANCH == env.PRODUCTION_BRANCH
       #        env:
-      #          TAG_NAME: ${{ github.sha }}
+      #          TAG_NAME: ${{ env.IMAGE_TAG_NAME }}
       #        run: ./linux-amd64/helm upgrade -n ${{ env.KUBE_NAMESPACE }} -i $RELEASE_NAME chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN
 
       - name: deploy to production cluster
@@ -78,7 +81,7 @@ jobs:
         uses: wahyd4/kubectl-helm-action@v0.1.2
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_PROD_CONFIG_DATA }}
-          TAG_NAME: ${{ github.sha }}
+          TAG_NAME: ${{ env.IMAGE_TAG_NAME }}
         with:
           args: helm upgrade -n $KUBE_NAMESPACE -i $RELEASE_NAME chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN
 
@@ -87,7 +90,7 @@ jobs:
         uses: wahyd4/kubectl-helm-action@master
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_STAGE_CONFIG_DATA }}
-          TAG_NAME: ${{ github.sha }}
+          TAG_NAME: ${{ env.IMAGE_TAG_NAME }}
         with:
           args: helm upgrade -n $KUBE_NAMESPACE -i $RELEASE_NAME chart/ --atomic --timeout 100s --set image.tag=$TAG_NAME --set ingress.domain=$INGRESS_DOMAIN --set ingress.tlsname=$INGRESS_DOMAIN --set ingress.issuer=letsencrypt-http --set ingress.clusterissuer=""
 
