@@ -14,6 +14,7 @@
 <circle cx="182" cy="50" r="4" fill="#360D5C" stroke="#612598" stroke-width="2"/>
 <circle cx="230" cy="42" r="4" fill="#360D5C" stroke="#612598" stroke-width="2"/>
 <circle cx="134" cy="58" r="4" fill="#360D5C" stroke="#612598" stroke-width="2"/>
+<circle cx="182" cy="50" r="5" fill="#42DF81"/>
 <defs>
 <filter id="filter0_d_79_311" x="0" y="0" width="287" height="103" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
