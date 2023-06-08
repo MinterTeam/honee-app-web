@@ -224,8 +224,8 @@ export default {
         'show-all-earn-options-link': 'Показать другие варианты',
 
         'support-button': 'Поддержка',
-        'megachain-sign-up-subtitle': 'Игровой EVM-блокчейн',
-        'megachain-sign-up-p': 'Лаунчпад Metagarden Chain',
+        'megachain-sign-up-subtitle': 'Кошелек Metagarden Chain',
+        'megachain-sign-up-p': 'Получите +100% бонус и аиродропы от игр',
 
         'megagamer-sign-up-subtitle': 'Получите свой GamerID',
         'megagamer-sign-up-p': 'Для получения GamerID потребуется ваш Telegram-аккаунт. Другие способы верификации могут стать доступны позже.',
@@ -777,8 +777,8 @@ export default {
         'description': 'Присоединяйтесь к Metagarden Chain, мощному EVM-блокчейну, предназначенному для игр. Купите токены MEGANET до запуска основной сети, чтобы получить 100% бонус.',
         'buy-button': 'Купить токены MEGANET',
         'buy-text': 'Купите токены MEGANET любым из этих вариантов, чтобы присоединиться к Metagarden Chain.',
-        'early-adopter-title': 'Купите токены до запуска',
-        'early-adopter-description': 'Купите токены MEGANET, чтобы присоединиться к сети Metagarden Chain. Все держатели токенов MEGANET получат нативные монеты Metagarden Chain со 100% бонусом.',
+        'early-adopter-title': 'Купите токены MEGANET, чтобы получить +100% бонус и аирдропы от игр',
+        'early-adopter-description': 'Все держатели токенов MEGANET получат монеты MEGA (нативные монеты Metagarden Chain) со 100% бонусом после запуска основной сети.',
         'testnet-address-title': 'Ваш адрес в тестнете',
         'testnet-address-label': 'Адрес тестнета Metagarden',
         'testnet-address-button': 'Посмотреть в эксплорере',

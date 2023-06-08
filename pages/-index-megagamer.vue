@@ -79,7 +79,7 @@ export default {
 
         <div class="card card__content card__content--medium u-text-center u-mb-10">
             <h2 class="u-h3 u-mb-05">{{ $td('Become early adopter', 'meganet.early-adopter-title') }}</h2>
-            <p class="u-text-medium">{{ $td('Buy MEGANET tokens to join the Metagarden Chain. All MEGANET token holders will receive native Metagarden Chain coins with a 100% bonus.', 'meganet.early-adopter-description') }}</p>
+            <p class="u-text-medium">{{ $td('All MEGANET token holders will receive MEGA coins (native Metagarden Chain coins) with a 100% bonus after the Mainnet launch.', 'meganet.early-adopter-description') }}</p>
 
             <a class="button button--main button--full u-mt-10" href="https://launchpad.metagarden.io/">
                 {{ $td('Buy MEGANET tokens', 'meganet.buy-button') }}

@@ -45,8 +45,8 @@ export default {
     <div class="u-container--small">
         <div class="card u-mb-10">
             <div class="card__content card__content--medium u-text-center">
-                <h2 class="u-h3 u-mb-05">{{ $td('Buy tokens before Mainnet launch', 'meganet.early-adopter-title') }}</h2>
-                <p class="u-text-medium">{{ $td('Buy MEGANET tokens to join the Metagarden Chain. All MEGANET token holders will receive native Metagarden Chain coins with a 100% bonus.', 'meganet.early-adopter-description') }}</p>
+                <h2 class="u-h3 u-mb-05">{{ $td('Buy MEGANET tokens to receive +100% bonus & aidrops from games', 'meganet.early-adopter-title') }}</h2>
+                <p class="u-text-medium">{{ $td('All MEGANET token holders will receive MEGA coins (native Metagarden Chain coins) with a 100% bonus after the Mainnet launch.', 'meganet.early-adopter-description') }}</p>
 
                 <div class="meganet__range u-mt-15" :style="`--val: 305; --min: 0; --max: 500; --step: 1`"></div>
 
@@ -87,7 +87,7 @@ export default {
 
         <div class="card card__content card__content--medium u-text-center u-mb-10">
             <h2 class="u-h3 u-mb-05">{{ $td('MEGANET price stages', 'meganet.token-price-stages-title') }}</h2>
-            <p class="u-text-medium u-mb-10">{{ $td('The current price of early access MEGANET tokens is', 'meganet.token-price-stages-description-1') }} <span class="span-green">$0.32</span> {{ $td('per token.', 'meganet.token-price-stages-description-2') }}</p>
+            <p class="u-text-medium u-mb-10">{{ $td('The current price of early access MEGANET tokens is', 'meganet.token-price-stages-description-1') }} <span class="span-green">$0.64</span> {{ $td('per token.', 'meganet.token-price-stages-description-2') }}</p>
             <img src="/img/megachain-prices.svg" alt="MEGANET Price Stages" width="100%">
             <p class="u-text-small">{{ $td('The token price can be subject to increase at any time.', 'meganet.token-price-stages-p') }}</p>
         </div>
