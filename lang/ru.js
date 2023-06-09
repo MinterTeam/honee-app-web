@@ -802,7 +802,7 @@ export default {
         'launch-balance': 'Баланс {coin}',
         'launch-bonus': 'Ваш бонус',
         'launch-receive': 'Токены к получению',
-        'gaming-platform-videoid': 'xC97gHtKO6w',
+        'gaming-platform-videoid': 'rhEgn11amV4',
         'gaming-platform-title': 'Игровая платформа',
         'gaming-platform-p': 'Попробуйте первые play-to-earn игры нашей платформы. К концу 2023 года мы планируем запустить более 100 мини-игр от разных разработчиков. Представленные игры находятся в альфа-статусе и запускаются из единого Telegram-бота, так что вы можете с легкостью переключаться между ними, не выходя из любимого мессенджера.',
         'gaming-platform-button': 'Играть',
