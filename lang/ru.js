@@ -794,7 +794,7 @@ export default {
         'header-account': 'Ваш баланс',
         'minter-address-label': 'Адрес вашего кошелька в Minter',
         'tokens-left-1': 'Осталось ',
-        'tokens-left-2': 'из 500 000 токенов',
+        'tokens-left-2': 'из 1 000 000 токенов',
         'token-price-stages-title': 'Цена токенов MEGANET',
         'token-price-stages-description-1': 'Текущая цена токенов раннего доступа MEGANET составляет',
         'token-price-stages-description-2': 'за токен.',
