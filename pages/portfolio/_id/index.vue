@@ -7,7 +7,7 @@ import PortfolioHead from '~/components/PortfolioHead.vue';
 
 export default {
     layout(context) {
-        return context.store.getters.isAuthorized ? 'default' : 'splash-index';
+        return context.store.getters.isPKAuthorized ? 'default' : 'splash-index';
     },
     components: {
         BaseAmountEstimation,
@@ -19,7 +19,7 @@ export default {
             return error({status: 404, message: 'Page not found'});
         }
 
-        if (store.getters.isAuthorized) {
+        if (store.getters.isPKAuthorized) {
             store.dispatch('portfolio/fetchConsumerPortfolioList');
         }
 
@@ -86,7 +86,7 @@ export default {
                     </div>
 
                     <div class="form-row">
-                        <div class="u-grid u-grid--vertical-margin" v-if="$store.getters.isAuthorized">
+                        <div class="u-grid u-grid--vertical-margin" v-if="$store.getters.isPKAuthorized">
                             <div class="u-cell">
                                 <nuxt-link class="button button--main button--full" :to="$i18nGetPreferredPath(`/portfolio/${portfolio.id}/buy`)">
                                     {{ $td('Buy', 'portfolio.buy-button') }}

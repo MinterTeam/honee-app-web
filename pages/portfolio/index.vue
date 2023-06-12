@@ -5,7 +5,7 @@ import PortfolioList, {PORTFOLIO_LIST_TYPE} from '~/components/PortfolioList.vue
 export default {
     PORTFOLIO_LIST_TYPE,
     layout(context) {
-        return context.store.getters.isAuthorized ? 'default' : 'splash-index';
+        return context.store.getters.isPKAuthorized ? 'default' : 'splash-index';
     },
     components: {
         BaseTabs,

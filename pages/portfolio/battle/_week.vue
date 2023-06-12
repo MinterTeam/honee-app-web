@@ -3,7 +3,7 @@ import PortfolioBattleTable from '~/components/PortfolioBattleTable.vue';
 
 export default {
     layout(context) {
-        return context.store.getters.isAuthorized ? 'default' : 'splash-index';
+        return context.store.getters.isPKAuthorized ? 'default' : 'splash-index';
     },
     components: {
         PortfolioBattleTable,

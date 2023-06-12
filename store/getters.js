@@ -8,11 +8,17 @@ export default {
      * Checks if user is authorized
      * @return {boolean}
      */
-    isAuthorized(state) {
+    isAuthorized(state, getters) {
+        if (IS_SUBAPP_MEGAGAMER) {
+            return getters['telegram/isAuthorized'];
+        }
+        return getters.isPKAuthorized;
+    },
+    isPKAuthorized(state, getters) {
         return state.auth && isValidMnemonic(state.auth);
     },
     wallet(state, getters) {
-        if (getters.isAuthorized) {
+        if (getters.isPKAuthorized) {
             return walletFromMnemonic(state.auth);
         }
         return null;
@@ -34,7 +40,7 @@ export default {
     //     return getExplorerAddressUrl(getters.address);
     // },
     mnemonic(state, getters) {
-        return getters.isAuthorized ? state.auth : '';
+        return getters.isPKAuthorized ? state.auth : '';
     },
     privateKey(state, getters) {
         return getters.wallet ? getters.wallet.getPrivateKeyString() : '';

@@ -13,7 +13,7 @@ export default function({app, store, redirect}) {
         return Promise.resolve();
     }
 
-    if (store.getters.isAuthorized && store.state.onLine) {
+    if (store.getters.address && store.state.onLine) {
         // init only once per auth address
         if (centrifuge && subscribedAddress === store.getters.address) {
             return Promise.resolve();

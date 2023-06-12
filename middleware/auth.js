@@ -1,4 +1,4 @@
-import {DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, IS_SUBAPP_MEGAGAMER} from '~/assets/variables.js';
+import {DASHBOARD_URL, DASHBOARD_URL_METAGARDEN} from '~/assets/variables.js';
 
 export default function({app, store, route, redirect, error}) {
     if (process.server) {
@@ -8,7 +8,7 @@ export default function({app, store, route, redirect, error}) {
     console.log('-- route', route);
     console.log('-- path', route.path);
 
-    const isAuthorized = IS_SUBAPP_MEGAGAMER ? store.getters['telegram/isAuthorized'] : store.getters.isAuthorized;
+    const isAuthorized = store.getters.isAuthorized;
 
     const urlHoneeSpecific = [
         /^(\/ru)?\/?$/,
@@ -22,6 +22,7 @@ export default function({app, store, route, redirect, error}) {
     ].some((pathRegex) => {
         return pathRegex.test(route.path);
     });
+    // preview for non-private-key users
     const urlHasPreview = [
         /^(\/ru)?\/portfolio\/?$/,
         /^(\/ru)?\/portfolio\/leaderboard\/?$/,
@@ -47,7 +48,7 @@ export default function({app, store, route, redirect, error}) {
     }
     if (urlHasPreview) {
         console.log('-- allow: has preview');
-        if (!store.getters.isAuthorized) {
+        if (!store.getters.isPKAuthorized) {
             store.commit('SET_AUTH_REDIRECT_PATH', route.fullPath);
         }
         return Promise.resolve();

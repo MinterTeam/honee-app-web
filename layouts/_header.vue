@@ -1,6 +1,6 @@
 <script>
 import InlineSvg from 'vue-inline-svg';
-import {HUB_NETWORK_SLUG, DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR, IS_SUBAPP_MEGAGAMER} from '~/assets/variables.js';
+import {HUB_NETWORK_SLUG, DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR} from '~/assets/variables.js';
 import {shortHashFilter} from '~/assets/utils.js';
 import Language from '~/components/layout/Language.vue';
 import Modal from '~/components/base/Modal.vue';
@@ -72,9 +72,6 @@ export default {
         isPremiumPage() {
             return this.$route.path === this.$i18nGetPreferredPath('/premium');
         },
-        isAuthorized() {
-            return IS_SUBAPP_MEGAGAMER ? this.$store.getters['telegram/isAuthorized'] : this.$store.getters.isAuthorized;
-        },
     },
     methods: {
         shortHashFilter,
@@ -101,7 +98,7 @@ export default {
             </div>
 
             <!--<div class="header__controls">-->
-            <template v-if="!isPremiumPage && isAuthorized && !simple && isHonee">
+            <template v-if="!isPremiumPage && $store.getters.isAuthorized && !simple && isHonee">
                 <hr class="header__horizontal-divider header__premium-item u-hidden-large-up metagarden-layout__hide"/>
                 <nuxt-link class="header__controls-link u-flex u-flex--align-center header__premium-item metagarden-layout__hide" :to="$i18nGetPreferredPath('/premium')">
                     <img class="u-mr-05 u-hidden-large-down" src="/img/icon-premium-fancy.svg" alt="" role="presentation" width="64" height="42">
@@ -113,7 +110,7 @@ export default {
                 <hr class="header__controls-link header__controls-divider header__premium-item u-hidden-large-down metagarden-layout__hide"/>
             </template>
 
-            <button v-if="isAuthorized && !simple" type="button" class="header__controls-link header__controls-user u-semantic-button" @click="isTopupModalOpen = true">
+            <button v-if="$store.getters.isAuthorized && !simple" type="button" class="header__controls-link header__controls-user u-semantic-button" @click="isTopupModalOpen = true">
                 <template v-if="isHonee">
                     <img class="header__controls-user-avatar u-mr-05 u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation" width="24" height="24"/>
                     <span class="">{{ $store.getters.username }}</span>
@@ -126,10 +123,10 @@ export default {
                     <img class="header__controls-user-avatar u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation" width="32" height="32"/>
                 </template>
             </button>
-            <button v-if="isAuthorized && !simple && isHonee" type="button" class="header__controls-link link u-semantic-button metagarden-layout__hide" @click="isLogoutModalOpen = true">
+            <button v-if="$store.getters.isAuthorized && !simple && isHonee" type="button" class="header__controls-link link u-semantic-button metagarden-layout__hide" @click="isLogoutModalOpen = true">
                 <img src="/img/icon-logout.svg" width="24" height="24" alt="Logout">
             </button>
-            <nuxt-link v-if="!isAuthorized && !simple && !isAuthPage" :to="$i18nGetPreferredPath('/auth')" type="button" class="header__controls-link">
+            <nuxt-link v-if="!$store.getters.isAuthorized && !simple && !isAuthPage" :to="$i18nGetPreferredPath('/auth')" type="button" class="header__controls-link">
                 {{ $td('Sign in', 'index.sign-in') }}
             </nuxt-link>
             <div class="header__controls-language header__controls-link" v-if="showLanguage">

@@ -1,6 +1,6 @@
 <script>
 import InlineSvg from 'vue-inline-svg';
-import {DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR, IS_SUBAPP_MEGAGAMER} from '~/assets/variables.js';
+import {DASHBOARD_URL, DASHBOARD_URL_METAGARDEN, ROUTE_NAME_SPLITTER, I18N_ROUTE_NAME_SEPARATOR} from '~/assets/variables.js';
 import {prettyUsd} from '~/assets/utils.js';
 
 export default {
@@ -29,9 +29,6 @@ export default {
             // match ^auth/.* or ^auth___(en|ru)
             return this.$route.name.indexOf('auth' + ROUTE_NAME_SPLITTER) === 0 || this.$route.name.indexOf('auth' + I18N_ROUTE_NAME_SEPARATOR) === 0;
         },
-        isAuthorized() {
-            return IS_SUBAPP_MEGAGAMER ? this.$store.getters['telegram/isAuthorized'] : this.$store.getters.isAuthorized;
-        },
     },
     methods: {
         prettyUsd,
@@ -52,14 +49,14 @@ export default {
 
             <!--<div class="header__controls">-->
 
-            <nuxt-link v-if="isAuthorized && !isAccountPage" :to="$i18nGetPreferredPath('/metagarden/account')" class="header__controls-link header__controls-user u-semantic-button">
+            <nuxt-link v-if="$store.getters.isAuthorized && !isAccountPage" :to="$i18nGetPreferredPath('/metagarden/account')" class="header__controls-link header__controls-user u-semantic-button">
                 <div class="u-mr-10 u-text-right">
                     <div class="u-fw-700 header__controls-user-name">{{ $td('Your account', 'metagarden.your-account') }}</div>
                     <div class="u-fw-600 header__controls-user-balance">${{ prettyUsd($store.state.totalBalanceSumUsd) }}</div>
                 </div>
                 <img class="header__controls-user-avatar u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation" width="32" height="32"/>
             </nuxt-link>
-            <nuxt-link v-if="!isAuthorized && !isAuthPage" :to="$i18nGetPreferredPath('/auth')" type="button" class="header__controls-link">
+            <nuxt-link v-if="!$store.getters.isAuthorized && !isAuthPage" :to="$i18nGetPreferredPath('/auth')" type="button" class="header__controls-link">
                 {{ $td('Sign in', 'index.sign-in') }}
             </nuxt-link>
             <!--</div>-->

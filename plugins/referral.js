@@ -17,7 +17,7 @@ export default ({ app, route, store }) => {
         await store.dispatch('referral/fetchRefId');
 
         const foreignRefId = store.state.referral.foreignRefId;
-        if (foreignRefId && store.getters.isAuthorized) {
+        if (foreignRefId && store.getters.isPKAuthorized) {
             if (foreignRefId !== store.state.referral.refId) {
                 // don't return because no need to await it, follow in the background
                 followReferrer(foreignRefId, store.getters.privateKey)
