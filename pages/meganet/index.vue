@@ -48,9 +48,9 @@ export default {
                 <h2 class="u-h3 u-mb-05">{{ $td('Buy MEGANET tokens to receive +100% bonus & aidrops from games', 'meganet.early-adopter-title') }}</h2>
                 <p class="u-text-medium">{{ $td('All MEGANET token holders will receive MEGA coins (native Metagarden Chain coins) with a 100% bonus after the Mainnet launch.', 'meganet.early-adopter-description') }}</p>
 
-                <div class="meganet__range u-mt-15" :style="`--val: 305; --min: 0; --max: 500; --step: 1`"></div>
+                <div class="meganet__range u-mt-15" :style="`--val: 905; --min: 0; --max: 1000; --step: 1`"></div>
 
-                <div class="u-mt-10 u-text-medium u-fw-700">{{ $td('', 'meganet.tokens-left-1') }}{{ prettyRound(500000 - 305000) }} {{ $td('of 500 000 tokens left', 'meganet.tokens-left-2') }}</div>
+                <div class="u-mt-10 u-text-medium u-fw-700">{{ $td('', 'meganet.tokens-left-1') }}{{ prettyRound(1000000 - 905000) }} {{ $td('of 1 000 000 tokens left', 'meganet.tokens-left-2') }}</div>
 
                 <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath('/meganet/balance')">
                     {{ $td('Buy MEGANET tokens', 'meganet.buy-button') }}
