@@ -80,6 +80,8 @@ const connectCSP = prepareCSP(varsConfig, (item) => {
     // lite-youtube-embed
     'www.youtube-nocookie.com',
     'https://www.youtube.com',
+    // telegram seed auth
+    'https://dali.io',
 ]);
 const imageCSP = prepareCSP(varsConfig, (item) => {
     return item === 'APP_ACCOUNTS_API_URL';

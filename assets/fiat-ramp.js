@@ -4,6 +4,8 @@
  */
 import { RampInstantSDK } from '@ramp-network/ramp-instant-sdk';
 import axios from 'axios';
+import {getPromiseWithResolvers} from '@shrpne/utils/src/promise-resolve.js';
+import {wait} from '@shrpne/utils/src/wait.js';
 import {NETWORK, MAINNET, HUB_NETWORK} from '~/assets/variables.js';
 
 const isMainnet = NETWORK === MAINNET;
@@ -16,19 +18,8 @@ const assetName = isMainnet ? 'BSC_BNB' : 'ETH';
 export default function initPurchase({userAddress, swapAmount} = {}) {
     let purchaseStarted = false;
 
-    let purchaseResolve;
-    let purchaseReject;
-    const purchasePromise = new Promise((resolve, reject) => {
-        purchaseResolve = resolve;
-        purchaseReject = reject;
-    });
-
-    let widgetResolve;
-    let widgetReject;
-    const widgetPromise = new Promise((resolve, reject) => {
-        widgetResolve = resolve;
-        widgetReject = reject;
-    });
+    const [purchasePromise, purchaseResolve, purchaseReject] = getPromiseWithResolvers();
+    const [widgetPromise, widgetResolve, widgetReject] = getPromiseWithResolvers();
 
     new RampInstantSDK({
         hostApiKey,
@@ -115,12 +106,6 @@ function pollPurchaseStatus(id, secret) {
 
             return wait(10000).then(() => pollPurchaseStatus(id, secret));
         });
-}
-
-function wait(time) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, time);
-    });
 }
 
 

@@ -19,6 +19,7 @@ export default function({app, store, route, redirect, error}) {
     const urlPublic = [
         /^(\/ru)?\/embed(\/|$)/,
         /^(\/ru)?\/go(\/)/,
+        /^(\/ru)?\/auth-tg(\/|$)/,
     ].some((pathRegex) => {
         return pathRegex.test(route.path);
     });

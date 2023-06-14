@@ -1,4 +1,5 @@
 // @ts-nocheck
+import {getPromiseWithResolvers} from '@shrpne/utils/src/promise-resolve.js';
 import {TWA_SCRIPT_URL, TWA_SCRIPT_HASH} from '~/assets/variables.js';
 import {sendAddress as _sendAddress} from '~/api/telegram.js';
 
@@ -8,6 +9,10 @@ export default ({ app, store }) => {
     if (!isTWA) {
         return;
     }
+
+    const [promiseLoad, resolveLoad] = getPromiseWithResolvers();
+    window.isTWA = true;
+    window.getTelegramWebApp = () => promiseLoad;
 
     let script = document.createElement('script');
     script.async = true;
@@ -19,6 +24,8 @@ export default ({ app, store }) => {
     document.body.appendChild(script);
 
     function init() {
+        resolveLoad(window.Telegram.WebApp);
+
         window.Telegram.WebApp.expand();
         sendAddress();
 
