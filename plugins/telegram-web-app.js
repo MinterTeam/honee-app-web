@@ -16,13 +16,16 @@ export default ({ app, store }) => {
     window.getTelegramWebApp = () => promiseLoad;
 
     let script = document.createElement('script');
-    script.async = true;
+    // script.async = true;
     // disable cross-origin check, because tg script doesn't provide CORS headers (anyway integrity checked by CSP meta)
     // script.integrity = TWA_SCRIPT_HASH;
     // script.crossOrigin = 'anonymous';
     script.src = TWA_SCRIPT_URL;
     script.onload = init;
     document.body.appendChild(script);
+
+    // wait for script to load, because something (probably nuxt/vue internals) overwrite window.location.hash and prevent telegram to properly parse initData
+    return promiseLoad;
 
     function init() {
         console.log(window.location.hash);
