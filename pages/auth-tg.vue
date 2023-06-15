@@ -24,8 +24,7 @@ export default {
                 });
             })
             .then((response) => {
-                store.commit('LOGOUT');
-                store.commit('ADD_AUTH_ADVANCED', response.data.mnemonic);
+                store.dispatch('AUTHORIZE_MNEMONIC', response.data.mnemonic);
                 return app.router.push(app.i18nGetPreferredPath({path: DASHBOARD_URL}));
             })
             .catch((error) => {

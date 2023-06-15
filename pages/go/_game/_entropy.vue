@@ -16,8 +16,7 @@ export default {
 
         const mnemonic = entropyToMnemonic(entropy);
 
-        store.commit('LOGOUT');
-        store.commit('ADD_AUTH_ADVANCED', mnemonic);
+        store.dispatch('AUTHORIZE_MNEMONIC', mnemonic);
         store.commit('SET_METAGARDEN');
 
         const newPath = game === 'metagarden' ? DASHBOARD_URL_METAGARDEN : '/' + game;

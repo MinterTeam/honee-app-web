@@ -4,8 +4,8 @@ import {TWA_SCRIPT_URL, TWA_SCRIPT_HASH} from '~/assets/variables.js';
 import {sendAddress as _sendAddress} from '~/api/telegram.js';
 
 export default ({ app, store }) => {
-    console.log(window.location.hash);
-    const isTWA = !!window.parent?.TelegramWebviewProxy;
+    const isDevTWA = process.env.NODE_ENV === 'development' && window.location.hash.indexOf('tgWebAppData') !== -1;
+    const isTWA = !!window.parent?.TelegramWebviewProxy || isDevTWA;
     // const isIframe = window.parent != null && window !== window.parent && window.parent.location.hostname !== 'honee.app';
     if (!isTWA) {
         return;
@@ -28,9 +28,6 @@ export default ({ app, store }) => {
     return promiseLoad;
 
     function init() {
-        console.log(window.location.hash);
-        console.log(window.Telegram.WebApp);
-        console.log(JSON.stringify(window.Telegram.WebApp));
         resolveLoad(window.Telegram.WebApp);
 
         window.Telegram.WebApp.expand();

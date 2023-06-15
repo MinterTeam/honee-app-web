@@ -3,6 +3,14 @@ import {getBalance, getAddressStakeList, getAddressTransactionList, getCoinList,
 import {setLastUpdateTime} from '~/composables/use-last-update-time.js';
 
 export default {
+    AUTHORIZE_MNEMONIC: ({ state, commit }, mnemonic) => {
+        if (mnemonic === state.auth) {
+            // don't re-login with same address, balance middleware can't handle it properly
+            return;
+        }
+        commit('LOGOUT');
+        commit('ADD_AUTH_ADVANCED', mnemonic);
+    },
     FETCH_TRANSACTION_LIST: ({ commit, dispatch, getters }, page = 1) => {
         if (!getters.address) {
             return;

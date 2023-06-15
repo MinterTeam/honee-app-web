@@ -40,9 +40,7 @@ export default {
                 this.$v.$touch();
                 return;
             }
-            // clear old format stored data
-            this.$store.commit('LOGOUT');
-            this.$store.commit('ADD_AUTH_ADVANCED', this.mnemonic);
+            this.$store.dispatch('AUTHORIZE_MNEMONIC', this.mnemonic);
             this.authorize();
         },
         authorize() {

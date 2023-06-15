@@ -1,6 +1,7 @@
 import Big from 'minterjs-util/src/big.js';
 
 export default {
+    // internal method, use dispatch('AUTHORIZE_MNEMONIC') instead
     ADD_AUTH_ADVANCED: (state, mnemonic) => {
         state.auth = mnemonic;
     },
