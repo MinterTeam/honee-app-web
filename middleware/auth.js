@@ -44,7 +44,7 @@ export default function({app, store, route, redirect, error}) {
         }
     }
     if (urlPublic) {
-        console.log('-- allow: embed');
+        console.log('-- allow: public');
         return Promise.resolve();
     }
     if (urlHasPreview) {

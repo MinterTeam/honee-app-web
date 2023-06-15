@@ -2,6 +2,7 @@ import {IS_SUBAPP_MEGAGAMER} from '~/assets/variables.js';
 
 export default ({ app, store }) => {
     store.subscribe((mutation) => {
+        console.log('mutation', mutation.type);
         if (mutation.type === 'LOGOUT') {
             // remove old data on logout
             store.dispatch('telegram/reset');

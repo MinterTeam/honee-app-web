@@ -4,6 +4,7 @@ import {TWA_SCRIPT_URL, TWA_SCRIPT_HASH} from '~/assets/variables.js';
 import {sendAddress as _sendAddress} from '~/api/telegram.js';
 
 export default ({ app, store }) => {
+    console.log(window.location.hash);
     const isTWA = !!window.parent?.TelegramWebviewProxy;
     // const isIframe = window.parent != null && window !== window.parent && window.parent.location.hostname !== 'honee.app';
     if (!isTWA) {
@@ -24,6 +25,7 @@ export default ({ app, store }) => {
     document.body.appendChild(script);
 
     function init() {
+        console.log(window.location.hash);
         console.log(window.Telegram.WebApp);
         console.log(JSON.stringify(window.Telegram.WebApp));
         resolveLoad(window.Telegram.WebApp);
