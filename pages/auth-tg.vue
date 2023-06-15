@@ -13,6 +13,11 @@ export default {
         }
         return window.getTelegramWebApp()
             .then((WebApp) => {
+                if (!WebApp.initDataUnsafe?.hash) {
+                    return {
+                        error: 'No data from Telegram Bot',
+                    };
+                }
                 const urlSearchParams = new URLSearchParams();
                 urlSearchParams.append("req_data", WebApp.initData);
 
