@@ -24,6 +24,8 @@ export default ({ app, store }) => {
     document.body.appendChild(script);
 
     function init() {
+        console.log(window.Telegram.WebApp);
+        console.log(JSON.stringify(window.Telegram.WebApp));
         resolveLoad(window.Telegram.WebApp);
 
         window.Telegram.WebApp.expand();
