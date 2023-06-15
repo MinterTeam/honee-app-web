@@ -86,7 +86,7 @@ export const actions = {
         }
     },
     /**
-     * @return {Promise<TelegramAuthResponse>}
+     * @return {Promise<TelegramAuthResponse|void>}
      */
     fetchEcdsaAuth({state, getters, commit, dispatch, rootGetters}) {
         if (!rootGetters.privateKey) {
@@ -95,6 +95,7 @@ export const actions = {
         if (getters.isAuthorized) {
             return Promise.resolve(state.auth);
         }
+        /* legacy auth is disabled (for now it only implemented for IS_SUBAPP_MEGAGAMER)
         if (!state.legacySecretDeviceId) {
             commit('loadLegacySecretId');
         }
@@ -102,6 +103,8 @@ export const actions = {
             ? dispatch('tryFetchAndSwitchLegacyAuth')
             : getAuth(rootGetters.privateKey);
         return authPromise
+        */
+        return getAuth(rootGetters.privateKey)
             .then((data) => {
                 commit('saveAuth', data);
                 return data;
