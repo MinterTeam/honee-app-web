@@ -2,11 +2,13 @@
 import {pretty, prettyRound} from '~/assets/utils';
 import LiteYoutube from '~/components/base/LiteYoutube.vue';
 import FieldAddressDisplay from '~/components/base/FieldAddressDisplay.vue';
+import ReferralCard from '~/components/ReferralCard.vue';
 
 export default {
     components: {
         LiteYoutube,
         FieldAddressDisplay,
+        ReferralCard,
     },
     head: {
         bodyAttrs: {
@@ -32,6 +34,9 @@ export default {
         },
         minterBalance() {
             return this.$store.getters.getBalanceAmount(this.coin);
+        },
+        receiveAmount() {
+            return (this.minterBalance || 0) * 2 + this.$store.state.referral.referralBonus;
         },
     },
     methods: {
@@ -74,13 +79,21 @@ export default {
 
                     <div class="u-h u-h4">+100%</div>
                 </div>
+                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="$route.query.debug">
+                    <div class="u-flex u-flex--align-center u-mr-10">
+                        <div class="u-mr-05" style="width: 24px;"></div>
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Referral rewards', 'todo') }}</div>
+                    </div>
+
+                    <div class="u-h u-h4">{{ pretty($store.state.referral.referralBonus) }}</div>
+                </div>
                 <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
                     <div class="u-flex u-flex--align-center u-mr-10">
                         <div class="u-mr-05" style="width: 24px;"></div>
                         <div class="u-h--uppercase u-text-mega-muted">{{ $td('Tokens to receive', 'meganet.launch-receive') }}</div>
                     </div>
 
-                    <div class="u-h u-h4">{{ pretty(minterBalance * 2) || '0' }}</div>
+                    <div class="u-h u-h4">{{ pretty(receiveAmount) }}</div>
                 </div>
             </div>
         </div>
@@ -126,6 +139,8 @@ export default {
             <a class="button button--ghost-main button--full u-mt-10" :href="$td('https://metagarden.io/platform', 'meganet.useful-links-button-platform-url')" target="_blank">{{ $td('Gaming platform', 'meganet.useful-links-button-platform') }}</a>
             <a class="button button--ghost-main button--full u-mt-10" :href="$td('https://metagarden.io/influencer', 'meganet.useful-links-button-influencer-url')" target="_blank">{{ $td('For Influencers', 'meganet.useful-links-button-influencer') }}</a>
         </div>
+
+        <ReferralCard class="card card__content card__content--medium u-mt-10" :is-modal-button="false" v-if="$route.query.debug"/>
     </div>
 </template>
 

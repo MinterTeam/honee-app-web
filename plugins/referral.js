@@ -1,5 +1,5 @@
 import {followReferrer} from '~/api/referral.js';
-import {REF_ID_QUERY} from '~/assets/variables.js';
+import {IS_SUBAPP_MEGACHAIN, REF_ID_QUERY} from '~/assets/variables.js';
 
 export default ({ app, route, store }) => {
     // always init regardless of presence of query ref id (it will fallback to web storage)
@@ -15,6 +15,10 @@ export default ({ app, route, store }) => {
     // Every time the route changes (fired on initialization too)
     app.router.beforeEach(async (to, from, next) => {
         await store.dispatch('referral/fetchRefId');
+        if (IS_SUBAPP_MEGACHAIN && store.state.referral.refId) {
+            // needed for MEGANET sale
+            store.dispatch('referral/fetchReferralBonus');
+        }
 
         const foreignRefId = store.state.referral.foreignRefId;
         if (foreignRefId && store.getters.isPKAuthorized) {

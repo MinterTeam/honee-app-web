@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import {getRefId} from '~/api/referral.js';
+import {getReferralBonus, getRefId} from '~/api/referral.js';
 
 const FOREIGN_REF_COOKIE_KEY = 'foreignRefId';
 
@@ -8,6 +8,7 @@ export const state = () => ({
     refId: undefined,
     // ref to follow
     foreignRefId: undefined,
+    referralBonus: 0,
 });
 
 export const mutations = {
@@ -16,6 +17,9 @@ export const mutations = {
     },
     setRefId(state, value) {
         state.refId = value;
+    },
+    setReferralBonus(state, value) {
+        state.referralBonus = value;
     },
     initForeignRefId(state, value) {
         if (value) {
@@ -66,5 +70,13 @@ export const actions = {
             return Promise.resolve(state.refId);
         }
     },
-
+    fetchReferralBonus({state, commit}) {
+        return getReferralBonus(state.refId)
+            .then((bonus) => {
+                commit('setReferralBonus', bonus);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    },
 };
