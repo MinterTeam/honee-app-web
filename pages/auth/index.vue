@@ -38,7 +38,19 @@ export default {
 
 <template>
     <div class="u-container u-container--mini">
-        <template v-if="!$store.getters.isMegagamer">
+        <template v-if="$store.getters.isMegachain">
+            <a class="button button--telegram button--full" :href="$td('http://t.me/metagardenbot?start=launchpad', 'index.sign-up-megachain-url')" target="_blank">
+                <img src="/img/icon-social-telegram.svg" alt="" role="presentation" class="button__icon">
+                {{ $td('Register via Telegram', 'index.sign-up-megachain') }}
+            </a>
+
+            <div class="u-text-center u-mt-15">
+                <nuxt-link class="link link--underline u-fw-700" :to="$i18nGetPreferredPath('/auth/sign-in')">
+                    {{ $td('Login with a seed phrase', 'index.already-have-wallet-megachain') }}
+                </nuxt-link>
+            </div>
+        </template>
+        <template v-if="$store.getters.isHonee">
             <nuxt-link class="button button--main button--full button--large" :to="$i18nGetPreferredPath('/auth/sign-up')">
                 {{ $td('Create a new wallet', 'index.sign-up') }}
             </nuxt-link>
@@ -49,7 +61,7 @@ export default {
                 </nuxt-link>
             </div>
         </template>
-        <template v-else>
+        <template v-if="$store.getters.isMegagamer">
             <TelegramAuth
                 class="u-text-center"
                 reason="gamer-id"

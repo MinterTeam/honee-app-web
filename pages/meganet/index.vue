@@ -51,7 +51,7 @@ export default {
         <div class="card u-mb-10">
             <div class="card__content card__content--medium u-text-center">
                 <h2 class="u-h3 u-mb-05">{{ $td('Buy MEGANET tokens to receive +100% bonus & aidrops from games', 'meganet.early-adopter-title') }}</h2>
-                <p class="u-text-medium">{{ $td('All MEGANET token holders will receive MEGA coins (native Metagarden Chain coins) with a 100% bonus after the Mainnet launch.', 'meganet.early-adopter-description') }}</p>
+                <p class="u-text-medium">{{ $td('All MEGANET token holders will receive MEGA coins (native Metagarden Chain coins) with a 100% bonus after the Mainnet launch. The current price of MEGANET is', 'meganet.early-adopter-description') }} <span class="span-green">$0.64</span> {{ $td('per token.', 'meganet.token-price-stages-description-2') }}</p>
 
                 <div class="meganet__range u-mt-15" :style="`--val: 905; --min: 0; --max: 1000; --step: 1`"></div>
 
@@ -98,24 +98,12 @@ export default {
             </div>
         </div>
 
-        <div class="card card__content card__content--medium u-text-center u-mb-10">
+        <!--<div class="card card__content card__content--medium u-text-center u-mb-10">
             <h2 class="u-h3 u-mb-05">{{ $td('MEGANET price stages', 'meganet.token-price-stages-title') }}</h2>
             <p class="u-text-medium u-mb-10">{{ $td('The current price of early access MEGANET tokens is', 'meganet.token-price-stages-description-1') }} <span class="span-green">$0.64</span> {{ $td('per token.', 'meganet.token-price-stages-description-2') }}</p>
-            <!--<img src="/img/megachain-prices.svg" alt="MEGANET Price Stages" width="100%">-->
+            <img src="/img/megachain-prices.svg" alt="MEGANET Price Stages" width="100%">
             <p class="u-text-small">{{ $td('The token price can be subject to increase at any time.', 'meganet.token-price-stages-p') }}</p>
-        </div>
-
-        <div class="card card__content card__content--medium u-text-center u-mb-10">
-            <h2 class="u-h3 u-mb-05">{{ $td('Your testnet address', 'meganet.testnet-address-title') }}</h2>
-
-            <FieldAddressDisplay
-                class="u-mt-10"
-                :value="$store.getters.evmAddress"
-                :label="$td('Metagarden testnet address', 'meganet.testnet-address-label')"
-            />
-
-            <a class="button button--main button--full u-mt-10" :href="`https://scan.testnet.metagarden.io/address/${$store.getters.evmAddress}`" target="_blank">{{ $td('View in block explorer', 'meganet.testnet-address-button') }}</a>
-        </div>
+        </div>-->
 
         <div class="card card__content card__content--medium u-text-center u-mb-10">
             <div class="video-section-video">
@@ -129,6 +117,18 @@ export default {
             <a class="button button--main button--full u-mb-05" href="http://t.me/metagardenbot?start=start" target="_blank">{{ $td('Play', 'meganet.gaming-platform-button') }}</a>
             <p class="u-text-small u-mb-10">{{ $td('Try α-versions of our games in Telegram', 'meganet.gaming-platform-p-small') }}</p>
             <a :href="$td('https://metagarden.io/platform', 'meganet.gaming-platform-more-url')" target="_blank" class="link link--bold link--underline">{{ $td('Read more about platform', 'meganet.gaming-platform-more') }}</a>
+        </div>
+
+        <div class="card card__content card__content--medium u-text-center u-mb-10">
+            <h2 class="u-h3 u-mb-05">{{ $td('Your testnet address', 'meganet.testnet-address-title') }}</h2>
+
+            <FieldAddressDisplay
+                class="u-mt-10"
+                :value="$store.getters.evmAddress"
+                :label="$td('Metagarden testnet address', 'meganet.testnet-address-label')"
+            />
+
+            <a class="button button--main button--full u-mt-10" :href="`https://scan.testnet.metagarden.io/address/${$store.getters.evmAddress}`" target="_blank">{{ $td('View in block explorer', 'meganet.testnet-address-button') }}</a>
         </div>
 
         <div class="card card__content card__content--medium u-text-center">
