@@ -2,12 +2,14 @@
 import {pretty, prettyRound} from '~/assets/utils';
 import LiteYoutube from '~/components/base/LiteYoutube.vue';
 import FieldAddressDisplay from '~/components/base/FieldAddressDisplay.vue';
+import MetagardenLootboxCard from '~/components/MetagardenLootboxCard.vue';
 import ReferralCard from '~/components/ReferralCard.vue';
 
 export default {
     components: {
         LiteYoutube,
         FieldAddressDisplay,
+        MetagardenLootboxCard,
         ReferralCard,
     },
     head: {
@@ -48,6 +50,7 @@ export default {
 
 <template>
     <div class="u-container--small">
+        <MetagardenLootboxCard class="card card__content card__content--medium u-mb-10" :is-modal-button="false"/>
         <div class="card u-mb-10">
             <div class="card__content card__content--medium u-text-center">
                 <h2 class="u-h3 u-mb-05">{{ $td('Buy MEGANET tokens to receive +100% bonus & aidrops from games', 'meganet.early-adopter-title') }}</h2>
