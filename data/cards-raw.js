@@ -203,6 +203,62 @@ export default {
                     description: 'Децентрализованный торговый фонд на основе Топ-10 портфелей экспертов.',
                 },
             }),
+            makeCard(presets.farm('RABBITS', 'METAGARDEN'), {
+                stats: {
+                    apr: {
+                        percent: '61',
+                    },
+                },
+            }),
+            makeCard(presets.farm('CARROTS', 'METAGARDEN'), {
+                stats: {
+                    apr: {
+                        percent: '61',
+                    },
+                },
+            }),
+            makeCard(presets.farm('BUNNY', 'METAGARDEN'), {
+                stats: {
+                    apr: {
+                        percent: '61',
+                    },
+                },
+            }),
+            makeCard(presets.farm('WATER', 'METAGARDEN'), {
+                stats: {
+                    apr: {
+                        percent: '61',
+                    },
+                },
+            }),
+            makeCard(presets.farm('GARDEN', 'METAGARDEN'), {
+                stats: {
+                    apr: {
+                        percent: '61',
+                    },
+                },
+            }),
+            makeCard(presets.farm('SNATCH', 'METAGARDEN'), {
+                stats: {
+                    apr: {
+                        percent: '61',
+                    },
+                },
+            }),
+            makeCard(presets.farm('WONDER', 'METAGARDEN'), {
+                stats: {
+                    apr: {
+                        percent: '61',
+                    },
+                },
+            }),
+            makeCard(presets.farm('HEISTGAME', 'METAGARDEN'), {
+                stats: {
+                    apr: {
+                        percent: '61',
+                    },
+                },
+            }),
             {
                 style: 'portfolio-battle',
                 caption: 'Contest',
