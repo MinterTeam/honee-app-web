@@ -50,7 +50,7 @@ export default {
                 </nuxt-link>
             </div>
         </template>
-        <template v-if="$store.getters.isHonee">
+        <template v-if="!$store.getters.isMegachain && !$store.getters.isMegagamer">
             <nuxt-link class="button button--main button--full button--large" :to="$i18nGetPreferredPath('/auth/sign-up')">
                 {{ $td('Create a new wallet', 'index.sign-up') }}
             </nuxt-link>
