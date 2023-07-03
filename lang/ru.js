@@ -180,7 +180,6 @@ export default {
         'sign-up': 'Создать новый кошелёк',
         'sign-up-2': 'Создание кошелька',
         'sign-up-megachain': 'Зарегистрировать через TG',
-        'sign-up-megachain-url': 'http://t.me/metagardenbot?start=launchpadru',
         'or': 'или',
         'sign-in': 'Вход',
         'already-have-wallet': 'У меня уже есть кошелёк',

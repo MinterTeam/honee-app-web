@@ -29,6 +29,13 @@ export default {
             }
             return undefined;
         },
+        telegramLoginUrl() {
+            const url = this.$i18n.locale === 'ru'
+                ? 'https://t.me/metagardenbot?start=launchpadru'
+                : 'https://t.me/metagardenbot?start=launchpad';
+            const refId = this.$store.state.referral.foreignRefId;
+            return refId ? url + '-' + refId : url;
+        },
     },
     methods: {
 
@@ -39,7 +46,7 @@ export default {
 <template>
     <div class="u-container u-container--mini">
         <template v-if="$store.getters.isMegachain">
-            <a class="button button--telegram button--full" :href="$td('http://t.me/metagardenbot?start=launchpad', 'index.sign-up-megachain-url')" target="_blank">
+            <a class="button button--telegram button--full" :href="telegramLoginUrl" target="_blank">
                 <img src="/img/icon-social-telegram.svg" alt="" role="presentation" class="button__icon">
                 {{ $td('Register via Telegram', 'index.sign-up-megachain') }}
             </a>
