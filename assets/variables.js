@@ -28,9 +28,12 @@ export const CHAINIK_API_URL = 'https://chainik.io/json/';
 export const FARM_API_URL = 'https://yf.chainik.io/api/v1/';
 export const CARD_TO_MINTER_HOST = process.env.APP_CARD_TO_MINTER_HOST;
 export const CARD_TO_MINTER_API_URL = 'https://card-api.minter.trade/v1/';
-export const TELEGRAM_AUTH_HOST = process.env.APP_TELEGRAM_AUTH_HOST;
+export const TELEGRAM_AUTH_BOT_NAME = IS_SUBAPP_MEGACHAIN || IS_SUBAPP_MEGAGAMER ? 'MetagardenBot' : 'HoneePremiumBot';
+export const TELEGRAM_AUTH_HOST = IS_SUBAPP_MEGACHAIN || IS_SUBAPP_MEGAGAMER ? 'https://metagarden-bot.minter.network' : 'https://premium-bot.honee.app';
 export const TELEGRAM_AUTH_API_URL = TELEGRAM_AUTH_HOST + '/api/v1/';
-export const TELEGRAM_LEGACY_AUTH_API_URL = IS_SUBAPP_MEGAGAMER ? TELEGRAM_AUTH_API_URL : 'https://telegram-auth.honee.app/api/v1/';
+// 'legacy' now means 'without ecdsaAuth', real legacy not used anymore
+export const TELEGRAM_LEGACY_AUTH_API_URL = IS_SUBAPP_MEGAGAMER ? TELEGRAM_AUTH_API_URL : '';
+// export const TELEGRAM_LEGACY_AUTH_API_URL = 'https://telegram-auth.honee.app/api/v1/';
 export const STAKING_API_URL = process.env.APP_STAKING_API_URL;
 export const REFERRAL_API_URL = process.env.APP_REFERRAL_API_URL;
 export const PORTFOLIO_API_URL = process.env.APP_PORTFOLIO_API_URL;

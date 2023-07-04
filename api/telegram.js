@@ -110,6 +110,8 @@ export function sendAddress(telegramId, address, initData) {
         telegramId,
         address,
         initData,
+        // metagarden-bot.minter.network api requires token, so hardcode some everywhere https://t.me/c/1747718110/1533
+        token: 'LAUNCHPAD',
     }));
 }
 

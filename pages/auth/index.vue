@@ -1,4 +1,5 @@
 <script>
+import {TELEGRAM_AUTH_BOT_NAME} from '~/assets/variables.js';
 import getTitle from '~/assets/get-title.js';
 import TelegramAuth from '~/components/TelegramAuth.vue';
 
@@ -31,8 +32,8 @@ export default {
         },
         telegramLoginUrl() {
             const url = this.$i18n.locale === 'ru'
-                ? 'https://t.me/metagardenbot?start=launchpadru'
-                : 'https://t.me/metagardenbot?start=launchpad';
+                ? `https://t.me/${TELEGRAM_AUTH_BOT_NAME}?start=launchpadru`
+                : `https://t.me/${TELEGRAM_AUTH_BOT_NAME}?start=launchpad`;
             const refId = this.$store.state.referral.foreignRefId;
             return refId ? url + '-' + refId : url;
         },
