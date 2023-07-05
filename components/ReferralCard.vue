@@ -123,7 +123,7 @@ export default {
                         Loading…
                     </template>
                     <template v-else>
-                        {{ $td('Share the unique link below with your friends and earn MEGANET tokens with their purchases. The more you invite – the more you earn.', 'todo') }}
+                        {{ $td('Share the unique link below with your friends and earn LAUNCHER tokens with their purchases. The more you invite – the more you earn.', 'todo') }}
                     </template>
                 </p>
             </template>
@@ -165,14 +165,14 @@ export default {
             </p>
             <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="$store.state.referral.refId && referralList && $options.IS_SUBAPP_MEGACHAIN">
                 <div class="u-flex u-flex--align-center u-mr-10">
-                    <div class="u-h--uppercase u-text-mega-muted">{{ $td('Total Invites accepted', 'todo') }}</div>
+                    <div class="u-h--uppercase u-text-mega-muted">{{ $td('Total invites accepted', 'todo') }}</div>
                 </div>
 
                 <div class="u-h u-h4">{{ referralList.length }}</div>
             </div>
             <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="$options.IS_SUBAPP_MEGACHAIN">
                 <div class="u-flex u-flex--align-center u-mr-10">
-                    <div class="u-h--uppercase u-text-mega-muted">{{ $td('Total MEGANET referral rewards', 'todo') }}</div>
+                    <div class="u-h--uppercase u-text-mega-muted">{{ $td('Total LAUNCHER referral rewards', 'todo') }}</div>
                 </div>
 
                 <div class="u-h u-h4">{{ pretty($store.state.referral.referralBonus) }}</div>

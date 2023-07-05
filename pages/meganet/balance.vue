@@ -9,8 +9,11 @@ import Modal from '~/components/base/Modal.vue';
 import Topup from '~/components/Topup.vue';
 import Swap from '~/components/Swap.vue';
 
+const PRESALE_COIN = 'LAUNCHER';
+
 
 export default {
+    PRESALE_COIN,
     HUB_NETWORK_SLUG,
     TELEGRAM_BUY_LINKS,
     components: {
@@ -48,10 +51,13 @@ export default {
         isMainnet() {
             return NETWORK === MAINNET;
         },
+        coin() {
+            return PRESALE_COIN;
+        },
         card2MinterUrl() {
             return getCard2MinterUrl({
                 address: this.$store.getters.address,
-                coin: 'MEGANET',
+                coin: PRESALE_COIN,
                 returnUrl: window.location.href,
                 finishUrl: window.location.origin,
             });
@@ -77,7 +83,7 @@ export default {
 <template>
     <div class="u-text-center u-container--small">
         <img class="u-image u-mb-10" src="/img/logo-megachain-side.svg" alt="Metagarden Chain" width="265" height="48">
-        <h1 class="u-h4 u-mb-15">{{ $td('Buy MEGANET tokens with any of these options to join the Metagarden Chain.', 'meganet.buy-text') }}</h1>
+        <h1 class="u-h4 u-mb-15">{{ $td(`Buy ${coin} tokens with any of these options to join the Metagarden Chain.`, 'meganet.buy-text', {coin: $options.PRESALE_COIN}) }}</h1>
 
 
 
@@ -89,7 +95,7 @@ export default {
                 <TopupWaitSmartWalletWrap
                     class="u-text-center u-text-medium"
                     :showWaitIndicator="false"
-                    coin-swap-after-deposit="MEGANET"
+                    :coin-swap-after-deposit="$options.PRESALE_COIN"
                     @update:processing="isDepositProcessing = $event"
                     @topup="successDeposit = $event;"
                     @is-show="isShowWaitSmartWallet = $event;"
@@ -119,10 +125,10 @@ export default {
                 />
                 <p class="form-row u-text-muted u-text-small u-text-left u-mb-25">
                     <template v-if="$i18n.locale === 'en'">
-                    Ethereum network fee will be ≈ $100. However, we will compensate you with MEGANET tokens. To receive compensation, please contact support.
+                    Ethereum network fee will be ≈ $100. However, we will compensate you with {{ $options.PRESALE_COIN }} tokens. To receive compensation, please contact support.
                     </template>
                     <template v-if="$i18n.locale === 'ru'">
-                    Комиссия в сети Ethereum ≈ $100. Однако, мы компенсируем ее в виде токенов MEGANET. Для получения компенсации обратитесь в службу поддержки.
+                    Комиссия в сети Ethereum ≈ $100. Однако, мы компенсируем ее в виде токенов {{ $options.PRESALE_COIN }}. Для получения компенсации обратитесь в службу поддержки.
                     </template>
                 </p>
                 <!-- evm bsc -->
@@ -176,7 +182,7 @@ export default {
                     <img class="u-mr-05" src="/img/icon-social-telegram-circle.svg" alt="" role="presentation" width="24" height="24">
                     {{ $td('Telegram bot', 'deposit.title-telegram') }}
                 </h2>
-                <a class="button button--main button--full u-mt-10" :href="$options.TELEGRAM_BUY_LINKS['MEGANET']" target="_blank" v-if="$options.TELEGRAM_BUY_LINKS['MEGANET']">
+                <a class="button button--main button--full u-mt-10" :href="$options.TELEGRAM_BUY_LINKS[$options.PRESALE_COIN]" target="_blank" v-if="$options.TELEGRAM_BUY_LINKS[$options.PRESALE_COIN]">
                     {{ $td('Switch to Telegram', 'deposit.button-buy-with-telegram') }}
                 </a>
 
@@ -198,7 +204,7 @@ export default {
                     :label="$td('Your Minter wallet address', 'meganet.minter-address-label')"
                 />
 
-                <Swap class="u-mt-10" :params="{coinToBuy: 'MEGANET'}" :show-deposit="false"/>
+                <Swap class="u-mt-10" :params="{coinToBuy: $options.PRESALE_COIN}" :show-deposit="false"/>
             </div>
 
 

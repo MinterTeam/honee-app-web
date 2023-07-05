@@ -58,9 +58,11 @@ export default {
             <nuxt-link v-if="$store.getters.isAuthorized && !isAccountPage" class="header__controls-link header__controls-user u-semantic-button" :to="$i18nGetPreferredPath('/meganet/balance')">
                 <div class="u-mr-10 u-text-right">
                     <div class="u-fw-700 header__controls-user-name">{{ $td('Your balance', 'meganet.header-account') }}</div>
+                    <!--
                     <div class="u-fw-600 header__controls-user-balance">
                         {{ pretty($store.getters.getBalanceAmount('MEGANET')) }} MEGANET
                     </div>
+                    -->
                 </div>
                 <img class="header__controls-user-avatar u-hidden-mini-down" :src="$store.getters.avatar" v-if="$store.getters.avatar" alt="" role="presentation" width="32" height="32"/>
             </nuxt-link>

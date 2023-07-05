@@ -32,13 +32,16 @@ export default {
     },
     computed: {
         coin() {
-            return 'MEGANET';
+            return 'LAUNCHER';
+        },
+        meganetBalance() {
+            return this.$store.getters.getBalanceAmount('MEGANET');
         },
         minterBalance() {
             return this.$store.getters.getBalanceAmount(this.coin);
         },
         receiveAmount() {
-            return (this.minterBalance || 0) * 2 + this.$store.state.referral.referralBonus;
+            return (this.meganetBalance || 0) * 2 + this.$store.state.referral.referralBonus + this.minterBalance;
         },
     },
     methods: {
@@ -52,52 +55,73 @@ export default {
     <div class="u-container--small">
         <MetagardenLootboxCard
             class="card card__content card__content--medium u-mb-10"
-            :allow-empty="true"
+            :allow-empty="false"
             external-link="https://my.honee.app/metagarden/lootbox"
         />
         <div class="card card--megachain u-mb-10">
             <div class="card__content card__content--medium u-text-center">
-                <h2 class="u-h3 u-mb-05">{{ $td('Buy MEGANET tokens to receive +100% bonus & aidrops from games', 'meganet.early-adopter-title') }}</h2>
-                <p class="u-text-medium">{{ $td('All MEGANET token holders will receive MEGA coins (native Metagarden Chain coins) with a 100% bonus after the Mainnet launch. The current price of MEGANET is', 'meganet.early-adopter-description') }} <span class="span-green">$0.64</span> {{ $td('per token.', 'meganet.token-price-stages-description-2') }}</p>
+                <h2 class="u-h3 u-mb-05">{{ $td(`Buy ${coin} tokens to receive bonus & aidrops from games`, 'meganet.early-adopter-title') }}</h2>
+                <p class="u-text-medium">
+                    {{ $td(`All ${coin} token holders will receive MEGA coins (native Metagarden Chain coins) with a bonus after the Mainnet launch.`, 'meganet.early-adopter-description', {coin}) }}
+                    <!--
+                    {{ $td('The current price of ${coin} is ', 'early-adopter-description-price', {coin}) }}
+                    <span class="span-green">$0.64</span>
+                    {{ $td('per token.', 'meganet.token-price-stages-description-2') }}
+                    -->
+                </p>
 
                 <!--<div class="meganet__range u-mt-15" :style="`--val: 905; --min: 0; --max: 1000; --step: 1`"></div>
 
                 <div class="u-mt-10 u-text-medium u-fw-700">{{ $td('', 'meganet.tokens-left-1') }}{{ prettyRound(1000000 - 905000) }} {{ $td('of 1 000 000 tokens left', 'meganet.tokens-left-2') }}</div>-->
 
                 <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath('/meganet/balance')">
-                    {{ $td('Buy MEGANET tokens', 'meganet.buy-button') }}
+                    {{ $td(`Buy ${coin} tokens`, 'meganet.buy-button', {coin}) }}
                 </nuxt-link>
             </div>
 
             <div class="card__content card__content--medium">
+                <div class="u-flex u-flex--align-center u-mb-10">
+                    <img class="u-image u-image--round u-mr-05" alt="" :src="$store.getters['explorer/getCoinIcon']('MEGANET')" width="24" height="24">
+                    <div class="u-h--uppercase-solid">
+                        {{ $td(`Your balance`, 'meganet.your-balance') }}
+                    </div>
+                </div>
+
                 <div class="u-flex u-flex--justify-between u-flex--align-center">
                     <div class="u-flex u-flex--align-center u-mr-10">
-                        <img class="u-image u-image--round u-mr-05" alt="" :src="$store.getters['explorer/getCoinIcon'](coin)" width="24" height="24">
-                        <div class="u-h--uppercase u-text-mega-muted">{{ $td(`${coin} balance`, 'meganet.launch-balance', {coin}) }}</div>
+                        <div class="u-h--uppercase u-text-mega-muted">
+                            {{ $td(`MEGANET tokens`, 'meganet.launch-balance', {coin: 'MEGANET'}) }}
+                        </div>
+                    </div>
+
+                    <div class="u-h u-h4">{{ pretty(meganetBalance) || '0' }}</div>
+                </div>
+                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
+                    <div class="u-flex u-flex--align-center u-mr-10">
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Early adopter bonus (+100%)', 'meganet.launch-bonus') }}</div>
+                    </div>
+
+                    <div class="u-h u-h4">{{ pretty(meganetBalance) || '0' }}</div>
+                </div>
+                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
+                    <div class="u-flex u-flex--align-center u-mr-10">
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td(`${coin} tokens`, 'meganet.launch-balance', {coin}) }}</div>
                     </div>
 
                     <div class="u-h u-h4">{{ pretty(minterBalance) || '0' }}</div>
                 </div>
-                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
-                    <div class="u-flex u-flex--align-center u-mr-10">
-                        <div class="u-mr-05" style="width: 24px;"></div>
-                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Your bonus', 'meganet.launch-bonus') }}</div>
-                    </div>
-
-                    <div class="u-h u-h4">+100%</div>
-                </div>
                 <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="$route.query.debug">
                     <div class="u-flex u-flex--align-center u-mr-10">
-                        <div class="u-mr-05" style="width: 24px;"></div>
-                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Referral rewards', 'todo') }}</div>
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Extra bonus', 'todo') }}</div>
                     </div>
 
                     <div class="u-h u-h4">{{ pretty($store.state.referral.referralBonus) }}</div>
                 </div>
-                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
+            </div>
+            <div class="card__content card__content--medium">
+                <div class="u-flex u-flex--justify-between u-flex--align-center">
                     <div class="u-flex u-flex--align-center u-mr-10">
-                        <div class="u-mr-05" style="width: 24px;"></div>
-                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Tokens to receive', 'meganet.launch-receive') }}</div>
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Total balance after Mainnet&nbsp;launch', 'meganet.launch-receive') }}</div>
                     </div>
 
                     <div class="u-h u-h4">{{ pretty(receiveAmount) }}</div>

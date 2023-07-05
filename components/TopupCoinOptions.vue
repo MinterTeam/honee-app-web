@@ -6,6 +6,7 @@ import {getCard2MinterUrl} from '~/assets/utils.js';
 export const TELEGRAM_BUY_LINKS = {
     BEE: 'https://t.me/honeepremiumbot?start=buy-bee',
     MEGANET: 'https://t.me/metagardenbot?start=meganet',
+    LAUNCHER: 'https://t.me/metagardenbot?start=launcher',
 };
 
 export default {
