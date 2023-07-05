@@ -50,8 +50,12 @@ export default {
 
 <template>
     <div class="u-container--small">
-        <MetagardenLootboxCard class="card card__content card__content--medium u-mb-10" :is-modal-button="false"/>
-        <div class="card u-mb-10">
+        <MetagardenLootboxCard
+            class="card card__content card__content--medium u-mb-10"
+            :allow-empty="true"
+            external-link="https://my.honee.app/metagarden/lootbox"
+        />
+        <div class="card card--megachain u-mb-10">
             <div class="card__content card__content--medium u-text-center">
                 <h2 class="u-h3 u-mb-05">{{ $td('Buy MEGANET tokens to receive +100% bonus & aidrops from games', 'meganet.early-adopter-title') }}</h2>
                 <p class="u-text-medium">{{ $td('All MEGANET token holders will receive MEGA coins (native Metagarden Chain coins) with a 100% bonus after the Mainnet launch. The current price of MEGANET is', 'meganet.early-adopter-description') }} <span class="span-green">$0.64</span> {{ $td('per token.', 'meganet.token-price-stages-description-2') }}</p>
@@ -101,14 +105,14 @@ export default {
             </div>
         </div>
 
-        <!--<div class="card card__content card__content--medium u-text-center u-mb-10">
+        <!--<div class="card card--megachain card__content card__content--medium u-text-center u-mb-10">
             <h2 class="u-h3 u-mb-05">{{ $td('MEGANET price stages', 'meganet.token-price-stages-title') }}</h2>
             <p class="u-text-medium u-mb-10">{{ $td('The current price of early access MEGANET tokens is', 'meganet.token-price-stages-description-1') }} <span class="span-green">$0.64</span> {{ $td('per token.', 'meganet.token-price-stages-description-2') }}</p>
             <img src="/img/megachain-prices.svg" alt="MEGANET Price Stages" width="100%">
             <p class="u-text-small">{{ $td('The token price can be subject to increase at any time.', 'meganet.token-price-stages-p') }}</p>
         </div>-->
 
-        <div class="card card__content card__content--medium u-text-center u-mb-10">
+        <div class="card card--megachain card__content card__content--medium u-text-center u-mb-10">
             <div class="video-section-video">
                 <LiteYoutube
                     class="video-youtube u-mb-10"
@@ -122,7 +126,7 @@ export default {
             <a :href="$td('https://metagarden.io/platform', 'meganet.gaming-platform-more-url')" target="_blank" class="link link--bold link--underline">{{ $td('Read more about platform', 'meganet.gaming-platform-more') }}</a>
         </div>
 
-        <div class="card card__content card__content--medium u-text-center u-mb-10">
+        <div class="card card--megachain card__content card__content--medium u-text-center u-mb-10">
             <h2 class="u-h3 u-mb-05">{{ $td('Your testnet address', 'meganet.testnet-address-title') }}</h2>
 
             <FieldAddressDisplay
@@ -134,7 +138,7 @@ export default {
             <a class="button button--main button--full u-mt-10" :href="`https://scan.testnet.metagarden.io/address/${$store.getters.evmAddress}`" target="_blank">{{ $td('View in block explorer', 'meganet.testnet-address-button') }}</a>
         </div>
 
-        <div class="card card__content card__content--medium u-text-center">
+        <div class="card card--megachain card__content card__content--medium u-text-center">
             <h2 class="u-h3 u-mb-05">{{ $td('Useful links', 'meganet.useful-links-title') }}</h2>
 
             <a class="button button--ghost-main button--full u-mt-10" :href="$td('https://metagarden.io/', 'meganet.useful-links-button-about-url')" target="_blank">{{ $td('About EVM blockchain', 'meganet.useful-links-button-about') }}</a>
@@ -143,7 +147,7 @@ export default {
             <a class="button button--ghost-main button--full u-mt-10" :href="$td('https://metagarden.io/influencer', 'meganet.useful-links-button-influencer-url')" target="_blank">{{ $td('For Influencers', 'meganet.useful-links-button-influencer') }}</a>
         </div>
 
-        <ReferralCard class="card card__content card__content--medium u-mt-10" :is-modal-button="false" v-if="$route.query.debug"/>
+        <ReferralCard class="card card--megachain card__content card__content--medium u-mt-10" :is-modal-button="false" v-if="$route.query.debug"/>
     </div>
 </template>
 
