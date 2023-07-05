@@ -14,7 +14,7 @@ export default {
         'METAGARDEN',
         'WONDER',
         'SNATCH',
-        'MEGANET',
+        'LAUNCHER',
     ],
     layout(context) {
         return context.store.getters.isMetagarden ? 'metagarden' : 'default';
