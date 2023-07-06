@@ -11,7 +11,7 @@ export default {
     components: {
         CardMetagardenGame,
         LiteYoutube,
-        FieldAddressDisplay,
+        // FieldAddressDisplay,
         MetagardenLootboxCard,
         ReferralCard,
     },
@@ -55,9 +55,10 @@ export default {
 
 <template>
     <div class="u-container--small">
-        <img class="u-image u-image-center u-mb-10" src="/img/logo-megachain-side.svg" alt="Metagarden Chain" width="265" height="48">
+        <img class="u-image u-image-center u-mb-15" src="/img/logo-megachain-side.svg" alt="Metagarden Chain" width="265" height="48">
 
-        <div class="card card--megachain-welcome card__content card__content--medium u-mb-10 u-text-center">
+        <div class="card card--megachain-welcome card__content card__content--medium u-mb-15 u-text-center">
+            <img class="u-image u-image-center u-mb-05" src="/img/megachain-gamepad.png" srcset="/img/megachain-gamepad@2x.png 2x" alt="">
             <h2 class="u-h3 u-mb-05">{{ $td('Welcome!', 'meganet.welcome-title') }}</h2>
             <p>{{ $td('Thank you for launching Launchpad with best games in Telegram. Here you can get bonuses for playing everyday. We give you $10 of the new blockchain as welcome bonus.', 'meganet.welcome-description') }}</p>
             <button
@@ -78,7 +79,7 @@ export default {
         </div>
 
         <MetagardenLootboxCard
-            class="card card__content card__content--medium u-mb-10"
+            class="card card__content card__content--medium u-mb-15"
             :allow-empty="true"
             external-link="https://my.honee.app/metagarden/lootbox"
         />
@@ -92,7 +93,7 @@ export default {
             />
         </div>
 
-        <div class="card card--megachain u-mb-10">
+        <div class="card card--megachain u-mb-15">
             <div class="card__content card__content--medium u-text-center">
                 <h2 class="u-h3 u-mb-05">{{ $td(`Buy ${coin} tokens to receive bonus & aidrops from games`, 'meganet.early-adopter-title') }}</h2>
                 <p class="u-text-medium">
@@ -114,14 +115,14 @@ export default {
             </div>
         </div>
 
-        <!--<div class="card card--megachain card__content card__content--medium u-text-center u-mb-10">
+        <!--<div class="card card--megachain card__content card__content--medium u-text-center u-mb-15">
             <h2 class="u-h3 u-mb-05">{{ $td('MEGANET price stages', 'meganet.token-price-stages-title') }}</h2>
             <p class="u-text-medium u-mb-10">{{ $td('The current price of early access MEGANET tokens is', 'meganet.token-price-stages-description-1') }} <span class="span-green">$0.64</span> {{ $td('per token.', 'meganet.token-price-stages-description-2') }}</p>
             <img src="/img/megachain-prices.svg" alt="MEGANET Price Stages" width="100%">
             <p class="u-text-small">{{ $td('The token price can be subject to increase at any time.', 'meganet.token-price-stages-p') }}</p>
         </div>-->
 
-        <div class="card card--megachain card__content card__content--medium u-text-center u-mb-10">
+        <div class="card card--megachain card__content card__content--medium u-text-center u-mb-15">
             <div class="video-section-video">
                 <LiteYoutube
                     class="video-youtube u-mb-10"
@@ -135,7 +136,8 @@ export default {
             <a :href="$td('https://metagarden.io/platform', 'meganet.gaming-platform-more-url')" target="_blank" class="link link--bold link--underline">{{ $td('Read more about platform', 'meganet.gaming-platform-more') }}</a>
         </div>
 
-        <div class="card card--megachain card__content card__content--medium u-text-center u-mb-10">
+        <!--
+        <div class="card card&#45;&#45;megachain card__content card__content&#45;&#45;medium u-text-center u-mb-15">
             <h2 class="u-h3 u-mb-05">{{ $td('Your testnet address', 'meganet.testnet-address-title') }}</h2>
 
             <FieldAddressDisplay
@@ -144,9 +146,9 @@ export default {
                 :label="$td('Metagarden testnet address', 'meganet.testnet-address-label')"
             />
 
-            <a class="button button--main button--full u-mt-10" :href="`https://scan.testnet.metagarden.io/address/${$store.getters.evmAddress}`" target="_blank">{{ $td('View in block explorer', 'meganet.testnet-address-button') }}</a>
+            <a class="button button&#45;&#45;main button&#45;&#45;full u-mt-10" :href="`https://scan.testnet.metagarden.io/address/${$store.getters.evmAddress}`" target="_blank">{{ $td('View in block explorer', 'meganet.testnet-address-button') }}</a>
         </div>
-
+        -->
         <div class="card card--megachain card__content card__content--medium u-text-center">
             <h2 class="u-h3 u-mb-05">{{ $td('Useful links', 'meganet.useful-links-title') }}</h2>
 

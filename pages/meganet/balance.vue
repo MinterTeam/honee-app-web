@@ -72,7 +72,7 @@ export default {
             return this.$store.getters.getBalanceAmount(this.coin);
         },
         receiveAmount() {
-            return this.welcomeBonus + (this.meganetBalance || 0) * 2 + this.$store.state.referral.referralBonus + this.minterBalance;
+            return this.welcomeBonus + (this.meganetBalance || 0) * 2 + Number(this.$store.state.referral.referralBonus) + Number(this.minterBalance);
         },
     },
     methods: {
@@ -114,7 +114,7 @@ export default {
 
                     <div class="u-h u-h4">{{ pretty(welcomeBonus) }}</div>
                 </div>
-                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
+                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="meganetBalance > 0">
                     <div class="u-flex u-flex--align-center u-mr-10">
                         <div class="u-h--uppercase u-text-mega-muted">
                             {{ $td(`MEGANET tokens`, 'meganet.launch-balance', {coin: 'MEGANET'}) }}
@@ -123,7 +123,7 @@ export default {
 
                     <div class="u-h u-h4">{{ pretty(meganetBalance) || '0' }}</div>
                 </div>
-                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
+                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="meganetBalance > 0">
                     <div class="u-flex u-flex--align-center u-mr-10">
                         <div class="u-h--uppercase u-text-mega-muted">{{ $td('Early adopter bonus (+100%)', 'meganet.launch-bonus') }}</div>
                     </div>
