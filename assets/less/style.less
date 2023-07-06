@@ -73,7 +73,7 @@
 
     background: @c-mega-bg; color: #fff;
     .wallet__action-button .color-main-light {display: none;}
-    .card--light-grey {.card--megachain();}
+    .card--light-grey, .card--metagarden-game {.card--megachain();}
     .card:has(.card--light-grey) {}
     .card--invert {border: none; background: transparent !important; /* important to override inline styles from custom color */}
     //.card--invert .card.card__content {border-top: none;}
@@ -261,6 +261,7 @@
     background-size: auto 200%, auto;
     color: #fff;}
 .card--megachain {background: @c-mega-bg; color: #fff; box-shadow: none; border: 1px solid @c-mega-border;}
+.card--megachain-welcome { background: url(../img/megachain-welcome.svg) #037940;}
 .card--extended-card {
     .card__action-head {
         margin: 0 0 152px 0 !important;
@@ -707,13 +708,14 @@
 
 .mg-cards {display: flex; margin-inline: -@container-padding-small; padding-inline: @container-padding-small; overflow-y: auto;}
 @media (min-width: @breakpoint-small-up) {
-    margin-inline: -@container-padding; padding-inline: @container-padding;
+    .mg-cards {margin-inline: -@container-padding; padding-inline: @container-padding;}
 }
 @media (min-width: @breakpoint-medium-up) {
-    .mg-cards {
+    .mg-cards:not(.mg-cards--inline) {
         flex-wrap: wrap; margin-top: -16px; margin-left: -16px; margin-right: 0; padding: 0; overflow-y: visible;
          & > .card {margin-top: 16px; margin-left: 16px;}
     }
+    .mg-cards--inline {margin-inline: calc(-50vw + 376px / 2); padding-inline: calc(50vw - 376px / 2); scrollbar-width: thin;}
 }
 
 

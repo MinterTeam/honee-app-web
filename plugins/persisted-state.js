@@ -6,6 +6,9 @@ export default ({store}) => {
             'auth',
             'balanceDisplayType',
             'isMetagarden',
+            // 'megachain.isCollectedWelcomeBonus',
         ],
     })(store);
+
+    store.dispatch('megachain/fetchInitialState');
 };

@@ -28,6 +28,7 @@ export const CHAINIK_API_URL = 'https://chainik.io/json/';
 export const FARM_API_URL = 'https://yf.chainik.io/api/v1/';
 export const CARD_TO_MINTER_HOST = process.env.APP_CARD_TO_MINTER_HOST;
 export const CARD_TO_MINTER_API_URL = 'https://card-api.minter.trade/v1/';
+export const CLOUDFLARE_KV_API_URL = 'https://exchanges-proxy.bip.dev/honee-cloudflare-kv/';
 export const TELEGRAM_AUTH_BOT_NAME = IS_SUBAPP_MEGACHAIN || IS_SUBAPP_MEGAGAMER ? 'MetagardenBot' : 'HoneePremiumBot';
 export const TELEGRAM_AUTH_HOST = IS_SUBAPP_MEGACHAIN || IS_SUBAPP_MEGAGAMER ? 'https://metagarden-bot.minter.network' : 'https://premium-bot.honee.app';
 export const TELEGRAM_AUTH_API_URL = TELEGRAM_AUTH_HOST + '/api/v1/';

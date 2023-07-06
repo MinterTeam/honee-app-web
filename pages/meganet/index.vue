@@ -1,12 +1,15 @@
 <script>
+import metagardenGames from '~/data/metagarden-games.js';
 import {pretty, prettyRound} from '~/assets/utils';
 import LiteYoutube from '~/components/base/LiteYoutube.vue';
 import FieldAddressDisplay from '~/components/base/FieldAddressDisplay.vue';
 import MetagardenLootboxCard from '~/components/MetagardenLootboxCard.vue';
 import ReferralCard from '~/components/ReferralCard.vue';
+import CardMetagardenGame from '~/components/CardMetagardenGame.vue';
 
 export default {
     components: {
+        CardMetagardenGame,
         LiteYoutube,
         FieldAddressDisplay,
         MetagardenLootboxCard,
@@ -28,36 +31,67 @@ export default {
     */
     data() {
         return {
+            isJustGrubbed: false,
         };
     },
     computed: {
         coin() {
             return 'LAUNCHER';
         },
-        meganetBalance() {
-            return this.$store.getters.getBalanceAmount('MEGANET');
-        },
-        minterBalance() {
-            return this.$store.getters.getBalanceAmount(this.coin);
-        },
-        receiveAmount() {
-            return (this.meganetBalance || 0) * 2 + this.$store.state.referral.referralBonus + this.minterBalance;
+        gameList() {
+            return metagardenGames;
         },
     },
     methods: {
         pretty,
         prettyRound,
+        grabWelcomeBonus() {
+            this.isJustGrubbed = true;
+            this.$store.dispatch('megachain/grabWelcomeBonus');
+        },
     },
 };
 </script>
 
 <template>
     <div class="u-container--small">
+        <img class="u-image u-image-center u-mb-10" src="/img/logo-megachain-side.svg" alt="Metagarden Chain" width="265" height="48">
+
+        <div class="card card--megachain-welcome card__content card__content--medium u-mb-10 u-text-center">
+            <h2 class="u-h3 u-mb-05">{{ $td('Welcome!', 'meganet.welcome-title') }}</h2>
+            <p>{{ $td('Thank you for launching Launchpad with best games in Telegram. Here you can get bonuses for playing everyday. We give you $10 of the new blockchain as welcome bonus.', 'meganet.welcome-description') }}</p>
+            <button
+                v-if="!$store.state.megachain.isCollectedWelcomeBonus || isJustGrubbed"
+                class="button button--full u-mt-10" type="button"
+                :class="isJustGrubbed ? 'is-disabled' : 'button--meganet-welcome'"
+                @click="grabWelcomeBonus()"
+            >
+                <img class="button__icon" src="/img/icon-present.svg" alt="" role="presentation">
+                <template v-if="!isJustGrubbed">{{ $td('Grab your $10', 'todo') }}</template>
+                <template v-else>{{ $td('Success!', 'todo') }}</template>
+
+            </button>
+            <a class="button button--telegram button--full u-mt-10" target="_blank" href="https://t.me/+Uy8uBelJEx1iNTVi">
+                <img class="button__icon" src="/img/icon-social-telegram.svg" alt="Telegram">
+                {{ $td('Join our private group', 'todo') }}
+            </a>
+        </div>
+
         <MetagardenLootboxCard
             class="card card__content card__content--medium u-mb-10"
-            :allow-empty="false"
+            :allow-empty="true"
             external-link="https://my.honee.app/metagarden/lootbox"
         />
+
+        <h2 class="u-h--uppercase-solid u-mb-10 u-mt-25">{{ $td('Play our games', 'meganet.play-our-games') }}</h2>
+        <div class="mg-cards mg-cards--inline u-mb-15">
+            <CardMetagardenGame
+                v-for="game in gameList"
+                :key="game.slug"
+                :game="game"
+            />
+        </div>
+
         <div class="card card--megachain u-mb-10">
             <div class="card__content card__content--medium u-text-center">
                 <h2 class="u-h3 u-mb-05">{{ $td(`Buy ${coin} tokens to receive bonus & aidrops from games`, 'meganet.early-adopter-title') }}</h2>
@@ -77,55 +111,6 @@ export default {
                 <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath('/meganet/balance')">
                     {{ $td(`Buy ${coin} tokens`, 'meganet.buy-button', {coin}) }}
                 </nuxt-link>
-            </div>
-
-            <div class="card__content card__content--medium">
-                <div class="u-flex u-flex--align-center u-mb-10">
-                    <img class="u-image u-image--round u-mr-05" alt="" :src="$store.getters['explorer/getCoinIcon']('MEGANET')" width="24" height="24">
-                    <div class="u-h--uppercase-solid">
-                        {{ $td(`Your balance`, 'meganet.your-balance') }}
-                    </div>
-                </div>
-
-                <div class="u-flex u-flex--justify-between u-flex--align-center">
-                    <div class="u-flex u-flex--align-center u-mr-10">
-                        <div class="u-h--uppercase u-text-mega-muted">
-                            {{ $td(`MEGANET tokens`, 'meganet.launch-balance', {coin: 'MEGANET'}) }}
-                        </div>
-                    </div>
-
-                    <div class="u-h u-h4">{{ pretty(meganetBalance) || '0' }}</div>
-                </div>
-                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
-                    <div class="u-flex u-flex--align-center u-mr-10">
-                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Early adopter bonus (+100%)', 'meganet.launch-bonus') }}</div>
-                    </div>
-
-                    <div class="u-h u-h4">{{ pretty(meganetBalance) || '0' }}</div>
-                </div>
-                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
-                    <div class="u-flex u-flex--align-center u-mr-10">
-                        <div class="u-h--uppercase u-text-mega-muted">{{ $td(`${coin} tokens`, 'meganet.launch-balance', {coin}) }}</div>
-                    </div>
-
-                    <div class="u-h u-h4">{{ pretty(minterBalance) || '0' }}</div>
-                </div>
-                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="$route.query.debug">
-                    <div class="u-flex u-flex--align-center u-mr-10">
-                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Extra bonus', 'todo') }}</div>
-                    </div>
-
-                    <div class="u-h u-h4">{{ pretty($store.state.referral.referralBonus) }}</div>
-                </div>
-            </div>
-            <div class="card__content card__content--medium">
-                <div class="u-flex u-flex--justify-between u-flex--align-center">
-                    <div class="u-flex u-flex--align-center u-mr-10">
-                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Total balance after Mainnet&nbsp;launch', 'meganet.launch-receive') }}</div>
-                    </div>
-
-                    <div class="u-h u-h4">{{ pretty(receiveAmount) }}</div>
-                </div>
             </div>
         </div>
 

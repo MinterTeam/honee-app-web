@@ -1,6 +1,6 @@
 <script>
 import {MAINNET, NETWORK, HUB_NETWORK_SLUG} from '~/assets/variables.js';
-import {getCard2MinterUrl} from '~/assets/utils.js';
+import {getCard2MinterUrl, pretty, prettyRound} from '~/assets/utils.js';
 import {TELEGRAM_BUY_LINKS} from '~/components/TopupCoinOptions.vue';
 import TopupWaitMinter from '~/components/TopupWaitMinter.vue';
 import TopupWaitSmartWalletWrap from '~/components/TopupWaitSmartWalletWrap.vue';
@@ -62,8 +62,22 @@ export default {
                 finishUrl: window.location.origin,
             });
         },
+        welcomeBonus() {
+            return this.$store.state.megachain.isCollectedWelcomeBonus ? 10 : 0;
+        },
+        meganetBalance() {
+            return this.$store.getters.getBalanceAmount('MEGANET');
+        },
+        minterBalance() {
+            return this.$store.getters.getBalanceAmount(this.coin);
+        },
+        receiveAmount() {
+            return this.welcomeBonus + (this.meganetBalance || 0) * 2 + this.$store.state.referral.referralBonus + this.minterBalance;
+        },
     },
     methods: {
+        pretty,
+        prettyRound,
         getTopupInnerPage(inner) {
             const base = this.$options.isOnboarding ? '/onboarding/topup/' : '/topup/';
             return this.$i18nGetPreferredPath(base + inner);
@@ -82,10 +96,68 @@ export default {
 
 <template>
     <div class="u-text-center u-container--small">
-        <img class="u-image u-mb-10" src="/img/logo-megachain-side.svg" alt="Metagarden Chain" width="265" height="48">
+        <div class="card card--megachain u-mb-20 u-text-left">
+            <div class="card__content card__content--medium">
+                <div class="u-flex u-flex--align-center u-mb-10">
+                    <img class="u-image u-image--round u-mr-05" alt="" :src="$store.getters['explorer/getCoinIcon']('MEGANET')" width="24" height="24">
+                    <div class="u-h--uppercase-solid">
+                        {{ $td(`Your balance`, 'meganet.your-balance') }}
+                    </div>
+                </div>
+
+                <div class="u-flex u-flex--justify-between u-flex--align-center">
+                    <div class="u-flex u-flex--align-center u-mr-10">
+                        <div class="u-h--uppercase u-text-mega-muted">
+                            {{ $td(`Welcome bonus`, 'meganet.welcome-bonus-balance') }}
+                        </div>
+                    </div>
+
+                    <div class="u-h u-h4">{{ pretty(welcomeBonus) }}</div>
+                </div>
+                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
+                    <div class="u-flex u-flex--align-center u-mr-10">
+                        <div class="u-h--uppercase u-text-mega-muted">
+                            {{ $td(`MEGANET tokens`, 'meganet.launch-balance', {coin: 'MEGANET'}) }}
+                        </div>
+                    </div>
+
+                    <div class="u-h u-h4">{{ pretty(meganetBalance) || '0' }}</div>
+                </div>
+                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
+                    <div class="u-flex u-flex--align-center u-mr-10">
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Early adopter bonus (+100%)', 'meganet.launch-bonus') }}</div>
+                    </div>
+
+                    <div class="u-h u-h4">{{ pretty(meganetBalance) || '0' }}</div>
+                </div>
+                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
+                    <div class="u-flex u-flex--align-center u-mr-10">
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td(`${coin} tokens`, 'meganet.launch-balance', {coin}) }}</div>
+                    </div>
+
+                    <div class="u-h u-h4">{{ pretty(minterBalance) || '0' }}</div>
+                </div>
+                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="$route.query.debug">
+                    <div class="u-flex u-flex--align-center u-mr-10">
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Extra bonus', 'todo') }}</div>
+                    </div>
+
+                    <div class="u-h u-h4">{{ pretty($store.state.referral.referralBonus) }}</div>
+                </div>
+            </div>
+            <div class="card__content card__content--medium">
+                <div class="u-flex u-flex--justify-between u-flex--align-center">
+                    <div class="u-flex u-flex--align-center u-mr-10">
+                        <div class="u-h--uppercase u-text-mega-muted">{{ $td('Total balance after Mainnet&nbsp;launch', 'meganet.launch-receive') }}</div>
+                    </div>
+
+                    <div class="u-h u-h4">{{ pretty(receiveAmount) }}</div>
+                </div>
+            </div>
+        </div>
+
+
         <h1 class="u-h4 u-mb-15">{{ $td(`Buy ${coin} tokens with any of these options to join the Metagarden Chain.`, 'meganet.buy-text', {coin: $options.PRESALE_COIN}) }}</h1>
-
-
 
         <div class="card card--light-grey u-text-left">
             <div
@@ -125,10 +197,10 @@ export default {
                 />
                 <p class="form-row u-text-muted u-text-small u-text-left u-mb-25">
                     <template v-if="$i18n.locale === 'en'">
-                    Ethereum network fee will be ≈ $100. However, we will compensate you with {{ $options.PRESALE_COIN }} tokens. To receive compensation, please contact support.
+                        Ethereum network fee will be ≈ $100. However, we will compensate you with {{ $options.PRESALE_COIN }} tokens. To receive compensation, please contact support.
                     </template>
                     <template v-if="$i18n.locale === 'ru'">
-                    Комиссия в сети Ethereum ≈ $100. Однако, мы компенсируем ее в виде токенов {{ $options.PRESALE_COIN }}. Для получения компенсации обратитесь в службу поддержки.
+                        Комиссия в сети Ethereum ≈ $100. Однако, мы компенсируем ее в виде токенов {{ $options.PRESALE_COIN }}. Для получения компенсации обратитесь в службу поддержки.
                     </template>
                 </p>
                 <!-- evm bsc -->
@@ -143,10 +215,10 @@ export default {
                 />
                 <p class="form-row u-text-muted u-text-small u-text-left">
                     <template v-if="$i18n.locale === 'en'">
-                    BNB Smart Chain network fee ≈ 3$.
+                        BNB Smart Chain network fee ≈ 3$.
                     </template>
                     <template v-if="$i18n.locale === 'ru'">
-                    Комиссия в сети BNB Smart Chain ≈ $3.
+                        Комиссия в сети BNB Smart Chain ≈ $3.
                     </template>
                 </p>
                 <!-- evm token -->
