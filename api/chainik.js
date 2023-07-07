@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {cacheAdapterEnhancer, Cache} from 'axios-extensions';
-import {CHAINIK_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
+import {CHAINIK_COINS_API_URL, CHAINIK_API_URL, NETWORK, MAINNET} from "~/assets/variables.js";
 import {getDefaultAdapter} from '~/assets/axios-default-adapter.js';
 import addToCamelInterceptor from '~/assets/axios-to-camel.js';
 
@@ -20,6 +20,7 @@ export function getCoinIconList() {
         return Promise.resolve({});
     }
     return instance.get('coins.json', {
+            baseURL: CHAINIK_COINS_API_URL,
             cache: coinsCache,
         })
         .then((response) => {
@@ -30,5 +31,12 @@ export function getCoinIconList() {
                 iconMap[coin.id] = coin.icon;
             });
             return iconMap;
+        });
+}
+
+export function getCoinHolders(coin) {
+    return instance.get(`coin/${coin}/total`)
+        .then((response) => {
+            return response.data.data;
         });
 }

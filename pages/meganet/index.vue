@@ -6,6 +6,7 @@ import FieldAddressDisplay from '~/components/base/FieldAddressDisplay.vue';
 import MetagardenLootboxCard from '~/components/MetagardenLootboxCard.vue';
 import ReferralCard from '~/components/ReferralCard.vue';
 import CardMetagardenGame from '~/components/CardMetagardenGame.vue';
+import MegachainRating from '~/components/MegachainRating.vue';
 
 export default {
     components: {
@@ -14,6 +15,7 @@ export default {
         // FieldAddressDisplay,
         MetagardenLootboxCard,
         ReferralCard,
+        MegachainRating,
     },
     head: {
         bodyAttrs: {
@@ -58,7 +60,7 @@ export default {
         <img class="u-image u-image-center u-mb-15" src="/img/logo-megachain-side.svg" alt="Metagarden Chain" width="265" height="48">
 
         <div class="card card--megachain-welcome card__content card__content--medium u-mb-15 u-text-center">
-            <img class="u-image u-image-center u-mb-05" src="/img/megachain-gamepad.png" srcset="/img/megachain-gamepad@2x.png 2x" alt="">
+            <img class="u-image u-image-center u-mb-05" src="/img/megachain-gamepad.png" srcset="/img/megachain-gamepad@2x.png 2x" alt="" width="179" height="151">
             <h2 class="u-h3 u-mb-05">{{ $td('Welcome!', 'meganet.welcome-title') }}</h2>
             <p>{{ $td('Thank you for launching Launchpad with best games in Telegram. Here you can get bonuses for playing everyday. We give you $10 of the new blockchain as welcome bonus.', 'meganet.welcome-description') }}</p>
             <button
@@ -135,6 +137,8 @@ export default {
             <p class="u-text-small u-mb-10">{{ $td('Try α-versions of our games in Telegram', 'meganet.gaming-platform-p-small') }}</p>
             <a :href="$td('https://metagarden.io/platform', 'meganet.gaming-platform-more-url')" target="_blank" class="link link--bold link--underline">{{ $td('Read more about platform', 'meganet.gaming-platform-more') }}</a>
         </div>
+
+        <MegachainRating class="card card__content card__content--medium card--megachain u-mb-15"/>
 
         <!--
         <div class="card card&#45;&#45;megachain card__content card__content&#45;&#45;medium u-text-center u-mb-15">

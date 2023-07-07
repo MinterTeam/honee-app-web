@@ -317,7 +317,7 @@
 .card__content {
     .card-content-base-padding();
     &:empty {display: none;}
-    &:not(:empty):not(.u-hidden) + & {border-top: 1px solid var(--color-divider);}
+    &:not(:empty):not(.u-hidden):not(.card) + & {border-top: 1px solid var(--color-divider);}
 
     .card__fake-divider {margin: 16px -16px; border-top: 1px solid var(--color-divider); align-self: stretch; flex-basis: 100%; flex-grow: 2;}
 }
