@@ -72,32 +72,48 @@ export function getReferralList(address) {
 const fastCache = new Cache({ttl: 2 * 1000, max: 100});
 
 /**
+ * @typedev
+ */
+
+/**
  * @param {Array<string>} refIdList
- * @return {Promise<Record<string, number>>}
+ * @return {Promise<{
+ * data: Record<string, Record<number, Array<string>>>,
+ * launchers: Record<string, Record<number|'total', number>>
+ * }>}
  */
 export function getReferralBonusList(refIdList) {
     if (!refIdList?.length) {
         throw new Error('refId needed to get statistics');
     }
-    return instance.get(`statistic/meganet`, {
+    return instance.get(`statistic/launcher`, {
             params: {
                 users: refIdList.join(','),
             },
             cache: fastCache,
         })
-        .then((response) => response.data.data);
+        .then((response) => response.data);
 }
 
 /**
  * @param {string} refId
- * @return {Promise<number>}
+ * @return {Promise<{inviteCount: number, reward: number}>}
  */
 export function getReferralBonus(refId) {
     if (!refId) {
         throw new Error('refId needed to get statistics');
     }
     return getReferralBonusList([refId])
-        .then((bonusMap) => Object.values(bonusMap)[0]);
+        .then((result) => {
+            const inviteLevels = Object.values(result.data)[0] || {};
+            // count of invites from all levels
+            const inviteCount = Object.values(inviteLevels).reduce((sum, level) => sum + level.length, 0);
+            const launchers = Object.values(result.launchers)[0];
+            return {
+                inviteCount,
+                reward: launchers?.total || 0,
+            };
+        });
 }
 
 

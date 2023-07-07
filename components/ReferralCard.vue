@@ -26,8 +26,10 @@ export default {
         },
     },
     async fetch() {
-        if (IS_SUBAPP_MEGACHAIN) {
+        if (!this.isModalButton) {
             this.fetchReferralList();
+        }
+        if (IS_SUBAPP_MEGACHAIN) {
             if (!this.$store.state.referral.refId) {
                 await this.setup(true);
             }
@@ -46,6 +48,12 @@ export default {
     computed: {
         refUrl() {
             return window.location.origin + this.$route.fullPath;
+        },
+        referralCount() {
+            // megachain program is multilevel and invites from all levels needed
+            return IS_SUBAPP_MEGACHAIN
+                ? this.$store.state.referral.referralInviteCount
+                : (this.referralList?.length || 0);
         },
     },
     watch: {
@@ -90,6 +98,9 @@ export default {
                 });
         },
         fetchReferralList() {
+            if (IS_SUBAPP_MEGACHAIN) {
+                return;
+            }
             return getReferralList(this.$store.getters.address)
                 .then((list) => {
                     this.referralList = list;
@@ -170,12 +181,15 @@ export default {
                 </div>
             </div>
 
-            <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="$store.state.referral.refId && referralList && $options.IS_SUBAPP_MEGACHAIN">
+            <p class="u-text-medium u-mt-10" v-if="$store.state.referral.refId && !$options.IS_SUBAPP_MEGACHAIN">
+                {{ $td(`You currently invited ${referralCount} friends`, 'referral.invited-list') }}
+            </p>
+            <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="$store.state.referral.refId && $options.IS_SUBAPP_MEGACHAIN">
                 <div class="u-flex u-flex--align-center u-mr-10">
                     <div class="u-h--uppercase u-text-mega-muted">{{ $td('Total invites accepted', 'meganet.referral-program-total-invites') }}</div>
                 </div>
 
-                <div class="u-h u-h4">{{ referralList.length }}</div>
+                <div class="u-h u-h4">{{ referralCount }}</div>
             </div>
             <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="$options.IS_SUBAPP_MEGACHAIN">
                 <div class="u-flex u-flex--align-center u-mr-10">
