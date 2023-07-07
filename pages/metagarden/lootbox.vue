@@ -2,6 +2,7 @@
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import {decodeCheck} from 'minter-js-sdk/src/check.js';
 import {getLootbox, openLootbox} from '~/api/metagarden.js';
+import {IS_SUBAPP_HONEE} from '~/assets/variables.js';
 import {getErrorText} from '~/assets/server-error.js';
 import useTxService from '~/composables/use-tx-service.js';
 import BaseLoader from '~/components/base/BaseLoader.vue';
@@ -14,7 +15,7 @@ const LOOTBOX_STATE = {
 
 export default {
     LOOTBOX_STATE,
-    layout: 'metagarden',
+    layout: IS_SUBAPP_HONEE ? 'metagarden' : undefined,
     components: {
         BaseLoader,
     },

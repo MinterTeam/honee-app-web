@@ -1,4 +1,5 @@
 <script>
+import {IS_SUBAPP_HONEE} from '~/assets/variables.js';
 import MetagardenGame from '~/components/MetagardenGame.vue';
 import MetagardenSpotCard from '~/components/MetagardenSpotCard.vue';
 //import MetagardenSwHoldCard from '~/components/CardSwHold.vue';
@@ -7,7 +8,7 @@ import MetagardenLootboxCard from '~/components/MetagardenLootboxCard.vue';
 import MetagardenStakingCard from '~/components/CardMetagardenStaking.vue';
 
 export default {
-    layout: 'metagarden',
+    layout: IS_SUBAPP_HONEE ? 'metagarden' : undefined,
     components: {
         MetagardenGame,
         MetagardenSpotCard,

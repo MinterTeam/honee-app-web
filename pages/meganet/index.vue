@@ -83,7 +83,6 @@ export default {
         <MetagardenLootboxCard
             class="card card__content card__content--medium u-mb-15"
             :allow-empty="true"
-            external-link="https://my.honee.app/metagarden/lootbox"
         />
 
         <h2 class="u-h--uppercase-solid u-mb-10 u-mt-25">{{ $td('Play our games', 'meganet.play-our-games') }}</h2>

@@ -1,8 +1,9 @@
 <script>
+import {IS_SUBAPP_HONEE} from '~/assets/variables.js';
 import MetagardenGame from '~/components/MetagardenGame.vue';
 
 export default {
-    layout: 'metagarden',
+    layout: IS_SUBAPP_HONEE ? 'metagarden' : undefined,
     components: {
         MetagardenGame,
     },

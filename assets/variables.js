@@ -3,6 +3,7 @@ export const SUBAPP_MEGACHAIN = 'megachain';
 export const SUBAPP_MEGAGAMER = 'megagamer';
 export const IS_SUBAPP_MEGACHAIN = SUBAPP === SUBAPP_MEGACHAIN;
 export const IS_SUBAPP_MEGAGAMER = SUBAPP === SUBAPP_MEGAGAMER;
+export const IS_SUBAPP_HONEE = !IS_SUBAPP_MEGACHAIN && !IS_SUBAPP_MEGAGAMER;
 export const MAINNET = 'mainnet';
 export const TESTNET = 'testnet';
 export const NETWORK = process.env.APP_ENV === MAINNET ? MAINNET : TESTNET;
