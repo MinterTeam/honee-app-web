@@ -822,9 +822,10 @@ export default {
         'referral-program-share-title': 'Ваша реф. ссылка',
         'meganet.referral-program-total-invites': 'Всего рефералов',
         'referral-program-total-rewards': 'Сумма реферальных наград',
-        'rating-title': 'Ваш рейтинги',
+        'rating-title': 'Ваши рейтинги',
         'rating-meganet-holders': 'Держатели MEGANET',
         'rating-launcher-holders': 'Держатели LAUNCHER',
+        'your-balance': 'Ваш баланс',
     },
     'mg-lootbox': {
         'title-inactive': 'Лутбокс еще не готов',
