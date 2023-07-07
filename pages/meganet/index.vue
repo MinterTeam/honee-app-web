@@ -62,7 +62,7 @@ export default {
         <div class="card card--megachain-welcome card__content card__content--medium u-mb-15 u-text-center">
             <img class="u-image u-image-center u-mb-05" src="/img/megachain-gamepad.png" srcset="/img/megachain-gamepad@2x.png 2x" alt="" width="179" height="151">
             <h2 class="u-h3 u-mb-05">{{ $td('Welcome!', 'meganet.welcome-title') }}</h2>
-            <p>{{ $td('Thank you for activating a LaunchPad with the best crypto games on Telegram. As a welcome bonus, we’d like like to give you $10 in our platform\'s digital currency.', 'meganet.welcome-description') }}</p>
+            <p class="u-text-medium">{{ $td('Thank you for activating a LaunchPad with the best crypto games on Telegram. As a welcome bonus, we\’d like to give you $10 in our platform\'s digital currency.', 'meganet.welcome-description') }}</p>
             <button
                 v-if="!$store.state.megachain.isCollectedWelcomeBonus || isJustGrubbed"
                 class="button button--full u-mt-10" type="button"
@@ -97,9 +97,9 @@ export default {
 
         <div class="card card--megachain u-mb-15">
             <div class="card__content card__content--medium u-text-center">
-                <h2 class="u-h3 u-mb-05">{{ $td('Buy platform tokens', 'meganet.early-adopter-title') }}</h2>
+                <h2 class="u-h3 u-mb-05">{{ $td('Buy project tokens', 'meganet.early-adopter-title') }}</h2>
                 <p class="u-text-medium">
-                    {{ $td(`We are preparing to launch the fastest Layer 1 EVM-compatible blockchain designed for gaming. You can buy its pre-launch tokens to join our expansion of crypto gaming on Telegram.`, 'meganet.early-adopter-description') }}
+                    {{ $td(`We are going to launch Metagarden Chain, the fastest EVM-blockchain designed for gaming, its second testnet is working perfectly. You can buy Metagarden Chain pre-launch tokens to join our expansion of crypto gaming on Telegram.`, 'meganet.early-adopter-description') }}
                     <!--
                     {{ $td('The current price of ${coin} is ', 'early-adopter-description-price', {coin}) }}
                     <span class="span-green">$0.64</span>
@@ -133,8 +133,8 @@ export default {
                     :video-id="$td('xC97gHtKO6w', 'meganet.gaming-platform-videoid')"
                 />
             </div>
-            <h2 class="u-h3 u-mb-05">{{ $td('About Platform', 'meganet.gaming-platform-title') }}</h2>
-            <p class="u-text-medium u-mb-10">{{ $td('Try out the first Metagarden platform crypto games. The games presented are in alpha status and can be played from a single Telegram bot.', 'meganet.gaming-platform-p') }}</p>
+            <h2 class="u-h3 u-mb-05">{{ $td('The Platform', 'meganet.gaming-platform-title') }}</h2>
+            <p class="u-text-medium u-mb-10">{{ $td('Try out the first crypto games for Telegram. They are in an alpha state and can be played from a single telegram bot.', 'meganet.gaming-platform-p') }}</p>
             <a class="button button--main button--full u-mb-05" href="https://t.me/metagardenbot?start=start" target="_blank">{{ $td('Play all games', 'meganet.gaming-platform-button') }}</a>
             <p class="u-text-small u-mb-10">{{ $td('Try α-versions of our games in Telegram', 'meganet.gaming-platform-p-small') }}</p>
             <a :href="$td('https://metagarden.io', 'meganet.gaming-platform-more-url')" target="_blank" class="link link--bold link--underline">{{ $td('Learn more', 'meganet.gaming-platform-more') }}</a>

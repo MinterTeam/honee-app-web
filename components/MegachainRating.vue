@@ -42,7 +42,7 @@ export default {
         <div class="u-flex u-flex--align-center u-mb-10">
             <img class="u-image u-image--round u-mr-05" alt="" src="/img/icon-star.svg" width="24" height="24">
             <div class="u-h--uppercase-solid">
-                {{ $td(`Your rating`, 'meganet.rating-title') }}
+                {{ $td(`Your ratings`, 'meganet.rating-title') }}
             </div>
         </div>
 
