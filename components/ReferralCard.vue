@@ -117,13 +117,23 @@ export default {
 
         <component :is="isModalButton ? $options.components.Modal : 'div'" class="u-text-center u-text-medium" :isOpen.sync="isConfirmModalVisible">
             <template v-if="$options.IS_SUBAPP_MEGACHAIN">
-                <h2 class="u-h3 u-mb-10">{{ $td('Referral program', 'todo') }}</h2>
-                <p class="u-mb-10">
+                <div class="u-flex u-flex--align-center u-mb-10">
+                    <img class="u-image u-image--round u-mr-05" alt="" src="/img/icon-ref.png" width="24" height="24">
+                    <div class="u-h--uppercase-solid">
+                        {{ $td('Referral program', 'meganet.referral-program-title') }}
+                    </div>
+                </div>
+                <p class="u-mb-10 u-text-left">
                     <template v-if="!$store.state.referral.refId">
                         Loading…
                     </template>
                     <template v-else>
-                        {{ $td('Share the unique link below with your friends and earn LAUNCHER tokens with their purchases. The more you invite – the more you earn.', 'todo') }}
+                        <template v-if="$i18n.locale === 'en'">
+                            Invite friends to the Metagarden platform and get rewards up to 50% when they buy LAUNCHER tokens (<a href="https://metagarden.io/referral-program" target="_blank" class="link link--underline">see details</a>).
+                        </template>
+                        <template v-if="$i18n.locale === 'ru'">
+                            Приглашайте друзей на платформу Metagarden и получайте вознаграждение до 50% за их покупки токенов LAUNCHER (<a href="https://metagarden.io/ru/referral-program" target="_blank" class="link link--underline">подробности</a>).
+                        </template>
                     </template>
                 </p>
             </template>
@@ -152,7 +162,7 @@ export default {
 
             <div class="h-field u-mt-15" v-if="$store.state.referral.refId">
                 <div class="h-field__content">
-                    <div class="h-field__title" v-if="$options.IS_SUBAPP_MEGACHAIN">{{ $td('Share this link', 'todo') }}</div>
+                    <div class="h-field__title" v-if="$options.IS_SUBAPP_MEGACHAIN">{{ $td('Share this link', 'meganet.referral-program-share-title') }}</div>
                     <div class="h-field__input is-not-empty">{{ refUrl }}</div>
                 </div>
                 <div class="h-field__aside h-field__aside--with-icon">
@@ -160,19 +170,16 @@ export default {
                 </div>
             </div>
 
-            <p class="u-text-medium u-mt-10" v-if="$store.state.referral.refId && referralList && $options.IS_SUBAPP_MEGACHAIN">
-                {{ $td(`You currently invited ${referralList.length} friends`, 'referral.invited-list') }}
-            </p>
             <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="$store.state.referral.refId && referralList && $options.IS_SUBAPP_MEGACHAIN">
                 <div class="u-flex u-flex--align-center u-mr-10">
-                    <div class="u-h--uppercase u-text-mega-muted">{{ $td('Total invites accepted', 'todo') }}</div>
+                    <div class="u-h--uppercase u-text-mega-muted">{{ $td('Total invites accepted', 'meganet.referral-program-total-invites') }}</div>
                 </div>
 
                 <div class="u-h u-h4">{{ referralList.length }}</div>
             </div>
             <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="$options.IS_SUBAPP_MEGACHAIN">
                 <div class="u-flex u-flex--align-center u-mr-10">
-                    <div class="u-h--uppercase u-text-mega-muted">{{ $td('Total LAUNCHER referral rewards', 'todo') }}</div>
+                    <div class="u-h--uppercase u-text-mega-muted">{{ $td('Total referral rewards', 'meganet.referral-program-total-rewards') }}</div>
                 </div>
 
                 <div class="u-h u-h4">{{ pretty($store.state.referral.referralBonus) }}</div>

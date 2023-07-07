@@ -62,7 +62,7 @@ export default {
         <div class="card card--megachain-welcome card__content card__content--medium u-mb-15 u-text-center">
             <img class="u-image u-image-center u-mb-05" src="/img/megachain-gamepad.png" srcset="/img/megachain-gamepad@2x.png 2x" alt="" width="179" height="151">
             <h2 class="u-h3 u-mb-05">{{ $td('Welcome!', 'meganet.welcome-title') }}</h2>
-            <p>{{ $td('Thank you for launching Launchpad with best games in Telegram. Here you can get bonuses for playing everyday. We give you $10 of the new blockchain as welcome bonus.', 'meganet.welcome-description') }}</p>
+            <p>{{ $td('Thank you for activating a LaunchPad with the best crypto games on Telegram. As a welcome bonus, I\'d like to give you $10 in our platform\'s digital currency.', 'meganet.welcome-description') }}</p>
             <button
                 v-if="!$store.state.megachain.isCollectedWelcomeBonus || isJustGrubbed"
                 class="button button--full u-mt-10" type="button"
@@ -70,13 +70,13 @@ export default {
                 @click="grabWelcomeBonus()"
             >
                 <img class="button__icon" src="/img/icon-present.svg" alt="" role="presentation">
-                <template v-if="!isJustGrubbed">{{ $td('Grab your $10', 'todo') }}</template>
-                <template v-else>{{ $td('Success!', 'todo') }}</template>
+                <template v-if="!isJustGrubbed">{{ $td('Grab your $10', 'meganet.welcome-grab-button') }}</template>
+                <template v-else>{{ $td('Success!', 'meganet.welcome-grab-success') }}</template>
 
             </button>
             <a class="button button--telegram button--full u-mt-10" target="_blank" href="https://t.me/+Uy8uBelJEx1iNTVi">
                 <img class="button__icon" src="/img/icon-social-telegram.svg" alt="Telegram">
-                {{ $td('Join our private group', 'todo') }}
+                {{ $td('Join our private group', 'meganet.welcome-join-group-button') }}
             </a>
         </div>
 
@@ -97,9 +97,9 @@ export default {
 
         <div class="card card--megachain u-mb-15">
             <div class="card__content card__content--medium u-text-center">
-                <h2 class="u-h3 u-mb-05">{{ $td(`Buy ${coin} tokens to receive bonus & aidrops from games`, 'meganet.early-adopter-title') }}</h2>
+                <h2 class="u-h3 u-mb-05">{{ $td('Buy platform tokens', 'meganet.early-adopter-title') }}</h2>
                 <p class="u-text-medium">
-                    {{ $td(`All ${coin} token holders will receive MEGA coins (native Metagarden Chain coins) with a bonus after the Mainnet launch.`, 'meganet.early-adopter-description', {coin}) }}
+                    {{ $td(`We are preparing to launch the fastest Layer 1 EVM-compatible blockchain designed for gaming. You can buy its pre-launch tokens to join our expansion of crypto gaming on Telegram.`, 'meganet.early-adopter-description') }}
                     <!--
                     {{ $td('The current price of ${coin} is ', 'early-adopter-description-price', {coin}) }}
                     <span class="span-green">$0.64</span>
@@ -117,6 +117,8 @@ export default {
             </div>
         </div>
 
+        <ReferralCard class="card card--megachain card__content card__content--medium u-mb-15" :is-modal-button="false" v-if="$route.query.debug"/>
+
         <!--<div class="card card--megachain card__content card__content--medium u-text-center u-mb-15">
             <h2 class="u-h3 u-mb-05">{{ $td('MEGANET price stages', 'meganet.token-price-stages-title') }}</h2>
             <p class="u-text-medium u-mb-10">{{ $td('The current price of early access MEGANET tokens is', 'meganet.token-price-stages-description-1') }} <span class="span-green">$0.64</span> {{ $td('per token.', 'meganet.token-price-stages-description-2') }}</p>
@@ -131,11 +133,11 @@ export default {
                     :video-id="$td('xC97gHtKO6w', 'meganet.gaming-platform-videoid')"
                 />
             </div>
-            <h2 class="u-h3 u-mb-05">{{ $td('Gaming Platform', 'meganet.gaming-platform-title') }}</h2>
-            <p class="u-text-medium u-mb-10">{{ $td('Try out the first play-to-earn Metagarden platform games. By the end of 2023, we plan to launch more than 100 mini-games from different developers. The games presented are in alpha status and can be played from a single Telegram bot, so you can easily switch between them without leaving your favorite messenger.', 'meganet.gaming-platform-p') }}</p>
-            <a class="button button--main button--full u-mb-05" href="https://t.me/metagardenbot?start=start" target="_blank">{{ $td('Play', 'meganet.gaming-platform-button') }}</a>
+            <h2 class="u-h3 u-mb-05">{{ $td('About Platform', 'meganet.gaming-platform-title') }}</h2>
+            <p class="u-text-medium u-mb-10">{{ $td('Try out the first Metagarden platform crypto games. The games presented are in alpha status and can be played from a single Telegram bot.', 'meganet.gaming-platform-p') }}</p>
+            <a class="button button--main button--full u-mb-05" href="https://t.me/metagardenbot?start=start" target="_blank">{{ $td('Play all games', 'meganet.gaming-platform-button') }}</a>
             <p class="u-text-small u-mb-10">{{ $td('Try α-versions of our games in Telegram', 'meganet.gaming-platform-p-small') }}</p>
-            <a :href="$td('https://metagarden.io/platform', 'meganet.gaming-platform-more-url')" target="_blank" class="link link--bold link--underline">{{ $td('Read more about platform', 'meganet.gaming-platform-more') }}</a>
+            <a :href="$td('https://metagarden.io', 'meganet.gaming-platform-more-url')" target="_blank" class="link link--bold link--underline">{{ $td('Learn more', 'meganet.gaming-platform-more') }}</a>
         </div>
 
         <MegachainRating class="card card__content card__content--medium card--megachain u-mb-15"/>
@@ -161,8 +163,6 @@ export default {
             <a class="button button--ghost-main button--full u-mt-10" :href="$td('https://metagarden.io/platform', 'meganet.useful-links-button-platform-url')" target="_blank">{{ $td('Gaming platform', 'meganet.useful-links-button-platform') }}</a>
             <a class="button button--ghost-main button--full u-mt-10" :href="$td('https://metagarden.io/influencer', 'meganet.useful-links-button-influencer-url')" target="_blank">{{ $td('For Influencers', 'meganet.useful-links-button-influencer') }}</a>
         </div>
-
-        <ReferralCard class="card card--megachain card__content card__content--medium u-mt-10" :is-modal-button="false" v-if="$route.query.debug"/>
     </div>
 </template>
 

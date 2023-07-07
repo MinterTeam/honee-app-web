@@ -37,15 +37,19 @@ export default {
         <img class="u-mb-05" :class="{'mg-lootbox__chest-inactive': !lootboxList.length}" src="/img/metagarden-lootbox-fancy.png" srcset="/img/metagarden-lootbox-fancy@2x.png" alt="" role="presentation" width="179" height="151">
 
 
-        <h2 class="u-h3">
-            <template v-if="lootboxList.length > 0">
-                {{ $td('You’ve got', 'mg-lootbox.new-lootbox-button') }}
-                {{ $tc('mg-lootbox.new-lootbox-button-plural', lootboxList.length, {n: lootboxList.length}) }}!
-            </template>
-            <template v-else>
-                {{ $td('Check back later', 'mg-lootbox.no-lootbox-button') }}
-            </template>
-        </h2>
+        <template v-if="lootboxList.length > 0">
+            <h2 class="u-h3 u-mb-05">
+            {{ $td('You’ve got', 'mg-lootbox.new-lootbox-button') }}
+            {{ $tc('mg-lootbox.new-lootbox-button-plural', lootboxList.length, {n: lootboxList.length}) }}!
+            </h2>
+            <p>{{ $td('Check Launchpad every day to find new lootboxes.', 'mg-lootbox.new-lootbox-p') }}</p>
+        </template>
+        <template v-else>
+            <h2 class="u-h3 u-mb-05">
+            {{ $td('No lootboxes. Visit tomorrow!', 'mg-lootbox.no-lootbox-title') }}
+            </h2>
+            <p>{{ $td('Check Launchpad every day to find new lootboxes.', 'mg-lootbox.no-lootbox-p') }}</p>
+        </template>
     </component>
 </template>
 

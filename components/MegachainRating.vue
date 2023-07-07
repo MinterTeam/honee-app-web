@@ -49,7 +49,7 @@ export default {
         <div class="u-flex u-flex--justify-between u-flex--align-center u-mb-10" v-if="meganetPosition > 0">
             <div class="u-flex u-flex--align-center u-mr-10">
                 <div class="u-h--uppercase u-text-mega-muted">
-                    {{ $td(`MEGANET holders`, 'meganet.rating-coin-holders', {coin: 'MEGANET'}) }}
+                    {{ $td(`MEGANET holders`, 'meganet.rating-meganet-holders', {coin: 'MEGANET'}) }}
                 </div>
             </div>
 
@@ -62,7 +62,7 @@ export default {
         <div class="u-flex u-flex--justify-between u-flex--align-center">
             <div class="u-flex u-flex--align-center u-mr-10">
                 <div class="u-h--uppercase u-text-mega-muted">
-                    {{ $td(`LAUNCHER holders`, 'meganet.rating-coin-holders', {coin: 'LAUNCHER'}) }}
+                    {{ $td(`LAUNCHER holders`, 'meganet.rating-launcher-holders', {coin: 'LAUNCHER'}) }}
                 </div>
             </div>
 
