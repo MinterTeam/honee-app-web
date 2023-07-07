@@ -62,7 +62,7 @@ export default {
         <div class="card card--megachain-welcome card__content card__content--medium u-mb-15 u-text-center">
             <img class="u-image u-image-center u-mb-05" src="/img/megachain-gamepad.png" srcset="/img/megachain-gamepad@2x.png 2x" alt="" width="179" height="151">
             <h2 class="u-h3 u-mb-05">{{ $td('Welcome!', 'meganet.welcome-title') }}</h2>
-            <p>{{ $td('Thank you for activating a LaunchPad with the best crypto games on Telegram. As a welcome bonus, I\'d like to give you $10 in our platform\'s digital currency.', 'meganet.welcome-description') }}</p>
+            <p>{{ $td('Thank you for activating a LaunchPad with the best crypto games on Telegram. As a welcome bonus, we’d like like to give you $10 in our platform\'s digital currency.', 'meganet.welcome-description') }}</p>
             <button
                 v-if="!$store.state.megachain.isCollectedWelcomeBonus || isJustGrubbed"
                 class="button button--full u-mt-10" type="button"
