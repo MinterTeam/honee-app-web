@@ -137,7 +137,7 @@ export default {
 
                     <div class="u-h u-h4">{{ pretty(minterBalance) || '0' }}</div>
                 </div>
-                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10" v-if="$route.query.debug">
+                <div class="u-flex u-flex--justify-between u-flex--align-center u-mt-10">
                     <div class="u-flex u-flex--align-center u-mr-10">
                         <div class="u-h--uppercase u-text-mega-muted">{{ $td('Extra bonus', 'todo') }}</div>
                     </div>
