@@ -46,6 +46,16 @@ export default [
         },
     },
     {
+        title: 'Heist',
+        description: '',
+        coin: 'HEIST',
+        slug: 'heist',
+        isComingSoon: true,
+        ru: {
+            description: '',
+        },
+    },
+    {
         title: 'Chess',
         description: 'Play classic chess against each other. Earn crypto by playing chess matches, climb the rankings to get rewards.',
         category: 'Board game',

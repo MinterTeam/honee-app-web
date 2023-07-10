@@ -8,6 +8,11 @@ import ReferralCard from '~/components/ReferralCard.vue';
 import CardMetagardenGame from '~/components/CardMetagardenGame.vue';
 import MegachainRating from '~/components/MegachainRating.vue';
 
+const launchpadDisablesGames = [
+    'perfect-city',
+    'miner',
+];
+
 export default {
     components: {
         CardMetagardenGame,
@@ -41,7 +46,7 @@ export default {
             return 'LAUNCHER';
         },
         gameList() {
-            return metagardenGames;
+            return metagardenGames.filter((game) => !launchpadDisablesGames.includes(game.slug));
         },
     },
     methods: {
