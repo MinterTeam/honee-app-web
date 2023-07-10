@@ -94,8 +94,9 @@ export default {
             />
         </div>
 
-        <div class="card card--megachain u-mb-15">
+        <div class="card card--megachain card--megachain-buy-block u-mb-15">
             <div class="card__content card__content--medium u-text-center">
+                <img class="u-image u-image-center u-mb-05" src="/img/megachain-buy-block-img.png" srcset="/img/megachain-buy-block-img@2x.png 2x" alt="" width="170" height="182">
                 <h2 class="u-h3 u-mb-05">{{ $td('Buy project tokens', 'meganet.early-adopter-title') }}</h2>
                 <p class="u-text-medium">
                     {{ $td(`We are going to launch Metagarden Chain, the fastest EVM-blockchain designed for gaming, its second testnet is working perfectly. You can buy Metagarden Chain pre-launch tokens to join our expansion of crypto gaming on Telegram.`, 'meganet.early-adopter-description') }}
