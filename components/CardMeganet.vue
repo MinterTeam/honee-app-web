@@ -14,8 +14,8 @@ export default {
         },
         tooltipContent() {
             return this.$i18n.locale === 'en'
-                ? `${PRESALE_COIN} tokens entitle you to enter the Metagarden Chain genesis block at the network launch and get METAGARDEN (native Metagarden Chain coins) with a bonus.`
-                : `Токены ${PRESALE_COIN} дают право войти в генезисный блок Metagarden Chain при запуске сети и получить монеты METAGARDEN (нативные монеты Metagarden Chain) со бонусом.`;
+                ? `${PRESALE_COIN} tokens entitle you to enter the Metagarden Chain genesis block at the network launch and get MEGA (native Metagarden Chain coins) with a bonus.`
+                : `Токены ${PRESALE_COIN} дают право войти в генезисный блок Metagarden Chain при запуске сети и получить MEGA (нативные монеты Metagarden Chain) со бонусом.`;
         },
         card2MinterUrl() {
             return getCard2MinterUrl({
