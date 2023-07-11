@@ -202,6 +202,7 @@ module.exports = {
         setVueAliasesModule,
     ],
     plugins: [
+        { src: '~/plugins/web3-sdk.js'},
         { src: '~/plugins/global-mixin.js'},
         { src: '~/plugins/global-mixin-client.js', ssr: false},
         { src: '~/plugins/online.js', ssr: false },

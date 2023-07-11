@@ -65,6 +65,7 @@ export const ETHERSCAN_HOST = NETWORK === MAINNET ? 'https://etherscan.io' : 'ht
 export const BSCSCAN_HOST = NETWORK === MAINNET ? 'https://bscscan.com' : 'https://testnet.bscscan.com';
 export const ONE_INCH_API_URL = 'https://api.1inch.io/v5.0/';
 export const PARASWAP_API_URL = 'https://apiv5.paraswap.io/';
+export const ZERO_EX_API_KEY = 'c11e1bd1-74e2-4af8-93b2-97b762248fd3';
 export const ZERO_X_ETHEREUM_API_URL = 'https://api.0x.org/';
 export const ZERO_X_BSC_API_URL = 'https://bsc.api.0x.org/';
 export const WETH_CONTRACT_ADDRESS = NETWORK === MAINNET ? '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' : '0x0a180a76e4466bf68a7f86fb029bed3cccfaaac5';// '0xc778417e063141139fce010982780140aa0cd5ab';
