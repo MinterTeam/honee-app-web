@@ -42,9 +42,8 @@ export default defineComponent({
             </div>-->
 
             <div class="u-mt-10">
-                <nuxt-link class="button button--ghost-main button--full " :to="$i18nGetPreferredPath(`/metagarden/game/${game.slug}`)">
-                    <template v-if="game.isComingSoon">{{ $td('Learn more', 'mg-games.button-learn') }}</template>
-                    <template v-else>{{ $td('Play', 'mg-games.button-play') }}</template>
+                <nuxt-link class="button button--main button--full " :to="$i18nGetPreferredPath(`/metagarden/game/${game.slug}`)">
+                    {{ $td('Learn more', 'mg-games.button-learn') }}
                 </nuxt-link>
             </div>
         </div>
