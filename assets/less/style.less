@@ -73,7 +73,7 @@
 
     background: @c-mega-bg; color: #fff;
     .wallet__action-button .color-main-light {display: none;}
-    .card--light-grey, .card--metagarden-game {.card--megachain();}
+    .card--light-grey, .card--metagarden-game, .card:not([class="^card--"]) {.card--megachain();}
     .card:has(.card--light-grey) {}
     .card--invert {border: none; background: transparent !important; /* important to override inline styles from custom color */}
     //.card--invert .card.card__content {border-top: none;}

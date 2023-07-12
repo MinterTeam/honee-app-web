@@ -23,13 +23,13 @@ function getInitialChainData() {
  */
 const web3Balance = reactive(getInitialChainData());
 
-export default function useWeb3AddressBalance() {
+export default function useWeb3AddressBalance(options) {
     // const {tokenData, tokenContractAddress, tokenDecimals, isNativeToken, setHubTokenProps} = useHubToken();
 
     const props = reactive({
-        accountAddress: '',
+        accountAddress: options?.accountAddress || '',
         /** @type {ChainId} */
-        chainId: 0,
+        chainId: options?.chainId || 0,
     });
 
     /**
@@ -82,7 +82,7 @@ export default function useWeb3AddressBalance() {
 
         return getWalletBalances(chainId, accountAddress)
             .then((result) => {
-                console.log(result);
+                console.log(chainId, accountAddress, result);
                 /** @type {Array<TokenBalanceItem>} */
                 const oldBalanceList = web3Balance[chainId][accountAddress];
                 /** @type {HUB_NETWORK_SLUG} */

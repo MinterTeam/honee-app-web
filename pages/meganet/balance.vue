@@ -6,6 +6,7 @@ import TopupWaitMinter from '~/components/TopupWaitMinter.vue';
 import TopupWaitSmartWalletWrap from '~/components/TopupWaitSmartWalletWrap.vue';
 import FieldAddressDisplay from '~/components/base/FieldAddressDisplay.vue';
 import Modal from '~/components/base/Modal.vue';
+import MetagardenTokenBalance from '~/components/MetagardenTokenBalance.vue';
 import Topup from '~/components/Topup.vue';
 import Swap from '~/components/Swap.vue';
 
@@ -20,6 +21,7 @@ export default {
         Topup,
         Modal,
         FieldAddressDisplay,
+        MetagardenTokenBalance,
         TopupWaitSmartWalletWrap,
         // TopupWaitMinter,
         Swap,
@@ -155,6 +157,8 @@ export default {
                 </div>
             </div>
         </div>
+
+        <MetagardenTokenBalance class="card__content--medium card--megachain u-mb-20"/>
 
 
         <h1 class="u-h4 u-mb-15">{{ $td(`Buy ${coin} tokens with any of these options to join the Metagarden Chain.`, 'meganet.buy-text', {coin: $options.PRESALE_COIN}) }}</h1>

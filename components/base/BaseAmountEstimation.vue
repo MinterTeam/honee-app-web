@@ -1,5 +1,6 @@
 <script>
 import {pretty, prettyExact, prettyPrecise} from '~/assets/utils.js';
+import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA} from '~/assets/variables.js';
 import BaseCoinSymbol from '~/components/base/BaseCoinSymbol.vue';
 import BaseLoader from '~/components/base/BaseLoader.vue';
 
@@ -10,6 +11,8 @@ const FORMAT_TYPE = {
 };
 
 export default {
+    HUB_NETWORK_SLUG,
+    HUB_CHAIN_DATA,
     components: {
         BaseCoinSymbol,
         BaseLoader,
@@ -21,6 +24,11 @@ export default {
             required: true,
         },
         coin: {
+            type: String,
+            default: '',
+        },
+        network: {
+            /** @type {PropType<HUB_NETWORK_SLUG>} */
             type: String,
             default: '',
         },
@@ -107,6 +115,9 @@ export default {
         <div class="information__coin">
             <img class="information__coin-icon" v-if="coinIconUrl" :src="coinIconUrl" width="20" height="20" alt="" role="presentation">
             <BaseCoinSymbol class="information__coin-symbol">{{ coin }}</BaseCoinSymbol>
+            <span class="u-ml-025" v-if="network && $options.HUB_CHAIN_DATA[network] && network !== $options.HUB_NETWORK_SLUG.MINTER">
+                ({{ $options.HUB_CHAIN_DATA[network].shortName }})
+            </span>
         </div>
         <div class="information__value">
             <BaseLoader class="information__loader" :is-loading="isLoading"/>
