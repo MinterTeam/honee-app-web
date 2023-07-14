@@ -48,7 +48,7 @@ export default [
     {
         title: 'Heist',
         description: '',
-        coin: 'HEIST',
+        coin: 'HEISTGAME',
         slug: 'heist',
         isComingSoon: true,
         ru: {
