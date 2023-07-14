@@ -285,6 +285,21 @@ export const TX_STATUS = {
     FAILURE: false,
 };
 
+export const SPOT_DATA = {
+    METAGARDEN: {
+        card2CardToken: '_SPOT',
+        priceUsd: 320,
+        minAmount: 0.1,
+        buyAddress: 'Mxfb758e0516e3ced06eb90387b7fee61ecaad0000',
+    },
+    FARMER: {
+        card2CardToken: '_FARMER',
+        priceUsd: 100,
+        minAmount: 1,
+        buyAddress: 'Mx852c9e9befeb187de6968fc7ac75033ba0b0d111',
+    },
+};
+
 /**
  * @typedef {number} ChainId
  */

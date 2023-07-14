@@ -1,17 +1,13 @@
 <script>
 import {SPOT_DATA} from '~/assets/variables.js';
-import ActionMetagardenBuySpot, {SPOT_PRICE_METAGARDEN} from '~/components/ActionMetagardenBuySpot.vue';
+import ActionMetagardenBuySpot from '~/components/ActionMetagardenBuySpot.vue';
 
-export const SPOT_PRICE_USD = SPOT_DATA.METAGARDEN.priceUsd;
-export const SPOT_MIN_AMOUNT = SPOT_DATA.METAGARDEN.minAmount;
+export const SPOT_PRICE_USD = SPOT_DATA.FARMER.priceUsd;
+export const SPOT_MIN_AMOUNT = SPOT_DATA.FARMER.minAmount;
 
 export default {
-    SPOT_PRICE_METAGARDEN,
     SPOT_PRICE_USD,
     SPOT_MIN_AMOUNT,
-    layout(context) {
-        return context.store.getters.isMetagarden ? 'metagarden' : 'default';
-    },
     components: {
         ActionMetagardenBuySpot,
     },
@@ -28,14 +24,14 @@ export default {
     <div class="u-section u-container u-container--small">
         <div class="card card--invert">
             <div class="card__content card__content--medium">
-                <h1 class="card__action-title-value">{{ $td('Buy Metagarden miners', 'metagarden.title') }}</h1>
+                <h1 class="card__action-title-value">{{ $td('Buy Farmers', 'meganet.buy-farmer-title') }}</h1>
                 <p class="card__action-description u-mt-05">
-                    {{ $td(`The cost of 1 miner is $${$options.SPOT_PRICE_USD} or ${$options.SPOT_PRICE_METAGARDEN} METAGARDEN. You can buy from ${$options.SPOT_MIN_AMOUNT} miner.`, 'metagarden.description', {priceUsd: $options.SPOT_PRICE_USD, priceMetagarden: $options.SPOT_PRICE_METAGARDEN}) }}
+                    {{ $td(`The cost of 1 Farmer is $${$options.SPOT_PRICE_USD}. You can buy from ${$options.SPOT_MIN_AMOUNT} Farmer.`, 'meganet.buy-farmers-description', {priceUsd: $options.SPOT_PRICE_USD}) }}
                 </p>
             </div>
 
             <ActionMetagardenBuySpot
-                type="METAGARDEN"
+                type="FARMER"
                 class="card card--pop card--light-grey"
                 @success-modal-close="$router.push($getDashboardUrl())"
             />

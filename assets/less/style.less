@@ -73,7 +73,7 @@
 
     background: @c-mega-bg; color: #fff;
     .wallet__action-button .color-main-light {display: none;}
-    .card--light-grey, .card--metagarden-game, .card:not([class="^card--"]) {.card--megachain();}
+    .card--light-grey, .card--metagarden-game, .card:not([class*="card--"]) {.card--megachain();}
     .card:has(.card--light-grey) {}
     .card--invert {border: none; background: transparent !important; /* important to override inline styles from custom color */}
     //.card--invert .card.card__content {border-top: none;}
@@ -198,9 +198,6 @@
 .auth__subtitle {text-align: center; font-size: 16px;}
 .auth__subtitle-2 {text-align: center; font-size: 20px; line-height: 24px; font-weight: 700;}
 .auth__p {text-align: center; font-size: 14px; line-height: 17px;}
-/*@media (min-width: @breakpoint-medium-up) {
-    .auth__body {background-image: url(../img/auth-bg.svg); background-position: 50% 10%; background-repeat: no-repeat;}
-}*/
 
 
 .v-transition-toast-enter-active, .v-transition-toast-leave-active {
@@ -366,6 +363,8 @@
 
 .card__cover {border-radius: 16px 16px 0 0; vertical-align: top; width: 100%;}
 .card__badge {.u-h--uppercase(); position: absolute; bottom: 16px; right: 0; padding: 4px 8px; box-shadow: 0px 2px 2px rgba(0,0,0, 0.25); border-radius: 8px 0px 0px 8px; color: @c-black;}
+.card__badge--top {bottom: auto; top: 16px;}
+.card__badge--megachain-farmers {background: #00AD45; color: #fff; font-size: 16px; line-height: 20px; text-transform: none; padding: 6px 16px;}
 .card__badge--coming-soon {background: #faff00;}
 
 @media (min-width: @breakpoint-medium-up) {

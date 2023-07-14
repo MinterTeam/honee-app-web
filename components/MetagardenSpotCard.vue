@@ -2,6 +2,7 @@
 import {claimSpotReward, getSpotInfo} from '~/api/metagarden.js';
 import {getCard2MinterUrl, pretty} from '~/assets/utils.js';
 import {getErrorText} from '~/assets/server-error.js';
+import {SPOT_DATA} from '~/assets/variables.js';
 import tooltip from 'v-tooltip/src/directives/v-tooltip.js';
 import InlineSvg from 'vue-inline-svg';
 import BaseLoader from '~/components/base/BaseLoader.vue';
@@ -52,7 +53,7 @@ export default {
             };
         },
         card2MinterUrl() {
-            const MINER_SPOT_COIN_SYMBOL = '_SPOT';
+            const MINER_SPOT_COIN_SYMBOL = SPOT_DATA.METAGARDEN.card2CardToken;
             return getCard2MinterUrl({
                 address: this.$store.getters.address,
                 returnUrl: window.location.href,

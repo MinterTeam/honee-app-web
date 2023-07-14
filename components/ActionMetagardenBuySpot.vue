@@ -9,6 +9,7 @@ import autosize from 'v-autosize';
 import {TX_TYPE} from 'minterjs-util/src/tx-types.js';
 import checkEmpty from '~/assets/v-check-empty.js';
 import {pretty, getDateAmerican, getTimeDistance} from '~/assets/utils.js';
+import {SPOT_DATA} from '~/assets/variables.js';
 import {prepareSpendMaxOrAfterSwap} from '~/assets/utils/sequence.js';
 import SwapEstimation from '~/components/base/SwapEstimation.vue';
 import TxSequenceWithSwapForm from '~/components/base/TxSequenceWithSwapForm.vue';
@@ -29,13 +30,9 @@ const MODE = {
     BUY_USD: 'buy_usd',
 };
 export const SPOT_PRICE_METAGARDEN = 1000;
-export const SPOT_PRICE_USD = 320;
-const SPOT_MIN_AMOUNT = 0.1;
-const SPOT_BUY_ADDRESS = 'Mxfb758e0516e3ced06eb90387b7fee61ecaad0000';
 
 export default {
     TX_TYPE,
-    SPOT_MIN_AMOUNT,
     METAGARDEN_SYMBOL,
     USD_SYMBOL,
     components: {
@@ -56,6 +53,10 @@ export default {
         'override-stats-value',
     ],
     props: {
+        type: {
+            type: String,
+            required: true,
+        },
         action: {
             type: Object,
         },
@@ -111,7 +112,7 @@ export default {
             },
             spotAmount: {
                 required,
-                minValue: minValue(SPOT_MIN_AMOUNT),
+                minValue: minValue(this.spotData.minAmount),
             },
             // sendAmount: {
             //     required: (value) => value > 0,
@@ -119,10 +120,16 @@ export default {
         };
     },
     computed: {
+        spotData() {
+            return SPOT_DATA[this.type];
+        },
         currentMode() {
             // 0.04 price check is made by comparing estimation (which is made based on 1000 and 40 prices)
             // const isMetagardenCheaper = this.estimationSpendForUsd <= 0 || Number(this.estimationSpendForMetagarden) <= Number(this.estimationSpendForUsd);
             if (this.form.coin === METAGARDEN_SYMBOL) {
+                if (this.type === 'FARMER') {
+                    return MODE.BUY_USD;
+                }
                 return MODE.SEND_METAGARDEN;
             } else if (this.form.coin === USD_SYMBOL) {
                 return MODE.SEND_USD;
@@ -157,7 +164,7 @@ export default {
             if (this.currentMode === MODE.SEND_METAGARDEN || this.currentMode === MODE.BUY_METAGARDEN) {
                 return this.sendAmount / SPOT_PRICE_METAGARDEN;
             } else {
-                return this.sendAmount / SPOT_PRICE_USD;
+                return this.sendAmount / this.spotData.priceUsd;
             }
         },
         selectedBalance() {
@@ -182,7 +189,7 @@ export default {
                 data: {
                     value: this.sendAmount,
                     coin: this.sendTokenSymbol,
-                    to: SPOT_BUY_ADDRESS,
+                    to: this.spotData.buyAddress,
                 },
                 type: TX_TYPE.SEND,
             };
@@ -289,7 +296,7 @@ export default {
                         </div>
                     </div>
                     <span class="form-field__error" v-if="$v.form.spotAmount.$dirty && !$v.form.spotAmount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
-                    <span class="form-field__error" v-else-if="$v.form.spotAmount.$dirty && !$v.form.spotAmount.minValue">{{ $td('Minimum', 'form.amount-error-min') }} {{ $options.SPOT_MIN_AMOUNT }}</span>
+                    <span class="form-field__error" v-else-if="$v.form.spotAmount.$dirty && !$v.form.spotAmount.minValue">{{ $td('Minimum', 'form.amount-error-min') }} {{ spotData.minAmount }}</span>
                 </div>
                 -->
 
@@ -304,7 +311,7 @@ export default {
                     />
 
                     <div class="u-text-warn u-fw-700 u-text-small u-mt-05 u-text-right" v-if="$v.spotAmount.$error">
-                        {{ $td('Minimum', 'form.amount-error-min') }} {{ $options.SPOT_MIN_AMOUNT }}
+                        {{ $td('Minimum', 'form.amount-error-min') }} {{ spotData.minAmount }}
                     </div>
                 </div>
 
