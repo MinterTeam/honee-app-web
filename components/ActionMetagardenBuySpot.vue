@@ -39,7 +39,7 @@ export default {
         // SwapEstimation,
         TxSequenceWithSwapForm,
         BaseAmountEstimation,
-        // InputMaskedAmount,
+        InputMaskedAmount,
         FieldCombined,
     },
     directives: {
@@ -54,6 +54,7 @@ export default {
     ],
     props: {
         type: {
+            /** @type {PropType<keyof SPOT_DATA>} */
             type: String,
             required: true,
         },
@@ -76,7 +77,9 @@ export default {
             form: {
                 // coin to spend
                 coin: '',
-                // spend from balance
+                // spot amount to buy if direction BUY
+                spotAmount: undefined,
+                // spend from balance if direction SELL
                 spendAmount: undefined,
                 // coin: availableSpots > 0 ? METAGARDEN_SYMBOL : '',
                 // spotAmount: availableSpots || 1,
@@ -97,31 +100,32 @@ export default {
                 required,
                 minLength: minLength(3),
             },
-            spendAmount: {
-                required,
-                maxValue: (value) => maxValue(this.selectedBalance)(value),
-            },
         };
 
         return {
             form,
-            estimation: {
-                minValue: (value) => this.isModeSwap ? value > 0 : true,
-                // maxValue: (value) => this.isModeSwap ? maxValue(this.selectedBalance)(value) : true,
-                finished: (value) => !this.isEstimationLoading,
+            spendAmount: {
+                minValue: (value) => value > 0,
+                maxValue: (value) => maxValue(this.selectedBalance)(value),
             },
             spotAmount: {
                 required,
                 minValue: minValue(this.spotData.minAmount),
             },
-            // sendAmount: {
-            //     required: (value) => value > 0,
-            // },
+            estimation: {
+                finished: (value) => !this.isEstimationLoading,
+            },
+            sendAmount: {
+                required: (value) => value > 0,
+            },
         };
     },
     computed: {
         spotData() {
             return SPOT_DATA[this.type];
+        },
+        isDirectionBuy() {
+            return this.type === 'FARMER';
         },
         currentMode() {
             // 0.04 price check is made by comparing estimation (which is made based on 1000 and 40 prices)
@@ -152,20 +156,50 @@ export default {
             }
         },
         // value in 'SEND' tx
-        sendAmount() {
+        sendAmountDirectionBuy() {
+            if (this.currentMode === MODE.SEND_METAGARDEN || this.currentMode === MODE.BUY_METAGARDEN) {
+                return this.spotsPriceMetagarden;
+            } else {
+                return this.spotsPriceUsd;
+            }
+        },
+        sendAmountDirectionSell() {
             if (this.isModeSwap) {
                 return this.estimation;
             } else {
                 return this.form.spendAmount;
             }
         },
-        // receive spots
-        spotAmount() {
+        sendAmount() {
+            return this.isDirectionBuy ? this.sendAmountDirectionBuy : this.sendAmountDirectionSell;
+        },
+        // spend from balance
+        spendAmountDirectionBuy() {
+            if (this.isModeSwap) {
+                return this.estimation;
+            } else {
+                return this.sendAmountDirectionBuy;
+            }
+        },
+        spendAmount() {
+            return this.isDirectionBuy ? this.spendAmountDirectionBuy : this.form.spendAmount;
+        },
+        // receive spots in direction SELL
+        spotAmountDirectionSell() {
             if (this.currentMode === MODE.SEND_METAGARDEN || this.currentMode === MODE.BUY_METAGARDEN) {
                 return this.sendAmount / SPOT_PRICE_METAGARDEN;
             } else {
                 return this.sendAmount / this.spotData.priceUsd;
             }
+        },
+        spotAmount() {
+            return this.isDirectionBuy ? this.form.spotAmount : this.spotAmountDirectionSell;
+        },
+        spotsPriceMetagarden() {
+            return this.form.spotAmount * SPOT_PRICE_METAGARDEN;
+        },
+        spotsPriceUsd() {
+            return this.form.spotAmount * this.spotData.priceUsd;
         },
         selectedBalance() {
             return this.$store.getters.getBalanceAmount(this.form.coin);
@@ -210,8 +244,21 @@ export default {
         },
     },
     watch: {
+        'form.spotAmount': {
+            handler() {
+                if (!this.isDirectionBuy) {
+                    return;
+                }
+                if (!(this.form.spotAmount > 0)) {
+                    this.estimation = 0;
+                }
+            },
+        },
         'form.spendAmount': {
             handler() {
+                if (this.isDirectionBuy) {
+                    return;
+                }
                 if (!(this.form.spendAmount > 0)) {
                     this.estimation = 0;
                 }
@@ -235,6 +282,7 @@ export default {
         clearForm() {
             // this.form.value = '';
             this.form.coin = '';
+            this.form.spotAmount = '';
             this.form.spendAmount = '';
             this.$v.$reset();
         },
@@ -250,6 +298,7 @@ export default {
             :coin-to-sell="form.coin"
             :coin-to-buy="sendTokenSymbol"
             :value-to-sell="form.spendAmount"
+            :value-to-buy="sendAmountDirectionBuy"
             :is-use-max="isUseMax"
             :sequence-params="sequenceParams"
             :v$sequence-params="$v"
@@ -259,48 +308,50 @@ export default {
             @success="$emit('success')"
             @success-modal-close="$emit('success-modal-close')"
         >
-            <!--:value-to-buy="sendAmount"-->
             <template v-slot:default="{fee, estimation}">
+                <div class="form-row" v-if="isDirectionBuy">
+                    <div class="h-field" :class="{'is-error': $v.spotAmount.$error}">
+                        <div class="h-field__content">
+                            <div class="h-field__title">{{ $td(`${spotData.plural} amount`, 'metagarden.spot-amount-label') }}</div>
+                            <InputMaskedAmount
+                                class="h-field__input h-field__input--medium"
+                                placeholder="0"
+                                :scale="undefined"
+                                v-model="form.spotAmount"
+                                @blur="$v.spotAmount.$touch()"
+                            />
+                        </div>
+                    </div>
+                    <span class="form-field__error" v-if="$v.spotAmount.$dirty && !$v.spotAmount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
+                    <span class="form-field__error" v-else-if="$v.spotAmount.$dirty && !$v.spotAmount.minValue">{{ $td('Minimum', 'form.amount-error-min') }} {{ spotData.minAmount }}</span>
+                </div>
+
                 <div class="form-row">
                     <FieldCombined
                         :coin.sync="form.coin"
                         :$coin="$v.form.coin"
                         :coinList="$store.state.balance"
                         :fallbackToFullList="false"
-                        :amount.sync="form.spendAmount"
-                        :$amount="$v.form.spendAmount"
+                        :amount="isDirectionBuy ? spendAmountDirectionBuy : form.spendAmount"
+                        @update:amount="isDirectionBuy ? undefined : form.spendAmount = $event"
+                        :$amount="$v.spendAmount"
                         :useBalanceForMaxValue="true"
                         :fee="fee.resultList[0]"
+                        :is-estimation="isDirectionBuy"
+                        :isLoading="isDirectionBuy ? isEstimationLoading : false"
                         :label="$td('Coin to spend', 'form.you-spend')"
                         @update:is-use-max="isUseMax = $event"
                     />
                     <span class="form-field__error" v-if="$v.form.coin.$dirty && !$v.form.coin.required">{{ $td('Enter coin symbol', 'form.coin-error-required') }}</span>
                     <span class="form-field__error" v-else-if="$v.form.coin.$dirty && !$v.form.coin.minLength">{{ $td('Min 3 letters', 'form.coin-error-min') }}</span>
-                    <span class="form-field__error" v-else-if="$v.estimation.$dirty && !$v.estimation.minValue">{{ $td('Can\'t swap', 'form.swap-error') }}</span>
-                    <span class="form-field__error" v-else-if="$v.form.spendAmount.$dirty && !$v.form.spendAmount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
-                    <span class="form-field__error" v-else-if="$v.form.spendAmount.$dirty && !$v.form.spendAmount.maxValue">{{ $td('Not enough coin balance', 'form.spots-error-balance') }}</span>
+                    <span class="form-field__error" v-else-if="$v.spendAmount.$dirty && !$v.spendAmount.minValue">
+                        <template v-if="isDirectionBuy">{{ $td('Can\'t swap', 'form.swap-error') }}</template>
+                        <template v-else>{{ $td('Enter amount', 'form.amount-error-required') }}</template>
+                    </span>
+                    <span class="form-field__error" v-else-if="$v.spendAmount.$dirty && !$v.spendAmount.maxValue">{{ $td('Not enough coin balance', 'form.spots-error-balance') }}</span>
                 </div>
 
-                <!--
-                <div class="form-row">
-                    <div class="h-field" :class="{'is-error': $v.form.spotAmount.$error}">
-                        <div class="h-field__content">
-                            <div class="h-field__title">{{ $td('Miners amount', 'metagarden.spot-amount-label') }}</div>
-                            <InputMaskedAmount
-                                class="h-field__input h-field__input&#45;&#45;medium"
-                                placeholder="0"
-                                :scale="undefined"
-                                v-model="form.spotAmount"
-                                @blur="$v.form.spotAmount.$touch()"
-                            />
-                        </div>
-                    </div>
-                    <span class="form-field__error" v-if="$v.form.spotAmount.$dirty && !$v.form.spotAmount.required">{{ $td('Enter amount', 'form.amount-error-required') }}</span>
-                    <span class="form-field__error" v-else-if="$v.form.spotAmount.$dirty && !$v.form.spotAmount.minValue">{{ $td('Minimum', 'form.amount-error-min') }} {{ spotData.minAmount }}</span>
-                </div>
-                -->
-
-                <div class="information form-row">
+                <div class="information form-row" v-if="!isDirectionBuy">
                     <h3 class="information__title">{{ $td('You will buy', 'todo') }}</h3>
                     <BaseAmountEstimation
                         :coin="spotData.plural"
@@ -356,13 +407,13 @@ export default {
             <template v-slot:confirm-modal-body>
                 <div class="information form-row">
                     <h3 class="information__title">{{ $td('You will spend', 'form.you-will-spend') }}</h3>
-                    <BaseAmountEstimation :coin="form.coin" :amount="form.spendAmount"/>
+                    <BaseAmountEstimation :coin="form.coin" :amount="spendAmount" :format="isDirectionBuy ? 'approx' : undefined"/>
 
                     <h3 class="information__title">{{ $td('You will buy', 'todo') }}</h3>
                     <BaseAmountEstimation
                         :coin="spotData.plural"
                         :amount="spotAmount"
-                        :format="isModeSwap ? 'approx' : undefined"
+                        :format="isModeSwap && isDirectionBuy ? 'approx' : undefined"
                         :hide-icon="true"
                     />
                 </div>

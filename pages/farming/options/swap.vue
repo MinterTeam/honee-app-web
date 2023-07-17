@@ -33,7 +33,7 @@ export default {
             <ActionMetagardenBuySpot
                 type="FARMER"
                 class="card card--pop card--light-grey"
-                @success-modal-close="$router.push($getDashboardUrl())"
+                @success-modal-close="$router.push($i18nGetPreferredPath('/farming'))"
             />
 
 
