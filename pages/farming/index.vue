@@ -42,13 +42,13 @@ export default {
 <template>
     <div class="u-section u-container u-container--small">
         <div class="card card__content--small card--megachain-farming card--megachain-farming--blobs u-text-center">
-            <img class="u-image u-image-center u-mt-15" style="margin-bottom: -16px; padding-right: 8px;" src="/img/megachain-farmers.png" srcset="/img/megachain-farmers@2x.png 2x" alt="" role="presentation">
+            <img class="u-image u-image-center u-mt-15" style="margin-bottom: -16px; padding-right: 8px;" src="/img/megachain-farmers.png" srcset="/img/megachain-farmers@2x.png 2x" alt="" role="presentation" width="315" height="230">
             <div class="card__badge card__badge--top card__badge--megachain-farmers" v-if="false">
                 {{ $td('Limited offer: 95 Farmers left', 'todo') }}
             </div>
             <h1 class="u-h3">{{ $td('Gaming Token Farmers', 'todo') }}</h1>
 
-            <nuxt-link :to="$i18nGetPreferredPath('/farming/options')" class="button button--full u-mt-10 u-mb-15">
+            <nuxt-link :to="$i18nGetPreferredPath('/farming/options')" class="button button--full u-mt-15 u-mb-15">
                 {{ $td('Buy Farmers for $100', 'todo') }}
             </nuxt-link>
 
@@ -91,6 +91,5 @@ export default {
 </template>
 
 <style>
-.card--megachain-farming {background: #1d2892;}
-.card--megachain-farming--blobs {background-image: url('/img/megachain-farmers-blobs.svg'); background-position: center top; background-repeat: no-repeat;}
+
 </style>

@@ -99,6 +99,16 @@ export default {
             />
         </div>
 
+        <div class="card card__content--small card--megachain-farming card--megachain-farming--blobs u-text-center u-mb-15">
+            <img class="u-image u-image-center" style="margin-bottom: -16px; padding-right: 4px;" src="/img/megachain-farmers-price.png" srcset="/img/megachain-farmers-price@2x.png 2x" alt="" role="presentation" width="336" height="221">
+            <h1 class="u-h3">{{ $td('Gaming Token Farmers', 'meganet.farmers-card-title') }}</h1>
+            <p>{{ $td('Games earns commissions, NFT-bots gather them and send to you. First limited batch of farmer-bots already ready.', 'meganet.farmers-card-description') }}</p>
+
+            <nuxt-link :to="$i18nGetPreferredPath('/farming')" class="button button--full u-mt-15">
+                {{ $td('Learn more', 'meganet.gaming-platform-more') }}
+            </nuxt-link>
+        </div>
+
         <div class="card card--megachain card--megachain-buy-block u-mb-15">
             <div class="card__content card__content--medium u-text-center">
                 <img class="u-image u-image-center u-mb-05" src="/img/megachain-buy-block-img.png" srcset="/img/megachain-buy-block-img@2x.png 2x" alt="" width="170" height="182">

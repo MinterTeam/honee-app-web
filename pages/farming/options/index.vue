@@ -60,10 +60,12 @@ export default {
                 <InlineSvg class="button__icon" src="/img/icon-blockchain.svg" width="24" height="24" alt="" role="presentation"/>
                 {{ $td('Crypto', 'topup.buy-with-crypto') }}
             </nuxt-link>
-            <a class="button button--full u-mt-10" :class="buttonClass" :href="$options.TELEGRAM_BUY_LINKS.FARMER" target="_blank" v-if="$options.TELEGRAM_BUY_LINKS.FARMER">
+            <!--
+            <a class="button button&#45;&#45;full u-mt-10" :class="buttonClass" :href="$options.TELEGRAM_BUY_LINKS.FARMER" target="_blank" v-if="$options.TELEGRAM_BUY_LINKS.FARMER">
                 <InlineSvg class="button__icon" src="/img/icon-social-telegram.svg" width="24" height="24" alt="" role="presentation"/>
                 {{ $td('Telegram bot', 'topup.buy-via-telegram') }}
             </a>
+            -->
             <nuxt-link class="button button--full u-mt-10" :class="buttonClass" :to="$i18nGetPreferredPath('/farming/options/swap')">
                 <InlineSvg class="button__icon" src="/img/icon-swap.svg" width="24" height="24" alt="" role="presentation"/>
                 {{ $td('Swap in Minter', 'topup.buy-in-minter') }}

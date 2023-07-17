@@ -826,6 +826,8 @@ export default {
         'rating-meganet-holders': 'Держатели MEGANET',
         'rating-launcher-holders': 'Держатели LAUNCHER',
         'your-balance': 'Ваш баланс',
+        'farmers-card-title': 'Преврати $100 в $200!',
+        'farmers-card-description': 'Игры зарабатывают комиссии, NFT-боты их собирают и отправляют тебе. Первая лимитированная партия фармер ботов уже доступна.',
     },
     'mg-lootbox': {
         'title-inactive': 'Лутбокс еще не готов',
