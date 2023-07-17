@@ -56,10 +56,10 @@ export default {
                 <InlineSvg class="button__icon" src="/img/icon-topup-card.svg" width="24" height="24" alt="" role="presentation"/>
                 {{ $td('Card', 'topup.top-up-with-card2card') }}
             </a>
-            <nuxt-link class="button button--full u-mt-10" :class="buttonClass" :to="$i18nGetPreferredPath('/topup/crypto')">
+            <!--<nuxt-link class="button button--full u-mt-10" :class="buttonClass" :to="$i18nGetPreferredPath('/topup/crypto')">
                 <InlineSvg class="button__icon" src="/img/icon-blockchain.svg" width="24" height="24" alt="" role="presentation"/>
                 {{ $td('Crypto', 'topup.buy-with-crypto') }}
-            </nuxt-link>
+            </nuxt-link>-->
             <!--
             <a class="button button&#45;&#45;full u-mt-10" :class="buttonClass" :href="$options.TELEGRAM_BUY_LINKS.FARMER" target="_blank" v-if="$options.TELEGRAM_BUY_LINKS.FARMER">
                 <InlineSvg class="button__icon" src="/img/icon-social-telegram.svg" width="24" height="24" alt="" role="presentation"/>
