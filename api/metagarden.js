@@ -33,6 +33,22 @@ export function getSpotInfo(privateKey) {
         .then((response) => response.data.data);
 }
 
+/**
+ * @param {string} privateKey
+ * @return {Promise<number>}
+ */
+export function getSpotFarmerInfo(privateKey) {
+    if (!privateKey) {
+        throw new Error('PK needed to get spots info');
+    }
+    return instance.get('farmer/info', {
+            ecdsaAuth: {
+                privateKey,
+            },
+        })
+        .then((response) => response.data.data);
+}
+
 // export const getSpotInfo = () => getSpotInfoDebug('Mx531bdb3a6ab6faa0b6adba80cedeb86a6dbbea67');
 
 /**

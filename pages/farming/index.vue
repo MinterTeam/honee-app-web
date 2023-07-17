@@ -1,5 +1,5 @@
 <script>
-import {getSpotInfo} from '~/api/metagarden.js';
+import {getSpotFarmerInfo} from '~/api/metagarden.js';
 import {pretty} from '~/assets/utils.js';
 import {getErrorText} from '~/assets/server-error.js';
 import tooltip from 'v-tooltip/src/directives/v-tooltip.js';
@@ -13,10 +13,10 @@ export default {
         tooltip,
     },
     fetch() {
-        // return getSpotInfo(this.$store.getters.privateKey)
-        //     .then((info) => {
-        //         this.spotInfo = info;
-        //     });
+        return getSpotFarmerInfo(this.$store.getters.privateKey)
+            .then((value) => {
+                this.spotAmount = value;
+            });
     },
     props: {
         hideHead: {
@@ -26,8 +26,7 @@ export default {
     },
     data() {
         return {
-            /** @type {MetagardenSpotInfo} */
-            spotInfo: undefined,
+            spotAmount: 0,
         };
     },
     computed: {
@@ -44,7 +43,7 @@ export default {
     <div class="u-section u-container u-container--small">
         <div class="card card__content--small card--megachain-farming card--megachain-farming--blobs u-text-center">
             <img class="u-image u-image-center u-mt-15" style="margin-bottom: -16px; padding-right: 8px;" src="/img/megachain-farmers.png" srcset="/img/megachain-farmers@2x.png 2x" alt="" role="presentation">
-            <div class="card__badge card__badge--top card__badge--megachain-farmers">
+            <div class="card__badge card__badge--top card__badge--megachain-farmers" v-if="false">
                 {{ $td('Limited offer: 95 Farmers left', 'todo') }}
             </div>
             <h1 class="u-h3">{{ $td('Gaming Token Farmers', 'todo') }}</h1>
@@ -60,9 +59,9 @@ export default {
                 Can't get spots info: <br>
                 {{ getErrorText($fetchState.error) }}
             </div>
-            <div class="u-mb-05" v-else-if="spotInfo">
+            <div class="u-mb-05" v-else>
                 <span class="u-h--uppercase">{{ $td('You own', 'metagarden.you-own') }}</span>
-                <span class="u-h--uppercase-solid">{{ pretty(spotInfo?.spots) || '—' }}</span>
+                <span class="u-h--uppercase-solid">{{ pretty(spotAmount) || '—' }}</span>
             </div>
 
             <div class="u-h--uppercase-solid">{{ $td('Soon to be activated', 'todo') }}</div>
