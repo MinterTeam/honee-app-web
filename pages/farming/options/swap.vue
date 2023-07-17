@@ -23,10 +23,10 @@ export default {
 <template>
     <div class="u-section u-container u-container--small">
         <div class="card card--invert">
-            <div class="card__content card__content--medium">
-                <h1 class="card__action-title-value">{{ $td('Buy Farmers', 'meganet.buy-farmer-title') }}</h1>
+            <div class="card__content card__content--medium u-text-center">
+                <h1 class="card__action-title-value">{{ $td('Buy Farmer bots in Minter', 'mg-farming.buy-options-minter-title') }}</h1>
                 <p class="card__action-description u-mt-05">
-                    {{ $td(`The cost of 1 Farmer is $${$options.SPOT_PRICE_USD}. You can buy from ${$options.SPOT_MIN_AMOUNT} Farmer.`, 'meganet.buy-farmers-description', {priceUsd: $options.SPOT_PRICE_USD}) }}
+                    {{ $td(`The cost of 1 Farmer bot is $${$options.SPOT_PRICE_USD}. You can buy from ${$options.SPOT_MIN_AMOUNT} Farmer bot.`, 'mg-farming.buy-farmers-description', {priceUsd: $options.SPOT_PRICE_USD}) }}
                 </p>
             </div>
 

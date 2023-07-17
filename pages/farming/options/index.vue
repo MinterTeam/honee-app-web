@@ -48,7 +48,7 @@ export default {
     <div class="u-section topup__vertical-container u-container u-container--small u-text-center">
         <div class="card card__content card__content--small card--light-grey topup__vertical-center">
             <h1 class="u-h3 u-mb-025">
-                {{ $td('Buy', 'index.swap') }} FARMER
+                {{ $td('Buy Farmer bots', 'mg-farming.buy-options-title') }}
             </h1>
             <p>{{ $td('Choose one of these options', 'topup.description') }}</p>
 
