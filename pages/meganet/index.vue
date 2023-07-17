@@ -101,8 +101,8 @@ export default {
 
         <div class="card card__content--small card--megachain-farming card--megachain-farming--blobs u-text-center u-mb-15">
             <img class="u-image u-image-center" style="margin-bottom: -16px; padding-right: 4px;" src="/img/megachain-farmers-price.png" srcset="/img/megachain-farmers-price@2x.png 2x" alt="" role="presentation" width="336" height="221">
-            <h1 class="u-h3">{{ $td('Turn $100 into $200!', 'meganet.farmers-card-title') }}</h1>
-            <p>{{ $td('Games earn fees, NFT bots collect them and send to you. The first limited batch of Farming Bots is already available.', 'meganet.farmers-card-description') }}</p>
+            <h1 class="u-h3 u-mb-05">{{ $td('Turn $100 into $200!', 'meganet.farmers-card-title') }}</h1>
+            <p class="u-text-medium">{{ $td('Games earn fees, NFT bots collect them and send to you. The first limited batch of Farming Bots is already available.', 'meganet.farmers-card-description') }}</p>
 
             <nuxt-link :to="$i18nGetPreferredPath('/farming')" class="button button--full u-mt-15">
                 {{ $td('Learn more', 'meganet.gaming-platform-more') }}

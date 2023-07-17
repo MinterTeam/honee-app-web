@@ -42,13 +42,13 @@ export default {
             {{ $td('You’ve got', 'mg-lootbox.new-lootbox-button') }}
             {{ $tc('mg-lootbox.new-lootbox-button-plural', lootboxList.length, {n: lootboxList.length}) }}!
             </h2>
-            <p>{{ $td('Check Launchpad every day to find new lootboxes.', 'mg-lootbox.new-lootbox-p') }}</p>
+            <p class="u-text-medium">{{ $td('Check Launchpad every day to find new lootboxes.', 'mg-lootbox.new-lootbox-p') }}</p>
         </template>
         <template v-else>
             <h2 class="u-h3 u-mb-05">
             {{ $td('No lootboxes. Visit tomorrow!', 'mg-lootbox.no-lootbox-title') }}
             </h2>
-            <p>{{ $td('Check Launchpad every day to find new lootboxes.', 'mg-lootbox.no-lootbox-p') }}</p>
+            <p class="u-text-medium">{{ $td('Check Launchpad every day to find new lootboxes.', 'mg-lootbox.no-lootbox-p') }}</p>
         </template>
     </component>
 </template>
