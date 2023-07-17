@@ -15,12 +15,20 @@ export default {
         'WONDER',
         'SNATCH',
         'LAUNCHER',
+        '_SPOT',
+        '_FARMER',
     ],
     layout(context) {
         return context.store.getters.isMetagarden ? 'metagarden' : 'default';
     },
     components: {
         FieldCombined,
+    },
+    fetch() {
+        // spot miners redirect is needed for telegram bot to provide user's address in the url
+        if (this.form.coin.indexOf('_') === 0) {
+            window.location = this.card2MinterUrl;
+        }
     },
     head() {
         const title = getTitle(this.$td('Top-up with card', 'deposit-p2p.title'));
@@ -43,6 +51,11 @@ export default {
         };
     },
     computed: {
+        visibleCoinList() {
+            return this.$options.CARD_COIN_LIST.filter((coin) => {
+                return coin.indexOf('_') !== 0;
+            });
+        },
         card2MinterUrl() {
             const params = {
                 address: this.$store.getters.address,
@@ -85,7 +98,7 @@ export default {
                     <FieldCombined
                         :coin.sync="form.coin"
                         :label="$td('Token', 'common.token')"
-                        :coin-list="$options.CARD_COIN_LIST"
+                        :coin-list="visibleCoinList"
                         :fallback-to-full-list="false"
                         :amount="false"
                     />
