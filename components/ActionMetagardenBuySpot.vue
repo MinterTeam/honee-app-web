@@ -303,7 +303,7 @@ export default {
                 <div class="information form-row">
                     <h3 class="information__title">{{ $td('You will buy', 'todo') }}</h3>
                     <BaseAmountEstimation
-                        :coin="'Miners'"
+                        :coin="spotData.plural"
                         :amount="spotAmount || 0"
                         :format="isModeSwap ? 'approx' : undefined"
                         :hide-icon="true"
@@ -360,7 +360,7 @@ export default {
 
                     <h3 class="information__title">{{ $td('You will buy', 'todo') }}</h3>
                     <BaseAmountEstimation
-                        :coin="'Miners'"
+                        :coin="spotData.plural"
                         :amount="spotAmount"
                         :format="isModeSwap ? 'approx' : undefined"
                         :hide-icon="true"

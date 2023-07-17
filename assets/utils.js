@@ -1,5 +1,5 @@
 import decode from 'entity-decode';
-import prettyNum, {PRECISION_SETTING} from 'pretty-num';
+import prettyNum, {PRECISION_SETTING, ROUNDING_MODE} from 'pretty-num';
 import stripZeros from 'pretty-num/src/strip-zeros';
 import fromExponential from 'from-exponential';
 import parseISO from "date-fns/esm/parseISO";
@@ -132,6 +132,20 @@ export function prettyUsd(value) {
  */
 export function prettyRound(value) {
     return prettyNumber(value, 0);
+}
+
+/**
+ * @param {string|number} value
+ * @return {string}
+ */
+export function prettyFloor(value) {
+    return decode(prettyNum(value, {
+        precision: 0,
+        precisionSetting: undefined,
+        roundingMode: ROUNDING_MODE.FLOOR,
+        separateOneDigit: false,
+        thousandsSeparator: '&#x202F;',
+    }));
 }
 
 /**
