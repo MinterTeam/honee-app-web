@@ -33,7 +33,7 @@ export default {
     },
     computed: {
         farmersLeft() {
-            return !this.totalSold ? 111 : this.totalSold % 111;
+            return 111 - this.totalSold % 111;
         },
     },
     methods: {
