@@ -35,7 +35,7 @@ export function getSpotInfo(privateKey) {
 
 /**
  * @param {string} privateKey
- * @return {Promise<number>}
+ * @return {Promise<{total: number, addressTotal: number}>}
  */
 export function getSpotFarmerInfo(privateKey) {
     if (!privateKey) {
@@ -46,7 +46,7 @@ export function getSpotFarmerInfo(privateKey) {
                 privateKey,
             },
         })
-        .then((response) => response.data.data);
+        .then((response) => response.data);
 }
 
 // export const getSpotInfo = () => getSpotInfoDebug('Mx531bdb3a6ab6faa0b6adba80cedeb86a6dbbea67');

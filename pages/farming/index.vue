@@ -14,8 +14,9 @@ export default {
     },
     fetch() {
         return getSpotFarmerInfo(this.$store.getters.privateKey)
-            .then((value) => {
-                this.spotAmount = value;
+            .then((info) => {
+                this.spotAmount = info.addressTotal;
+                this.totalSold = info.total;
             });
     },
     props: {
@@ -27,10 +28,13 @@ export default {
     data() {
         return {
             spotAmount: 0,
+            totalSold: 0,
         };
     },
     computed: {
-
+        farmersLeft() {
+            return !this.totalSold ? 111 : this.totalSold % 111;
+        },
     },
     methods: {
         pretty,
@@ -43,8 +47,8 @@ export default {
     <div class="u-section u-container u-container--small">
         <div class="card card__content--small card--megachain-farming card--megachain-farming--blobs u-text-center">
             <img class="u-image u-image-center u-mt-15" style="margin-bottom: -16px; padding-right: 8px;" src="/img/megachain-farmers.png" srcset="/img/megachain-farmers@2x.png 2x" alt="" role="presentation" width="315" height="230">
-            <div class="card__badge card__badge--top card__badge--megachain-farmers" v-if="false">
-                {{ $td('Limited offer: 95 Farmers left', 'todo') }}
+            <div class="card__badge card__badge--top card__badge--megachain-farmers">
+                {{ $td(`Limited offer: ${farmersLeft} Farmers left`, 'todo', {left: farmersLeft}) }}
             </div>
             <h1 class="u-h3">{{ $td('Gaming Token Farmers', 'todo') }}</h1>
 
@@ -61,7 +65,7 @@ export default {
             </div>
             <div class="u-mb-05" v-else>
                 <span class="u-h--uppercase">{{ $td('You own', 'metagarden.you-own') }}</span>
-                <span class="u-h--uppercase-solid">{{ pretty(spotAmount) || '—' }}</span>
+                <span class="u-h--uppercase-solid">{{ spotAmount }}</span>
             </div>
 
             <div class="u-h--uppercase-solid">{{ $td('Soon to be activated', 'todo') }}</div>
