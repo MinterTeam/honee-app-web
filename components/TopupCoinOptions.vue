@@ -7,7 +7,7 @@ export const TELEGRAM_BUY_LINKS = {
     BEE: 'https://t.me/honeepremiumbot?start=buy-bee',
     MEGANET: 'https://t.me/metagardenbot?start=meganet',
     LAUNCHER: 'https://t.me/metagardenbot?start=launcher',
-    FARMER: 'https://t.me/metagardenbot?start=farmer',
+    FARMER: 'https://t.me/metagardenbot?start=farmer-cryptobot',
 };
 
 export default {
