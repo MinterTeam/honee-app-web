@@ -1,5 +1,6 @@
 <script>
 import {SPOT_DATA} from '~/assets/variables.js';
+import FieldAddressDisplay from '~/components/base/FieldAddressDisplay.vue';
 import ActionMetagardenBuySpot from '~/components/ActionMetagardenBuySpot.vue';
 
 export const SPOT_PRICE_USD = SPOT_DATA.FARMER.priceUsd;
@@ -9,6 +10,7 @@ export default {
     SPOT_PRICE_USD,
     SPOT_MIN_AMOUNT,
     components: {
+        FieldAddressDisplay,
         ActionMetagardenBuySpot,
     },
     data() {
@@ -32,9 +34,17 @@ export default {
 
             <ActionMetagardenBuySpot
                 type="FARMER"
-                class="card card--pop card--light-grey"
+                class="card card--light-grey"
                 @success-modal-close="$router.push($i18nGetPreferredPath('/farming'))"
-            />
+            >
+                <template v-slot:card-top>
+                    <FieldAddressDisplay
+                        class="form-row"
+                        :value="$store.getters.address"
+                        :label="$td('Your Minter address', 'meganet.minter-address-label')"
+                    />
+                </template>
+            </ActionMetagardenBuySpot>
 
 
             <!--                <div class="card__content card__content&#45;&#45;medium u-text-medium">

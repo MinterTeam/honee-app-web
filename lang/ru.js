@@ -749,7 +749,7 @@ export default {
         'title': 'Майнеры Metagarden',
         // eslint-disable-next-line no-useless-escape
         'description': 'Стоимость 1 майнера составляет \${priceUsd} или {priceMetagarden} METAGARDEN. Вы можете купить от 0.1 майнера.',
-        'spot-amount-label': 'Количество майнеров',
+        'spot-amount-label': 'Количество {spotPlural}',
         'confirm-title': 'Подтвердите покупку',
         'mining-spots': 'Майнеры',
         'you-own': 'Количество',

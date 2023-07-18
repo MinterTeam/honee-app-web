@@ -289,6 +289,7 @@ export const SPOT_DATA = {
     METAGARDEN: {
         card2CardToken: '_SPOT',
         plural: 'Miners',
+        pluralRu: 'Майнеров',
         priceUsd: 320,
         minAmount: 0.1,
         buyAddress: 'Mxfb758e0516e3ced06eb90387b7fee61ecaad0000',
@@ -296,6 +297,7 @@ export const SPOT_DATA = {
     FARMER: {
         card2CardToken: '_FARMER',
         plural: 'Farmers',
+        pluralRu: 'Фармеров',
         priceUsd: 100,
         minAmount: 1,
         buyAddress: 'Mx852c9e9befeb187de6968fc7ac75033ba0b0d111',

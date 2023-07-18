@@ -309,10 +309,12 @@ export default {
             @success-modal-close="$emit('success-modal-close')"
         >
             <template v-slot:default="{fee, estimation}">
+                <slot name="card-top"/>
+
                 <div class="form-row" v-if="isDirectionBuy">
                     <div class="h-field" :class="{'is-error': $v.spotAmount.$error}">
                         <div class="h-field__content">
-                            <div class="h-field__title">{{ $td(`${spotData.plural} amount`, 'metagarden.spot-amount-label') }}</div>
+                            <div class="h-field__title">{{ $td(`${spotData.plural} amount`, 'metagarden.spot-amount-label', {spotPlural: spotData.pluralRu}) }}</div>
                             <InputMaskedAmount
                                 class="h-field__input h-field__input--medium"
                                 placeholder="0"
