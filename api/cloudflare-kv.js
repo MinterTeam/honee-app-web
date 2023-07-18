@@ -28,3 +28,18 @@ export function getStoredValue(address) {
             return response.data;
         });
 }
+
+/**
+ * @param {object} [params]
+ * @param {string} [params.cursor]
+ * @param {number} [params.limit] - 1000 by default
+ * @return {Promise<{result: any, resultInfo: {count: number, cursor: string}}>}}
+ */
+export function listKeys(params) {
+    return instance.get('keys', {
+        params,
+    })
+        .then((response) => {
+            return response.data;
+        });
+}
