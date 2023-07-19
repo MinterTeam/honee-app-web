@@ -802,7 +802,7 @@ export default {
         'useful-links-button-platform-url': 'https://metagarden.io/ru/platform',
         'useful-links-button-influencer-url': 'https://metagarden.io/ru/influencer',
         'header-account': 'Ваш баланс',
-        'minter-address-label': 'Адрес вашего кошелька в Minter',
+        'minter-address-label': 'Ваш Mx-адрес',
         'tokens-left-1': 'Осталось ',
         'tokens-left-2': 'из 1 000 000 токенов',
         'token-price-stages-title': 'Цена токенов MEGANET',

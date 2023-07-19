@@ -41,7 +41,7 @@ export default {
                     <FieldAddressDisplay
                         class="form-row"
                         :value="$store.getters.address"
-                        :label="$td('Your Minter address', 'meganet.minter-address-label')"
+                        :label="$td('Your Mx address', 'meganet.minter-address-label')"
                     />
                 </template>
             </ActionMetagardenBuySpot>
