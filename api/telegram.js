@@ -105,6 +105,19 @@ export function getUserPortfolioNotificationList(privateKey) {
         .then((response) => response.data.data);
 }
 
+/**
+ * @param {string} address
+ * @param {string} token
+ * @return {Promise<number>}
+ */
+export function createBuyOrder(address, token) {
+    return instance.post('/order', {
+        address,
+        token,
+    })
+        .then((response) => response.data.orderId);
+}
+
 export function sendAddress(telegramId, address, initData) {
     return instance.post('/users/address', toSnake({
         telegramId,

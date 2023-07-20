@@ -1,6 +1,7 @@
 <script>
 import {NETWORK, MAINNET, SPOT_DATA} from '~/assets/variables.js';
 import InlineSvg from 'vue-inline-svg';
+import {createBuyOrder} from '~/api/telegram.js';
 import {getCard2MinterUrl} from '~/assets/utils.js';
 
 export const TELEGRAM_BUY_LINKS = {
@@ -74,8 +75,22 @@ export default {
             default: '',
         },
     },
+    fetch() {
+        if (!this.$store.getters.isMegachain || !this.settings.bot) {
+            return;
+        }
+        let address = this.$store.getters.address;
+        if (this.settings.bot?.addressType === PRODUCT_ADDRESS_TYPE.SMART_WALLET) {
+            address = this.$store.getters.smartWalletAddress;
+        }
+        return createBuyOrder( address, this.coin)
+            .then((orderId) => {
+                this.telegramOrderId = orderId;
+            });
+    },
     data() {
         return {
+            telegramOrderId: undefined,
         };
     },
     computed: {
@@ -105,12 +120,8 @@ export default {
             });
         },
         telegramBotUrl() {
-            let address = this.$store.getters.address;
-            if (this.settings.bot?.addressType === PRODUCT_ADDRESS_TYPE.SMART_WALLET) {
-                address = this.$store.getters.smartWalletAddress;
-            }
             if (this.$store.getters.isMegachain) {
-                return `https://metagarden-bot.minter.network/order?address=${address}&token=${this.coin}`;
+                return this.telegramOrderId ? `https://t.me/metagardenbot?start=order-${this.telegramOrderId}` : '';
             } else {
                 return TELEGRAM_BUY_LINKS[this.coin];
             }
