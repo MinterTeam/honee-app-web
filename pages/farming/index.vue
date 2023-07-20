@@ -54,7 +54,7 @@ export default {
             </div>
             <h1 class="u-h3">{{ $td('NFT farmer bot', 'mg-farming.buy-block-title') }}</h1>
             <p class="u-mt-10">{{ $td('Costs $100 and mines $200 for 6-18 months depending on the game you choose. Games earn fees, NFT bots collect them and send to you.', 'mg-farming.buy-block-description') }}</p>
-            <nuxt-link :to="$i18nGetPreferredPath('/farming/options')" class="button button--full u-mt-15 u-mb-15">
+            <nuxt-link :to="$i18nGetPreferredPath('/buy/FARMER')" class="button button--full u-mt-15 u-mb-15">
                 {{ $td('Buy farmer bot for $100', 'mg-farming.buy-block-button') }}
             </nuxt-link>
 
