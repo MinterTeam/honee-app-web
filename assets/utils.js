@@ -61,8 +61,14 @@ export function getEvmAddressUrl(chainId, hash) {
 }
 
 export function getCard2MinterUrl({address, returnUrl, finishUrl, coin = 'BIP'}) {
-    const query = queryToString({address, returnUrl, finishUrl, coin});
+    returnUrl = removeHash(returnUrl);
+    finishUrl = removeHash(finishUrl);
+    const query = queryToString({coin, address, returnUrl, finishUrl});
     return `${CARD_TO_MINTER_HOST}/?${query}`;
+
+    function removeHash(url) {
+        return url.replace(/#.*$/, '');
+    }
 }
 
 /**
