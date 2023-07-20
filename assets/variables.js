@@ -286,7 +286,7 @@ export const TX_STATUS = {
 };
 
 export const SPOT_DATA = {
-    METAGARDEN: {
+    MGMINER: {
         card2CardToken: '_SPOT',
         plural: 'Miners',
         pluralRu: 'Майнеров',

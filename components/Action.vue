@@ -44,7 +44,7 @@ const addLiquidityAction = {
  * @type {Object.<string, (ActionItemRaw | function(actionPathParts: Array<string>): ActionItemRaw)>}
  */
 const actionList = {
-    buy: {
+    'hub-buy': {
         params: ['coinToGet'],
         component: HubBuyForm,
         tags: [],

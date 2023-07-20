@@ -2,8 +2,8 @@
 import {SPOT_DATA} from '~/assets/variables.js';
 import ActionMetagardenBuySpot, {SPOT_PRICE_METAGARDEN} from '~/components/ActionMetagardenBuySpot.vue';
 
-export const SPOT_PRICE_USD = SPOT_DATA.METAGARDEN.priceUsd;
-export const SPOT_MIN_AMOUNT = SPOT_DATA.METAGARDEN.minAmount;
+export const SPOT_PRICE_USD = SPOT_DATA.MGMINER.priceUsd;
+export const SPOT_MIN_AMOUNT = SPOT_DATA.MGMINER.minAmount;
 
 export default {
     SPOT_PRICE_METAGARDEN,
@@ -35,7 +35,7 @@ export default {
             </div>
 
             <ActionMetagardenBuySpot
-                type="METAGARDEN"
+                type="MGMINER"
                 class="card card--pop card--light-grey"
                 @success-modal-close="$router.push($getDashboardUrl())"
             />

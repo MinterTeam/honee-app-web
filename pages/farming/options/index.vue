@@ -66,7 +66,7 @@ export default {
                 {{ $td('Telegram bot', 'topup.buy-via-telegram') }}
             </a>
 
-            <nuxt-link class="button button--full u-mt-10" :class="buttonClass" :to="$i18nGetPreferredPath('/farming/options/swap')">
+            <nuxt-link class="button button--full u-mt-10" :class="buttonClass" :to="$i18nGetPreferredPath('/buy/FARMER/minter')">
                 <InlineSvg class="button__icon" src="/img/icon-swap.svg" width="24" height="24" alt="" role="presentation"/>
                 {{ $td('Swap in Minter', 'topup.buy-in-minter') }}
             </nuxt-link>

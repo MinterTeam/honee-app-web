@@ -53,7 +53,7 @@ export default {
             };
         },
         card2MinterUrl() {
-            const MINER_SPOT_COIN_SYMBOL = SPOT_DATA.METAGARDEN.card2CardToken;
+            const MINER_SPOT_COIN_SYMBOL = SPOT_DATA.MGMINER.card2CardToken;
             return getCard2MinterUrl({
                 address: this.$store.getters.address,
                 returnUrl: window.location.href,
