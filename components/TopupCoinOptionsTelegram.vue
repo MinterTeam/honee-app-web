@@ -30,6 +30,9 @@ export default {
         if (typeof this.settings.bot?.addressType === 'function') {
             address = await this.settings.bot.addressType();
         }
+        if (!address) {
+            return;
+        }
         return createBuyOrder( address, this.coin)
             .then((orderId) => {
                 this.telegramOrderId = orderId;

@@ -49,14 +49,25 @@ export const BUY_PRODUCTS = {
         minter: false,
         bot: {
             addressType: function() {
-                // @TODO other tg auth can be used if not in TWA
+                // @TODO authorized tg user id can be used if not in TWA
                 return window.getTelegramWebApp?.()
                     .then((WebApp) => {
+                        if (!WebApp.initDataUnsafe?.hash) {
+                            throw new Error('No data from Telegram Bot');
+                        }
+                        const urlSearchParams = new URLSearchParams();
+                        urlSearchParams.append("req_data", WebApp.initData);
+
+                        return axios.get('https://heist-bsc-api.dl-dev.ru/me', {
+                            params: urlSearchParams,
+                        });
+                        /*
                         const userId = WebApp.initDataUnsafe?.user?.id;
                         if (!userId) {
                             throw new Error('No data from Telegram Bot');
                         }
                         return axios.get(`https://heist-bsc-api.dl-dev.ru/address?id=${userId}`);
+                        */
                     })
                     .then((response) => {
                         return response.data.address;
