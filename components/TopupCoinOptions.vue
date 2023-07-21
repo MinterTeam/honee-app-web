@@ -1,8 +1,10 @@
 <script>
+import axios from 'axios';
 import {NETWORK, MAINNET, SPOT_DATA} from '~/assets/variables.js';
 import InlineSvg from 'vue-inline-svg';
 import {createBuyOrder} from '~/api/telegram.js';
 import {getCard2MinterUrl} from '~/assets/utils.js';
+import BaseLoader from '~/components/base/BaseLoader.vue';
 
 export const TELEGRAM_BUY_LINKS = {
     BEE: 'https://t.me/honeepremiumbot?start=buy-bee',
@@ -47,8 +49,23 @@ const BUY_PRODUCTS = {
     MEGA: {
         card2Card: false,
         minter: false,
-        // it should be external addresss
-        bot: false,
+        bot: {
+            addressType: function() {
+                // @TODO other tg auth can be used if not in TWA
+                return window.getTelegramWebApp?.()
+                    .then((WebApp) => {
+                        const userId = WebApp.initDataUnsafe?.user?.id;
+                        if (!userId) {
+                            throw new Error('No data from Telegram Bot');
+                        }
+                        return axios.get(`https://heist-bsc-api.dl-dev.ru/address?id=${userId}`);
+                    })
+                    .then((response) => {
+                        return response.data.address;
+                    });
+
+            },
+        },
     },
     // карта, Криптобот, Minter
     BIP: {
@@ -64,6 +81,7 @@ const BUY_PRODUCTS = {
 export default {
     TELEGRAM_BUY_LINKS,
     components: {
+        BaseLoader,
         InlineSvg,
     },
     props: {
@@ -76,13 +94,16 @@ export default {
             default: '',
         },
     },
-    fetch() {
+    async fetch() {
         if (!this.$store.getters.isMegachain || !this.settings.bot) {
             return;
         }
         let address = this.$store.getters.address;
         if (this.settings.bot?.addressType === PRODUCT_ADDRESS_TYPE.SMART_WALLET) {
             address = this.$store.getters.smartWalletAddress;
+        }
+        if (typeof this.settings.bot?.addressType === 'function') {
+            address = await this.settings.bot.addressType();
         }
         return createBuyOrder( address, this.coin)
             .then((orderId) => {
@@ -165,10 +186,20 @@ export default {
             </template>
         </nuxt-link>
 
-        <a class="button button--full u-mt-10" :class="buttonClass" :href="telegramBotUrl" target="_blank" v-if="settings.bot && telegramBotUrl">
-            <InlineSvg class="button__icon" src="/img/icon-social-telegram.svg" width="24" height="24" alt="" role="presentation"/>
-            {{ $td('Telegram bot', 'topup.buy-via-telegram') }}
-        </a>
+        <component
+            :is="$fetchState.pending ? 'div' : 'a'"
+            class="button button--full u-mt-10"
+            :class="[buttonClass, {'is-loading': $fetchState.pending}]"
+            :href="telegramBotUrl"
+            target="_blank"
+            v-if="settings.bot && (telegramBotUrl || $fetchState.pending)"
+        >
+            <span class="button__content">
+                <InlineSvg class="button__icon" src="/img/icon-social-telegram.svg" width="24" height="24" alt="" role="presentation"/>
+                {{ $td('Telegram bot', 'topup.buy-via-telegram') }}
+            </span>
+            <BaseLoader class="button__loader" :isLoading="true"/>
+        </component>
 
         <a class="button button--full u-mt-10" :class="buttonClass" :href="card2MinterUrl" v-if="settings.card2Card">
             <InlineSvg class="button__icon" src="/img/icon-topup-card.svg" width="24" height="24" alt="" role="presentation"/>

@@ -82,6 +82,8 @@ const connectCSP = prepareCSP(varsConfig, (item) => {
     'https://www.youtube.com',
     // telegram seed auth
     'https://dali.io',
+    // heist address of telegram user
+    'https://heist-bsc-api.dl-dev.ru',
 ]);
 const imageCSP = prepareCSP(varsConfig, (item) => {
     return item === 'APP_ACCOUNTS_API_URL';
