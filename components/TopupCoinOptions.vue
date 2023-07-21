@@ -2,9 +2,8 @@
 import axios from 'axios';
 import {NETWORK, MAINNET, SPOT_DATA} from '~/assets/variables.js';
 import InlineSvg from 'vue-inline-svg';
-import {createBuyOrder} from '~/api/telegram.js';
 import {getCard2MinterUrl} from '~/assets/utils.js';
-import BaseLoader from '~/components/base/BaseLoader.vue';
+import TopupCoinOptionsTelegram from '~/components/TopupCoinOptionsTelegram.vue';
 
 export const TELEGRAM_BUY_LINKS = {
     BEE: 'https://t.me/honeepremiumbot?start=buy-bee',
@@ -13,13 +12,12 @@ export const TELEGRAM_BUY_LINKS = {
     FARMER: 'https://t.me/metagardenbot?start=farmer-cryptobot',
 };
 
-const PRODUCT_ADDRESS_TYPE = {
+export const PRODUCT_ADDRESS_TYPE = {
     MINTER: 'minter',
     SMART_WALLET: 'smart-wallet',
-    EXTERNAL: 'external',
 };
 
-const BUY_PRODUCTS = {
+export const BUY_PRODUCTS = {
     // карта, Minter
     MGMINER: {
         isMiner: true,
@@ -78,11 +76,24 @@ const BUY_PRODUCTS = {
     },
 };
 
+export function getProductSettings(coin) {
+    const settings = BUY_PRODUCTS[coin];
+    return settings ? {
+        card2Card: true,
+        minter: true,
+        bot: true,
+        ...settings,
+    } : {
+        card2Card: true,
+        minter: true,
+        bot: false,
+    };
+}
+
 export default {
-    TELEGRAM_BUY_LINKS,
     components: {
-        BaseLoader,
         InlineSvg,
+        TopupCoinOptionsTelegram,
     },
     props: {
         coin: {
@@ -94,25 +105,8 @@ export default {
             default: '',
         },
     },
-    async fetch() {
-        if (!this.$store.getters.isMegachain || !this.settings.bot) {
-            return;
-        }
-        let address = this.$store.getters.address;
-        if (this.settings.bot?.addressType === PRODUCT_ADDRESS_TYPE.SMART_WALLET) {
-            address = this.$store.getters.smartWalletAddress;
-        }
-        if (typeof this.settings.bot?.addressType === 'function') {
-            address = await this.settings.bot.addressType();
-        }
-        return createBuyOrder( address, this.coin)
-            .then((orderId) => {
-                this.telegramOrderId = orderId;
-            });
-    },
     data() {
         return {
-            telegramOrderId: undefined,
         };
     },
     computed: {
@@ -120,17 +114,7 @@ export default {
             return NETWORK === MAINNET;
         },
         settings() {
-            const settings = BUY_PRODUCTS[this.coin];
-            return settings ? {
-                card2Card: true,
-                minter: true,
-                bot: true,
-                ...settings,
-            } : {
-                card2Card: true,
-                minter: true,
-                bot: false,
-            };
+            return getProductSettings(this.coin);
         },
         card2MinterUrl() {
             const card2CardToken = SPOT_DATA[this.coin] ? SPOT_DATA[this.coin].card2CardToken : this.coin;
@@ -140,13 +124,6 @@ export default {
                 returnUrl: window.location.href,
                 finishUrl: window.location.origin + (this.settings.finishUrl ? this.$i18nGetPreferredPath(this.settings.finishUrl) : ''),
             });
-        },
-        telegramBotUrl() {
-            if (this.$store.getters.isMegachain) {
-                return this.telegramOrderId ? `https://t.me/metagardenbot?start=order-${this.telegramOrderId}` : '';
-            } else {
-                return TELEGRAM_BUY_LINKS[this.coin];
-            }
         },
         cryptoUrl() {
             if (!this.settings.minter) {
@@ -186,20 +163,7 @@ export default {
             </template>
         </nuxt-link>
 
-        <component
-            :is="$fetchState.pending ? 'div' : 'a'"
-            class="button button--full u-mt-10"
-            :class="[buttonClass, {'is-loading': $fetchState.pending}]"
-            :href="telegramBotUrl"
-            target="_blank"
-            v-if="settings.bot && (telegramBotUrl || $fetchState.pending)"
-        >
-            <span class="button__content">
-                <InlineSvg class="button__icon" src="/img/icon-social-telegram.svg" width="24" height="24" alt="" role="presentation"/>
-                {{ $td('Telegram bot', 'topup.buy-via-telegram') }}
-            </span>
-            <BaseLoader class="button__loader" :isLoading="true"/>
-        </component>
+        <TopupCoinOptionsTelegram class="button button--full u-mt-10" :class="buttonClass" :coin="coin" :settings="settings" :button-class="buttonClass"/>
 
         <a class="button button--full u-mt-10" :class="buttonClass" :href="card2MinterUrl" v-if="settings.card2Card">
             <InlineSvg class="button__icon" src="/img/icon-topup-card.svg" width="24" height="24" alt="" role="presentation"/>

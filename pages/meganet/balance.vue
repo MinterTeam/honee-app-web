@@ -1,7 +1,7 @@
 <script>
 import {MAINNET, NETWORK, HUB_NETWORK_SLUG} from '~/assets/variables.js';
 import {getCard2MinterUrl, pretty, prettyRound} from '~/assets/utils.js';
-import {TELEGRAM_BUY_LINKS} from '~/components/TopupCoinOptions.vue';
+import {TELEGRAM_BUY_LINKS, getProductSettings} from '~/components/TopupCoinOptions.vue';
 import TopupWaitMinter from '~/components/TopupWaitMinter.vue';
 import TopupWaitSmartWalletWrap from '~/components/TopupWaitSmartWalletWrap.vue';
 import FieldAddressDisplay from '~/components/base/FieldAddressDisplay.vue';
@@ -9,6 +9,7 @@ import Modal from '~/components/base/Modal.vue';
 import MetagardenTokenBalance from '~/components/MetagardenTokenBalance.vue';
 import Topup from '~/components/Topup.vue';
 import Swap from '~/components/Swap.vue';
+import TopupCoinOptionsTelegram from '~/components/TopupCoinOptionsTelegram.vue';
 
 const PRESALE_COIN = 'LAUNCHER';
 
@@ -18,6 +19,7 @@ export default {
     HUB_NETWORK_SLUG,
     TELEGRAM_BUY_LINKS,
     components: {
+        TopupCoinOptionsTelegram,
         Topup,
         Modal,
         FieldAddressDisplay,
@@ -80,6 +82,7 @@ export default {
     methods: {
         pretty,
         prettyRound,
+        getProductSettings,
         getTopupInnerPage(inner) {
             const base = this.$options.isOnboarding ? '/onboarding/topup/' : '/topup/';
             return this.$i18nGetPreferredPath(base + inner);
@@ -258,13 +261,19 @@ export default {
                     <img class="u-mr-05" src="/img/icon-social-telegram-circle.svg" alt="" role="presentation" width="24" height="24">
                     {{ $td('Telegram bot', 'deposit.title-telegram') }}
                 </h2>
-                <a class="button button--main button--full u-mt-10" :href="$options.TELEGRAM_BUY_LINKS[$options.PRESALE_COIN]" target="_blank" v-if="$options.TELEGRAM_BUY_LINKS[$options.PRESALE_COIN]">
+                <TopupCoinOptionsTelegram
+                    class="button button--main button--full u-mt-10"
+                    :coin="$options.PRESALE_COIN"
+                    :settings="getProductSettings($options.PRESALE_COIN)"
+                >
                     {{ $td('Switch to Telegram', 'deposit.button-buy-with-telegram') }}
-                </a>
+                </TopupCoinOptionsTelegram>
 
+                <!--
                 <p class="u-text-medium u-mt-10">
-                    {{ $td('You will need to give', 'deposit.telegram-find-address-description-1') }} <button type="button" class="link link--underline u-semantic-button" @click="isAddressModalOpen = true">{{ $td('this Minter address', 'deposit.telegram-find-address-button') }}</button> {{ $td('to the Telegram bot.', 'deposit.telegram-find-address-description-2') }}
+                    {{ $td('You will need to give', 'deposit.telegram-find-address-description-1') }} <button type="button" class="link link&#45;&#45;underline u-semantic-button" @click="isAddressModalOpen = true">{{ $td('this Minter address', 'deposit.telegram-find-address-button') }}</button> {{ $td('to the Telegram bot.', 'deposit.telegram-find-address-description-2') }}
                 </p>
+                -->
             </div>
 
             <!-- minter -->
