@@ -132,7 +132,7 @@ export default {
             </div>
         </div>
 
-        <ReferralCard class="card card--megachain card__content card__content--medium u-mb-15" :is-modal-button="false"/>
+        <ReferralCard class="card card--megachain card__content card__content--medium u-mb-15" :is-modal-button="false" v-if="$route.query.debug"/>
 
         <!--<div class="card card--megachain card__content card__content--medium u-text-center u-mb-15">
             <h2 class="u-h3 u-mb-05">{{ $td('MEGANET price stages', 'meganet.token-price-stages-title') }}</h2>
