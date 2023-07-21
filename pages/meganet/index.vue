@@ -126,7 +126,7 @@ export default {
 
                 <div class="u-mt-10 u-text-medium u-fw-700">{{ $td('', 'meganet.tokens-left-1') }}{{ prettyRound(1000000 - 905000) }} {{ $td('of 1 000 000 tokens left', 'meganet.tokens-left-2') }}</div>-->
 
-                <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath('/meganet/balance')">
+                <nuxt-link class="button button--main button--full u-mt-10" :to="$i18nGetPreferredPath(`/buy/${coin}`)">
                     {{ $td(`Buy ${coin} tokens`, 'meganet.buy-button', {coin}) }}
                 </nuxt-link>
             </div>
