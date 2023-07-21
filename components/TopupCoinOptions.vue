@@ -21,6 +21,7 @@ const BUY_PRODUCTS = {
     // карта, Minter
     MGMINER: {
         isMiner: true,
+        bot: false,
     },
     // карта, Криптобот, Minter
     FARMER: {
@@ -30,22 +31,22 @@ const BUY_PRODUCTS = {
     // карта, Криптобот, Minter
     LAUNCHER: {
     },
-    // Криптобот 0x
-    MEGA: {
-        card2Card: false,
-        minter: false,
-        // it should be external addresss
-        bot: {
-            addressType: PRODUCT_ADDRESS_TYPE.SMART_WALLET,
-        },
-    },
-    // карта, Криптобот, Minter
+    // карта, Minter
     METAGARDEN: {
+        bot: false,
     },
     // карта, Криптобот, Minter
     SNATCH: {},
     // карта, Криптобот 0х, Minter
     WONDER: {
+        bot: {
+            addressType: PRODUCT_ADDRESS_TYPE.SMART_WALLET,
+        },
+    },
+    // Криптобот 0x
+    MEGA: {
+        card2Card: false,
+        minter: false,
         // it should be external addresss
         bot: false,
     },
@@ -126,6 +127,13 @@ export default {
                 return TELEGRAM_BUY_LINKS[this.coin];
             }
         },
+        cryptoUrl() {
+            if (!this.settings.minter) {
+                return '';
+            }
+            const coinQuery = this.settings.isMiner ? '' : `?coinToGet=${this.coin}`;
+            return '/topup/crypto' + coinQuery;
+        },
         minterSwapUrl() {
             return this.settings.isMiner ? `/buy/${this.coin}/minter` : `/swap/${this.coin}`;
         },
@@ -142,21 +150,10 @@ export default {
         </h1>
         <p>{{ $td('Choose one of these options', 'topup.description') }}</p>
 
-        <a class="button button--full u-mt-10" :class="buttonClass" :href="card2MinterUrl" v-if="settings.card2Card">
-            <InlineSvg class="button__icon" src="/img/icon-topup-card.svg" width="24" height="24" alt="" role="presentation"/>
-            {{ $td('Card', 'topup.top-up-with-card2card') }}
-        </a>
-        <!--
-        <nuxt-link class="button button--full u-mt-10" :class="buttonClass" :to="$i18nGetPreferredPath('/topup/crypto')">
+        <nuxt-link class="button button--full u-mt-10" :class="buttonClass" :to="$i18nGetPreferredPath(cryptoUrl)" v-if="cryptoUrl">
             <InlineSvg class="button__icon" src="/img/icon-blockchain.svg" width="24" height="24" alt="" role="presentation"/>
             {{ $td('Crypto', 'topup.buy-with-crypto') }}
         </nuxt-link>
-        -->
-
-        <a class="button button--full u-mt-10" :class="buttonClass" :href="telegramBotUrl" target="_blank" v-if="settings.bot && telegramBotUrl">
-            <InlineSvg class="button__icon" src="/img/icon-social-telegram.svg" width="24" height="24" alt="" role="presentation"/>
-            {{ $td('Telegram bot', 'topup.buy-via-telegram') }}
-        </a>
 
         <nuxt-link class="button button--full u-mt-10" :class="buttonClass" :to="$i18nGetPreferredPath(minterSwapUrl)" v-if="settings.minter">
             <InlineSvg class="button__icon" src="/img/icon-swap.svg" width="24" height="24" alt="" role="presentation"/>
@@ -167,6 +164,16 @@ export default {
                 {{ $td('Swap in Minter', 'topup.buy-in-minter') }}
             </template>
         </nuxt-link>
+
+        <a class="button button--full u-mt-10" :class="buttonClass" :href="telegramBotUrl" target="_blank" v-if="settings.bot && telegramBotUrl">
+            <InlineSvg class="button__icon" src="/img/icon-social-telegram.svg" width="24" height="24" alt="" role="presentation"/>
+            {{ $td('Telegram bot', 'topup.buy-via-telegram') }}
+        </a>
+
+        <a class="button button--full u-mt-10" :class="buttonClass" :href="card2MinterUrl" v-if="settings.card2Card">
+            <InlineSvg class="button__icon" src="/img/icon-topup-card.svg" width="24" height="24" alt="" role="presentation"/>
+            {{ $td('Card', 'topup.top-up-with-card2card') }}
+        </a>
 
         <!--<nuxt-link class="button button--ghost button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/coin/' + coin)">
             {{ $td('Cancel', 'topup.cancel') }}
