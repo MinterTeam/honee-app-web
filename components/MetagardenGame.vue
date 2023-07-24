@@ -1,7 +1,7 @@
 <script>
 import metagardenGames from '~/data/metagarden-games.js';
-import get from 'lodash-es/get.js';
 import {pretty} from '~/assets/utils.js';
+import {translateCardField} from '~/components/Card.vue';
 import CardMetagardenGame from '~/components/CardMetagardenGame.vue';
 
 export default {
@@ -24,7 +24,7 @@ export default {
         pretty,
         translate(key) {
             // fallback to en locale
-            return get(this.game?.[this.$i18n.locale], key) || get(this.game, key);
+            return translateCardField(this.game, key, this.$i18n.locale);
         },
     },
 };

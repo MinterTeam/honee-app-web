@@ -83,7 +83,7 @@ const connectCSP = prepareCSP(varsConfig, (item) => {
     // telegram seed auth
     'https://dali.io',
     // heist address of telegram user
-    'https://heist-bsc-api.dl-dev.ru',
+    // 'https://heist-bsc-api.dl-dev.ru',
     // snatch address of telegram user
     'https://snatch.honee.app',
 ]);

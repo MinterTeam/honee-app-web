@@ -15,7 +15,6 @@ export default {
         },
         label: {
             type: String,
-            required: true,
         },
     },
     data() {
@@ -44,7 +43,7 @@ export default {
 <template>
     <div class="h-field">
         <div class="h-field__content" @click="copy(value)">
-            <div class="h-field__title">{{ label }}</div>
+            <div class="h-field__title" v-if="label">{{ label }}</div>
             <div class="h-field__input is-not-empty">{{ value }}</div>
         </div>
         <div class="h-field__aside h-field__aside--with-icon" v-if="isClipboardSupported">

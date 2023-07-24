@@ -2,7 +2,10 @@
 import axios from 'axios';
 import {NETWORK, MAINNET, SPOT_DATA} from '~/assets/variables.js';
 import InlineSvg from 'vue-inline-svg';
+import {getHeistAddress} from '~/api/heist.js';
 import {getCard2MinterUrl} from '~/assets/utils.js';
+import {translateCardField} from '~/components/Card.vue';
+import TopupCoinEvm from '~/components/TopupCoinEvm.vue';
 import TopupCoinOptionsTelegram from '~/components/TopupCoinOptionsTelegram.vue';
 
 export const TELEGRAM_BUY_LINKS = {
@@ -17,7 +20,7 @@ export const PRODUCT_ADDRESS_TYPE = {
     SMART_WALLET: 'smart-wallet',
 };
 
-export const BUY_PRODUCTS = {
+const BUY_PRODUCTS = {
     // карта, Minter
     MGMINER: {
         isMiner: true,
@@ -66,30 +69,14 @@ export const BUY_PRODUCTS = {
         minter: false,
         bot: {
             addressType: function() {
-                // @TODO authorized tg user id can be used if not in TWA
-                return window.getTelegramWebApp?.()
-                    .then((WebApp) => {
-                        if (!WebApp.initDataUnsafe?.hash) {
-                            throw new Error('No data from Telegram Bot');
-                        }
-                        const urlSearchParams = new URLSearchParams();
-                        urlSearchParams.append("req_data", WebApp.initData);
-
-                        return axios.get('https://heist-bsc-api.dl-dev.ru/me', {
-                            params: urlSearchParams,
-                        });
-                        /*
-                        const userId = WebApp.initDataUnsafe?.user?.id;
-                        if (!userId) {
-                            throw new Error('No data from Telegram Bot');
-                        }
-                        return axios.get(`https://heist-bsc-api.dl-dev.ru/address?id=${userId}`);
-                        */
-                    })
-                    .then((response) => {
-                        return response.data.address;
-                    });
-
+                return getHeistAddress();
+            },
+        },
+        custom: {
+            component: TopupCoinEvm,
+            label: 'Instant BNB swap',
+            ru: {
+                label: 'Мгновенный обмен BNB',
             },
         },
     },
@@ -165,6 +152,9 @@ export default {
         },
     },
     methods: {
+        translate(item, key) {
+            return translateCardField(item, key, this.$i18n.locale);
+        },
     },
 };
 </script>
@@ -197,6 +187,10 @@ export default {
             <InlineSvg class="button__icon" src="/img/icon-topup-card.svg" width="24" height="24" alt="" role="presentation"/>
             {{ $td('Card', 'topup.top-up-with-card2card') }}
         </a>
+
+        <nuxt-link class="button button--full u-mt-10" :class="buttonClass" :to="$i18nGetPreferredPath(`/buy/${coin}/custom`)" v-if="settings.custom">
+            {{ translate(settings.custom, 'label') }}
+        </nuxt-link>
 
         <!--<nuxt-link class="button button--ghost button--full u-mt-10" :to="$i18nGetPreferredPath('/topup/coin/' + coin)">
             {{ $td('Cancel', 'topup.cancel') }}

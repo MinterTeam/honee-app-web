@@ -9,7 +9,6 @@ const instance = axios.create({
     // adapter: cacheAdapterEnhancer(getDefaultAdapter(), { enabledByDefault: false}),
     headers: {
         // @todo encrypt stored data with user private key
-        Authorization: `Bearer 8mjOb9lWZBKBN13E73uYY2FSHLAkdxTDNWs0sVkd`,
     },
 });
 addToCamelInterceptor(instance);
