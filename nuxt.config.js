@@ -84,6 +84,8 @@ const connectCSP = prepareCSP(varsConfig, (item) => {
     'https://dali.io',
     // heist address of telegram user
     'https://heist-bsc-api.dl-dev.ru',
+    // snatch address of telegram user
+    'https://snatch.honee.app',
 ]);
 const imageCSP = prepareCSP(varsConfig, (item) => {
     return item === 'APP_ACCOUNTS_API_URL';

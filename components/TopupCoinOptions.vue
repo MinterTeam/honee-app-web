@@ -36,7 +36,24 @@ export const BUY_PRODUCTS = {
         bot: false,
     },
     // карта, Криптобот, Minter
-    SNATCH: {},
+    SNATCH: {
+        bot: {
+            addressType: function() {
+                // @TODO authorized tg user id can be used if not in TWA
+                return window.getTelegramWebApp?.()
+                    .then((WebApp) => {
+                        const userId = WebApp.initDataUnsafe?.user?.id;
+                        if (!userId) {
+                            throw new Error('No data from Telegram Bot');
+                        }
+                        return axios.get(`https://snatch.honee.app/address.php?id=${userId}`);
+                    })
+                    .then((response) => {
+                        return response.data.address;
+                    });
+            },
+        },
+    },
     // карта, Криптобот 0х, Minter
     WONDER: {
         bot: {

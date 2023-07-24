@@ -67,6 +67,9 @@ export function getCard2MinterUrl({address, returnUrl, finishUrl, coin = 'BIP'})
     return `${CARD_TO_MINTER_HOST}/?${query}`;
 
     function removeHash(url) {
+        if (!url) {
+            return url;
+        }
         return url.replace(/#.*$/, '');
     }
 }
