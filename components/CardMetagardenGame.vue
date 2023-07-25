@@ -29,11 +29,11 @@ export default defineComponent({
         </nuxt-link>
         <div class="card__content--small">
             <h3 class="u-h4 u-mb-025">{{ game.title }}</h3>
-            <div class="u-h--uppercase u-flex u-flex--align-center">
+            <!--<div class="u-h--uppercase u-flex u-flex--align-center">
                 <img class="u-image--round u-mr-05 " :src="$store.getters['explorer/getCoinIcon'](game.coin)" alt="" role="presentation" width="16" height="16">
                 {{ pretty($store.getters.getBalanceAmount(game.coin)) }}
                 {{ game.coin }}
-            </div>
+            </div>-->
             <!--<CardHead :card="card"/>-->
             <!--<p class="card__action-description">{{ translate('description') }}</p>-->
 

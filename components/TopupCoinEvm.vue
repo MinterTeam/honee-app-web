@@ -25,7 +25,7 @@ export default {
 <template>
     <div>
         <p class="u-text-medium u-mb-10">
-            {{ $td(`Send from 0.01 BNB or more to this address to instantly receive MEGA tokens.`, 'todo') }}
+            {{ $td(`Send from 0.005 BNB or more to this address to instantly receive MEGA tokens. The price is 1 MEGA = $1. It will take 1 to 3 minutes to get credited to your game address. You can close this window and go play Heist.`, 'topup.deposit-coin-evm-description') }}
         </p>
 
         <FieldAddressDisplay

@@ -40,11 +40,11 @@ export default {
         </div>
 
         <template v-if="game">
-            <div class="u-h--uppercase-like u-mb-025">{{ translate('category') || 'Metagarden' }}</div>
-            <h1 class="u-h4 u-mb-05">{{ translate('title') }}</h1>
-            <p class="u-mb-10 u-text-medium">{{ translate('description') }}</p>
-
             <div class="u-grid u-mb-10">
+                <div class="u-cell u-cell--1-2">
+                    <div class="u-h--uppercase u-mb-05">{{ translate('category') || 'Metagarden' }}</div>
+                    <h1 class="u-h4 u-mb-05">{{ translate('title') }}</h1>
+                </div>
                 <div class="u-cell u-cell--1-2">
                     <div class="u-h--uppercase u-mb-05">{{ $td('Game token', 'mg-games.game-token') }}</div>
                     <div class="u-flex u-flex--align-center u-fw-700">
@@ -52,13 +52,8 @@ export default {
                         {{ game.coin }}
                     </div>
                 </div>
-                <div class="u-cell u-cell--1-2">
-                    <div class="u-h--uppercase u-mb-05">{{ $td('Your balance', 'mg-games.balance') }}</div>
-                    <div class="u-fw-700">
-                        {{ pretty($store.getters.getBalanceAmount(game.coin)) }}
-                    </div>
-                </div>
             </div>
+            <p class="u-mb-10 u-text-medium">{{ translate('description') }}</p>
 
             <slot :game="game"/>
         </template>

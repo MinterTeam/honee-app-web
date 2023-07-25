@@ -24,6 +24,15 @@ export default [
         },
     },
     {
+        title: 'Heist',
+        description: 'Pig hackers rob a piggy bank!',
+        coin: 'HEISTGAME',
+        slug: 'heist',
+        ru: {
+            description: 'Свиньи-хакеры грабят свинью-копилку!',
+        },
+    },
+    {
         title: 'Wonder',
         description: 'Win, collect and sell unique NFTs that can be found in different WonderBoxes!',
         category: 'Lottery',
@@ -43,16 +52,6 @@ export default [
         ru: {
             description: 'Многопользовательская игра, в которой необходимо открывать банковские ячейки, чтобы забирать призы.',
             category: 'Лотерея',
-        },
-    },
-    {
-        title: 'Heist',
-        description: '',
-        coin: 'HEISTGAME',
-        slug: 'heist',
-        isComingSoon: true,
-        ru: {
-            description: '',
         },
     },
     {

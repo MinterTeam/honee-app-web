@@ -250,6 +250,8 @@ export default {
         'deposit-sw-balance-description': 'На вашем смарт-кошельке есть доступные средства. Хотите зачислить?',
         'deposit-evm-balance-description': 'На вашем {network} адресе доступные средства. Хотите зачислить?',
         'deposit-evm-balance-button': 'Зачислить',
+        'deposit-coin-evm-description': 'Отправьте на этот адрес то 0.005 BNB и более, чтобы мгновенно получить токены MEGA. Курс 1 MEGA = $1. Зачисление на ваш игровой адрес от 1 до 3 минут. Можете закрыть это окно и пойти играть в Heist.',
+
     },
     deposit: {
         'title': 'Мгновенное пополнение',
