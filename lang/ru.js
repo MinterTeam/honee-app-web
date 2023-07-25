@@ -865,7 +865,7 @@ export default {
         'label-coming': 'Скоро',
         'button-learn': 'Подробнее',
         'button-play': 'Играть',
-        'game-token': 'Игровой токен',
+        'game-token': 'Игровая монета',
         'balance': 'Ваш баланс',
         'find-more': 'Больше игр',
         'join-channel': 'Подписаться на канал',

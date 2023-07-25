@@ -46,7 +46,7 @@ export default {
                     <h1 class="u-h4 u-mb-05">{{ translate('title') }}</h1>
                 </div>
                 <div class="u-cell u-cell--1-2">
-                    <div class="u-h--uppercase u-mb-05">{{ $td('Game token', 'mg-games.game-token') }}</div>
+                    <div class="u-h--uppercase u-mb-05">{{ $td('Game Coin', 'mg-games.game-token') }}</div>
                     <div class="u-flex u-flex--align-center u-fw-700">
                         <img class="u-image--round u-mr-05 " :src="$store.getters['explorer/getCoinIcon'](game.coin)" alt="" role="presentation" width="16" height="16">
                         {{ game.coin }}
