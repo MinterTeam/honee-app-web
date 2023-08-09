@@ -6,7 +6,7 @@ import {getCard2MinterUrl} from '~/assets/utils.js';
 
 const recentSlugList = [
     'miner',
-    'magic-box',
+    'wonder',
 ];
 
 export default {

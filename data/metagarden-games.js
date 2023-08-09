@@ -37,7 +37,7 @@ export default [
         description: 'Win, collect and sell unique NFTs that can be found in different WonderBoxes!',
         category: 'Lottery',
         coin: 'WONDER',
-        slug: 'magic-box',
+        slug: 'wonder',
         ru: {
             description: 'Выигрывайте, собирайте и продавайте уникальные NFT, которые можно найти в разных ВандерБоксах!',
             category: 'Лотерея',
