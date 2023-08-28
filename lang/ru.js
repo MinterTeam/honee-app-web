@@ -871,7 +871,7 @@ export default {
         'join-channel': 'Подписаться на канал',
         'join-conversation': 'Вступить в группу',
         'game-community': 'Сообщество игры',
-        'button-send-tokens': 'Отправить токены в игру',
+        'button-send-tokens': 'Отправить токены',
     },
     'deposit-p2p': {
         'title': 'Пополнение с карты',
