@@ -117,7 +117,7 @@ export default {
 
         <MetagardenLootboxCard class="u-mt-25"/>
 
-        <MetagardenMeganetCard class="u-mt-25"/>
+        <!--<MetagardenMeganetCard class="u-mt-25"/>-->
 
         <!-- BEE earning options -->
         <div class="u-mt-25">
