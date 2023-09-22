@@ -146,7 +146,7 @@ export default {
                     },
                 },
             }),*/
-            makeCard(presets.farm('METAGARDEN', 'USDTE'), {
+            /*makeCard(presets.farm('METAGARDEN', 'USDTE'), {
                 stats: {
                     apr: {
                         percent: '73',
@@ -159,8 +159,8 @@ export default {
                         percent: '73',
                     },
                 },
-            }),
-            makeCard(presets.stake(32), {
+            }),*/
+            /*makeCard(presets.stake(32), {
                 coin: `METAGARDEN`,
                 description: 'Stake METAGARDEN for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
                 stats: {
@@ -171,7 +171,7 @@ export default {
                 ru: {
                     description: 'Стейкуйте METAGARDEN на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
                 },
-            }),
+            }),*/
             /*makeCard(presets.stake(24), {
                 coin: `MUSD`,
                 description: 'Stake MUSD for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
@@ -184,7 +184,7 @@ export default {
                     description: 'Стейкуйте MUSD на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
                 },
             }),*/
-            makeCard(presets.stake(21), {
+            /*makeCard(presets.stake(21), {
                 coin: `HUBSTAKE`,
                 description: 'Stake HUBSTAKE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
                 stats: {
@@ -195,9 +195,9 @@ export default {
                 ru: {
                     description: 'Стейкуйте HUBSTAKE на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
                 },
-            }),
+            }),*/
             makeCard(presets.delegate(BASE_COIN)),
-            makeCard(presets.swap('DETFAPY'), {
+            /*makeCard(presets.swap('DETFAPY'), {
                 description: 'Decentralized Trading Fund based on top 10 expert portfolios.',
                 ru: {
                     description: 'Децентрализованный торговый фонд на основе Топ-10 портфелей экспертов.',
@@ -258,8 +258,8 @@ export default {
                         percent: '61',
                     },
                 },
-            }),
-            {
+            }),*/
+            /*{
                 style: 'portfolio-battle',
                 caption: 'Contest',
                 title: 'PORTFOLIO BATTLE',
@@ -275,7 +275,19 @@ export default {
                     buttonLabel: 'Подробнее',
 
                 },
-            },
+            },*/
+            makeCard(presets.stake(54), {
+                coin: `INTERSTAKE`,
+                description: 'Stake INTERSTAKE for 1, 2 or 3 years to get everyday rewards. The longer you stake, the more you earn!',
+                stats: {
+                    apr: {
+                        percent: '6-24',
+                    },
+                },
+                ru: {
+                    description: 'Стейкуйте INTERSTAKE на 1, 2 или 3 года, чтобы получать ежедневные награды. Чем больше период, тем больше вы зарабатываете!',
+                },
+            }),
         ],
     },
     swap: {
