@@ -82,7 +82,7 @@ export default defineComponent({
                 amount: {
                     required,
                     validAmount: isValidAmount,
-                    // maxValue: maxValue(this.maxAmount || 0),
+                    maxValue: (value) => this.maxAmount ? value <= this.maxAmount : true,
                     minValue: (value) => value > 0,
                     enoughToPayFee: (value) => Number(value) >= Number(this.currentData?.smartWalletRelayReward || 0),
                 },
@@ -149,6 +149,9 @@ export default defineComponent({
         // 'selected' - mean selected by user
         selectedBalanceItem() {
             return this.form.tokenBalanceItem;
+        },
+        maxAmount() {
+            return this.selectedBalanceItem?.amount || 0;
         },
         selectedHubChainData() {
             return HUB_CHAIN_DATA[this.selectedBalanceItem?.hubNetworkSlug];
@@ -291,7 +294,7 @@ function getComponentPropsItem(networkSlug, isLegacy) {
                     :amount.sync="form.amount"
                     :$amount="$v.form.amount"
                     :label="$td('Choose amount', 'form.amount')"
-                    :max-value="form.tokenBalanceItem?.amount"
+                    :max-value="maxAmount || undefined"
                     :use-balance-for-max-value="false"
                     @select-suggestion="form.tokenBalanceItem = $event"
                     @blur="/*handleInputBlur(); */$v.form.amount.$touch()"
@@ -301,7 +304,7 @@ function getComponentPropsItem(networkSlug, isLegacy) {
                 <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.enoughToPayFee">{{ $td('Not enough to pay fee', 'form.not-enough-to-pay-fee') }}</span>
                 <span class="form-field__error" v-else-if="currentData?.estimationLimitForRelayRewardsError">{{ currentData.estimationLimitForRelayRewardsError }}</span>
                 <span class="form-field__error" v-else-if="currentData?.smartWalletSwapParamsError">{{ currentData.smartWalletSwapParamsError }}</span>
-                <!--                        <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.maxValue">{{ $td('Not enough', 'form.not-enough') }} {{ form.coinToGet }} ({{ $td('max.', 'form.max') }} {{ pretty(maxAmount) }})</span>-->
+                <span class="form-field__error" v-else-if="$v.form.amount.$dirty && !$v.form.amount.maxValue">{{ $td('Not enough', 'form.not-enough') }} {{ form.tokenBalanceItem?.tokenSymbol }} ({{ $td('max.', 'form.max') }} {{ pretty(maxAmount) }})</span>
             </div>
 
             <button type="button" class="button button--main button--full u-mt-10" :class="{'is-loading': isLoading, 'is-disabled': $v.$invalid}" @click="openDepositConfirmation()">
