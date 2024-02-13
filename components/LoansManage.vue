@@ -1,6 +1,6 @@
 <script>
 import { createReusableTemplate } from '@vueuse/core';
-import {getProviderByChain, fromErcDecimals} from 'minter-js-web3-sdk/src/web3.js';
+// import {getProviderByChain, fromErcDecimals} from 'minter-js-web3-sdk/src/web3.js';
 import {getLoanList, getLendList, LEND_COIN, getCollateralPrice} from '~/api/web3-loans.js';
 import loansABI from '~/assets/abi/loans.json';
 import {pretty, getDate, getTime} from '~/assets/utils.js';

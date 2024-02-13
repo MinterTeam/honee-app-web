@@ -1,5 +1,6 @@
 import {reactive, set} from 'vue';
-import {getProviderByChain, getAllowance as _getAllowance, web3Utils, fromErcDecimals} from 'minter-js-web3-sdk/src/web3.js';
+import {fromErcDecimals} from 'minter-js-web3-sdk/src/web3-abi.js';
+import {getProviderByChain, getAllowance as _getAllowance, web3Utils} from 'minter-js-web3-sdk/src/web3.js';
 import erc20ABI from 'minter-js-web3-sdk/src/abi/erc20.js';
 import {HUB_CHAIN_BY_ID, HUB_CHAIN_DATA} from '~/assets/variables.js';
 

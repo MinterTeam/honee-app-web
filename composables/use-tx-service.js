@@ -1,6 +1,7 @@
 import {reactive, computed, set} from 'vue';
 import {deepMerge} from '~/assets/utils/collection.js';
-import {getProviderByChain, web3Utils, toErcDecimals} from 'minter-js-web3-sdk/src/web3.js';
+import {toErcDecimals} from 'minter-js-web3-sdk/src/web3-abi.js';
+import {getProviderByChain, web3Utils} from 'minter-js-web3-sdk/src/web3.js';
 import {subscribeTransaction} from '~/api/web3.js';
 import {postTx} from '~/api/gate.js';
 import {HUB_BUY_STAGE as LOADING_STAGE, CHAIN_ID as MINTER_CHAIN_ID} from '~/assets/variables.js';

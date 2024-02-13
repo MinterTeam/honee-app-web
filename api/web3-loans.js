@@ -1,5 +1,6 @@
 import Big from 'minterjs-util/src/big.js';
-import {fromErcDecimals, getProviderByChain} from 'minter-js-web3-sdk/src/web3.js';
+import {fromErcDecimals} from 'minter-js-web3-sdk/src/web3-abi.js';
+import {getProviderByChain} from 'minter-js-web3-sdk/src/web3.js';
 import {LOANS_BSC_CONTRACT_ADDRESS_LIST} from '~/assets/variables.js';
 import loansABI from '~/assets/abi/loans.json';
 

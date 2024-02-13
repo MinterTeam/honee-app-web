@@ -1,6 +1,7 @@
 import {HUB_CHAIN_BY_ID, HUB_DEPOSIT_TX_PURPOSE} from '~/assets/variables.js';
 import Utils from 'web3-utils';
-import {fromErcDecimals, getProviderByChain, web3Abi} from 'minter-js-web3-sdk/src/web3.js';
+import {fromErcDecimals} from 'minter-js-web3-sdk/src/web3-abi.js';
+import {getProviderByChain, web3Abi} from 'minter-js-web3-sdk/src/web3.js';
 import {getExternalCoinList, getTokenDecimals} from '~/api/web3.js';
 
 /**
