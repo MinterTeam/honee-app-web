@@ -8,7 +8,7 @@ import maxValue from 'vuelidate/src/validators/maxValue.js';
 import Big from 'minterjs-util/src/big.js';
 import {buildTransferTx, toErcDecimals} from 'minter-js-web3-sdk/src/web3-abi.js';
 import {pretty} from '~/assets/utils.js';
-import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA} from '~/assets/variables.js';
+import {HUB_NETWORK_SLUG, HUB_CHAIN_DATA, NATIVE_COIN_ADDRESS} from '~/assets/variables.js';
 import useHubOracle from '~/composables/use-hub-oracle.js';
 import useHubToken from '~/composables/use-hub-token.js';
 import useWeb3SmartWalletWithRelayReward from 'minter-js-web3-sdk/src/composables/use-web3-smartwallet-relay-reward.js';
@@ -63,6 +63,7 @@ export default {
                 token: '',
                 amount: '',
                 address: '',
+                isNativeGas: false,
             },
         };
     },
@@ -78,15 +79,19 @@ export default {
     created() {
         // smartWalletProps
         this.$watch(
-            () => ({
-                privateKey: this.$store.getters.privateKey,
-                evmAccountAddress: this.$store.getters.evmAddress,
-                chainId: this.hubChainData.chainId,
-                gasPriceGwei: this.networkGasPrice,
-                gasTokenAddress: this.tokenContractAddress,
-                gasTokenDecimals: this.tokenDecimals,
-                estimationSkip: true,
-            }),
+            () => {
+                const gasTokenAddress = this.form.isNativeGas ? NATIVE_COIN_ADDRESS : this.tokenContractAddress;
+                const gasTokenDecimals = this.form.isNativeGas ? 18 : this.tokenDecimals;
+                return {
+                    privateKey: this.$store.getters.privateKey,
+                    evmAccountAddress: this.$store.getters.evmAddress,
+                    chainId: this.hubChainData.chainId,
+                    gasPriceGwei: this.networkGasPrice,
+                    gasTokenAddress,
+                    gasTokenDecimals,
+                    estimationSkip: true,
+                };
+            },
             (newVal) => this.setSmartWalletProps(newVal),
             {deep: true, immediate: true},
         );
@@ -178,6 +183,14 @@ export default {
                 placeholder="0x"
             />
         </div>
+
+        <div class="form-row">
+            <label class="form-check">
+                <input class="form-check__input" type="checkbox" v-model="form.isNativeGas">
+                <span class="form-check__label form-check__label--checkbox">{{ $td('Use native coin for gas', 'todo') }}</span>
+            </label>
+        </div>
+
         <div class="form-row">
             <button class="button button--main button--full" type="submit">{{ $td('Send', 'form.wallet-send-button') }}</button>
         </div>
