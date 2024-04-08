@@ -47,10 +47,10 @@ export default {
             </h1>
             <p>{{ $td('Choose one of these options', 'topup.description') }}</p>
 
-            <nuxt-link class="button button--main button--full u-mt-10" :to="getTopupInnerPage('card')" v-if="isMainnet">
+            <!--<nuxt-link class="button button--main button--full u-mt-10" :to="getTopupInnerPage('card')" v-if="isMainnet">
                 <InlineSvg class="button__icon" src="/img/icon-topup-card.svg" alt="" role="presentation"/>
                 {{ $td('Card to card', 'topup.top-up-with-card2card') }}
-            </nuxt-link>
+            </nuxt-link>-->
             <nuxt-link class="button button--main button--full u-mt-10" :to="getTopupInnerPage('bsc')">
                 <InlineSvg class="button__icon" src="/img/icon-topup-bnb.svg" alt="" role="presentation"/>
                 {{ $td('Top up with BNB', 'topup.top-up-with-network', {network: 'BNB'}) }}

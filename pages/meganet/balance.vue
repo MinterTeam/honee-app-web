@@ -245,7 +245,7 @@ export default {
 
         <template v-if="!isDepositProcessing && !successDeposit">
             <!-- p2p -->
-            <div v-if="isMainnet" class="card card--light-grey u-text-left card__content card__content--medium u-mt-20">
+            <!--<div v-if="isMainnet" class="card card--light-grey u-text-left card__content card__content--medium u-mt-20">
                 <h2 class="u-h--uppercase-solid u-mb-025 u-flex u-flex--align-center">
                     <img class="u-mr-05" src="/img/icon-card.svg" alt="" role="presentation" width="24" height="24">
                     {{ $td('Bank cards', 'deposit.title-card') }}
@@ -253,7 +253,7 @@ export default {
                 <a class="button button--main button--full u-mt-10" :href="card2MinterUrl">
                     {{ $td('Buy with card', 'deposit.button-buy-with-card') }}
                 </a>
-            </div>
+            </div>-->
 
             <!-- Telegram -->
             <div class="card card--light-grey u-text-left card__content card__content--medium u-mt-20">

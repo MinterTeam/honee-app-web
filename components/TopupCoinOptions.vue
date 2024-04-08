@@ -183,10 +183,10 @@ export default {
 
         <TopupCoinOptionsTelegram class="button button--full u-mt-10" :class="buttonClass" :coin="coin" :settings="settings" :button-class="buttonClass"/>
 
-        <a class="button button--full u-mt-10" :class="buttonClass" :href="card2MinterUrl" v-if="settings.card2Card">
+        <!--<a class="button button--full u-mt-10" :class="buttonClass" :href="card2MinterUrl" v-if="settings.card2Card">
             <InlineSvg class="button__icon" src="/img/icon-topup-card.svg" width="24" height="24" alt="" role="presentation"/>
             {{ $td('Card', 'topup.top-up-with-card2card') }}
-        </a>
+        </a>-->
 
         <nuxt-link class="button button--full u-mt-10" :class="buttonClass" :to="$i18nGetPreferredPath(`/buy/${coin}/custom`)" v-if="settings.custom">
             {{ translate(settings.custom, 'label') }}

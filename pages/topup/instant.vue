@@ -110,13 +110,13 @@ export default {
                     <TopupSmartWalletForm/>
 
                     <!-- p2p -->
-                    <template v-if="isMainnet">
+                    <!--<template v-if="isMainnet">
                         <h2 class="u-h--uppercase-solid u-mt-20 u-mb-025 u-flex u-flex--align-center">
                             <img class="u-mr-05" src="/img/icon-card.svg" alt="" role="presentation" width="24" height="24">
                             {{ $td('Bank cards', 'deposit.title-card') }}
                         </h2>
                         <nuxt-link class="button button--main button--full u-mt-10" :to="getTopupInnerPage('card')">{{ $td('Top up with Card', 'deposit.button-card') }}</nuxt-link>
-                    </template>
+                    </template>-->
 
 
                     <!-- minter -->

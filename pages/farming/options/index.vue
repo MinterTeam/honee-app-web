@@ -52,10 +52,10 @@ export default {
             </h1>
             <p>{{ $td('Choose one of these options', 'topup.description') }}</p>
 
-            <a class="button button--full u-mt-10" :class="buttonClass" :href="card2MinterUrl" v-if="isMainnet">
+            <!--<a class="button button--full u-mt-10" :class="buttonClass" :href="card2MinterUrl" v-if="isMainnet">
                 <InlineSvg class="button__icon" src="/img/icon-topup-card.svg" width="24" height="24" alt="" role="presentation"/>
                 {{ $td('Card', 'topup.top-up-with-card2card') }}
-            </a>
+            </a>-->
             <!--<nuxt-link class="button button--full u-mt-10" :class="buttonClass" :to="$i18nGetPreferredPath('/topup/crypto')">
                 <InlineSvg class="button__icon" src="/img/icon-blockchain.svg" width="24" height="24" alt="" role="presentation"/>
                 {{ $td('Crypto', 'topup.buy-with-crypto') }}
