@@ -30,9 +30,9 @@ export const CHAINIK_API_URL = 'https://api.chainik.io/v1/';
 export const FARM_API_URL = 'https://yf.chainik.io/api/v1/';
 export const CARD_TO_MINTER_HOST = process.env.APP_CARD_TO_MINTER_HOST;
 export const CARD_TO_MINTER_API_URL = 'https://card-api.minter.trade/v1/';
-export const CLOUDFLARE_KV_API_URL = 'https://exchanges-proxy.bip.dev/honee-cloudflare-kv/';
+export const CLOUDFLARE_KV_API_URL = 'https://web-proxy.minter.network/honee-cloudflare-kv/';
 export const HEIST_BSC_API_URL = 'https://heist-bsc-api.dl-dev.ru/';
-export const HEIST_BNB_MEGA_SWAP_API_URL = 'https://exchanges-proxy.bip.dev/heist-bnb-mega-swap/';
+export const HEIST_BNB_MEGA_SWAP_API_URL = 'https://web-proxy.minter.network/heist-bnb-mega-swap/';
 export const TELEGRAM_AUTH_BOT_NAME = IS_SUBAPP_MEGACHAIN || IS_SUBAPP_MEGAGAMER ? 'MetagardenBot' : 'HoneePremiumBot';
 export const TELEGRAM_AUTH_HOST = IS_SUBAPP_MEGACHAIN || IS_SUBAPP_MEGAGAMER ? 'https://metagarden-bot.minter.network' : 'https://premium-bot.honee.app';
 export const TELEGRAM_AUTH_API_URL = TELEGRAM_AUTH_HOST + '/api/v1/';
@@ -56,7 +56,7 @@ export const BSC_API_URL = process.env.APP_BSC_API_URL;
 export const ETHEREUM_CHAIN_ID = NETWORK === MAINNET ? 1 : 3;
 /** @type {ChainId} */
 export const BSC_CHAIN_ID = NETWORK === MAINNET ? 56 : 97;
-export const MORALIS_API_URL = 'https://exchanges-proxy.bip.dev/moralis';
+export const MORALIS_API_URL = 'https://web-proxy.minter.network/moralis';
 // dummy key needed for sdk to work correctly
 export const MORALIS_API_KEY = 'dummy-key';
 // export const MORALIS_API_URL = 'https://deep-index.moralis.io/api/v2';
