@@ -107,7 +107,8 @@ export default {
 
                 <div class="card__content card__content--medium" v-if="!isDepositProcessing && !successDeposit">
                     <!-- evm -->
-                    <TopupSmartWalletForm/>
+                    <p>{{ $td('The deposit is only available from', 'deposit.only-console') }} <a href="https://console.minter.network/hub" target="_blank">Minter Console</a>.</p>
+                    <!-- <TopupSmartWalletForm/> -->
 
                     <!-- p2p -->
                     <!--<template v-if="isMainnet">

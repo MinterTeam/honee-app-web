@@ -279,6 +279,7 @@ export default {
         'telegram-find-address-description-1': 'Вам нужно будет отправить',
         'telegram-find-address-description-2': 'Telegram боту.',
         'telegram-find-address-button': 'этот Minter-адрес',
+        'only-console': 'Депозит доступен только через',
     },
     'topup-network': {
         'title': 'Пополнить через',
